@@ -178,6 +178,20 @@ const LISTS = { 'Kitah Alef': { v: 1, rows: [{ he: 'נֹעָה', en: 'Noa' }, { 
   const fresh = device({ [DASH]: JSON.stringify(ROSTERS), [KEY]: JSON.stringify({ v: 1, classes: {}, retired: { a_0: A.store().retired.a_0 } }) });
   fresh.C.adopt();
   assert.ok(!fresh.C.get('a_0') && !fresh.store().classes.a_0, 'a device that never held the class does not bring it back');
+  // a deleted class a sync landing put back in the store (the tab that deleted it had an older view of it): hidden,
+  // and removed again once the account has answered — but a class changed after its deletion is kept
+  const relanded = A.store(), keptA2 = J(relanded.classes.a_2);
+  relanded.classes.a_0 = { id: 'a_0', name: 'Kitah Alef', students: [{ id: 'sx', he: '', en: 'Noa' }], updated: relanded.retired.a_0 - 5 };
+  relanded.retired.zz = relanded.retired.a_0; relanded.classes.zz = { id: 'zz', name: 'Edited since', students: [], updated: relanded.retired.a_0 + 5 };
+  A.data[KEY] = JSON.stringify(relanded);
+  assert.ok(!A.C.get('a_0') && A.C.get('zz'), 'the landed copy of a deleted class is hidden; one edited since its deletion shows');
+  A.C.adopt({ dash: true, nt: true });
+  assert.ok(A.store().classes.a_0, 'without the prune (the account not heard in this load) nothing is removed');
+  A.C.adopt({ dash: true, nt: true, prune: true });
+  assert.ok(!A.store().classes.a_0 && A.store().retired.a_0 && A.store().classes.zz, 'the prune takes the hidden class out and keeps the one edited since');
+  assert.equal(A.canon(A.store().classes.a_2), A.canon(keptA2), 'and touches no other class');
+  const prunedOnce = A.data[KEY]; A.C.adopt({ dash: true, nt: true, prune: true });
+  assert.equal(A.data[KEY], prunedOnce, 'a second prune writes nothing');
   ok('operations: copy-on-edit, delete and restore a student, delete a class for good');
 }
 

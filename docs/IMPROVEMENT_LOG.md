@@ -80,8 +80,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S653 — what `d707bc8a` leaves; G's, gate 3**) | hebrew_blend_generator.html | **A landscape Inverse sheet exports seven columns where paper prints ten** (the capture is the 760px screen sheet). | found S653
 
-- [ ] P4 (**NEW S649 H — what `17657ca3` leaves**) | classroom_dashboard.html | **A Hebrew-first name with a Latin part still leads that part with its last mark** ("דָּוִד / David K." shows ".David K / דָּוִד"): the Latin run would need its own isolate. | found S649
-
 - [ ] P4 (**NEW S649 H**) | classroom_dashboard.html | **The editor toolbars' font menu clips its own default, "Source Sans 3"** (the drawer's two toolbars and Bulk preset edit's: the 3 under the arrow in English, the S cut in Hebrew). | found S649
 
 - [ ] P4 (**NEW S646 P — attribute first**) | Hebrew_Font_Maker.html | **On a project of 8 phone photos the local snapshot still makes long tasks after every edit**: 4 of 51–77 ms @1× (the S565 probe) and, in a cloud autosave's window (two snapshots), ~25 of 200–290 ms @4× on HEAD and the tree alike — the gzip stream over 29 M chars is the likely source (findings S646). | found S646
@@ -211,8 +209,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] S–M | parsha_emojis.html (reads the dashboard's class lists) | **Each child's name on their coloring sheet's Name line, from a class list**: a teacher printing 22 copies of this week's sheet writes 22 names by hand; a class choice beside Copies would print one sheet per child, named (the generator's Class Set names seed is its twin). | found S629 H
 
 - [ ] S | resources.html | **The Links filters live in the address** (`?cat=&age=`): bookmarkable, kept on reload. | found S454 H
-
-- [ ] S–M | flash_cards.html (reads the dashboard's class lists) | **Make student profiles from a class list.** A class already in the dashboard (`hebrewDashboard_settings.rosters`) is re-typed one `prompt()` at a time; a "From a class list…" choice is ~50 lines + 3 keys, a handshake pair. | found: S412 Pass H
 
 - [ ] S | flash_cards.html | **The code box takes a pasted link too**: a whole link pasted into "Got a code from your teacher?" reads "Invalid code". | found: S651 Pass H
 
@@ -367,6 +363,12 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 _(none)_
 
 ## Done
+
+- [x] 2026-11-21 | PR #418 (the maintainer's brief, no loop session) | js/ivrit-classes.js, the hub, name_tags, classroom_dashboard, flash_cards, reading_assignments, `0013`, sw.js | **One class roster shared by the Dashboard, Name Tags, Flash Cards and reading assignments** (`ivritSuite_classes`, tool `Classes`; old rosters and lists shown as a live view, copied only after the account answers, never doubled) | the classes, migration, sync, tools and assignments smokes green; `0013` live; `docs/reference/class-roster.md`
+
+- [x] 2026-11-21 | `a013e161` | classroom_dashboard.html | (PR #418; the open picker-direction P4) **A Hebrew name beside a Latin one no longer leads the Latin part with its last mark**: each script run in its own isolate (`pickerNameHTML`, *Names shown*) | browser pass, EN + HE, light + dark
+
+- [x] 2026-11-21 | `704dc61e` | flash_cards.html | (PR #418; the profiles-from-a-class-list seed) **Make profiles for this class**: one linked profile per student who has none, beside *Link profiles…* (each suggestion confirmed) | browser pass; the share code holds no class or student (smoke-tools)
 
 - [x] 2026-11-21 | (S671 close-out) | branch/deploy note | **S671 = H on `trope_atlas.html` (its 2nd, S583 → S671; 27 commits to the page since): 3 lessons + the student cell by real input, FOUND 2 frictions + 1 P4 + 2 seeds, FIXED 2 (one closes the S665 P4) + the S653 ring from the queue; the S670 toggle P4 refuted.** Draft PR #417 (continued), `sw.js` v1467 → v1470; nothing live changed.
 

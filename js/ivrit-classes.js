@@ -694,6 +694,11 @@
     which = which || { dash: true, nt: true };
     var store = readStore(), sv = survey(store);
     var okFrom = function (from) { return from === 'dash' ? !!which.dash : !!which.nt; };
+    // A deleted class that is in the store again goes out again. The sync module lands a row back when the tab that
+    // deleted it had an older view of it (another tab changed the class a moment before): the class is hidden by
+    // `retired`, but its students' names would stay here and in the account for good. Asked for only once the
+    // account has answered in this page load (or signed out), so this removal is one the module sends on.
+    if (which.prune) Object.keys(store.classes).forEach(function (id) { if (!alive(store, id)) delete store.classes[id]; });
     sv.dash.concat(sv.nts).forEach(function (x) {
       var id = x.cls.id;
       if (!okFrom(x.src.from)) return;
@@ -1012,7 +1017,7 @@
       if (!d || !d.ok || !Array.isArray(d.tools)) return;
       d.tools.forEach(function (tool) { freshTools[tool] = true; });
       if (!freshTools.Classes) return;
-      try { adopt({ dash: !!freshTools.Dashboard, nt: !!freshTools.NameTags }); } catch (err) {}
+      try { adopt({ dash: !!freshTools.Dashboard, nt: !!freshTools.NameTags, prune: true }); } catch (err) {}
     });
   }
 
@@ -1610,7 +1615,7 @@
   }
 
   // Signed out, a class already copied still takes what an old tab adds to its old source (add-only).
-  function reconcileLocal() { if (!hasStoredSession()) { try { adopt({ dash: true, nt: true, onlyExisting: true }); } catch (e) {} } }
+  function reconcileLocal() { if (!hasStoredSession()) { try { adopt({ dash: true, nt: true, onlyExisting: true, prune: true }); } catch (e) {} } }
   if (root.document && root.document.addEventListener) {
     if (root.document.readyState === 'loading') root.document.addEventListener('DOMContentLoaded', reconcileLocal); else reconcileLocal();
     root.addEventListener('storage', function (e) { if (e && (e.key === DASH_KEY || e.key === NT_KEY)) reconcileLocal(); });

@@ -168,6 +168,10 @@
  *   node scripts/smoke-sync.mjs --sdk path/to/supabase.js [--port 8081]
  * The script starts python3 -m http.server itself (port 8081 by default, so it can run beside the others).
  * SMOKE_DEBUG=1 echoes the pages' console; SMOKE_ONLY=3,6,D2 runs only those scenarios (0 always runs).
+ *  D45. A Dashboard tab and a Name Tags tab open together on an account two old pages left a roster, a same-named
+ *      list and another list in: both show the same three classes (the pair as one), the account holds one row a
+ *      class; a student added on one tab shows on the other with no old key written; a class deleted on the
+ *      Dashboard leaves both tabs and the account (its row, the old roster, the old list) and stays gone on reload.
  */
 import pkg from '/opt/node22/lib/node_modules/playwright/index.js';
 import { spawn } from 'node:child_process';
@@ -2260,6 +2264,54 @@ try {
     check('D44: two loads and a page leave send nothing over them — the account keeps the choices', acc().rwShowTranslit === false && acc().rwTranslPage === 'same' && !reqs(cloud, 0, 'PATCH').length, JSON.stringify({ account: [acc().rwShowTranslit, acc().rwTranslPage], calls: methods(cloud, 0) }));
     check('D44: 0 pageerrors', b.errors.length === 0, b.errors.join(' | '));
     await ctxB.close();
+  }
+  // ---- D45. a Dashboard tab and a Name Tags tab open together: one set of shared classes, no doubles, a delete that holds ----
+  if (want('D45')) {
+    const DC_TOOLS = ['Dashboard', 'Suite', 'Classes'], NT_TOOLS = ['NameTags', 'Suite', 'Classes'];
+    // the account as two old pages left it: a roster and a same-named list of the same two students, and a list of its own
+    const cloud = new FakeCloud(CLOUD_ROWS().concat([
+      { tool: 'NameTags', kind: 'list', name: 'Kitah Alef', data: { v: 1, rows: [{ he: '', en: 'Noa' }, { he: '', en: 'Eitan' }], extra: '' } },
+      { tool: 'NameTags', kind: 'list', name: 'Kitah Bet', data: { v: 1, rows: [{ he: 'דָּן', en: 'Dan' }], extra: '' } }
+    ]));
+    const ctx = await openContext(browser, cloud, SEED({ device: true, extra: { hebrewNameTags_tourSeen: '1' } }));
+    const A = await openPage(ctx, 'classroom_dashboard.html', { tools: DC_TOOLS });
+    const B = await openPage(ctx, 'name_tags.html', { tools: NT_TOOLS });
+    const both = async () => { await sleep(WRITE_MS); const a = await settled(A.page, DC_TOOLS, 15000), b = await settled(B.page, NT_TOOLS, 15000); await sleep(400); return a && b; };
+    const classesIn = page => page.evaluate(() => IvritClasses.list().map(c => ({ id: c.id, name: c.name, n: c.students.length, stored: c.stored })));
+    const classRows = () => cloud.rows.filter(r => r.tool === 'Classes' && r.kind === 'class').map(r => ({ id: r.name, name: r.data.name, n: (r.data.students || []).length }));
+    const ok1 = await both();
+    const a1 = await classesIn(A.page), b1 = await classesIn(B.page), rows1 = classRows();
+    const names = l => l.map(c => c.name + ':' + c.n).sort().join(',');
+    const wanted = 'Kitah Alef:2,Kitah Bet:1';   // (the device's untouched empty "My class" is not a class)
+    check('D45: both tabs show the same classes — the roster and its same-named list as one class, the other list as its own', ok1 && names(a1) === wanted && names(b1) === wanted && a1.find(c => c.name === 'Kitah Alef').id === 'lap_0' && JSON.stringify(a1.map(c => c.id).sort()) === JSON.stringify(b1.map(c => c.id).sort()), JSON.stringify({ ok1, a1, b1 }));
+    const posts1 = reqs(cloud, 0, 'POST', 'class').map(e => e.body.name).sort();
+    check('D45: the account holds one row a class, each sent once (two tabs copying the same old data make the same ids)', names(rows1) === wanted && posts1.length === new Set(posts1).size, JSON.stringify({ rows1, posts1 }));
+    // Name Tags adds a student: the Dashboard tab shows it without a reload, and no old key is written
+    const from = cloud.log.length;
+    const oldKeys = await A.page.evaluate(() => [localStorage.getItem('hebrewNameTags_lists'), JSON.stringify(JSON.parse(localStorage.getItem('hebrewDashboard_settings')).rosters)]);
+    await B.page.evaluate(() => { IvritClasses.addStudent('lap_0', { he: '', en: 'Gali' }); });
+    const ok2 = await both();
+    const a2 = await A.page.evaluate(() => ({ n: IvritClasses.get('lap_0').students.length, old: [localStorage.getItem('hebrewNameTags_lists'), JSON.stringify(JSON.parse(localStorage.getItem('hebrewDashboard_settings')).rosters)] }));
+    const oldReqs = cloud.log.slice(from).filter(e => e.table === 'saves' && e.m !== 'GET' && e.body && (e.body.kind === 'roster' || e.body.kind === 'list'));
+    check('D45: a student added on Name Tags is on the Dashboard tab at once and in the account; the old roster and list are not written', ok2 && a2.n === 3 && classRows().find(c => c.id === 'lap_0').n === 3 && JSON.stringify(a2.old) === JSON.stringify(oldKeys) && oldReqs.length === 0 && cloud.find('roster', 'lap_0').data.names.length === 2, JSON.stringify({ ok2, a2: a2.n, oldReqs: oldReqs.length }));
+    // the Dashboard deletes the class: it leaves both tabs and the account, with the old roster and list each page owns
+    await A.page.evaluate(() => { IvritClasses.deleteClass('lap_0'); });
+    const ok3 = await both(); await both();
+    const a3 = await classesIn(A.page), b3 = await classesIn(B.page);
+    if (process.env.SMOKE_DEBUG) { console.log(JSON.stringify(cloud.log.slice(from).filter(e => e.table === 'saves' && e.m !== 'GET').map(e => [e.m, e.status, e.search, e.body && e.body.kind, e.body && e.body.name]), null, 0)); console.log('A store', await A.page.evaluate(() => localStorage.getItem('ivritSuite_classes'))); }
+    const left = { cls: !!cloud.find('class', 'lap_0'), roster: !!cloud.find('roster', 'lap_0'), list: !!cloud.find('list', 'Kitah Alef'), bet: !!cloud.find('list', 'Kitah Bet'), retired: !!(((cloud.find('retired', 'default', 'Classes') || {}).data || {}).retired || {}).lap_0 };
+    check('D45: a class deleted on the Dashboard leaves both tabs, and the account loses its class row, its old roster (the Dashboard\'s) and its old list (Name Tags\')', ok3 && names(a3) === 'Kitah Bet:1' && names(b3) === names(a3) && !left.cls && !left.roster && !left.list && left.bet && left.retired, JSON.stringify({ ok3, a3, b3, left }));
+    // both tabs reload: nothing of it comes back, nothing is sent again
+    const from2 = cloud.log.length;
+    await A.page.reload({ waitUntil: 'domcontentloaded' }); await B.page.reload({ waitUntil: 'domcontentloaded' });
+    await A.page.waitForFunction(t => window.IvritSaves && IvritSaves._test.settled(t), DC_TOOLS, { timeout: HYDRATE_MS });
+    await B.page.waitForFunction(t => window.IvritSaves && IvritSaves._test.settled(t), NT_TOOLS, { timeout: HYDRATE_MS });
+    await both();
+    const a4 = await classesIn(A.page), b4 = await classesIn(B.page);
+    const writes = cloud.log.slice(from2).filter(e => e.table === 'saves' && e.m !== 'GET');
+    check('D45: after both tabs reload the class stays gone and nothing is written', names(a4) === 'Kitah Bet:1' && names(b4) === names(a4) && writes.length === 0 && !cloud.find('class', 'lap_0'), JSON.stringify({ a4, b4, writes: writes.map(e => [e.m, e.body && e.body.kind, e.body && e.body.name]) }));
+    check('D45: 0 pageerrors', A.errors.length === 0 && B.errors.length === 0, A.errors.concat(B.errors).join(' | '));
+    await ctx.close();
   }
 } finally {
   await browser.close();

@@ -20,9 +20,12 @@ only asks you to sign in; students never see it do anything.)
    its students happens in there, and **Edit class…** next to a class brings it back. (Students you never put in
    a class live under *Students without a class*, with the same popup.)
 3. Under *Add students*, type one name per line — a first name or a nickname is enough; it is what the student
-   sees on screen. Type a last name too if you want usernames like `ruth.cohen`. If you keep a class list in the
-   Classroom Dashboard, Name Tags or Flash Cards on this computer, the drop-down beside the box can add those
-   names for you.
+   sees on screen. Type a last name too if you want usernames like `ruth.cohen`. If the class is already one of
+   your class lists (the ones the Classroom Dashboard, Name Tags and Flash Cards share), choose it under **Class
+   list** at the top of the popup and press **Create accounts for these students**: the names of the students
+   who have no login yet are filled in for you and the preview of step 4 opens. Nothing is created until you
+   press Create in step 5, and the class list then remembers each student's username. (The drop-down beside the
+   names box can also add the names of any class list, or of your Flash Cards profiles, without linking.)
 4. Choose a **Username style** (first name + number, first.last, initial + last name…) and press **Preview
    usernames and passwords**. Each student gets a username and a three-word password (like `blue-tiger-42`).
    Change any of them if you like — usernames are lowercase letters, digits and dots; passwords at least 8
