@@ -82,7 +82,10 @@ every row), `node scripts/build-holiday-pages.mjs`, `node scripts/smoke-holiday-
   focuses the ✕; Escape, the ✕ and a click on the backdrop call `hgClose`, which clears the pages and returns focus
   to the opener (found again by its box and holiday when a language switch redrew it). Tab stays inside the dialog.
   The pages are built only while it is open (`hgBuild` returns early otherwise: the fit is measured on screen).
-  Below 860px the popup fills the screen and shows the sheet before its options. The markup and behaviour follow
+  Below 860px the popup fills the screen and shows the sheet before its options, one scrolling column (`.hg-panes`):
+  it opens at the top, on the sheet, and a build keeps the options where they were on the screen (`hgOptionsTop` /
+  `hgKeepOptions`), since a choice that changes the page count grows or shrinks everything above the option tapped
+  and Safari has no scroll anchoring to hold it. The markup and behaviour follow
   `parsha_emojis.html`'s coloring popup. `#hgCards[data-ready="1"]` marks the page as drawn.
 - The holiday (`hgHoliday`) and the ticked symbols (`hgChosen`, `-1` = the holiday's own symbol, offered as a seventh
   picture) are **never stored**; every opening starts with that holiday's six ticked. `?holiday=<slug>`

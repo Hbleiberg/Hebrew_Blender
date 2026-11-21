@@ -1152,10 +1152,25 @@ function hgPageStyle() {
   const st = document.getElementById('hgPageSize');
   if (st) st.textContent = '@page { size: ' + (hg.paper === 'a4' ? 'A4' : 'letter') + ' portrait; margin: 0.35in; }';   // i18n-ignore: CSS, not text
 }
+// Below 860px the sheet maker is one scrolling column with the pages above the options, so a choice that changes how
+// many pages there are (per page, All / None, a symbol) moves the option under the finger — by thousands of pixels
+// where the engine has no scroll anchoring (Safari). A build keeps the options where they were on the screen; with the
+// options below the screen, the pages being read stay put by themselves. Side by side, each pane scrolls alone.
+function hgOptionsTop() {
+  const panes = document.querySelector('.hg-panes'), side = document.querySelector('.hg-side');
+  if (!panes || !side || getComputedStyle(panes).overflowY === 'visible') return null;
+  const top = side.getBoundingClientRect().top;
+  return top < panes.getBoundingClientRect().bottom ? top : null;
+}
+function hgKeepOptions(top) {
+  if (top == null) return;
+  const d = document.querySelector('.hg-side').getBoundingClientRect().top - top;
+  if (Math.abs(d) > 0.5) document.querySelector('.hg-panes').scrollTop += d;
+}
 // The pages the choices make: the ticked symbols in the catalog's order, hg.per to a page.
 function hgBuild() {
   const list = document.getElementById('hgPages'), note = document.getElementById('hgNote'), count = document.getElementById('hgCount'), print = document.getElementById('hgPrint');
-  const h = HG.get(hgHoliday);
+  const h = HG.get(hgHoliday), optTop = hgIsOpen() ? hgOptionsTop() : null;
   list.textContent = '';
   delete list.dataset.ready;   // set again once this build's pages are fitted in the loaded faces
   hgPageStyle();
@@ -1177,6 +1192,7 @@ function hgBuild() {
   count.textContent = pages.length ? I18n.t(pages.length === 1 ? 'holidayguide.builder.count.one' : 'holidayguide.builder.count.other', { count: pages.length, name: hgName(h) }) : '';
   print.setAttribute('aria-disabled', pages.length ? 'false' : 'true');
   hgFitAll();
+  hgKeepOptions(optTop);
   // The fit is measured in the real faces: once more when they have loaded (a web font arrives after the first build).
   if (document.fonts && document.fonts.ready) { const sig = ++_hgBuildNo; document.fonts.ready.then(() => { if (sig === _hgBuildNo) { hgFitAll(); list.dataset.ready = '1'; } }); }
   else list.dataset.ready = '1';
@@ -1214,6 +1230,7 @@ function hgOpen(key, opener) {
   document.getElementById('hgOverlay').hidden = false;
   document.body.classList.add('hg-open');   // print keys on it: paper gets the sheets alone
   hgSetHoliday(h.key);
+  document.querySelector('.hg-panes').scrollTop = 0;   // it opens on the sheet (a build keeps the options in place)
   setTimeout(() => { try { document.getElementById('hgClose').focus(); } catch (e) {} }, 0);
 }
 function hgClose() {
