@@ -707,10 +707,10 @@ try {
     const okA = await settled(A.page, DASH_TOOLS);
     const postedA = reqs(cloud, from, 'POST', 'roster');
     const bLive = await B.page.evaluate((id) => ({ inMemory: !!settings.rosters[id], inStore: !!(JSON.parse(localStorage.getItem('hebrewDashboard_settings')).rosters || {})[id], options: [...document.getElementById('pickerClassSel').options].map(o => o.textContent) }), id);
-    check("4: tab A's old roster went up (one POST); its page-write stamp left tab B's in-memory blob alone (the roster is in storage, not in B's memory)", okA && postedA.length === 1 && postedA[0].body.name === id && bLive.inStore && !bLive.inMemory, JSON.stringify({ okA, posted: postedA.length, bLive }));
-    // B's stale whole-blob write (its in-memory settings lack the class A added)
+    check("4: tab A's old roster went up (one POST); tab B's copy of the old rosters followed the store (the page's own storage listener — this page never adds to them, so its whole-blob save cannot put a removed one back)", okA && postedA.length === 1 && postedA[0].body.name === id && bLive.inStore && bLive.inMemory, JSON.stringify({ okA, posted: postedA.length, bLive }));
+    // B's stale whole-blob write, as an older tab of this page makes it (its in-memory settings lack the class A added)
     from = cloud.log.length;
-    await B.page.evaluate(() => { settings.location = 'Haifa'; saveSettingsToStorage(); });
+    await B.page.evaluate((id) => { delete settings.rosters[id]; settings.location = 'Haifa'; saveSettingsToStorage(); }, id);
     const okB = await settled(B.page, DASH_TOOLS, 8000);
     const delsB = reqs(cloud, from, 'DELETE');
     const bAfter = await B.page.evaluate((id) => ({ inMemory: !!settings.rosters[id], inStore: !!(JSON.parse(localStorage.getItem('hebrewDashboard_settings')).rosters || {})[id] }), id);
@@ -1121,7 +1121,7 @@ try {
     });
     const okA = await settled(A.page, DASH_TOOLS);
     const bStale = await B.page.evaluate(() => ({ location: settings.location, names: (settings.rosters.lap_0 || {}).names || [] }));
-    check("D1: tab A's location and new student reached the account; tab B's in-memory copy never re-read them", okA && sRow.data.location === 'Jerusalem' && rRow.data.names.includes('Yael') && bStale.location !== 'Jerusalem' && !bStale.names.includes('Yael'), JSON.stringify({ okA, location: sRow.data.location, names: rRow.data.names, bStale, calls: methods(cloud, from) }));
+    check("D1: tab A's location and new student reached the account; tab B's in-memory settings never re-read the location (only its old rosters follow the store)", okA && sRow.data.location === 'Jerusalem' && rRow.data.names.includes('Yael') && bStale.location !== 'Jerusalem' && bStale.names.includes('Yael'), JSON.stringify({ okA, location: sRow.data.location, names: rRow.data.names, bStale, calls: methods(cloud, from) }));
     const fromB = cloud.log.length;
     await B.page.evaluate(() => { setHebDateSize(3.3); saveSettingsToStorage(); });
     const okB = await settled(B.page, DASH_TOOLS, 10000);
@@ -1693,7 +1693,7 @@ try {
     await P.goto(BASE + '/llms.txt', { waitUntil: 'domcontentloaded' }).catch(() => {});   // a plain file: reads the store without running a page
     const store = await P.evaluate(() => { const s = JSON.parse(localStorage.getItem('hebrewDashboard_settings') || '{}'); return { names: ((s.rosters || {}).lap_0 || {}).names || [], board: s.dashTextHTML || '', font: s.engFont }; });
     await P.close();
-    check('D24: tab A\'s new student and board message reached the account; the projector tab, with a change of its own, then wrote its older copy into this device\'s store', upA && !store.names.includes('Yael') && !/Newer board/.test(store.board) && store.font === 'D24 Font', JSON.stringify({ upA, store }));
+    check('D24: tab A\'s new student and board message reached the account; the projector tab, with a change of its own, then wrote its older board into this device\'s store (its old rosters had followed the store)', upA && store.names.includes('Yael') && !/Newer board/.test(store.board) && store.font === 'D24 Font', JSON.stringify({ upA, store }));
     // the next morning a fresh tab opens
     const from = cloud.log.length;
     const C = await openPage(ctx, 'classroom_dashboard.html');
