@@ -1007,6 +1007,72 @@ try {
     await t2.page.screenshot({ path: path.join(SHOTS, 'J-teacher-he-dark.png'), fullPage: true });
     await ctx2.close();
   }
+  /* ───── N. the shared class lists: a class is linked to one, and logins are made for its students ───── */
+  {
+    // An old Dashboard roster on the device (the shared classes show it without copying it), seeded once.
+    const init = () => { if (!localStorage.getItem('hebrewDashboard_settings')) localStorage.setItem('hebrewDashboard_settings', JSON.stringify({ activeRoster: 'a_1', rosters: { a_1: { name: 'Kitah Dalet', names: ['דָּן | Dan', 'Miriam', 'Yael <b>x</b>'] } } })); };
+    const ctx = await newCtx(browser, cloud, { session: teacherSession, init });
+    const { page, errors } = await openPage(ctx, 'reading_assignments.html');
+    await page.waitForFunction(() => !document.getElementById('stIn').hidden, null, { timeout: 10000 });
+    const before = { students: cloud.t.students.length, fn: cloud.fnCalls, old: await page.evaluate(() => localStorage.getItem('hebrewDashboard_settings')) };
+    await page.click('#addClassBtn');
+    await page.fill('#newClassName', 'Dalet logins');
+    await page.click('#newClassBtn');
+    await waitText(page, '#classStatus', /added/);
+    const accId = cloud.t.classes.find(c => c.name === 'Dalet logins').id;
+    const opts = await page.evaluate(() => ({ link: [...document.querySelectorAll('#linkClassSel option')].map(o => o.textContent), src: [...document.querySelectorAll('#importSource option')].map(o => o.textContent), shown: !document.getElementById('linkBlock').hidden, create: document.getElementById('linkCreateBtn').getAttribute('aria-disabled') }));
+    check('N: the class popup offers the shared class lists to link to and to import from, and Create is off until one is linked', opts.shown && opts.link.length === 2 && /not linked/.test(opts.link[0]) && opts.link[1] === 'Kitah Dalet (3)' && opts.src.some(x => x === 'Class list: Kitah Dalet (3)') && !opts.src.some(x => /Dashboard|Name Tags/.test(x)) && opts.create === 'true', JSON.stringify(opts));
+    await page.selectOption('#linkClassSel', 'a_1');
+    check('N: linking writes only the link — no login is made, no function called, the old roster key untouched', await waitText(page, '#linkStatus', /Linked to “Kitah Dalet”\. 3 students on it have no login yet/) && cloud.t.students.length === before.students && cloud.fnCalls === before.fn && await page.evaluate(([id, old]) => { const c = JSON.parse(localStorage.getItem('ivritSuite_classes')).classes.a_1; return c.accountClassId === id && c.students.every(s => !s.username) && localStorage.getItem('hebrewDashboard_settings') === old; }, [accId, before.old]), await text(page, '#linkStatus'));
+    await page.click('#linkCreateBtn');
+    const prev = await page.evaluate(() => ({ rows: [...document.querySelectorAll('#previewHost tbody tr')].map(tr => [...tr.querySelectorAll('input')].map(i => i.value)), names: document.getElementById('namesInput').value, focus: !!(document.activeElement && document.activeElement.closest('#previewHost')), xss: !!window.__xss }));
+    check('N: Create accounts… only fills the page\'s own preview (the three names, usernames and passwords to check) — still no login', prev.rows.length === 3 && prev.rows[0][0] === 'Dan' && prev.rows[1][0] === 'Miriam' && prev.rows[2][0] === 'Yael <b>x</b>' && prev.focus && !prev.xss && cloud.t.students.length === before.students && cloud.fnCalls === before.fn, JSON.stringify(prev));
+    // the teacher edits one username in the preview: the one that is made is the one noted on the student
+    await page.locator('#previewHost tbody tr').nth(1).locator('input').nth(1).fill('miriam.dalet');
+    await page.click('#previewHost button.btn:not(.ghost)');
+    check('N: the accounts are created by the Create button', await waitText(page, '#createStatus', /3 accounts created/), await text(page, '#createStatus'));
+    const nameOf = id => (cloud.t.profiles.find(p => p.id === id) || {}).display_name;
+    const made = cloud.t.students.filter(x => x.class_id === accId).map(x => ({ id: x.id, username: x.username, display_name: nameOf(x.id) }));
+    const noted = await page.evaluate(() => JSON.parse(localStorage.getItem('ivritSuite_classes')).classes.a_1.students.map(s => ({ en: s.en, he: s.he, u: s.username })));
+    check('N: each login is in the class and its username is noted on the class list\'s student', made.length === 3 && noted.length === 3 && noted.every(n => made.some(m => m.username === n.u)) && noted[1].u === 'miriam.dalet' && noted[0].he === 'דָּן' && made.find(m => m.username === noted[0].u).display_name === 'Dan', JSON.stringify({ noted, made: made.map(m => [m.display_name, m.username]) }));
+    check('N: the link now says every student has a login, and Create is off', await waitText(page, '#linkStatus', /Every student on it has a login/) && await page.evaluate(() => document.getElementById('linkCreateBtn').getAttribute('aria-disabled') === 'true'), await text(page, '#linkStatus'));
+    // a student added to the class list (as another page would) is the only one offered next
+    await page.evaluate(() => { IvritClasses.addStudent('a_1', { he: '', en: 'Noa' }); });
+    check('N: a student added to the list is the one without a login', await waitText(page, '#linkStatus', /One student on it has no login yet/) && await page.evaluate(() => document.getElementById('linkCreateBtn').getAttribute('aria-disabled') !== 'true'), await text(page, '#linkStatus'));
+    await page.click('#linkCreateBtn');
+    check('N: the next preview holds only that student', await page.evaluate(() => { const r = [...document.querySelectorAll('#previewHost tbody tr')]; return r.length === 1 && r[0].querySelector('input').value === 'Noa'; }));
+    await page.locator('#previewHost button', { hasText: 'Clear the preview' }).click();
+    // the roster editor opens above the popup with its own keys
+    await page.click('#linkEditBtn');
+    const ed = await page.evaluate(() => ({ open: IvritClasses.isEditorOpen(), inside: !!(document.activeElement && document.activeElement.closest('.ivc-dlg, .ivc-overlay, [class^="ivc-"]')) }));
+    await page.keyboard.press('Escape');
+    check('N: Edit class lists… opens the shared editor; Escape closes it and leaves the class popup open', ed.open && ed.inside && await page.evaluate(() => !IvritClasses.isEditorOpen() && !document.getElementById('clsDlg').hidden), JSON.stringify(ed));
+    // a login removed from the account: its student is without a login again
+    const gone = made.find(m => m.username === 'miriam.dalet');
+    await page.locator('#studentsHost tbody tr', { hasText: 'miriam.dalet' }).locator('button', { hasText: 'Remove' }).click();
+    check('N: a login removed here leaves its student without one (two to make now)', await waitText(page, '#linkStatus', /2 students on it have no login yet/) && !cloud.t.students.some(x => x.id === gone.id), await text(page, '#linkStatus'));
+    // another class list with a student this class already has a login for: linking it notes that login, and the first list is unlinked
+    await page.evaluate(() => { window.__other = IvritClasses.addClass('Dalet B', [{ he: '', en: 'Dan' }, { he: '', en: 'Avi' }]); });
+    await page.waitForFunction(() => [...document.querySelectorAll('#linkClassSel option')].some(o => /Dalet B/.test(o.textContent)), null, { timeout: 5000 });
+    await page.selectOption('#linkClassSel', await page.evaluate(() => window.__other));
+    const relink = await page.evaluate(() => { const d = JSON.parse(localStorage.getItem('ivritSuite_classes')).classes; const o = d[window.__other]; return { a: d.a_1.accountClassId || '', o: o.accountClassId, dan: o.students[0].username || '', avi: o.students[1].username || '' }; });
+    check('N: one class list a class — the first is unlinked, and a student whose name a login of the class already shows has that login noted', relink.a === '' && relink.o === accId && relink.dan === made.find(m => m.display_name === 'Dan').username && relink.avi === '' && await waitText(page, '#linkStatus', /Linked to “Dalet B”\. One student on it has no login yet/), JSON.stringify(relink));
+    await page.screenshot({ path: path.join(SHOTS, 'N-class-link.png') });
+    await page.keyboard.press('Escape');
+    check('N: 0 pageerrors', errors.length === 0, errors.join(' | '));
+    await ctx.close();
+    // Hebrew, dark, 800px: the link block has no raw key and does not overflow
+    const ctx2 = await newCtx(browser, cloud, { session: teacherSession, lang: 'he', dark: true, viewport: { width: 800, height: 900 }, init });
+    const h = await openPage(ctx2, 'reading_assignments.html');
+    await h.page.waitForFunction(() => document.querySelectorAll('#classesHost li').length > 0, null, { timeout: 10000 });
+    await h.page.evaluate(() => { const li = [...document.querySelectorAll('#classesHost li')].find(x => /Dalet logins/.test(x.textContent)); li.querySelector('button').click(); });
+    await h.page.waitForFunction(() => !document.getElementById('clsDlg').hidden && !document.getElementById('linkBlock').hidden, null, { timeout: 5000 });
+    const he = await h.page.evaluate(() => { const b = document.getElementById('linkBlock'); const r = b.getBoundingClientRect(); return { raw: /\b(assign|shared)\.[a-z_]+\.[a-z_]+/.test(b.innerText), over: [...b.querySelectorAll('*')].some(n => { const q = n.getBoundingClientRect(); return q.width && (q.right > innerWidth + 1 || q.left < -1); }), text: b.innerText.slice(0, 80), w: r.width }; });
+    check('N: Hebrew, dark, 800px: the link block is translated and fits', !he.raw && !he.over && /רשימת כיתה/.test(he.text), JSON.stringify(he));
+    await h.page.screenshot({ path: path.join(SHOTS, 'N-class-link-he-dark.png') });
+    check('N: 0 pageerrors (he, dark)', h.errors.length === 0, h.errors.join(' | '));
+    await ctx2.close();
+  }
 } finally {
   await browser.close();
   srv.kill();

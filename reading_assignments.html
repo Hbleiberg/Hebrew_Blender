@@ -26,6 +26,7 @@
 <script src="/js/supabase-config.js" defer></script>
 <script src="/js/ivrit-account.js" defer></script>
 <script src="/js/ivrit-saves.js" defer></script>
+<script src="/js/ivrit-classes.js" defer></script>
 <script src="/js/ivrit-assignments.js" defer></script>
 <title>Reading Assignments — Torah Trainer | IvritSuite</title>
 <meta name="description" content="A teacher's page for Torah Trainer reading assignments: student logins, assignments under a code word, and the recordings students submit.">
@@ -363,6 +364,19 @@ header{--bl-row:160px;}   /* the lockup, its divider and the header's gap: what 
   </form>
   <div id="clsBody" hidden>
     <p class="note" data-i18n="assign.students.note">Each student signs in to the Torah Trainer with a username and a password you give them — no email address. Print the login cards right after you create a batch; the passwords are shown only then. You can reset a password at any time.</p>
+    <!-- The suite's shared class lists (js/ivrit-classes.js: the Classroom Dashboard, Name Tags and Flash Cards show
+         the same ones). Linking writes only the link — this class's id on the class list, a login's username on its
+         student; a login is made by the Create button below, never by itself. -->
+    <div id="linkBlock">
+      <h3 data-i18n="assign.link.head">Class list</h3>
+      <p class="note" data-i18n="assign.link.note">Link this class to one of your class lists — the ones the Classroom Dashboard, Name Tags and Flash Cards share — to make logins for its students without retyping their names. No login is made until you press Create.</p>
+      <div class="row">
+        <div class="field" style="flex:0 1 320px;"><label for="linkClassSel" data-i18n="assign.link.label">Class list</label><select id="linkClassSel"></select></div>
+        <div><button class="btn ghost" type="button" id="linkCreateBtn" data-i18n="assign.link.create_btn">Create accounts for these students</button></div>
+        <div><button class="btn ghost sm" type="button" id="linkEditBtn" aria-haspopup="dialog" data-i18n="assign.link.edit_btn">Edit class lists…</button></div>
+      </div>
+      <p class="status" id="linkStatus" role="status" aria-live="polite"></p>
+    </div>
     <h3 data-i18n="assign.students.add_head">Add students</h3>
     <p class="note" data-i18n="assign.students.add_note">Type one name per line (a first name or a nickname is enough — it is what the student sees), or take the names from a class list saved on this device. Then check the usernames and passwords in the preview and press Create.</p>
     <div class="row">
@@ -502,8 +516,8 @@ function loadStudents() {
   say('studentsStatus', () => t('account.holds.checking')); setBusy('studentsRefresh', true);
   Promise.all([AS().classes.list(), AS().students.list()]).then(res => {
     if (!user || user.id !== me) return;
-    classes = res[0] || []; students = res[1] || [];
-    fillAllClassSelects(); renderStudents(); renderClasses(); renderClassView(); say('studentsStatus', null);
+    classes = res[0] || []; students = res[1] || []; studentsLoaded = true;
+    fillAllClassSelects(); renderStudents(); renderClasses(); renderClassView(); renderLink(); say('studentsStatus', null);
   }).catch(err => { if (user && user.id === me) say('studentsStatus', () => errText(err), true); })
     .then(() => setBusy('studentsRefresh', false));
 }
@@ -535,20 +549,77 @@ function renderStudents() {
 function removeStudent(s) {
   if (!window.confirm(t('assign.students.remove_confirm', { name: s.display_name }))) return;
   say('studentsStatus', () => t('shared.account.sending'));
-  AS().students.remove(s.id).then(() => { students = students.filter(x => x.id !== s.id); renderStudents(); say('studentsStatus', () => t('assign.students.removed', { name: s.display_name })); })
+  AS().students.remove(s.id).then(() => { students = students.filter(x => x.id !== s.id); renderStudents(); renderLink(); say('studentsStatus', () => t('assign.students.removed', { name: s.display_name })); })
     .catch(err => say('studentsStatus', () => errText(err), true));
+}
+
+/* ── the shared class lists (js/ivrit-classes.js — the only writer of ivritSuite_classes) ── */
+const CL = () => window.IvritClasses || null;
+function sharedClasses() { try { return CL() ? CL().list() : []; } catch (e) { return []; } }
+// The name a login shows: the English name, else the Hebrew one (a login has one name).
+const loginName = s => String((s && (s.en || s.he || s.tr)) || '').replace(/\s+/g, ' ').trim().slice(0, 80);
+// The class list this account class is linked to (the list carries the link: accountClassId).
+function linkedShared() { const id = curClassId(); return id ? sharedClasses().find(c => c.accountClassId === id) || null : null; }
+// A class-list student has a login while the account still lists the username noted on it (a login removed here, or on
+// another device, leaves the note behind — it is then simply a student without a login again).
+let studentsLoaded = false;
+const hasLogin = s => !!(s && s.username && (!studentsLoaded || students.some(a => a.username === s.username)));
+let linkQueue = null;   // { sharedId, byName: Map(name → [student id]) }: the class-list students the names box was filled from
+function renderLink() {
+  const blk = $('linkBlock'); if (!blk) return;
+  blk.hidden = clsDlg.mode !== 'class' || !CL();
+  if (blk.hidden) return;
+  const sel = $('linkClassSel'); while (sel.firstChild) sel.removeChild(sel.firstChild);
+  const none = el('option', '', t('assign.link.none')); none.value = ''; sel.appendChild(none);
+  sharedClasses().forEach(c => { const o = el('option', '', c.name + ' (' + c.students.length + ')'); o.value = c.id; sel.appendChild(o); });
+  const cur = linkedShared();
+  sel.value = cur ? cur.id : '';
+  const todo = cur ? cur.students.filter(s => !hasLogin(s) && loginName(s)).length : 0;
+  setBusy('linkCreateBtn', !todo);
+  say('linkStatus', !cur ? null : () => (todo ? tn('assign.link.todo', todo, { name: cur.name }) : t('assign.link.all_have', { name: cur.name })));
+}
+// A class-list student whose name one login of this class already shows has that login: its username is noted on the
+// student (one login, one student; a name two logins share is left for the teacher).
+function matchExistingLogins(sharedId, accId) {
+  const C = CL(), c = C && C.get(sharedId); if (!c) return 0;
+  const key = C.csv.matchKey, inClass = students.filter(a => a.class_id === accId), used = new Set(c.students.filter(hasLogin).map(x => x.username));
+  let n = 0;
+  c.students.forEach(st => {
+    if (hasLogin(st)) return;
+    const hit = inClass.filter(a => !used.has(a.username) && key(a.display_name) && (key(a.display_name) === key(st.en) || key(a.display_name) === key(st.he)));
+    if (hit.length === 1 && C.setStudentUsername(sharedId, st.id, hit[0].username)) { used.add(hit[0].username); n++; }
+  });
+  return n;
+}
+function changeLink() {
+  const accId = curClassId(), C = CL(); if (!accId || !C) return;
+  const want = $('linkClassSel').value;
+  sharedClasses().forEach(c => { if (c.accountClassId === accId && c.id !== want) C.setLink(c.id, ''); });   // one class list a class
+  linkQueue = null;
+  if (want) { C.setLink(want, accId); matchExistingLogins(want, accId); }
+  renderLink();
+}
+// "Create accounts for these students": the linked list's students who have no login go into the names box and the
+// page's own preview opens — the usernames and passwords are checked there, and Create makes the logins as it always
+// has. Sixty at a time (the server's batch); pressing again takes the next ones.
+function linkFill() {
+  if (isDisabled($('linkCreateBtn'))) return;
+  const cur = linkedShared(); if (!cur) return;
+  const todo = cur.students.filter(s => !hasLogin(s) && loginName(s)).slice(0, 60);
+  linkQueue = { sharedId: cur.id, byName: new Map() };
+  todo.forEach(s => { const n = loginName(s); if (!linkQueue.byName.has(n)) linkQueue.byName.set(n, []); linkQueue.byName.get(n).push(s.id); });
+  $('namesInput').value = todo.map(loginName).join('\n');
+  buildPreview();
+  const first = $('previewHost').querySelector('input'); if (first) first.focus();
 }
 
 /* ── adding students: names → preview → create → cards ── */
 function deviceLists() {
-  // Class lists the suite keeps on this device: the Dashboard's rosters, the Name Tags lists, the Flash Cards profiles.
-  // Read through the suite's prototype-safe parser; only names are taken.
+  // The class lists the suite keeps on this device — the shared classes (the Dashboard's, Name Tags' and Flash Cards'
+  // one list of classes) — and the Flash Cards profiles. Only names are taken: one name per student.
   const out = [];
+  sharedClasses().forEach(c => { const names = c.students.map(loginName).filter(Boolean); if (names.length) out.push({ label: t('assign.students.import_class', { name: c.name }), names }); });
   const parse = (k) => { try { const raw = localStorage.getItem(k); return raw ? JSON.parse(raw, (key, v) => (key === '__proto__' || key === 'constructor' || key === 'prototype') ? undefined : v) : null; } catch (e) { return null; } };
-  const dash = parse('hebrewDashboard_settings');
-  if (dash && dash.rosters && typeof dash.rosters === 'object') Object.keys(dash.rosters).forEach(id => { const r = dash.rosters[id]; if (r && Array.isArray(r.names) && r.names.length) out.push({ label: t('assign.students.import_dashboard', { name: String(r.name || '') }), names: r.names.map(x => typeof x === 'string' ? x : (x && (x.en || x.he || x.name)) || '').filter(Boolean) }); });
-  const tags = parse('hebrewNameTags_lists');
-  if (tags && typeof tags === 'object') Object.keys(tags).forEach(name => { const l = tags[name]; if (l && Array.isArray(l.rows) && l.rows.length) out.push({ label: t('assign.students.import_nametags', { name }), names: l.rows.map(x => (x && (x.en || x.he)) || '').filter(Boolean) }); });
   const fc = parse('hebrewFlashCards_profiles');
   if (fc && fc.profiles && typeof fc.profiles === 'object') { const names = Object.keys(fc.profiles).map(k => (fc.profiles[k] && (fc.profiles[k].name || fc.profiles[k].displayName)) || k).filter(Boolean); if (names.length) out.push({ label: t('assign.students.import_flashcards'), names }); }
   return out;
@@ -573,6 +644,8 @@ function buildPreview() {
   const taken = new Set(students.map(s => s.username));
   const style = $('usernameStyle').value;
   preview = names.map(n => { let u = AS().usernameFor(n, style); for (let k = 0; k < 20 && taken.has(u); k++) u = AS().usernameFor(n, k < 10 ? style : 'first.nn'); if (taken.has(u)) u = AS().usernameFor(n, 'first.nn'); taken.add(u); return { display_name: n.slice(0, 80), username: u, password: AS().passphrase() }; });
+  // a name the linked class list supplied keeps its student, so the login made for it can be noted on that student
+  if (linkQueue) { const q = new Map([...linkQueue.byName].map(([k, v]) => [k, v.slice()])); preview.forEach(p => { const ids = q.get(p.display_name); if (ids && ids.length) { p.sid = ids.shift(); p.sharedId = linkQueue.sharedId; } }); }
   say('createStatus', null);
   renderPreview();
 }
@@ -612,6 +685,8 @@ function createStudents() {
   AS().students.create(rows).then(results => {
     const made = [], failed = [];
     results.forEach((r, i) => { const p = preview[i]; if (!p) return; if (r.error) { p.error = errText({ code: r.error }); failed.push(p); } else { p.id = r.id; made.push(p); } });
+    // the class list's student now has this login (the username as it was made, after any edit in the preview)
+    if (CL()) made.forEach(p => { if (p.sid && p.sharedId) CL().setStudentUsername(p.sharedId, p.sid, p.username); });
     const after = () => {
       batch = made.slice();
       if (made.length) renderCreated(made, false);
@@ -620,6 +695,7 @@ function createStudents() {
       say('createStatus', () => failed.length ? t('assign.students.created_some', { made: made.length, failed: failed.length }) : tn('assign.students.created_all', made.length), !!failed.length);
       if (made.length) $('namesInput').value = failed.map(p => p.display_name).join('\n');
       loadStudents();
+      renderLink();
     };
     if (classId && made.length) Promise.all(made.map(p => AS().students.setClass(p.id, classId).catch(() => {}))).then(after); else after();
   }).catch(err => say('createStatus', () => errText(err), true));
@@ -668,7 +744,7 @@ function renderClasses() {
     const nm = el('strong', '', c.name); nm.dir = 'auto'; li.appendChild(nm);
     li.appendChild(document.createTextNode(' · ' + t('assign.classes.members', { n: students.filter(s => s.class_id === c.id).length }) + ' '));
     li.appendChild(btn(t('assign.classes.edit_btn'), '', () => openClassDlg({ mode: 'class', id: c.id })));
-    li.appendChild(btn(t('assign.classes.delete_btn'), 'ghost sm', () => { if (!window.confirm(t('assign.classes.delete_confirm', { name: c.name }))) return; AS().classes.remove(c.id).then(() => { classes = classes.filter(x => x.id !== c.id); students.forEach(s => { if (s.class_id === c.id) s.class_id = null; }); fillAllClassSelects(); renderClasses(); renderStudents(); }).catch(err => say('classStatus', () => errText(err), true)); }));
+    li.appendChild(btn(t('assign.classes.delete_btn'), 'ghost sm', () => { if (!window.confirm(t('assign.classes.delete_confirm', { name: c.name }))) return; AS().classes.remove(c.id).then(() => { classes = classes.filter(x => x.id !== c.id); sharedClasses().forEach(x => { if (x.accountClassId === c.id) CL().setLink(x.id, ''); });   /* a class list linked to it is linked to nothing now */ students.forEach(s => { if (s.class_id === c.id) s.class_id = null; }); fillAllClassSelects(); renderClasses(); renderStudents(); }).catch(err => say('classStatus', () => errText(err), true)); }));
     ul.appendChild(li);
   });
   const loose = students.filter(s => !s.class_id).length;
@@ -685,7 +761,7 @@ function openClassDlg(state) {
   const c = curClass();
   $('newClassName').value = c ? c.name : '';
   say('clsDlgStatus', null); say('createStatus', null); say('studentsStatus', null);
-  preview = null; renderPreview();
+  preview = null; linkQueue = null; renderPreview();
   if (clsDlg.mode !== 'class') { batch = null; const h = $('createdHost'); while (h.firstChild) h.removeChild(h.firstChild); }
   $('namesInput').value = '';
   syncClassDlg();
@@ -699,6 +775,7 @@ function syncClassDlg() {
   $('newClassBtn').textContent = clsDlg.mode === 'class' ? t('assign.classes.save_name') : t('assign.classes.new_btn');
   $('clsBody').hidden = clsDlg.mode === 'new';
   $('clsRosterHead').textContent = clsDlg.mode === 'none' ? t('assign.classes.noclass_entry') : t('assign.students.roster_head');
+  renderLink();
 }
 function addClass(e) {
   if (e) e.preventDefault();
@@ -734,6 +811,7 @@ function modalOpen(id, focusId) {
 }
 function modalKey(e) {
   const top = modalTop(); const dlg = top && $(top.id); if (!dlg) return;
+  if (CL() && CL().isEditorOpen()) return;   // the shared roster editor is open above this dialog: its own keys
   if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); modalClose(top.id); return; }
   if (e.key !== 'Tab') return;
   const f = [...dlg.querySelectorAll('button, input, select, textarea, a[href]')].filter(n => n.offsetParent !== null && !n.disabled);
@@ -1118,6 +1196,11 @@ document.addEventListener('DOMContentLoaded', () => {
   $('studentsRefresh').addEventListener('click', () => { if (!isDisabled($('studentsRefresh'))) loadStudents(); });
   $('importBtn').addEventListener('click', () => { if (!isDisabled($('importBtn'))) importNames(); });
   $('previewBtn').addEventListener('click', buildPreview);
+  $('linkClassSel').addEventListener('change', changeLink);
+  $('linkCreateBtn').addEventListener('click', linkFill);
+  $('linkEditBtn').addEventListener('click', e => { if (CL()) CL().openEditor({ classId: (linkedShared() || {}).id || null, opener: e.currentTarget }); });
+  // a class list changed — the roster editor, another tab, the account: the link block and the import menu follow
+  if (CL()) CL().onChange(() => { renderLink(); renderImportSources(); });
   $('addClassBtn').addEventListener('click', () => openClassDlg({ mode: 'new' }));
   $('clsNameForm').addEventListener('submit', addClass);
   $('clsDlgClose').addEventListener('click', () => modalClose('clsDlg'));
@@ -1140,7 +1223,9 @@ document.addEventListener('DOMContentLoaded', () => {
   if (window.IvritAccount && window.IvritSaves && window.IvritAssignments) {
     IvritAccount.init({ nameStep: true });
     window.addEventListener('ivritsuite:prefs', () => { const want = localStorage.getItem('hebrewBlender_darkMode'); if ((want === '1' || want === '0') && document.body.classList.contains('dark') !== (want === '1')) toggleDark(); });
-    try { IvritSaves.attach({ tool: 'Suite' }); } catch (e) { console.warn(e); }
+    // Suite (the preferences), and the shared class lists a class here can be linked to: js/ivrit-classes.js writes
+    // them, and this page hands the module their merge and tells that file when one landed.
+    try { IvritSaves.attach({ tool: 'Suite', alsoPull: ['Classes'], merges: { class: CL() ? CL().mergeClass : undefined }, onLocalChanged: kind => { if ((kind === 'class' || kind === 'retired') && CL()) CL().landed(); } }); } catch (e) { console.warn(e); }
     IvritAccount.onChange(onAccount);
   } else { say('busyNote', () => t('account.out.offline')); show('stBusy'); }
 });
