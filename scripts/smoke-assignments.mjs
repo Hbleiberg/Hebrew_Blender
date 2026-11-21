@@ -1064,7 +1064,7 @@ try {
     // Hebrew, dark, 800px: the link block has no raw key and does not overflow
     const ctx2 = await newCtx(browser, cloud, { session: teacherSession, lang: 'he', dark: true, viewport: { width: 800, height: 900 }, init });
     const h = await openPage(ctx2, 'reading_assignments.html');
-    await h.page.waitForFunction(() => document.querySelectorAll('#classesHost li').length > 0, null, { timeout: 10000 });
+    await h.page.waitForFunction(() => [...document.querySelectorAll('#classesHost li')].some(x => /Dalet logins/.test(x.textContent)), null, { timeout: 10000 });   // (the list first renders before the classes arrive)
     await h.page.evaluate(() => { const li = [...document.querySelectorAll('#classesHost li')].find(x => /Dalet logins/.test(x.textContent)); li.querySelector('button').click(); });
     await h.page.waitForFunction(() => !document.getElementById('clsDlg').hidden && !document.getElementById('linkBlock').hidden, null, { timeout: 5000 });
     const he = await h.page.evaluate(() => { const b = document.getElementById('linkBlock'); const r = b.getBoundingClientRect(); return { raw: /\b(assign|shared)\.[a-z_]+\.[a-z_]+/.test(b.innerText), over: [...b.querySelectorAll('*')].some(n => { const q = n.getBoundingClientRect(); return q.width && (q.right > innerWidth + 1 || q.left < -1); }), text: b.innerText.slice(0, 80), w: r.width }; });
