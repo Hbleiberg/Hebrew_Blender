@@ -21,6 +21,7 @@
 <script src="/js/supabase-config.js" defer></script>
 <script src="/js/ivrit-account.js" defer></script>
 <script src="/js/ivrit-saves.js" defer></script>
+<script src="/js/ivrit-classes.js" defer></script>
 <!-- iOS standalone + launch (splash) screens — regenerate with splash/gen_splash.py -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -1420,6 +1421,11 @@ function _ivSetLang(l) {
     I18n.setLang(l);
   });
 }
+// The shared class roster (js/ivrit-classes.js is its only writer): every class, the ones still only a view of an
+// old Dashboard roster or Name Tags list included, so a signed-out teacher's backup holds them all.
+function ivritClassesExport() {
+  try { return (window.IvritClasses && IvritClasses.exportAll()) || { v: 1, classes: {} }; } catch (e) { return { v: 1, classes: {} }; }
+}
 function exportAllSettings() {
   const blob = {
     _hebrewBlenderExport: 1,
@@ -1471,6 +1477,7 @@ function exportAllSettings() {
     letterLearnerPanels: lsJSON('hebrewLetterLearner_panels', {}),
     nameTagPanels:       lsJSON('hebrewNameTags_panels', {}),
     wordLists:           lsJSON('ivritSuite_wordLists', { v: 1, lists: {} }),
+    classes:             ivritClassesExport(),
     userFonts:           _fontsBackupCache || [],
   };
   // Compact, not indented: the box's cost is its line count. Indented, a busy profile came to ~57,000 lines and the
@@ -1606,6 +1613,9 @@ async function importAllSettings() {
       const existing = ivritSafeParse(localStorage.getItem('hebrewNameTags_lists') || '{}');
       localStorage.setItem('hebrewNameTags_lists', JSON.stringify(ivritSafeAssign(existing, parsed.nameTagLists)));
     }
+    // The shared class roster: the file's `classes`, and — from a file older than it — its Dashboard rosters and
+    // Name Tags lists, read with ids computed from the old data (the same file imported twice makes each class once).
+    if (window.IvritClasses) { try { IvritClasses.importFile(parsed, 'merge'); } catch (e) {} }
     // Trope Atlas: its view choices (key, layout, readings shown, note names, melody, phrase group), one blob, flat merge
     if (parsed.tropeAtlasSettings && Object.keys(parsed.tropeAtlasSettings).length) {
       const existing = ivritSafeParse(localStorage.getItem('hebrewTropeAtlas_settings') || '{}');
@@ -1740,7 +1750,7 @@ async function eraseAllSettings() {
   let unsynced = 0, unknown = false;
   if (signedIn && window.IvritSaves && typeof IvritSaves.flush === 'function') {
     try {
-      const tools = ['Suite', 'Worksheet', 'FlashCards', 'Dictionary', 'TorahTrainer', 'TropeTutor', 'Dashboard', 'LetterLearner', 'EmojiTorah', 'NameTags'];
+      const tools = ['Suite', 'Worksheet', 'FlashCards', 'Dictionary', 'TorahTrainer', 'TropeTutor', 'Classes', 'Dashboard', 'LetterLearner', 'EmojiTorah', 'NameTags'];
       await Promise.race([Promise.all(tools.map(t => IvritSaves.flush(t).catch(() => null))), new Promise(r => setTimeout(r, 5000))]);
       const ps = (typeof IvritSaves.pendingSignOut === 'function' && IvritSaves.pendingSignOut()) || {};
       unsynced = Number(ps.unsynced) || 0; unknown = !!ps.unknown;
@@ -1842,6 +1852,9 @@ async function eraseAllSettings() {
     'hebrewLetterLearner_panels',
     'hebrewNameTags_panels',
     'ivritSuite_wordLists',
+    'ivritSuite_classes',
+    // the roster's per-device memory (which look-alike notices were shown): never exported
+    'ivritSuite_classesLegacy',
     // pwa.js's install-banner dismissal: a one-time UI flag, so export-exempt — but "erase" means a
     // fresh start, and without this the Add-to-Home-Screen prompt stays suppressed forever.
     'hebrewBlender_pwaDismissed',
@@ -1929,6 +1942,7 @@ const IVRIT_CFG = {
       letterLearnerPanels: lsJSON('hebrewLetterLearner_panels', {}),
       nameTagPanels:       lsJSON('hebrewNameTags_panels', {}),
       wordLists:           lsJSON('ivritSuite_wordLists', { v: 1, lists: {} }),
+      classes:             ivritClassesExport(),
       userFonts:           _fontsBackupCache || [],
       // The three Dictionary scalars only when this device ever set them (a restore skips an absent key, so
       // a backup from a device that never touched them no longer resets the target's).
@@ -1982,6 +1996,9 @@ const IVRIT_CFG = {
     if (data.emojiTorahSettings && Object.keys(data.emojiTorahSettings).length) { mergeObj('hebrewEmojiTorah_settings', data.emojiTorahSettings); touched = true; }
     if (data.nameTagSettings && Object.keys(data.nameTagSettings).length) { mergeObj('hebrewNameTags_settings', data.nameTagSettings); touched = true; }
     if (data.nameTagLists && Object.keys(data.nameTagLists).length) { mergeObj('hebrewNameTags_lists', data.nameTagLists); touched = true; }   // by list name, like presets
+    // The shared class roster: `classes`, or an older file's rosters and lists through the same reader (a Merge restores
+    // a deleted student, a fill only adds what is missing, and only this file's Replace starts the store over).
+    if (window.IvritClasses) { try { if (IvritClasses.importFile(data, mode)) touched = true; } catch (e) {} }
     if (data.tropeAtlasSettings && Object.keys(data.tropeAtlasSettings).length) { mergeObj('hebrewTropeAtlas_settings', data.tropeAtlasSettings); touched = true; }
     if (data.holidayGuideSettings && Object.keys(data.holidayGuideSettings).length) { mergeObj('hebrewHolidayGuide_settings', data.holidayGuideSettings); touched = true; }
     if (data.tropeTutorProgress && Object.keys(data.tropeTutorProgress).length) { tropeProgressMerge(data.tropeTutorProgress, mode === 'replace'); touched = true; }
@@ -2118,6 +2135,9 @@ function mergeDashboardRosters(incoming, replace) {
 // account backup carries them as dashboardRosters. Counted once by id, without the empty "My class" a dashboard
 // makes for itself (no saved item, as the account layer treats it).
 function ivritClassCount(d) {
+  // A file from this version names every class in `classes` (the old rosters and lists it also carries are the same classes).
+  const cs = d.classes && d.classes.classes;
+  if (cs && typeof cs === 'object' && !Array.isArray(cs) && Object.keys(cs).length) return Object.keys(cs).length;
   const ids = new Set();
   [(d.dashboardRosters || {}).rosters, (d.dashboardSettings || {}).rosters].forEach(m => {
     if (!m || typeof m !== 'object' || Array.isArray(m)) return;
@@ -2434,9 +2454,10 @@ function initCloudSaves() {
   IvritSaves.attach({
     tool: 'Suite',
     status: '#cloudStatus',
-    alsoPull: ['Worksheet', 'FlashCards', 'Dictionary', 'TorahTrainer', 'TropeTutor', 'Dashboard', 'LetterLearner', 'EmojiTorah', 'NameTags'],
-    merges: { presetFolders: ftMergeTrees, profileFolders: ftMergeTrees, scheduleFolders: ftMergeTrees, favoriteFolders: ftMergeTrees },
-    onLocalChanged: (kind) => { if (!ieWindowOpen()) return; renderIvritInventory(); if (kind === 'font') { try { refreshFontsBackupCache(); renderMyFontsManager(); } catch (e) {} } }
+    alsoPull: ['Worksheet', 'FlashCards', 'Dictionary', 'TorahTrainer', 'TropeTutor', 'Classes', 'Dashboard', 'LetterLearner', 'EmojiTorah', 'NameTags'],
+    merges: { presetFolders: ftMergeTrees, profileFolders: ftMergeTrees, scheduleFolders: ftMergeTrees, favoriteFolders: ftMergeTrees,
+              class: window.IvritClasses ? IvritClasses.mergeClass : undefined },   // the shared roster's own pure merge: a class changed in two places is resolved here too
+    onLocalChanged: (kind) => { if ((kind === 'class' || kind === 'retired') && window.IvritClasses) IvritClasses.landed(); if (!ieWindowOpen()) return; renderIvritInventory(); if (kind === 'font') { try { refreshFontsBackupCache(); renderMyFontsManager(); } catch (e) {} } }
   });
 }
 function ieWindowOpen() { const bd = document.getElementById('ieBackdrop'); return !!bd && bd.classList.contains('open'); }

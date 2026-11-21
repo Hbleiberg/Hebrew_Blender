@@ -828,9 +828,10 @@
   }
 
   /* ══════════════════════════════════════════════════════
-     FILES — .ivrit and AllTools. A restore is a deliberate act: on a Merge a deleted student or class in the
-     file comes back; a `fill` (an account backup) only adds what is missing; only `replace` (the AllTools
-     Replace) starts from an empty store.
+     FILES — .ivrit and AllTools. A restore is a deliberate act, whatever the file: a student or a class in it
+     that was deleted here comes back (stamped now), students are matched by id and then by name, and nothing
+     typed is replaced — so a Merge and a `fill` (an account backup) land the same way here. Only `replace`
+     (the AllTools Replace) starts from an empty store.
      ══════════════════════════════════════════════════════ */
   function exportAll() {
     var v = buildView(), out = { v: 1, classes: {} };
@@ -844,7 +845,6 @@
     var retiredAt = num(hasOwn(store.retired, id) ? store.retired[id] : 0), cur = (hasOwn(store.classes, id) && isObj(store.classes[id])) ? store.classes[id] : null;
     if (cur && !alive(store, id)) cur = null;
     if (!cur) {
-      if (retiredAt && mode === 'fill') return false;
       var viewed = null;
       sv.dash.concat(sv.nts).forEach(function (y) { if (y.cls.id === id && !sv.foldOfN[id]) viewed = y; });
       if (viewed && !retiredAt) {
@@ -852,7 +852,7 @@
         var probe = clone(viewed.cls);
         if (sv.foldOfD[id]) applyFold(probe, sv.foldOfD[id]);
         var before = canon(probe);
-        absorb(probe, studentsOf(inc), { revive: mode !== 'fill' });
+        absorb(probe, studentsOf(inc), { revive: true });
         if (!str(probe.extra).trim() && str(inc.extra).trim()) probe.extra = clip(inc.extra);
         if (canon(probe) === before) return false;
         store.classes[id] = probe;
@@ -867,7 +867,7 @@
       store.classes[id] = c;
       return true;
     }
-    var changed = absorb(cur, studentsOf(inc), { revive: mode !== 'fill' });
+    var changed = absorb(cur, studentsOf(inc), { revive: true });
     if (!str(cur.extra).trim() && !(isObj(cur.t) && cur.t.extra) && str(inc.extra).trim()) { cur.extra = clip(inc.extra); changed = true; }
     if (!str(cur.name).trim() && str(inc.name).trim()) { cur.name = clip(inc.name); changed = true; }
     return changed;
@@ -957,57 +957,110 @@
      is still on its way to the next cell), and a landing from another tab or device redraws around the focused
      control, keeping what is being typed.
      ══════════════════════════════════════════════════════ */
-  var STR = {
-    title: 'Class lists', close: 'Close', classes_label: 'Classes', new_class: 'New class', default_name: 'My class',
-    count: '{n} students', count_one: '1 student', empty: 'No class yet. Add one to type or import your students.',
-    name_label: 'Class name', extra_label: 'Extra line for the whole class', extra_hint: 'A room, a teacher or a grade. Name Tags prints it under each name.',
-    up: 'Move this class up', down: 'Move this class down', duplicate: 'Duplicate', merge: 'Merge into…', del: 'Delete class',
-    merge_label: 'Merge this class into', merge_go: 'Merge', cancel: 'Cancel',
+  var STR = {   // the English fallbacks; locales/ui-strings.csv holds these under shared.classes.* with their Hebrew
+    title: 'Class lists',
+    close: 'Close',
+    classes_label: 'Classes',
+    new_class: 'New class',
+    default_name: 'My class',
+    'count.one': '1 student',
+    'count.other': '{n} students',
+    empty: 'No class yet. Add one to type or import your students.',
+    name_label: 'Class name',
+    extra_label: 'Extra line for the whole class',
+    extra_hint: 'A room, a teacher or a grade. Name Tags prints it under each name.',
+    up: 'Move this class up',
+    down: 'Move this class down',
+    duplicate: 'Duplicate',
+    merge: 'Merge into…',
+    del: 'Delete class',
+    merge_label: 'Merge this class into',
+    merge_go: 'Merge',
+    cancel: 'Cancel',
     merge_confirm: 'Move the students of “{from}” into “{into}” and delete “{from}”? Students already in “{into}” are matched by name.',
-    del_confirm: 'Delete the class “{name}” and its {n} students? Flash Cards profiles and reading-assignment logins are not deleted.',
-    del_confirm_cloud: 'Delete the class “{name}” and its {n} students? It is removed from your account and from every device signed in to it. Flash Cards profiles and reading-assignment logins are not deleted.',
-    used_label: 'Used in', used_dashboard: 'Classroom Dashboard', used_nametags: 'Name Tags', used_flashcards: 'Flash Cards ({n} profiles)', used_flashcards_one: 'Flash Cards (1 profile)',
-    used_linked: 'Reading assignments: linked', used_unlinked: 'Reading assignments: not linked',
-    import_csv: 'Import a file…', paste: 'Paste names…', export_csv: 'Export CSV',
-    paste_label: 'Paste names, one student per line (or rows copied from a spreadsheet)', paste_go: 'Read these names',
-    found: 'Found {n} students in {source}.', found_one: 'Found 1 student in {source}.', pasted: 'what you pasted',
-    how_add: 'Add to this class', how_new: 'Make a new class', how_replace: 'Replace this class',
-    replace_confirm: 'Replace every student in “{name}” with the {n} imported? The students there now move to Removed students.',
-    replace_confirm_cloud: 'Replace every student in “{name}” with the {n} imported? This changes the class in your account and on every device signed in to it. The students there now move to Removed students.',
-    added: 'Added {added}. Already in the class: {same}. Filled in: {filled}.', all_there: 'Everyone in that list is already in this class.',
-    refused: '{n} students did not fit: a class holds {max} at most.', none_found: 'No student names were found there.',
-    too_big: 'That file is too big for a class list (1 MB at most).', unreadable: 'That file could not be read.', nothing_export: 'This class has no students to export yet.',
-    too_many: 'You have {max} classes, the most this list holds. Delete one to add another.', full: 'This class is full ({max} students).',
-    table_caption: 'Students in {name}', col_num: '#', col_he: 'Hebrew name', col_en: 'English name', col_tr: 'Transliteration', col_ex: 'Extra line', col_order: 'Order', col_remove: 'Remove',
-    cell_he: 'Hebrew name, student {n}', cell_en: 'English name, student {n}', cell_tr: 'Transliteration, student {n}', cell_ex: 'Extra line, student {n}',
-    new_he: 'Hebrew name, new student', new_en: 'English name, new student', new_tr: 'Transliteration, new student', new_ex: 'Extra line, new student',
-    grip: 'Move {name}. Use the up and down arrow keys.', remove: 'Remove {name}', removed: 'Removed {name}.', undo: 'Undo',
-    gone_summary: 'Removed students ({n})', restore: 'Restore', restore_named: 'Restore {name}', unnamed: 'a student without a name',
-    near: 'Two classes are named “{name}” but hold different students, so they were kept apart.', near_merge: 'Merge them', near_keep: 'Keep both',
-    tr_auto: 'automatic'
+    del_confirm: 'Delete the class “{name}” and every student in it ({n})? Flash Cards profiles and reading-assignment logins are not deleted.',
+    del_confirm_cloud: 'Delete the class “{name}” and every student in it ({n})? It is removed from your account and from every device signed in to it. Flash Cards profiles and reading-assignment logins are not deleted.',
+    used_label: 'Used in',
+    used_dashboard: 'Classroom Dashboard',
+    used_nametags: 'Name Tags',
+    'used_flashcards.one': 'Flash Cards (1 profile)',
+    'used_flashcards.other': 'Flash Cards ({n} profiles)',
+    used_linked: 'Reading assignments: linked',
+    used_unlinked: 'Reading assignments: not linked',
+    import_csv: 'Import a file…',
+    paste: 'Paste names…',
+    export_csv: 'Export CSV',
+    paste_label: 'Paste names, one student per line (or rows copied from a spreadsheet)',
+    paste_go: 'Read these names',
+    'found.one': 'Found 1 student in {source}.',
+    'found.other': 'Found {n} students in {source}.',
+    pasted: 'what you pasted',
+    how_add: 'Add to this class',
+    how_new: 'Make a new class',
+    how_replace: 'Replace this class',
+    replace_confirm: 'Replace every student in “{name}” with the imported list ({n})? The students there now move to Removed students.',
+    replace_confirm_cloud: 'Replace every student in “{name}” with the imported list ({n})? This changes the class in your account and on every device signed in to it. The students there now move to Removed students.',
+    added: 'Added {added}. Already in the class: {same}. Filled in: {filled}.',
+    all_there: 'Everyone in that list is already in this class.',
+    refused: 'Not everyone fit: a class holds {max} students at most ({n} left out).',
+    none_found: 'No student names were found there.',
+    too_big: 'That file is too big for a class list (1 MB at most).',
+    unreadable: 'That file could not be read.',
+    nothing_export: 'This class has no students to export yet.',
+    too_many: 'You have {max} classes, the most this list holds. Delete one to add another.',
+    full: 'This class is full ({max} students).',
+    table_caption: 'Students in {name}',
+    col_num: '#',
+    col_he: 'Hebrew name',
+    col_en: 'English name',
+    col_tr: 'Transliteration',
+    col_ex: 'Extra line',
+    col_order: 'Order',
+    col_remove: 'Remove',
+    cell_he: 'Hebrew name, student {n}',
+    cell_en: 'English name, student {n}',
+    cell_tr: 'Transliteration, student {n}',
+    cell_ex: 'Extra line, student {n}',
+    new_he: 'Hebrew name, new student',
+    new_en: 'English name, new student',
+    new_tr: 'Transliteration, new student',
+    new_ex: 'Extra line, new student',
+    grip: 'Move {name}. Use the up and down arrow keys.',
+    remove: 'Remove {name}',
+    removed: 'Removed {name}.',
+    undo: 'Undo',
+    gone_summary: 'Removed students ({n})',
+    restore: 'Restore',
+    restore_named: 'Restore {name}',
+    unnamed: 'a student without a name',
+    near: 'Two classes are named “{name}” but hold different students, so they were kept apart.',
+    near_merge: 'Merge them',
+    near_keep: 'Keep both'
   };
   function T(key, params) { return t('shared.classes.' + key, STR[key], params); }
-  function Tn(key, n, params) { var p = { n: n }; if (params) for (var k in params) if (hasOwn(params, k)) p[k] = params[k]; return T(n === 1 && STR[key + '_one'] ? key + '_one' : key, p); }
+  function Tn(key, n, params) { var p = { n: n }; if (params) for (var k in params) if (hasOwn(params, k)) p[k] = params[k]; return T(key + (n === 1 ? '.one' : '.other'), p); }
 
   var CSS = [
-    '.ivc-overlay{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(10,18,40,.55);color-scheme:light;--ivc-accent:#1a2e5a;--ivc-on-accent:#fff;--ivc-line:#c9cfdc;--ivc-soft:#f1f3f8;--ivc-warn:#8a4b00;}',
-    'body.dark .ivc-overlay{color-scheme:dark;--ivc-accent:#e8c66a;--ivc-on-accent:#14203c;--ivc-line:#46506a;--ivc-soft:#232c44;--ivc-warn:#f0b866;}',
+    '.ivc-overlay{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(10,18,40,.55);color-scheme:light;--ivc-accent:#1a2e5a;--ivc-on-accent:#fff;--ivc-line:#c9cfdc;--ivc-soft:#f1f3f8;--ivc-warn:#8a4b00;--ivc-muted:#525b70;}',
+    'body.dark .ivc-overlay{color-scheme:dark;--ivc-accent:#e8c66a;--ivc-on-accent:#14203c;--ivc-line:#46506a;--ivc-soft:#232c44;--ivc-warn:#f0b866;--ivc-muted:#b9c1d3;}',
     '.ivc-dialog{box-sizing:border-box;display:flex;flex-direction:column;inline-size:min(1040px,100%);max-block-size:100%;background:Canvas;color:CanvasText;border:1px solid var(--ivc-line);border-radius:12px;box-shadow:0 18px 60px rgba(0,0,0,.35);font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;text-align:start;}',
     '.ivc-dialog *{box-sizing:border-box;}',
     '.ivc-head{display:flex;align-items:center;gap:12px;padding:12px 16px;border-block-end:1px solid var(--ivc-line);}',
     '.ivc-head h2{flex:1;margin:0;font-size:1.2rem;color:CanvasText;}',
     '.ivc-body{display:grid;grid-template-columns:minmax(170px,230px) minmax(0,1fr);min-block-size:0;flex:1;}',
     '.ivc-side{border-inline-end:1px solid var(--ivc-line);padding:12px;overflow:auto;display:flex;flex-direction:column;gap:8px;}',
-    '.ivc-side h3,.ivc-main h3{margin:0;font-size:.8rem;text-transform:uppercase;letter-spacing:.04em;color:GrayText;}',
+    '.ivc-side h3,.ivc-main h3{margin:0;font-size:.8rem;text-transform:uppercase;letter-spacing:.04em;color:var(--ivc-muted);}',
     '.ivc-classlist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px;}',
     '.ivc-class{display:flex;flex-direction:column;align-items:flex-start;inline-size:100%;min-block-size:44px;padding:6px 10px;border:1px solid transparent;border-radius:8px;background:transparent;color:inherit;font:inherit;text-align:start;cursor:pointer;}',
     '.ivc-class:hover{background:var(--ivc-soft);}',
     '.ivc-class[aria-current="true"]{background:var(--ivc-soft);border-color:var(--ivc-accent);font-weight:600;}',
-    '.ivc-class small{font-weight:400;color:GrayText;}',
+    '.ivc-class small{font-weight:400;color:var(--ivc-muted);}',
     '.ivc-main{padding:12px 16px 16px;overflow:auto;display:flex;flex-direction:column;gap:10px;min-inline-size:0;}',
     '.ivc-row{display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px;}',
-    '.ivc-field{display:flex;flex-direction:column;gap:3px;flex:1 1 220px;min-inline-size:0;}',
-    '.ivc-field>span,.ivc-lbl{font-size:.82rem;color:GrayText;}',
+    '.ivc-field{display:flex;flex-direction:column;gap:3px;min-inline-size:0;}',
+    '.ivc-row>.ivc-field{flex:1 1 220px;}',
+    '.ivc-main>*{flex:none;}',
+    '.ivc-field>span,.ivc-lbl{font-size:.82rem;color:var(--ivc-muted);}',
     '.ivc-dialog input[type=text],.ivc-dialog select,.ivc-dialog textarea{font:inherit;color:FieldText;background:Field;border:1px solid var(--ivc-line);border-radius:6px;padding:7px 9px;min-block-size:36px;inline-size:100%;}',
     '.ivc-dialog textarea{min-block-size:110px;resize:vertical;}',
     '.ivc-btn{font:inherit;min-block-size:36px;padding:6px 12px;border:1px solid var(--ivc-line);border-radius:8px;background:ButtonFace;color:ButtonText;cursor:pointer;}',
@@ -1027,9 +1080,9 @@
     '.ivc-tablewrap{overflow:auto;border:1px solid var(--ivc-line);border-radius:8px;}',
     '.ivc-table{border-collapse:collapse;inline-size:100%;min-inline-size:620px;}',
     '.ivc-table caption{position:absolute;inline-size:1px;block-size:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;}',
-    '.ivc-table th{font-size:.8rem;font-weight:600;color:GrayText;padding:6px 8px;border-block-end:1px solid var(--ivc-line);background:var(--ivc-soft);position:sticky;inset-block-start:0;white-space:nowrap;}',
+    '.ivc-table th{font-size:.8rem;font-weight:600;color:var(--ivc-muted);padding:6px 8px;border-block-end:1px solid var(--ivc-line);background:var(--ivc-soft);position:sticky;inset-block-start:0;white-space:nowrap;}',
     '.ivc-table td{padding:3px 4px;border-block-end:1px solid var(--ivc-line);vertical-align:middle;}',
-    '.ivc-table td.ivc-num{color:GrayText;text-align:center;inline-size:2.4em;font-variant-numeric:tabular-nums;}',
+    '.ivc-table td.ivc-num{color:var(--ivc-muted);text-align:center;inline-size:2.4em;font-variant-numeric:tabular-nums;}',
     '.ivc-table td.ivc-act{inline-size:44px;text-align:center;}',
     /* a column's heading and its cells sit on the side their script reads from, in either UI direction */
     '.ivc-table th.ivc-he{text-align:right;} .ivc-table th.ivc-tr,.ivc-table th.ivc-en{text-align:left;} .ivc-table th.ivc-ex{text-align:start;}',
@@ -1043,7 +1096,7 @@
     '.ivc-gone ul{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-direction:column;gap:4px;}',
     '.ivc-gone li{display:flex;align-items:center;gap:8px;}',
     '.ivc-gone li span{flex:1;min-inline-size:0;overflow-wrap:anywhere;}',
-    '.ivc-empty{margin:24px 0;text-align:center;color:GrayText;}',
+    '.ivc-empty{margin:24px 0;text-align:center;color:var(--ivc-muted);}',
     '.ivc-sr{position:absolute;inline-size:1px;block-size:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;}',
     '@media (max-width:800px){.ivc-overlay{padding:0;}.ivc-dialog{border-radius:0;block-size:100%;inline-size:100%;}.ivc-body{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr);}.ivc-side{border-inline-end:0;border-block-end:1px solid var(--ivc-line);max-block-size:32vh;}}',
     '@media (forced-colors:active){.ivc-dialog,.ivc-btn,.ivc-chip,.ivc-panel,.ivc-tablewrap{border:1px solid CanvasText;}.ivc-class[aria-current="true"]{border:2px solid Highlight;}.ivc-table input.ivc-cell{border-color:CanvasText;}.ivc-overlay{background:Canvas;}}',

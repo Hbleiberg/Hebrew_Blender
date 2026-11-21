@@ -197,15 +197,17 @@ const LISTS = { 'Kitah Alef': { v: 1, rows: [{ he: 'נֹעָה', en: 'Noa' }, { 
   assert.equal(B.C.importFile(J(oldFile), 'merge'), false, 'importing it again changes nothing');
   assert.equal(B.data[KEY], snap);
   assert.equal(B.C.get('a_0').students.length, 4, 'the file\'s roster and list fold as they do on a device');
-  // a restore brings a deleted student back; a fill does not
+  // a restore is a deliberate act: a deleted student comes back, from a Merge and from an account backup (fill) alike
   const sid = B.C.get('a_0').students[0].id;
   B.tick(); B.C.removeStudent('a_0', sid);
-  assert.equal(B.C.importFile(J(oldFile), 'fill'), false, 'an account backup (fill) does not undo a deletion');
+  assert.ok(B.C.importFile(J(oldFile), 'fill') && B.C.get('a_0').students.some((s) => s.id === sid) && B.C.get('a_0').students.length === 4, 'an account backup restores the deleted student, once');
+  B.tick(); B.C.removeStudent('a_0', sid);
   assert.ok(B.C.importFile(J(oldFile), 'merge') && B.C.get('a_0').students.some((s) => s.id === sid), 'a Merge restores the deleted student');
+  B.tick(); B.C.setStudentField('a_0', sid, 'en', 'Noah');
+  assert.equal(B.C.importFile(J(oldFile), 'merge'), false, 'and never puts the file\'s older spelling back over what was typed since');
   // … and a deleted class
   B.tick(); B.C.deleteClass('a_2');
-  assert.equal(B.C.importFile(J(oldFile), 'fill'), false);
-  assert.ok(B.C.importFile(J(oldFile), 'merge') && B.C.get('a_2'), 'a Merge restores a deleted class');
+  assert.ok(B.C.importFile(J(oldFile), 'fill') && B.C.get('a_2'), 'a restore brings a deleted class back');
   // a file from this version carries both generations: its own classes are the truth, its old sections add nothing
   const C3 = device({ [DASH]: JSON.stringify(ROSTERS) });
   C3.C.adopt(); C3.tick(); C3.C.removeStudent('a_0', C3.C.get('a_0').students[3].id);
@@ -224,7 +226,7 @@ const LISTS = { 'Kitah Alef': { v: 1, rows: [{ he: 'נֹעָה', en: 'Noa' }, { 
   assert.equal(F.C.importFile(J(oldFile), 'merge'), false, 'a file that adds nothing to the live view writes nothing');
   assert.equal(F.data[KEY], undefined);
   assert.equal(F.C.importFile({ nameTagSettings: {} }, 'merge'), false, 'a file with no class section is not for this store');
-  ok('files: old sections import once, a Merge restores, a fill only fills, only Replace replaces');
+  ok('files: old sections import once, a restore brings back what was deleted and replaces nothing typed, only Replace replaces');
 }
 
 // ── 6. near-matches are never merged silently ──
