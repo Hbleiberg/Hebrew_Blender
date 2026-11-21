@@ -57,7 +57,7 @@ Two consequences the SQL states only implicitly:
   tell you which one you hit.
 
 Two more shapes worth knowing before you change them: `saves.tool` is a **CHECK listing the ten tool
-names** (0001 wrote seven; 0004 added the Letter Learner, 0005 the Parsha Emojis page, 0007 the Name Tags page), mirroring `var TOOLS` in
+names** (eleven once `0013` is applied: it adds `Classes`, the shared class roster, which `var TOOLS` already names — until then the server refuses that tool's inserts with `23514` and the classes wait on the device) (0001 wrote seven; 0004 added the Letter Learner, 0005 the Parsha Emojis page, 0007 the Name Tags page), mirroring `var TOOLS` in
 `js/ivrit-saves.js` — an eleventh tool needs a migration widening it the way 0004, 0005 and 0007 do (that one constraint dropped and re-created in a
 single transaction, the only way Postgres offers), or every upload from that tool fails with an unexplained
 `23514`. And the four `storage.objects` policies are
