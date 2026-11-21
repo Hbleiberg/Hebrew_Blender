@@ -1320,7 +1320,9 @@ function selectMel(id, scroll) {
   singStop();
   buildPhrases();
   try { history.replaceState(null, '', '#sys-' + id); } catch (e) {}
-  if (scroll) document.getElementById('phrases').scrollIntoView();
+  // A contents link lands where its address does, on the melody's heading (not the section's intro, which left its first
+  // pattern cut at the window's foot), and takes the focus there: the next Tab is the melody's groups, not the rail.
+  if (scroll) { const head = document.getElementById('sys-' + id); head.scrollIntoView(); head.focus({ preventScroll: true }); }
   spySoon();
 }
 function buildPhrases() {
@@ -1330,7 +1332,7 @@ function buildPhrases() {
   document.getElementById('atMelCount').textContent = I18n.t(rowsAll.length === 1 ? 'atlas.phrases.count.one' : 'atlas.phrases.count.other', { count: rowsAll.length });
   const info = document.getElementById('atMelInfo');
   info.textContent = '';
-  const head = h('div', { class: 'syshead', id: 'sys-' + s.id }, h('h3', {}, sysLabel(s)), h('span', { class: 'sub' }, I18n.t('atlas.sys.' + s.id + '.sub')));
+  const head = h('div', { class: 'syshead', id: 'sys-' + s.id, tabindex: '-1' }, h('h3', {}, sysLabel(s)), h('span', { class: 'sub' }, I18n.t('atlas.sys.' + s.id + '.sub')));
   if (!s.approved) head.appendChild(unverifiedTag());
   info.appendChild(head);
   const note = h('p', { class: 'sysnote' }, I18n.t('atlas.sys.' + s.id + '.note') + (s.cite === 'je' ? ' ' + I18n.t('atlas.sys.je_note') : '') + ' ');

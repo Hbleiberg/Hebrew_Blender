@@ -1158,7 +1158,9 @@ traditions were imported from, and was rebuilt on the suite's own pieces, so it 
   hub's AllTools sites (export, import, erase, `IVRIT_CFG.gather/apply`) and not synced (no registry row; the page
   offers no account). A `#sys-<id>` address opens that melody without storing it. A contents link is a real
   address: a reading's `#grp-<reading>` opens that reading's first offered melody the same way (what its click
-  picks), and a Ctrl / ⌘ / Shift click is left to the browser, so the new tab lands by its address.
+  picks), and a Ctrl / ⌘ / Shift click is left to the browser, so the new tab lands by its address. A plain click (or
+  Enter) on a melody's or a reading's link lands where that address does, on the melody's heading (`sys-<id>`,
+  `tabindex="-1"`), and moves the focus there, so the next Tab is the melody's own, never the rail's next link.
 - **Layout.** A sticky bar (the contents button below 1000px, the title, the Key select), a contents rail (a drawer
   below 1000px: Escape, an outside click and the keyboard focus leaving it for another control close it, focus goes to
   its first link and back to the button, the button itself is hidden at 1000px and up by its id, and pwa.js's
