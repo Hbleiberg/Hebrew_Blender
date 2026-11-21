@@ -152,7 +152,7 @@ is called "mine", and merging a copy with itself changes nothing.
 - **A class is shown only if** it is not in `retired`, or it was edited after it was retired (a device that
   changed it since re-adds it — again the existing rule).
 - **A deleted student** is kept in the class's own `gone` list with the two names, and the editor offers
-  *Restore* there. **This is instead of the recovery bin** — see open point 1.
+  *Restore* there. **This is instead of the recovery bin** (§12).
 - **A landing never rewrites the row that landed.** Nothing clock-based or version-based runs in the
   re-read path, or every page load on every device would send one write, forever.
 
@@ -232,7 +232,7 @@ Everything below is keyed by `classId` / `studentId`, never by name.
 - Which class is open is a new per-device, erase-only key, `hebrewNameTags_activeClass` (a class id). The
   old `hebrewNameTags_activeList` is left alone.
 - **No stored per-tag overrides in this version** — none exist today (a row's four fields are the student's
-  own, now in the class; the Print tick is per session by design). See open point 3.
+  own, now in the class; the Print tick is per session by design).
 - CSV import and *From the Classroom Dashboard* are replaced by the editor's import; a CSV goes into the
   shared class.
 
