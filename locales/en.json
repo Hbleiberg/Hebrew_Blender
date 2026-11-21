@@ -5772,7 +5772,7 @@
   "shared.classes.merge_go": "Merge",
   "shared.classes.merge_label": "Merge this class into",
   "shared.classes.name_label": "Class name",
-  "shared.classes.near": "Two classes are named “{name}” but hold different students, so they were kept apart.",
+  "shared.classes.near": "Two classes are named “{name}”. They were not joined automatically; merge them if they are the same class.",
   "shared.classes.near_keep": "Keep both",
   "shared.classes.near_merge": "Merge them",
   "shared.classes.new_class": "New class",

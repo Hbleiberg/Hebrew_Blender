@@ -142,8 +142,9 @@ is called "mine", and merging a copy with itself changes nothing.
 
 ### Deletions
 
-- **A deleted class** is removed from `classes` and its id is written to `retired` (with the id of a list
-  folded into it). The row leaves the account like any deleted item; another device that still holds it keeps
+- **A deleted class** is removed from `classes` and its id is written to `retired`, with the id of the list
+  it stands for — whether that fold was written (`fold`) or is still only a view on this device; otherwise the
+  list would step forward as a class of its own the moment its roster class was gone. The row leaves the account like any deleted item; another device that still holds it keeps
   a copy in its recovery bin (`ivritSuite_removedByAccount`), offered for download until dismissed. The
   confirm names the account-wide effect while a session is stored (`IvritAccount.hasStoredSession()`).
 - **A class is shown only if** it is not in `retired`, or it was edited after it was retired (a device that
@@ -167,7 +168,7 @@ rule 2 is untouched) and exposes `window.IvritClasses`:
 | Part | What it does |
 |---|---|
 | `list()`, `get(id)`, `onChange(fn)`, `landed()` | What every tool reads. `list()` returns the stored classes plus the not-yet-copied old ones (§7.2), each as `{ id, name, extra, order, students, gone, accountClassId, stored }`. `onChange` fires on this page's writes, on another tab's (`storage`), and when the page's `onLocalChanged` calls `landed()` |
-| Operations (`addClass`, `renameClass`, `setClassExtra`, `duplicateClass`, `moveClass`, `deleteClass`, `mergeInto`, `addStudent`, `addStudents`, `replaceStudents`, `setStudentField`, `removeStudent`, `restoreStudent`, `moveStudent`, `setLink`, `setStudentUsername`) | **Each one re-reads the store, applies one stamped change, and writes.** Nothing holds a whole class in memory and writes it back, so a class another tab or device just sent is never overwritten. An operation on a class that is still only a live view copies that one class first |
+| Operations (`addClass`, `renameClass`, `setClassExtra`, `duplicateClass`, `moveClass`, `deleteClass`, `mergeInto`, `addStudent`, `addStudents`, `replaceStudents`, `setStudentField`, `removeStudent`, `restoreStudent`, `moveStudent`, `setLink`, `setStudentUsername`) | **Each one re-reads the store, applies one stamped change, and writes.** Nothing holds a whole class in memory and writes it back, so a class another tab or device just sent is never overwritten. An operation on a class that is still only a live view copies that one class first. **A student's id is kept wherever the student is still the same child:** `replaceStudents` keeps the id (and the login noted on it) of every student the new list still names, and `mergeInto` carries the id and login of a student who joins — a Flash Cards profile, a pick session and a reading-assignments login hang on that id. **`moveClass` is not an edit:** it writes every class its place (`order`, `t.order`) and never sets `updated`, because `updated` is what brings a class back over a deletion made elsewhere |
 | `mergeClass` | §4 |
 | The legacy reader | The live view, the copy step (`adopt`), the fold, the add-only import of an old page's edits, `nearMatches()` / `dismissNearMatch()` (§7) |
 | `idForList(name)`, `idForLine(classId, line)` | The computed id of an old Name Tags list, and of the student an old roster line is — how a page turns what it remembered by name (an open list, a pick session) into ids |
@@ -260,6 +261,11 @@ Everything below is keyed by `classId` / `studentId`, never by name.
   break between), and *Edit classes*.
 - A renamed student does not rename the profile (a rename there is a delete and an add in the account); the
   list shows the roster's name beside the profile's when they differ, with *Rename to match*, and *Unlink*.
+- A link whose student is no longer on any class list (the class was deleted, or the student removed) counts
+  as no link (`fcLiveLink`): the profile shows in *Link profiles…* again and *Make profiles* never makes a
+  second profile beside it. The stale id is never cleared by itself — the classes may simply not have arrived
+  on the device yet. An *Unlink* can come back when the same profile changed on another device meanwhile (the
+  profile merge keeps a field only one copy has).
 
 ### 6.4 Reading assignments
 
@@ -275,7 +281,9 @@ Everything below is keyed by `classId` / `studentId`, never by name.
   (`students.create`, then each new student placed in the class); each username that was made is then noted
   on its student. **No account is ever created automatically.**
 - A student "has a login" while the account still lists the username noted on it; a login removed on the
-  page leaves its student without one again. When a list is linked, a student whose name exactly one
+  page leaves its student without one again. A student whose login was just made is taken off the filled
+  list, so a later preview — a failed row tried again, the same name typed by hand for another child — is
+  never handed that student and cannot note its login over the first. When a list is linked, a student whose name exactly one
   unclaimed login of the class already shows gets that login noted.
 - The one name an account shows is the student's English name, else the Hebrew one.
 - The page's "From a class list on this device" menu reads the shared classes and the Flash Cards profiles.
@@ -355,6 +363,13 @@ whose class was deleted, is never folded.
 **A near-match is never merged silently.** Same name but different students: both stay, and a one-time
 notice in the editor names the pair and offers *Merge them*, which a person confirms.
 
+**Where the fold does not happen (known limits).** The fold needs both old sources on one device before
+either is a stored class of its own. Two cases end as two same-named classes and the notice instead:
+a teacher who used Name Tags on one device and the Dashboard on another, never both on one (each device
+copies the only source it has); and a student removed from the roster class on a device that does not hold
+the list — the roster line is scrubbed, so the list no longer matches one for one and stays a class of its
+own, with that student still in it.
+
 ### 7.5 An edit made on an old page
 
 An old tab left open, or a device offline on an old version, still writes the old keys, and those still sync
@@ -390,14 +405,17 @@ write to an old key, and it only ever removes.
 
 - `IvritClasses.scrub('dash' | 'nt')` answers `{ sources, lines, rows }`: the old sources whose class was
   deleted (a fold's fixed stamp is not a deletion), the roster lines whose computed student id is in the
-  class's `gone` list, and the list rows likewise. For a list folded into a roster class (`fold`) the rows
-  are matched by name: rows a student still in the class answers to stay, and of the rest the ones a removed
-  student answers to go.
+  class's `gone` list, and the list rows likewise, each named by its index in the stored list (a stored list
+  may hold entries that are not rows). For a list folded into a roster class (`fold`) the rows are matched by
+  name: rows a student still in the class answers to stay, and of the rest the ones a removed student answers
+  to go.
 - `IvritClasses.watchScrub(from, tool, fn)` calls the page's remover whenever the plan names something.
   Signed out, at once and after every change. With a stored session, only once a hydration in this page load
   has answered for `Classes` **and** for the old key's own tool, so a stale copy is never the one acted on.
 - The Dashboard's remover edits `settings.rosters` (and that class's pick session) and saves the blob; Name
-  Tags' rewrites `hebrewNameTags_lists`. The account rows follow through the ordinary write-through.
+  Tags' rewrites `hebrewNameTags_lists`. The account rows follow through the ordinary write-through. A second
+  Dashboard tab takes the store's `rosters` on the blob's `storage` event — it saves the whole blob from
+  memory, so its own copy would otherwise put a scrubbed roster back.
 
 Until the owning page is next opened on some device, the old row still holds the name. The delete confirm
 does not promise otherwise. Deleting a class can leave up to three recovery-bin copies on another device (the
@@ -422,7 +440,11 @@ class, its old roster, its old list).
   `IvritClasses.importFile`; no import writes them into the old keys. `flashCardProfiles` import as before
   (after the classes, so a profile's link finds its student).
 - **A file may carry both generations.** On import, an old section is read only for a source that no class
-  in the file already stands for.
+  in the file already stands for: a class's own id, the old list named by its `fold`, and every id in the
+  file's record of deleted classes — which sits inside `classes` in a file a page wrote and is a section of
+  its own, `classesRetired`, in an account backup. Where the file's class ends up stored, its fold is recorded
+  here too, so the list is not taken for a second class when the account's old row lands later. (Without
+  these, restoring a backup doubled a folded class and brought a deleted class back from its old roster.)
 - **A restore is a deliberate act, whatever the file:** a student in the file who is in `gone` here comes
   back (the same student, by id), and a class in `retired` comes back, both stamped now. That is why a file
   import is its own function and not `mergeClass`. Students are matched by id, then by name; nothing typed is
@@ -473,7 +495,9 @@ Two per-device keys can hold copies of student names: the recovery bin and the k
   clear wins; unknown fields and hostile ids survive; reading writes nothing; two devices copying the same old
   data write the same bytes and copying twice changes nothing; a rosters-only copy merges into the folded one;
   an old page's added line arrives once, and a deletion or a rename made here holds; a deleted class is never
-  re-created, and a landed copy of one is removed only by the prune (a class edited since its deletion is kept); files import once, restore what was deleted and replace nothing typed; a near-match is never
+  re-created, and a landed copy of one is removed only by the prune (a class edited since its deletion is kept);
+  deleting a class whose fold is only a view takes the list with it; a backup from such a device, and an account
+  backup, restore each class once; a move stamps no class as edited; Replace and Merge into keep ids and logins; files import once, restore what was deleted and replace nothing typed; a near-match is never
   folded; the scrub names exactly the deleted sources, lines and rows; the CSV code round-trips.
 - **`scripts/smoke-migration.mjs`** (the golden replay, `--sdk` required). Along its main story the old
   rosters and lists go up as one class each — never offered on the first-sign-in card, no time stamp — and

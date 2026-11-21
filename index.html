@@ -1093,6 +1093,8 @@ function mergeFlashCardProfiles(incoming, replace) {
       .sort((a, b) => new Date(a.savedAt) - new Date(b.savedAt)).slice(-FC_MAX_RESULTS);
     const ladder = mergeFcLadder(base.profiles[name].ladder, src.ladder);
     if (ladder) base.profiles[name].ladder = ladder;
+    // the file's link to a class's student, where this device's profile has none (never over one it has)
+    if (typeof src.studentId === 'string' && src.studentId && !base.profiles[name].studentId) base.profiles[name].studentId = src.studentId;
   });
   if (inc.activeProfile && base.profiles[inc.activeProfile]) base.activeProfile = inc.activeProfile;
   if (!base.activeProfile) base.activeProfile = Object.keys(base.profiles)[0] || null;

@@ -636,6 +636,7 @@ function importNames() {
   const sel = $('importSource'); const l = sel._lists && sel._lists[Number(sel.value)]; if (!l) return;
   const ta = $('namesInput');
   ta.value = (ta.value.trim() ? ta.value.replace(/\s+$/, '') + '\n' : '') + l.names.join('\n');
+  linkQueue = null;   // names from another list: none of them is a student of the linked class list
   ta.focus();
 }
 function buildPreview() {
@@ -686,7 +687,13 @@ function createStudents() {
     const made = [], failed = [];
     results.forEach((r, i) => { const p = preview[i]; if (!p) return; if (r.error) { p.error = errText({ code: r.error }); failed.push(p); } else { p.id = r.id; made.push(p); } });
     // the class list's student now has this login (the username as it was made, after any edit in the preview)
-    if (CL()) made.forEach(p => { if (p.sid && p.sharedId) CL().setStudentUsername(p.sharedId, p.sid, p.username); });
+    // — and that student is done with: a later preview (a failed row tried again, a name typed by hand for another
+    // child) is never handed the same student, or its login would be noted over this one
+    if (CL()) made.forEach(p => {
+      if (!p.sid || !p.sharedId) return;
+      CL().setStudentUsername(p.sharedId, p.sid, p.username);
+      if (linkQueue) linkQueue.byName.forEach(ids => { const i = ids.indexOf(p.sid); if (i >= 0) ids.splice(i, 1); });
+    });
     const after = () => {
       batch = made.slice();
       if (made.length) renderCreated(made, false);

@@ -8888,7 +8888,7 @@ function mountFolderTree(cfg){
       // whole suite's, so this page's Replace never empties them (only the home page's AllTools Replace does).
       const carries = d => !!d && typeof d === 'object' && !Array.isArray(d);
       if (window.IvritClasses && (carries(data.classes) || carries(data.dashboardRosters) || carries(data.roster) || carries(data.liveState) || carries(data.dashboardSettings))) {
-        const file = { classes: data.classes, dashboardRosters: data.dashboardRosters || data.roster, liveState: data.liveState, dashboardSettings: data.dashboardSettings };
+        const file = { classes: data.classes, classesRetired: data.classesRetired, dashboardRosters: data.dashboardRosters || data.roster, liveState: data.liveState, dashboardSettings: data.dashboardSettings };
         if (IvritClasses.importFile(file, mode === 'replace' ? 'merge' : mode)) applied = true;
         onClassesChanged();
       }
@@ -12455,23 +12455,6 @@ async function onUploadEngFontPick(input){
       applyWakeLock();
     }
   });
-  // The roster textarea commits on BLUR (commitRosterFromTextarea) and nothing else, so a refresh
-  // or a closed lid mid-typing fires no commit at all: a teacher who types twenty-five names and
-  // then hits F5 loses every one, while the live "25 names" count under the box says otherwise.
-  // Measured: 5 names typed, then reload — ✕ / Escape / backdrop all keep them (each is a real
-  // blur), a bare reload keeps 0. The in-place message editor two lines below is already rescued
-  // by this same pair, which is what this leaves out. Guarded on the textarea being the focused
-  // element: that IS the mid-typing case, and it is the only state where the box is known to hold
-  // the class's names — syncFormToSettings() fills it when the drawer opens, so committing an
-  // untouched (empty) textarea on a page whose drawer was never opened would write the roster away.
-  // A DRAFT save, not the blur commit. commitRosterFromTextarea() also rewrites the box with the
-  // parsed names and prunes the picked/absent lists against them — right once the teacher has left
-  // the box, wrong while she is still in it. Measured: "Ann⏎Ben⏎" with the caret on the empty third
-  // line, a switch away and back, then "Cara" typed, stored "BenCara", because the rewrite had
-  // dropped the empty line; and "Sarah" → "Sar" mid-fix with Sarah already picked lost the picked
-  // mark. So this stores what is typed and touches nothing else; the box, the session lists and
-  // the picker wait for the blur commit as before (the picker ignores a picked name that is not in
-  // the roster). Both callers save to storage right after.
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') acquireWakeLock();
     // Chrome exempts an AudioContext from background throttling but clamps setInterval to ~1/min, so a
@@ -12712,6 +12695,20 @@ async function onUploadEngFontPick(input){
     settingsSeenNow();   // what this tab holds now is what it read: a hide or close with no change since writes nothing
     // The shared classes moved (the roster editor, another tab, the account): the picker and the switchers follow.
     if (window.IvritClasses) { IvritClasses.onChange(onClassesChanged); IvritClasses.watchScrub('dash', 'Dashboard', scrubOldRosters); }
+    // Another tab of this page wrote the blob (its scrub took out a roster or a line a teacher deleted): this tab's
+    // copy of the old rosters follows the store. This page never adds to them, so the store's are never older than
+    // memory's — and without this, this tab's next whole-blob save would put the deleted roster back.
+    window.addEventListener('storage', e => {
+      if (e.key !== 'hebrewDashboard_settings' || e.newValue == null) return;
+      let stored = null;
+      try { stored = ivritSafeParse(e.newValue); } catch (err) { return; }
+      if (!stored || typeof stored !== 'object' || Array.isArray(stored)) return;
+      const next = (stored.rosters && typeof stored.rosters === 'object' && !Array.isArray(stored.rosters)) ? stored.rosters : {};
+      if (JSON.stringify(next) === JSON.stringify(settings.rosters || {})) return;
+      const clean = settingsSnapshot() === _settingsSeen;   // nothing of this tab's own is waiting to be saved
+      settings.rosters = next;
+      if (clean) settingsSeenNow();
+    });
     initCloudSaves();
   });
 

@@ -426,8 +426,9 @@
     Object.keys(lists).sort().forEach(function (name) {
       var l = lists[name];
       if (bad(name) || !isObj(l)) return;
-      out.push({ from: 'nt', id: 'nt_' + shortHash(name.normalize('NFC')), name: name, extra: str(l.extra).trim(),
-                 rows: (Array.isArray(l.rows) ? l.rows : []).filter(isObj) });
+      var rows = [], rowAt = [];   // rowAt: each kept row's index in the stored list (the scrub names rows by it)
+      (Array.isArray(l.rows) ? l.rows : []).forEach(function (r, i) { if (isObj(r)) { rows.push(r); rowAt.push(i); } });
+      out.push({ from: 'nt', id: 'nt_' + shortHash(name.normalize('NFC')), name: name, extra: str(l.extra).trim(), rows: rows, rowAt: rowAt });
     });
     return out;
   }
@@ -599,7 +600,7 @@
       if (!gone) return;
       // the list's rows that are students (classFromSource skips a row with no name), with their places in the list
       var named = [], at = [];
-      x.src.rows.forEach(function (r, i) { if (field(r, 'he').trim() || field(r, 'en').trim() || field(r, 'tr').trim()) { named.push(r); at.push(i); } });
+      x.src.rows.forEach(function (r, i) { if (field(r, 'he').trim() || field(r, 'en').trim() || field(r, 'tr').trim()) { named.push(r); at.push(x.src.rowAt ? x.src.rowAt[i] : i); } });
       var idx = [];
       if (own) named.forEach(function (r, k) { if (hasOwn(gone, x.cls.students[k].id)) idx.push(at[k]); });
       else {
@@ -722,7 +723,7 @@
   function clip(v) { return String(v == null ? '' : v).replace(/\s+/g, ' ').trim().slice(0, MAX_FIELD); }
   function countAlive(v) { return Object.keys(v.map).length; }
   // fn(cls, stamp, store) → false to change nothing. A class still only a view of old data is copied first.
-  function mutate(id, fn) {
+  function mutate(id, fn, quiet) {
     var v = buildView(), store = v.store;
     if (!(id in v.map)) return false;
     if (!v.map[id].stored) { if (!materialise(store, v.sv, id)) return false; }
@@ -732,7 +733,9 @@
     var st = nextStamp(cls, store.retired[id]);
     if (fn(cls, st, store) === false) return false;
     cls.id = id;
-    cls.updated = st;
+    // `updated` is what brings a class back over a deletion made elsewhere (alive): only a change to the class
+    // itself sets it — moving another class up the list re-numbers every class and must not revive one.
+    if (!quiet) cls.updated = st;
     return writeStore(store);
   }
   function stampField(obj, f, st) { if (!isObj(obj.t)) obj.t = {}; obj.t[f] = st; }
@@ -783,7 +786,7 @@
     var ok = true;
     ids.forEach(function (cid, n) {
       var c = get(cid);
-      if (c && c.order !== n) ok = mutate(cid, function (cls, st) { cls.order = n; stampField(cls, 'order', st); }) && ok;
+      if (c && c.order !== n) ok = mutate(cid, function (cls, st) { cls.order = n; stampField(cls, 'order', st); }, true) && ok;
     });
     return ok;
   }
@@ -793,8 +796,11 @@
     if (!(id in v.map)) return false;
     var cur = (hasOwn(store.classes, id) && isObj(store.classes[id])) ? store.classes[id] : null;
     store.retired[id] = Math.max(Date.now(), (cur ? classStamp(cur) : 0) + 1, num(store.retired[id]) + 1);
-    // the old list folded into this class is deleted with it (until now it was only marked as folded)
+    // the old list folded into this class is deleted with it (until now it was only marked as folded) — also when
+    // the fold was never written and is still only a view here, or the list would step forward as a class of its own
     if (cur && typeof cur.fold === 'string' && cur.fold && !bad(cur.fold)) store.retired[cur.fold] = store.retired[id];
+    var viewFold = v.sv.foldOfD[id];
+    if (viewFold && !bad(viewFold.n.cls.id)) store.retired[viewFold.n.cls.id] = store.retired[id];
     delete store.classes[id];
     return writeStore(store);
   }
@@ -811,11 +817,29 @@
     });
     return res ? (ok || !(res.added || res.filled) ? res : null) : null;
   }
+  // The class becomes the given rows. A row naming a student already here (the import's own matcher) stays that
+  // student — the id is what a Flash Cards profile, a pick session and a reading-assignments login hang on — and
+  // takes the row's values; only students the new list no longer names move to the removed ones.
   function replaceStudents(id, rows) {
     return mutate(id, function (cls, st) {
+      var incoming = (rows || []).slice(0, MAX_STUDENTS).map(function (r) { return { he: clip(r && r.he), en: clip(r && r.en), tr: clip(r && r.tr), ex: clip(r && r.ex) }; });
+      var pairs = pairRows(cls.students, incoming), kept = dict(), next = [];
+      incoming.forEach(function (r, k) {
+        var old = pairs.has(k) ? cls.students[pairs.get(k)] : null;
+        if (!isObj(old) || kept[old.id]) { next.push(newStudent(r)); return; }
+        kept[old.id] = true;
+        var s2 = clone(old);
+        FIELDS.forEach(function (f) {
+          if (str(s2[f]) === r[f]) return;
+          if (r[f] || f === 'he' || f === 'en') s2[f] = r[f]; else delete s2[f];
+          stampField(s2, f, st);
+        });
+        next.push(s2);
+      });
       if (!isObj(cls.gone)) cls.gone = {};
-      cls.students.forEach(function (s) { cls.gone[s.id] = goneRecord(s, st); });
-      cls.students = (rows || []).slice(0, MAX_STUDENTS).map(newStudent);
+      cls.students.forEach(function (s) { if (isObj(s) && !kept[s.id]) cls.gone[s.id] = goneRecord(s, st); });
+      cls.students = next;
+      stampField(cls, 'students', st);
       trimGone(cls);
     });
   }
@@ -884,8 +908,17 @@
     var src = get(fromId);
     if (!src || fromId === intoId || !get(intoId)) return false;
     var ok = mutate(intoId, function (cls, st) {
-      var m = mergeRows(cls.students, src.students.map(function (s) { return { he: s.he, en: s.en, tr: s.tr, ex: s.ex }; }));
-      m.fresh.forEach(function (r) { cls.students.push(newStudent(r)); });
+      var have = dict();
+      cls.students.forEach(function (s) { if (isObj(s)) have[s.id] = true; });
+      if (isObj(cls.gone)) Object.keys(cls.gone).forEach(function (g) { have[g] = true; });
+      var m = mergeRows(cls.students, src.students.map(function (s) { return { id: s.id, he: s.he, en: s.en, tr: s.tr, ex: s.ex, username: s.username }; }));
+      // a student who joins keeps the id and the login noted on it (what a Flash Cards profile is linked to)
+      m.fresh.forEach(function (r) {
+        var ns = newStudent(r);
+        if (typeof r.id === 'string' && r.id && !bad(r.id) && !have[r.id]) { ns.id = r.id; have[r.id] = true; }
+        if (r.username) ns.username = str(r.username).slice(0, 40);
+        cls.students.push(ns);
+      });
       if (!str(cls.extra).trim() && src.extra) { cls.extra = src.extra; stampField(cls, 'extra', st); }
     });
     return ok && deleteClass(fromId);
@@ -961,6 +994,10 @@
     if (!isObj(data)) return false;
     mode = mode === 'replace' || mode === 'fill' ? mode : 'merge';
     var fileStore = isObj(data.classes) && isObj(data.classes.classes) ? data.classes : null;
+    // the record of deleted classes: inside `classes` in a file this page wrote, a section of its own in an account
+    // backup (the account keeps it as its own row)
+    var fileRetired = (fileStore && isObj(fileStore.retired)) ? fileStore.retired
+      : (isObj(data.classesRetired) && isObj(data.classesRetired.retired)) ? data.classesRetired.retired : null;
     var rosters = dict(), any = !!fileStore, lists = isObj(data.nameTagLists) ? data.nameTagLists : null;
     [isObj(data.dashboardSettings) ? data.dashboardSettings.rosters : null, isObj(data.liveState) ? data.liveState.rosters : null,
      isObj(data.dashboardRosters) ? data.dashboardRosters.rosters : null].forEach(function (m) {
@@ -980,11 +1017,23 @@
         var inc = clone(c);
         inc.id = id;
         if (importOne(store, sv, inc, mode)) changed = true;
+        // The file's class also stands for the old list it was folded with: that list in the file's old sections is
+        // not a second class. Where the class is stored here now, the fold is recorded as every fold is, so the
+        // list is not taken for a class when it lands on this device later.
+        var fid = (typeof c.fold === 'string' && c.fold && !bad(c.fold)) ? c.fold : '';
+        if (!fid) return;
+        inFile[fid] = true;
+        var sc = hasOwn(store.classes, id) ? store.classes[id] : null;
+        if (isObj(sc) && alive(store, id) && !hasOwn(store.classes, fid) && !num(store.retired[fid])) {
+          store.retired[fid] = FOLD_STAMP;
+          if (sc.fold !== fid) sc.fold = fid;
+          changed = true;
+        }
       });
-      if (isObj(fileStore.retired)) Object.keys(fileStore.retired).forEach(function (id) { if (!bad(id)) inFile[id] = true; });
-      // a Replace makes this device the file: its record of deleted classes comes too (a Merge never deletes)
-      if (mode === 'replace' && isObj(fileStore.retired)) Object.keys(fileStore.retired).forEach(function (id) { if (!bad(id) && num(fileStore.retired[id])) store.retired[id] = num(fileStore.retired[id]); });
     }
+    if (fileRetired) Object.keys(fileRetired).forEach(function (id) { if (!bad(id) && num(fileRetired[id])) inFile[id] = true; });
+    // a Replace makes this device the file: its record of deleted classes comes too (a Merge never deletes)
+    if (mode === 'replace' && fileRetired) Object.keys(fileRetired).forEach(function (id) { if (!bad(id) && num(fileRetired[id]) && !(hasOwn(store.retired, id) && num(store.retired[id]) >= num(fileRetired[id]))) store.retired[id] = num(fileRetired[id]); });
     // The file's old sections: read with the same computed ids, and only for a source the file's own classes do
     // not already stand for (a file from this version carries both generations).
     var fd = dashSourcesFrom(rosters).map(function (s) { return { src: s, cls: classFromSource(s) }; });
@@ -1116,7 +1165,7 @@
     restore: 'Restore',
     restore_named: 'Restore {name}',
     unnamed: 'a student without a name',
-    near: 'Two classes are named “{name}” but hold different students, so they were kept apart.',
+    near: 'Two classes are named “{name}”. They were not joined automatically; merge them if they are the same class.',
     near_merge: 'Merge them',
     near_keep: 'Keep both'
   };
@@ -1219,6 +1268,9 @@
   function plainName(s) { return [str(s && s.he).trim(), str(s && s.en).trim()].filter(Boolean).join(' / ') || str(s && s.tr).trim() || T('unnamed'); }
   function say(text, warn, undo) { if (!ed) return; ed.note = text ? { text: text, warn: !!warn, undo: undo || null } : null; drawNote(); }
   function part(name) { return ed.root.querySelector('[data-part="' + name + '"]'); }
+  // The control whose key is `k`. Looked up by comparing, never by building a selector from it: a class id comes
+  // from storage and from files.
+  function byKey(scope, k) { var hit = null; Array.prototype.forEach.call(scope.querySelectorAll('[data-k]'), function (n) { if (!hit && n.getAttribute('data-k') === k) hit = n; }); return hit; }
   function fill(node, kids) { while (node.firstChild) node.removeChild(node.firstChild); kids.forEach(function (k) { if (k) node.appendChild(k); }); }
 
   // Where each class is in use on this device — read from storage, never a request.
@@ -1441,7 +1493,7 @@
     if (!key) return;
     var again = null;
     ed.root.querySelectorAll('[data-k]').forEach(function (n) { if (!again && n.getAttribute('data-k') === key) again = n; });
-    if (!again) again = ed.root.querySelector('[data-k="cls:' + (ed.classId || '') + '"]') || ed.root.querySelector('[data-k="new"]');
+    if (!again) again = byKey(ed.root, 'cls:' + (ed.classId || '')) || ed.root.querySelector('[data-k="new"]');
     if (!again) return;
     again.focus();
     if (typed && again.getAttribute('data-k') === key && typeof again.value === 'string') { again.value = typed.v; try { again.setSelectionRange(typed.s, typed.e); } catch (e) {} }
@@ -1609,7 +1661,7 @@
     root.document.body.appendChild(overlay);
     chrome();
     draw();
-    var start = overlay.querySelector('[data-k="cls:' + (ed.classId || '') + '"]') || overlay.querySelector('[data-k="new"]');
+    var start = byKey(overlay, 'cls:' + (ed.classId || '')) || overlay.querySelector('[data-k="new"]');
     if (start) start.focus();
     return true;
   }

@@ -7894,7 +7894,7 @@ shared.classes.gone_summary,Removed students ({n}),תלמידים שהוסרו (
 shared.classes.restore,Restore,שחזור,Shared roster editor: button beside a removed student,shared; js/ivrit-classes.js
 shared.classes.restore_named,Restore {name},שחזור {name},Shared roster editor: aria-label of the restore button,shared; js/ivrit-classes.js
 shared.classes.unnamed,a student without a name,תלמיד ללא שם,Shared roster editor: what a student with no name is called,shared; js/ivrit-classes.js
-shared.classes.near,"Two classes are named “{name}” but hold different students, so they were kept apart.","שתי כיתות נקראות ”{name}“ אבל יש בהן תלמידים שונים, ולכן הן נשמרו בנפרד.",Shared roster editor: one-time notice about a Dashboard class and a Name Tags list with the same name,shared; js/ivrit-classes.js
+shared.classes.near,"Two classes are named “{name}”. They were not joined automatically; merge them if they are the same class.","שתי כיתות נקראות ”{name}“. הן לא אוחדו אוטומטית; אפשר למזג אותן אם זו אותה כיתה.",Shared roster editor: one-time notice about a Dashboard class and a Name Tags list with the same name,shared; js/ivrit-classes.js
 shared.classes.near_merge,Merge them,למזג אותן,Shared roster editor: button in the notice,shared; js/ivrit-classes.js
 shared.classes.near_keep,Keep both,להשאיר את שתיהן,Shared roster editor: button in the notice,shared; js/ivrit-classes.js
 shared.cloud.tool_classes,Class lists,רשימות כיתה,Account screen / status line: the shared class roster's name,shared; cloud panel

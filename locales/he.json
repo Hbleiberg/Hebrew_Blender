@@ -5772,7 +5772,7 @@
   "shared.classes.merge_go": "מיזוג",
   "shared.classes.merge_label": "מיזוג הכיתה הזאת לתוך",
   "shared.classes.name_label": "שם הכיתה",
-  "shared.classes.near": "שתי כיתות נקראות ”{name}“ אבל יש בהן תלמידים שונים, ולכן הן נשמרו בנפרד.",
+  "shared.classes.near": "שתי כיתות נקראות ”{name}“. הן לא אוחדו אוטומטית; אפשר למזג אותן אם זו אותה כיתה.",
   "shared.classes.near_keep": "להשאיר את שתיהן",
   "shared.classes.near_merge": "למזג אותן",
   "shared.classes.new_class": "כיתה חדשה",

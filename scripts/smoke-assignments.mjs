@@ -1057,6 +1057,20 @@ try {
     await page.selectOption('#linkClassSel', await page.evaluate(() => window.__other));
     const relink = await page.evaluate(() => { const d = JSON.parse(localStorage.getItem('ivritSuite_classes')).classes; const o = d[window.__other]; return { a: d.a_1.accountClassId || '', o: o.accountClassId, dan: o.students[0].username || '', avi: o.students[1].username || '' }; });
     check('N: one class list a class — the first is unlinked, and a student whose name a login of the class already shows has that login noted', relink.a === '' && relink.o === accId && relink.dan === made.find(m => m.display_name === 'Dan').username && relink.avi === '' && await waitText(page, '#linkStatus', /Linked to “Dalet B”\. One student on it has no login yet/), JSON.stringify(relink));
+    // a student whose login was made is done with: the same name typed by hand afterwards (another child) is a login
+    // of its own and never replaces the username noted on the first
+    await page.click('#linkCreateBtn');
+    await page.click('#previewHost button.btn:not(.ghost)');
+    await waitText(page, '#createStatus', /1 account created/);
+    const aviFirst = await page.evaluate(() => JSON.parse(localStorage.getItem('ivritSuite_classes')).classes[window.__other].students[1].username || '');
+    await page.fill('#namesInput', 'Avi');
+    await page.click('#previewBtn');
+    await page.click('#previewHost button.btn:not(.ghost)');
+    await waitText(page, '#createStatus', /1 account created/);
+    await page.waitForTimeout(300);
+    const aviAfter = await page.evaluate(() => JSON.parse(localStorage.getItem('ivritSuite_classes')).classes[window.__other].students[1].username || '');
+    const avis = cloud.t.students.filter(x => x.class_id === accId && nameOf(x.id) === 'Avi').map(x => x.username);
+    check('N: a name typed by hand after a list student\'s login was made is its own login — the first student\'s username stays', !!aviFirst && aviAfter === aviFirst && avis.length === 2 && avis.includes(aviFirst), JSON.stringify({ aviFirst, aviAfter, avis }));
     await page.screenshot({ path: path.join(SHOTS, 'N-class-link.png') });
     await page.keyboard.press('Escape');
     check('N: 0 pageerrors', errors.length === 0, errors.join(' | '));

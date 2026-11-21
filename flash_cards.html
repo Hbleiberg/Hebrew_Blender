@@ -6983,6 +6983,13 @@ function fcClassProfiles(classId) {
   cls.students.forEach(s => { if (byStudent.has(s.id)) out.push({ name: byStudent.get(s.id), student: s }); });
   return out;
 }
+// The student a profile is linked to, while that student is still on a class list. A link whose student is gone (the
+// class was replaced from a file, merged or deleted) counts as no link — the profile can be linked again — and is
+// never cleared by itself: the classes may simply not have arrived on this device yet.
+function fcLiveLink(profile, index) {
+  const sid = profile && profile.studentId;
+  return (typeof sid === 'string' && sid && (index || fcStudentIndex()).has(sid)) ? sid : '';
+}
 let _fcClassNoteMsg = '';
 function fcClassNote(msg) {
   _fcClassNoteMsg = msg || '';
@@ -7017,7 +7024,7 @@ function fcMakeClassProfiles() {
   const cls = fcClasses().find(c => c.id === fcClassFilter());
   if (!cls) return;
   if (!cls.students.length) { fcClassNote(I18n.t('flashcards.classes.no_students')); return; }
-  const db = readProfiles(), linked = new Set(Object.keys(db.profiles).map(n => db.profiles[n].studentId).filter(Boolean));
+  const db = readProfiles(), index = fcStudentIndex(), linked = new Set(Object.keys(db.profiles).map(n => fcLiveLink(db.profiles[n], index)).filter(Boolean));
   let made = 0, same = 0;
   const now = Date.now();
   cls.students.forEach((s, i) => {
@@ -7025,7 +7032,7 @@ function fcMakeClassProfiles() {
     let name = fcStudentName(s);
     if (!name) return;
     const taken = db.profiles[name];
-    if (taken && !taken.studentId) { same++; return; }
+    if (taken && !fcLiveLink(taken, index)) { same++; return; }
     if (taken) name = ftDuplicateName(name, n => !!db.profiles[n]);   // another student's linked profile has the name: "David 1"
     db.profiles[name] = { created: now + i, order: now + i, results: [], studentId: s.id };
     made++;
@@ -7045,9 +7052,9 @@ function fcOpenLinkDialog() {
   const cls = fcClasses().find(c => c.id === fcClassFilter());
   if (!cls || !window.IvritClasses) return;
   const db = readProfiles();
-  const linked = new Set(Object.keys(db.profiles).map(n => db.profiles[n].studentId).filter(Boolean));
+  const index = fcStudentIndex(), linked = new Set(Object.keys(db.profiles).map(n => fcLiveLink(db.profiles[n], index)).filter(Boolean));
   const free = cls.students.filter(s => !linked.has(s.id));
-  const names = Object.keys(db.profiles).filter(n => !db.profiles[n].studentId).sort((a, b) => (db.profiles[a].order || 0) - (db.profiles[b].order || 0));
+  const names = Object.keys(db.profiles).filter(n => !fcLiveLink(db.profiles[n], index)).sort((a, b) => (db.profiles[a].order || 0) - (db.profiles[b].order || 0));
   if (!names.length || !free.length) { fcClassNote(I18n.t(names.length ? 'flashcards.classes.link_no_students' : 'flashcards.classes.link_nothing')); return; }
   // a profile's name as the two names a student has, then the class list's own matcher (each student matched once)
   const pairs = IvritClasses.csv.pairRows(free, names.map(n => IvritClasses.csv.splitRosterLine(n)));
@@ -7534,7 +7541,7 @@ const IVRIT_CFG = {
     // The shared classes, when the file carries them (a restore adds and fills; this page's Replace never empties the
     // suite's classes — only the home page's AllTools Replace does). Before the profiles, so their links find students.
     if (window.IvritClasses && data.classes && typeof data.classes === 'object' && !Array.isArray(data.classes)) {
-      try { IvritClasses.importFile({ classes: data.classes }, mode === 'replace' ? 'merge' : mode); } catch (e) {}
+      try { IvritClasses.importFile({ classes: data.classes, classesRetired: data.classesRetired }, mode === 'replace' ? 'merge' : mode); } catch (e) {}
     }
     // Restore student profiles too, when the file includes them
     const inProfF = data.profileFolders || data.flashCardProfileFolders;

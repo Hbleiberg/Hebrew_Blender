@@ -296,4 +296,79 @@ const LISTS = { 'Kitah Alef': { v: 1, rows: [{ he: 'נֹעָה', en: 'Noa' }, { 
   ok('CSV: headers, script sorting, the export\'s formula guard');
 }
 
+// ── 8. a fold that is still only a view: deleting, backing up and restoring ──
+{
+  const R = { rosters: { a_0: { name: 'Kitah Alef', names: ['Noa', 'Eitan'] }, b_0: { name: 'Kitah Bet', names: ['Ari'] } }, activeRosterId: 'a_0' };
+  const L = { 'Kitah Alef': { v: 1, rows: [{ he: 'נֹעָה', en: 'Noa' }, { he: '', en: 'Eitan' }], extra: 'Room 4' } };
+  const names = (d) => J(d.C.list().map(c => c.name + ':' + c.students.length)).sort().join(',');
+  // deleting the one class a roster and its list make leaves nothing — the list does not step forward
+  const A = device({ [DASH]: JSON.stringify(R), [NT]: JSON.stringify(L) });
+  assert.equal(names(A), 'Kitah Alef:2,Kitah Bet:1');
+  assert.ok(A.C.deleteClass('a_0'));
+  assert.equal(names(A), 'Kitah Bet:1', 'a class deleted while its fold is only a view is gone, with the list it stood for');
+  assert.ok(A.store().retired.a_0 > 1 && A.store().retired[A.C.idForList('Kitah Alef')] > 1, 'both ids are recorded as deleted');
+  // the same, after only the roster was copied (a Dashboard page: it heard Dashboard, not Name Tags)
+  const A2 = device({ [DASH]: JSON.stringify(R), [NT]: JSON.stringify(L) }, { session: true });
+  A2.C.adopt({ dash: true, nt: false });
+  assert.ok(A2.store().classes.a_0 && !A2.store().classes.a_0.fold, 'the roster class is stored without the fold');
+  A2.tick(); assert.ok(A2.C.deleteClass('a_0'));
+  assert.equal(names(A2), 'Kitah Bet:1', 'and deleting it still takes the list with it');
+  // a backup from a device whose fold is only a view: the same device, a fresh one, and a Replace all hold one class
+  const B = device({ [DASH]: JSON.stringify(R), [NT]: JSON.stringify(L) });
+  const file = J({ classes: B.C.exportAll(), nameTagLists: L, dashboardSettings: R });
+  assert.equal(file.classes.classes.a_0.fold, B.C.idForList('Kitah Alef'), 'the exported class says which old list it stands for');
+  assert.equal(B.C.importFile(file, 'merge'), false, 'its own backup adds nothing to the device that made it');
+  for (const mode of ['merge', 'replace']) {
+    const F = device();
+    assert.ok(F.C.importFile(J(file), mode));
+    assert.equal(names(F), 'Kitah Alef:2,Kitah Bet:1', mode + ': a fresh device holds each class once');
+    assert.equal(F.C.get('a_0').students[0].he, 'נֹעָה', 'with what the list added');
+    F.set(NT, L); F.set(DASH, R);   // the old keys arrive later (the account's old rows)
+    assert.equal(names(F), 'Kitah Alef:2,Kitah Bet:1', mode + ': and still once when the old list lands afterwards');
+    F.C.adopt();
+    assert.equal(names(F), 'Kitah Alef:2,Kitah Bet:1');
+  }
+  // an account backup: the fold written, a class deleted, its old roster row not yet cleaned — the record of deleted
+  // classes is a section of its own there
+  const acct = { classes: { v: 1, classes: { a_0: { id: 'a_0', name: 'Kitah Alef', fold: B.C.idForList('Kitah Alef'), students: [{ id: 'sx1', he: 'נֹעָה', en: 'Noa' }, { id: 'sx2', he: '', en: 'Eitan' }] } } },
+                 classesRetired: { v: 1, retired: { [B.C.idForList('Kitah Alef')]: 1, b_0: 1760000001000 } }, dashboardRosters: { rosters: R.rosters }, nameTagLists: L };
+  const G = device();
+  assert.ok(G.C.importFile(J(acct), 'fill'));
+  assert.equal(names(G), 'Kitah Alef:2', 'an account backup restores one class — not the folded list again, not the deleted class');
+  G.set(NT, L); G.set(DASH, R); G.C.adopt();
+  assert.equal(names(G), 'Kitah Alef:2,Kitah Bet:1', '(a class this device was never told is deleted comes from its old roster as before)');
+  ok('a fold still only a view: delete takes the list too; a backup restores each class once, an account backup included');
+}
+
+// ── 9. ids that links hang on, and a move that is not an edit ──
+{
+  const A = device({ [DASH]: JSON.stringify({ rosters: { a_0: { name: 'Alef', names: ['Noa', 'Eitan', 'Dan'] }, b_0: { name: 'Bet', names: ['Ari'] }, c_0: { name: 'Gimel', names: ['Gal'] } } }) });
+  A.C.adopt();
+  // moving one class re-numbers all of them and edits none: a deletion made elsewhere still holds
+  A.tick(); assert.ok(A.C.moveClass('b_0', -1));
+  assert.ok(Object.values(A.store().classes).every(c => c.updated === undefined && typeof c.order === 'number'), 'a move writes every class its place and stamps none as edited');
+  const st = A.store(); st.retired = { c_0: A.store().classes.c_0.t.order - 500 }; A.data[KEY] = JSON.stringify(st);   // deleted on another device, before the move
+  assert.ok(!A.C.get('c_0'), 'so a class deleted elsewhere before the move stays deleted');
+  // Replace keeps the students the new list still names (id, login), removes the rest, adds the new
+  const before = A.C.get('a_0'), noa = before.students[0], eitan = before.students[1], dan = before.students[2];
+  A.tick(); A.C.setStudentUsername('a_0', noa.id, 'noa.41');
+  A.tick(); assert.ok(A.C.replaceStudents('a_0', [{ he: '', en: 'Dan' }, { he: 'נֹעָה', en: 'Noa' }, { he: '', en: 'Shira' }]));
+  const after = A.C.get('a_0');
+  assert.deepEqual(J(after.students.map(x => x.en)), ['Dan', 'Noa', 'Shira'], 'the class is the new list, in its order');
+  assert.ok(after.students[0].id === dan.id && after.students[1].id === noa.id && after.students[1].username === 'noa.41' && after.students[1].he === 'נֹעָה', 'a student the list still names keeps the id and the login, and takes the list\'s values');
+  assert.ok(after.students[2].id !== eitan.id && J(after.gone.map(g => g.id)).join() === eitan.id, 'only the student it no longer names is removed');
+  // Merge into: a student who joins keeps the id and the login
+  const ari = A.C.get('b_0').students[0];
+  A.tick(); A.C.setStudentUsername('b_0', ari.id, 'ari.22');
+  A.tick(); assert.ok(A.C.mergeInto('b_0', 'a_0'));
+  const joined = A.C.get('a_0').students.find(x => x.en === 'Ari');
+  assert.ok(joined && joined.id === ari.id && joined.username === 'ari.22' && !A.C.get('b_0'), 'Merge into carries the joining student\'s id and login');
+  // the scrub names a row by its place in the stored list, whatever that list holds
+  const N = device({ [NT]: JSON.stringify({ Gan: { v: 1, rows: [null, { he: '', en: 'Noa' }, 'x', { he: '', en: 'Dan' }], extra: '' } }) });
+  const gid = N.C.idForList('Gan');
+  N.C.adopt(); N.tick(); N.C.removeStudent(gid, N.C.get(gid).students[1].id);
+  assert.deepEqual(J(N.C.scrub('nt').rows), { Gan: [3] }, 'a removed student\'s row is named by its index in the stored list');
+  ok('a move stamps no class as edited; Replace and Merge into keep ids and logins; the scrub\'s row index is the stored one');
+}
+
 console.log(`smoke-classes: ${n} checks passed`);
