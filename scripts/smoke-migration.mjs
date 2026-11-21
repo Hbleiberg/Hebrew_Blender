@@ -56,6 +56,17 @@
  *      cloud" kept stays here, held back; after a button sign-out, work made signed out gets the usual card (the
  *      automatic add runs once); control: a device the previous site never knew for this account still asks.
  *
+ *  12. The shared class roster (js/ivrit-classes.js, the tool `Classes`). Along the main story: A's old rosters and
+ *      lists go up as one class each under ids computed from the old data (never offered on the card, no time stamp),
+ *      and A, B and the account hold the same classes. Then, on accounts of their own: a roster and a list that are
+ *      one class go up as ONE and a rosters-only device adds nothing; two devices offline with a stored session show
+ *      their class and write nothing, then come online at once — one row, nothing doubled, and four more loads
+ *      (A, B, A, B) send nothing; a class deleted on one device is gone on the other and a fresh device does not make
+ *      it again from the old roster; a removed student is restored by the account backup, once; a name added on the
+ *      old Dashboard page arrives as exactly one student; a class changed on two devices merges with no dialog; a
+ *      button sign-out removes the classes; and while the account refuses the tool (23514, migration 0013 not
+ *      applied) the class stays whole on the device and goes up by itself once it is accepted.
+ *
  * Every scenario ends with 0 pageerror. Run from the repo root:
  *   node scripts/smoke-migration.mjs --sdk path/to/supabase.js [--port 8084]
  * The script starts python3 -m http.server itself (port 8084, so it can run beside the other smokes).
@@ -89,7 +100,7 @@ const UID = '11111111-1111-4111-8111-111111111111';
 const EMAIL = 'teacher@example.org';
 // The name step never opens: the session's user carries a display name.
 const SESSION = { access_token: 'x', refresh_token: 'y', expires_at: 4102444800, token_type: 'bearer', user: { id: UID, email: EMAIL, user_metadata: { full_name: 'Test Teacher' }, app_metadata: { provider: 'email' } } };
-const ALL_TOOLS = ['Suite', 'Worksheet', 'FlashCards', 'Dictionary', 'TorahTrainer', 'TropeTutor', 'Dashboard', 'LetterLearner', 'EmojiTorah', 'NameTags'];
+const ALL_TOOLS = ['Suite', 'Worksheet', 'FlashCards', 'Dictionary', 'TorahTrainer', 'TropeTutor', 'Classes', 'Dashboard', 'LetterLearner', 'EmojiTorah', 'NameTags'];
 
 /* ---------- the fake cloud ---------- */
 // The account's rows, answered the way PostgREST would for the queries the module makes: GET (eq. and in.(…)
@@ -99,7 +110,7 @@ const ALL_TOOLS = ['Suite', 'Worksheet', 'FlashCards', 'Dictionary', 'TorahTrain
 // asked for). The Auth user endpoints answer with the session's user, logout with 204, and `profiles` is
 // missing (404) so the module's fail-soft paths are exercised. Every call is logged.
 class FakeCloud {
-  constructor(rows) { this.n = 0; this.log = []; this.rows = (rows || []).map(r => this.fresh(r)); this.user = JSON.parse(JSON.stringify(SESSION.user)); }
+  constructor(rows) { this.n = 0; this.log = []; this.rows = (rows || []).map(r => this.fresh(r)); this.user = JSON.parse(JSON.stringify(SESSION.user)); this.refuse = null; }   // refuse(m, body) → { status, body } to answer an insert with instead
   stamp() { return new Date(Date.UTC(2026, 8, 14, 20, 0, 0) + (++this.n) * 1000).toISOString(); }
   fresh(r) { const at = this.stamp(); return Object.assign({ id: crypto.randomUUID(), user_id: UID, created_at: at, updated_at: at, client_updated_at: null, data_hash: null, bytes: JSON.stringify(r.data).length }, r); }
   find(kind, name, tool) { return this.rows.find(r => r.kind === kind && r.name === name && (!tool || r.tool === tool)); }
@@ -147,6 +158,8 @@ class FakeCloud {
       const bodies = Array.isArray(entry.body) ? entry.body : [entry.body];
       const dup = bodies.find(b => this.find(b.kind, b.name, b.tool));
       entry.tool = bodies[0] && bodies[0].tool;
+      const no = this.refuse && this.refuse(m, bodies[0]);
+      if (no) { entry.status = no.status; entry.refused = true; entry.rows = [bodies[0].tool + '/' + bodies[0].kind + '/' + bodies[0].name]; return json(no.status, no.body); }
       if (dup) {
         entry.status = 409; entry.rows = [dup.tool + '/' + dup.kind + '/' + dup.name];
         return json(409, { code: '23505', details: 'Key (user_id, tool, kind, name)=(…) already exists.', hint: null, message: 'duplicate key value violates unique constraint "saves_user_id_tool_kind_name_key"' });
@@ -432,7 +445,11 @@ function buildDeviceA(D) {
 const SESSION_KEYS = { [AUTH_KEY]: J(SESSION), ivritSuite_accountCache: J({ email: EMAIL, name: 'Test Teacher' }) };
 const withSession = (s) => Object.assign({}, s, SESSION_KEYS);
 const signInHere = (page) => page.evaluate((s) => { Object.keys(s).forEach(k => localStorage.setItem(k, s[k])); }, SESSION_KEYS);
-const EXPECTED_ROWS = { Suite: 2, TropeTutor: 2, TorahTrainer: 4, FlashCards: 8, Worksheet: 4, Dictionary: 2, Dashboard: 8, LetterLearner: 1, EmojiTorah: 1, NameTags: 3 };   // 35 rows, six of them folder trees
+// 39 rows, six of them folder trees. Classes: the shared roster's four — one per old Dashboard roster and Name Tags list
+// (the roster and the list both named Kitah Alef hold different students, so they stay two) — made by the home page from
+// the old keys once the account was heard from, never offered on the card.
+const EXPECTED_ROWS = { Suite: 2, TropeTutor: 2, TorahTrainer: 4, FlashCards: 8, Worksheet: 4, Dictionary: 2, Dashboard: 8, LetterLearner: 1, EmojiTorah: 1, NameTags: 3, Classes: 4 };
+const EXPECTED_TOTAL = Object.values(EXPECTED_ROWS).reduce((a, b) => a + b, 0);
 // A font the teacher made: it lives in IndexedDB, not localStorage, so the dump-and-classify pass below
 // cannot see it — it is seeded on A and looked for on B by name.
 const FONT_NAME = 'Morah Handwriting', FONT_B64 = 'AAEAAAALAIAAAwAwT1MvMg==';
@@ -505,7 +522,15 @@ try {
     const nameStep = await page.evaluate(() => IvritAccount._test.nameStepOutcome());
     check('2: the first signed-in load opened the device-extras card once, listing the device\'s items by tool and kind (no name step: the session has a name)', !!card && card.lines.length >= 8 && cards === 1 && nameStep === 'none', JSON.stringify({ card, cards, nameStep }));
     const countsMatch = Object.keys(EXPECTED_ROWS).every(t => byTool[t] === EXPECTED_ROWS[t]) && Object.keys(byTool).length === Object.keys(EXPECTED_ROWS).length;
-    check('2: after Add to my account the cloud holds exactly the expected rows per tool (35, six of them folder trees), all inserted, none refused', countsMatch && cloud.rows.length === 35 && writes.every(w => w.startsWith('POST ')) && writes.length === 35, JSON.stringify({ byTool, writes: writes.length, other: writes.filter(w => !w.startsWith('POST ')) }));
+    check('2: after Add to my account the cloud holds exactly the expected rows per tool (' + EXPECTED_TOTAL + ', six of them folder trees), all inserted, none refused', countsMatch && cloud.rows.length === EXPECTED_TOTAL && writes.every(w => w.startsWith('POST ')) && writes.length === EXPECTED_TOTAL, JSON.stringify({ byTool, writes: writes.length, other: writes.filter(w => !w.startsWith('POST ')) }));
+    {   // the shared class roster: one class per old source, under ids computed from the old data, with no time stamp
+      const cls = cloud.rows.filter(r => r.tool === 'Classes' && r.kind === 'class'), by = {};
+      cls.forEach(r => { by[r.name.replace(/^nt_.*/, 'nt') + ':' + r.data.name] = r.data.students.length; });
+      const cardNamesClasses = !card || card.lines.filter(l => /Class lists|רשימות כיתה/.test(l)).length !== 2;   // the Dashboard's and Name Tags' lines only
+      check('2: the old rosters and lists went up as four classes (the Dashboard\'s keep their ids, the lists get computed ones), none of them stamped, none listed on the card as a second copy',
+        canon(by) === canon({ 'a_0:Kitah Alef': 2, 'a_1:Kitah Bet': 1, 'nt:Kitah Alef': 2, 'nt:Gan': 1 }) && cls.every(r => !('updated' in r.data) && !('created' in r.data) && r.data.students.every(st => !st.t)) && !cloud.find('retired', 'default', 'Classes') && !cardNamesClasses && cloud.duplicates().length === 0,
+        JSON.stringify({ by, card: card && card.lines, dup: cloud.duplicates() }));
+    }
     check('2: the status line reports nothing skipped, and the account is marked hydrated on this device', !!st && !st.error && !/Couldn|לא ניתן/.test(st.text) && !!(m2.hydrated || {})[UID] && !!(m2.users || {})[UID], JSON.stringify({ st, hydrated: (m2.hydrated || {})[UID] }));
     await page.screenshot({ path: path.join(SHOTS, '2-A-uploaded.png') });
     dumpA = await dump(page);
@@ -559,6 +584,10 @@ try {
     const synced = REG.filter(e => e.lsKey).map(e => e.lsKey).concat([...suiteKeys]);
     const untouched = synced.filter(k => dumpA[k] === dumpB[k]);
     console.log('  4: keys byte-identical on both devices: ' + untouched.length + ' of ' + new Set(synced).size + ' synced keys');
+    const ca = JSON.parse(dumpA.ivritSuite_classes || 'null'), cb = JSON.parse(dumpB.ivritSuite_classes || 'null');
+    const inCloud = {}; cloud.rows.filter(r => r.tool === 'Classes' && r.kind === 'class').forEach(r => { inCloud[r.name] = r.data; });
+    check('4: the shared classes are the same on A, on B and in the account (compared key-sorted), and neither device rewrote an old key to make them', !!ca && !!cb && canon(ca.classes) === canon(cb.classes) && canon(ca.classes) === canon(inCloud) && canon(JSON.parse(dumpA.hebrewNameTags_lists)) === canon(JSON.parse(dumpB.hebrewNameTags_lists)) && dumpA.hebrewNameTags_lists === A_DATA.hebrewNameTags_lists,
+      JSON.stringify({ a: ca && Object.keys(ca.classes), b: cb && Object.keys(cb.classes), cloud: Object.keys(inCloud) }));
   }
   // ---- 5. round trip B → A: four changes through the pages' own functions, each up by itself ----------------
   {
@@ -691,7 +720,7 @@ try {
     errC.push(...errors);
     const w0 = cloud.writesSince(before).map(FakeCloud.label);
     const afterHydrate = await hub.evaluate(() => { const s = JSON.parse(localStorage.getItem('hebrewDashboard_settings')); return { location: s.location, zoom: s.zoomLevel, rosters: Object.keys(s.rosters).sort() }; });
-    check('8: the third device\'s own class was the one extra on the card and went up with Add; the account\'s city landed over its own, the zoom stayed', !!card && card.lines.length === 1 && same(w0, ['POST Dashboard/roster/c_1']) && afterHydrate.location === 'Haifa, Israel' && afterHydrate.zoom === 130 && same(afterHydrate.rosters, ['a_0', 'c_1']), JSON.stringify({ card, w0, afterHydrate }));
+    check('8: the third device\'s own class was the one extra on the card (once: its shared-roster copy is made after the Add, never offered beside it) and went up with Add; the account\'s city landed over its own, the zoom stayed', !!card && card.lines.length === 1 && same(w0.slice().sort(), ['POST Classes/class/c_1', 'POST Dashboard/roster/c_1']) && afterHydrate.location === 'Haifa, Israel' && afterHydrate.zoom === 130 && same(afterHydrate.rosters, ['a_0', 'c_1']), JSON.stringify({ card, w0, afterHydrate }));
     const at = cloud.log.length;
     const r = await hub.evaluate(async (text) => {
       window.__alerts = []; window.alert = (m) => window.__alerts.push(String(m));
@@ -850,6 +879,202 @@ try {
     check('11: control — on a device the previous site never knew this account, the card still asks first', !!ctl.card && ctl.errors.length === 0, JSON.stringify({ card: ctl.card, errors: ctl.errors }));
     await ctl.page.close();
     await ctxF.close();
+  }
+  // ---- 12. the shared class roster across devices: one class each, nothing doubled, nothing brought back -------
+  {
+    const classRows = (c) => c.rows.filter(r => r.tool === 'Classes' && r.kind === 'class');
+    const viewOf = (page) => page.evaluate(() => ({ view: IvritClasses.list().map(c => [c.id, c.students.length, c.stored]), raw: localStorage.getItem('ivritSuite_classes') }));
+    const classesOn = (page) => page.evaluate(() => (JSON.parse(localStorage.getItem('ivritSuite_classes') || '{"classes":{}}').classes));
+    const err12 = [];
+    // 12a. a roster and a list that are one class (same name, the same students one for one) go up as ONE class;
+    //      a second device holding only the roster adds nothing
+    {
+      const R = { rosters: { r_0: { name: 'Kitah Gimel', names: ['Noa', 'Eitan'] } }, activeRosterId: 'r_0' };
+      const L = { 'Kitah Gimel': { v: 1, rows: [{ he: 'נֹעָה', en: 'Noa' }, { he: '', en: 'Eitan', tr: 'Eytan' }], extra: 'Room 7' } };
+      const c = new FakeCloud([]);
+      const ctx1 = await openContext(browser, c, withSession({ hebrewDashboard_settings: J(R), hebrewNameTags_lists: J(L) }), { name: 'R1' });
+      const p1 = await openPage(ctx1, 'index.html', { card: 'add' });
+      const cls = c.find('class', 'r_0', 'Classes'), ret = c.find('retired', 'default', 'Classes');
+      check('12a: a roster and a list that are one class went up as ONE class under the roster\'s id — the list\'s Hebrew name, transliteration and extra line filled in — and the list\'s id is recorded so no device makes it a class again',
+        !!p1.card && p1.card.lines.length === 2 && classRows(c).length === 1 && !!cls && same(cls.data.students.map(x => [x.he, x.en, x.tr || '']), [['נֹעָה', 'Noa', ''], ['', 'Eitan', 'Eytan']]) && cls.data.extra === 'Room 7'
+        && !!ret && Object.keys(ret.data.retired).length === 1 && Object.values(ret.data.retired)[0] === 1 && !('classes' in ret.data) && c.duplicates().length === 0,
+        JSON.stringify({ card: p1.card, classes: classRows(c).map(r => r.name), cls: cls && cls.data, ret: ret && ret.data }));
+      err12.push(...p1.errors); await p1.page.close();
+      const ctx2 = await openContext(browser, c, withSession({ hebrewDashboard_settings: J(R) }), { name: 'R2' });
+      const at = c.log.length;
+      const p2 = await openPage(ctx2, 'index.html', { card: 'add' });
+      const w2 = c.writesSince(at).map(FakeCloud.label), v2 = await viewOf(p2.page), l2 = await classesOn(p2.page);
+      check('12a: a second device that holds only the roster shows the one class with everything the list added, and sends nothing (no card, no write)',
+        !p2.card && w2.length === 0 && same(v2.view, [['r_0', 2, true]]) && canon(l2.r_0) === canon(cls.data) && classRows(c).length === 1, JSON.stringify({ card: p2.card, w2, v2: v2.view }));
+      err12.push(...p2.errors); await p2.page.close();
+      await ctx1.close(); await ctx2.close();
+    }
+    // 12b. two devices with the same old class, both offline with a stored session, then both online at once
+    const c13 = new FakeCloud([]);
+    const S = { rosters: { s_0: { name: 'Kitah Dalet', names: ['Ari', 'דָּוִד / David', 'Maya (aide)'] } }, activeRosterId: 's_0' };
+    const cx = await openContext(browser, c13, withSession({ hebrewDashboard_settings: J(S) }), { name: 'S1' });
+    const cy = await openContext(browser, c13, withSession({ hebrewDashboard_settings: J(S) }), { name: 'S2' });
+    {
+      cx.gate.offline = cy.gate.offline = true;
+      const offline = async (ctx) => {
+        const page = await ctx.newPage();
+        page.on('pageerror', e => err12.push('offline: ' + String(e && e.message || e)));
+        await page.goto(BASE + '/index.html', { waitUntil: 'domcontentloaded' });
+        await page.waitForFunction(() => window.IvritClasses && window.IvritSaves && document.readyState === 'complete', null, { timeout: 25000, polling: 100 });
+        await page.waitForTimeout(2500);
+        const r = await viewOf(page);
+        await page.close();
+        return r;
+      };
+      const ox = await offline(cx), oy = await offline(cy);
+      check('12b: offline with a stored session, each device still shows its class (read from the old roster) and writes nothing — not the class store, not the account',
+        same(ox.view, [['s_0', 3, false]]) && ox.raw === null && same(oy.view, [['s_0', 3, false]]) && oy.raw === null && c13.rows.length === 0, JSON.stringify({ ox, oy, rows: c13.rows.length }));
+      cx.gate.offline = cy.gate.offline = false;
+      const [px, py] = await Promise.all([openPage(cx, 'index.html', { card: 'add' }), openPage(cy, 'index.html', { card: 'add' })]);
+      err12.push(...px.errors, ...py.errors); await px.page.close(); await py.page.close();
+      // one more load each lets the two settle on what the other sent (reported, not judged) …
+      const settleW = [];
+      for (const ctx of [cx, cy]) { const at = c13.log.length; const p = await openPage(ctx, 'index.html'); settleW.push(c13.writesSince(at).map(FakeCloud.label)); err12.push(...p.errors); await p.page.close(); }
+      console.log('  12b: writes while the two devices settled: ' + settleW.map(w => w.length ? w.join('; ') : 'none').join(' | '));
+      // … and then four loads, A B A B, must send nothing at all: nothing trades writes
+      const round = [], local = [];
+      for (const ctx of [cx, cy, cx, cy]) { const at = c13.log.length; const p = await openPage(ctx, 'index.html'); round.push(c13.writesSince(at).map(FakeCloud.label)); local.push(await classesOn(p.page)); err12.push(...p.errors); await p.page.close(); }
+      const row = c13.find('class', 's_0', 'Classes');
+      check('12b: both online at once → the account holds the class ONCE (one row, three students, nothing doubled), both devices hold exactly that, and four more loads — A, B, A, B — send nothing',
+        classRows(c13).length === 1 && !!row && same(row.data.students.map(x => [x.he, x.en]), [['', 'Ari'], ['דָּוִד', 'David'], ['', 'Maya (aide)']]) && c13.duplicates().length === 0
+        && round.every(w => w.length === 0) && local.every(l => canon(l) === canon({ s_0: row.data })),
+        JSON.stringify({ rows: c13.rows.map(r => r.tool + '/' + r.kind + '/' + r.name), dup: c13.duplicates(), round, students: row && row.data.students }));
+    }
+    // 12c. a class deleted on one device: gone on the other, and a device that never held it does not bring it back
+    {
+      const p = await openPage(cx, 'index.html');
+      const at = c13.log.length;
+      await p.page.evaluate(() => IvritClasses.deleteClass('s_0'));
+      const sent = await waitLog(c13, at, e => e.m === 'DELETE' && hasRow(e, 'Classes/class/s_0')) && await waitLog(c13, at, e => (e.m === 'POST' || e.m === 'PATCH') && hasRow(e, 'Classes/retired/default'));
+      await hydrateAndSettle(p.page, ALL_TOOLS);
+      err12.push(...p.errors); await p.page.close();
+      const at2 = c13.log.length;
+      const q = await openPage(cy, 'index.html');
+      const vy = await viewOf(q.page), wy = c13.writesSince(at2).map(FakeCloud.label);
+      const bin = await q.page.evaluate(() => { const b = JSON.parse(localStorage.getItem('ivritSuite_removedByAccount') || '{}'); return Object.values(b.users || {}).flatMap(u => Object.values(u)).map(x => x.tool + '/' + x.kind + '/' + x.name); });
+      err12.push(...q.errors); await q.page.close();
+      const cz = await openContext(browser, c13, withSession({}), { name: 'S3' });
+      const at3 = c13.log.length;
+      const z = await openPage(cz, 'index.html', { card: 'add' });
+      const vz = await viewOf(z.page), wz = c13.writesSince(at3).map(FakeCloud.label);
+      const rosterLanded = await z.page.evaluate(() => Object.keys((JSON.parse(localStorage.getItem('hebrewDashboard_settings') || '{}').rosters) || {}));
+      err12.push(...z.errors); await z.page.close(); await cz.close();
+      check('12c: a class deleted on one device went up as one DELETE and a record of its id; the other device lost it (a copy kept in its recovery bin) and sent nothing back',
+        sent && classRows(c13).length === 0 && !!c13.find('retired', 'default', 'Classes') && vy.view.length === 0 && wy.length === 0 && bin.includes('Classes/class/s_0'), JSON.stringify({ sent, vy: vy.view, wy, bin }));
+      check('12c: a fresh device downloads the old roster (still in the account) and does NOT make the deleted class again: nothing shown, nothing sent',
+        !z.card && same(rosterLanded, ['s_0']) && vz.view.length === 0 && wz.length === 0 && classRows(c13).length === 0, JSON.stringify({ card: z.card, rosterLanded, vz: vz.view, wz }));
+    }
+    await cx.close(); await cy.close();
+    // 12d. a deleted student, a backup that restores her, an edit made on the old Dashboard page, a class changed in two places
+    {
+      const c = new FakeCloud([]);
+      const U = { rosters: { u_0: { name: 'Kitah Hey', names: ['Noa', 'Eitan'] } }, activeRosterId: 'u_0' };
+      const ce = await openContext(browser, c, withSession({ hebrewDashboard_settings: J(U) }), { name: 'E1' });
+      const e1 = await openPage(ce, 'index.html', { card: 'add' });
+      const bk = await e1.page.evaluate(() => window.IvritSaves.bundleAll().then(x => x.file));
+      const noa = c.find('class', 'u_0', 'Classes').data.students.find(x => x.en === 'Noa').id;
+      let at = c.log.length;
+      await e1.page.evaluate((sid) => IvritClasses.removeStudent('u_0', sid), noa);
+      const patched = await waitLog(c, at, e => e.m === 'PATCH' && hasRow(e, 'Classes/class/u_0'));
+      await hydrateAndSettle(e1.page, ALL_TOOLS);
+      const afterDel = JSON.parse(JSON.stringify(c.find('class', 'u_0', 'Classes').data));
+      check('12d: a student removed in the roster went up as one update of her class: she is out of the list and kept in its removed-students record (her name, for Restore)',
+        patched && bk.partial === true && !!(bk.data.classes && bk.data.classes.classes && bk.data.classes.classes.u_0) && same(afterDel.students.map(x => x.en), ['Eitan']) && !!afterDel.gone && afterDel.gone[noa] && afterDel.gone[noa].en === 'Noa',
+        JSON.stringify({ patched, backupClasses: bk.data.classes && Object.keys(bk.data.classes.classes || {}), afterDel }));
+      at = c.log.length;
+      const asked = await e1.page.evaluate(async (text) => { window.alert = () => {}; window.__asked = false; ivritAskMode = () => { window.__asked = true; return Promise.resolve('merge'); }; await ivritRestore(text, 'account.ivrit'); return window.__asked; }, J(bk));
+      await hydrateAndSettle(e1.page, ALL_TOOLS);
+      const afterRestore = c.find('class', 'u_0', 'Classes').data, wr = c.writesSince(at).map(FakeCloud.label);
+      check('12d: the account backup taken before brings her back — the same student (her id), once, no question asked, one update of the class and no row twice',
+        asked === false && same(afterRestore.students.map(x => x.en).sort(), ['Eitan', 'Noa']) && afterRestore.students.find(x => x.en === 'Noa').id === noa && !(afterRestore.gone && afterRestore.gone[noa]) && wr.filter(w => /Classes\/class/.test(w)).length === 1 && wr.every(w => !w.startsWith('POST ') && !w.startsWith('DELETE ')) && c.duplicates().length === 0,
+        JSON.stringify({ asked, students: afterRestore.students, wr }));
+      err12.push(...e1.errors); await e1.page.close();
+      // the Dashboard page of this build still edits its own roster (the page that will read the shared classes comes
+      // later): a line it adds reaches the class as exactly one student, and the load after that sends nothing
+      const d = await openPage(ce, 'classroom_dashboard.html');
+      at = c.log.length;
+      await d.page.evaluate(() => { settings.rosters.u_0.names.push('Dan'); saveSettingsToStorage(); });
+      const rosterUp = await waitLog(c, at, e => e.m === 'PATCH' && hasRow(e, 'Dashboard/roster/u_0'));
+      await hydrateAndSettle(d.page, TOOLS_OF['classroom_dashboard.html']);
+      err12.push(...d.errors); await d.page.close();
+      at = c.log.length;
+      const h1 = await openPage(ce, 'index.html');
+      const w1 = c.writesSince(at).map(FakeCloud.label), after = c.find('class', 'u_0', 'Classes').data.students.map(x => x.en);
+      err12.push(...h1.errors); await h1.page.close();
+      at = c.log.length;
+      const h2 = await openPage(ce, 'index.html');
+      const w2 = c.writesSince(at).map(FakeCloud.label);
+      check('12d: a name added on the old Dashboard page reached the class as exactly one student (one update), nothing else was imported again, and the next load sent nothing',
+        rosterUp && same(w1, ['PATCH Classes/class/u_0']) && same(after.slice().sort(), ['Dan', 'Eitan', 'Noa']) && w2.length === 0, JSON.stringify({ rosterUp, w1, after, w2 }));
+      // a class changed in two places: this device corrects a name while its connection is down, another device adds
+      // the class's extra line; back online, the home page merges the two (no dialog) and the account holds both
+      ce.gate.offline = true;
+      const eitan = c.find('class', 'u_0', 'Classes').data.students.find(x => x.en === 'Eitan').id;
+      await h2.page.evaluate((sid) => IvritClasses.setStudentField('u_0', sid, 'en', 'Eytan'), eitan);
+      await h2.page.waitForTimeout(2600);   // its own send is tried and refused
+      err12.push(...h2.errors); await h2.page.close();
+      const ce2 = await openContext(browser, c, withSession({}), { name: 'E2' });
+      const o = await openPage(ce2, 'index.html', { card: 'add' });
+      at = c.log.length;
+      await o.page.evaluate(() => IvritClasses.setClassExtra('u_0', 'Room 9'));
+      const extraUp = await waitLog(c, at, e => e.m === 'PATCH' && hasRow(e, 'Classes/class/u_0'));
+      await hydrateAndSettle(o.page, ALL_TOOLS);
+      err12.push(...o.errors); await o.page.close();
+      await new Promise(r => setTimeout(r, 400));
+      ce.gate.offline = false;
+      at = c.log.length;
+      const m = await openPage(ce, 'index.html');
+      const overlays = await m.page.evaluate(() => document.querySelectorAll('.ivsav-overlay').length);
+      const mergedRow = c.find('class', 'u_0', 'Classes').data, localM = (await classesOn(m.page)).u_0;
+      err12.push(...m.errors); await m.page.close();
+      at = c.log.length;
+      const o2 = await openPage(ce2, 'index.html');
+      const back = c.writesSince(at).map(FakeCloud.label), localO = (await classesOn(o2.page)).u_0;
+      err12.push(...o2.errors); await o2.page.close();
+      check('12d: a class changed on two devices was merged on the home page with no dialog — the corrected name and the extra line are both in the account and on both devices, three students still, and the other device sent nothing back',
+        extraUp && overlays === 0 && mergedRow.extra === 'Room 9' && mergedRow.students.find(x => x.id === eitan).en === 'Eytan' && mergedRow.students.length === 3 && canon(localM) === canon(mergedRow) && canon(localO) === canon(mergedRow) && back.length === 0 && c.duplicates().length === 0,
+        JSON.stringify({ extraUp, overlays, mergedRow, back }));
+      // a button sign-out removes the account's classes from the device with the rest
+      const so = await openPage(ce2, 'index.html');
+      const before = await viewOf(so.page);
+      await so.page.evaluate(() => { window.confirm = () => true; return IvritAccount.signOut(); });
+      await so.page.waitForFunction(() => !localStorage.getItem('ivritSuite_classes') || Object.keys((JSON.parse(localStorage.getItem('ivritSuite_classes')).classes) || {}).length === 0, null, { timeout: 20000, polling: 100 }).catch(() => {});
+      const left = await so.page.evaluate(() => ({ classes: Object.keys((JSON.parse(localStorage.getItem('ivritSuite_classes') || '{}').classes) || {}), rosters: Object.keys((JSON.parse(localStorage.getItem('hebrewDashboard_settings') || '{}').rosters) || {}) }));
+      err12.push(...so.errors); await so.page.close();
+      check('12d: signing out with the account button took the account\'s classes off the device (the shared class and the old roster alike); the account still holds them',
+        before.view.length === 1 && left.classes.length === 0 && left.rosters.length === 0 && !!c.find('class', 'u_0', 'Classes'), JSON.stringify({ before: before.view, left }));
+      await ce.close(); await ce2.close();
+    }
+    // 12e. the account does not know the tool yet (migration 0013 not applied: the server answers every Classes
+    //       insert with 23514): nothing is lost on the device, and the class goes up by itself once it is applied
+    {
+      const c = new FakeCloud([]);
+      c.refuse = (m, body) => (m === 'POST' && body && body.tool === 'Classes') ? { status: 400, body: { code: '23514', details: null, hint: null, message: 'new row for relation "saves" violates check constraint "saves_tool_check"' } } : null;
+      const ctx = await openContext(browser, c, withSession({ hebrewDashboard_settings: J({ rosters: { w_0: { name: 'Kitah Vav', names: ['Tamar'] } }, activeRosterId: 'w_0' }) }), { name: 'W' });
+      const p = await openPage(ctx, 'index.html', { card: 'add' });
+      await waitLog(c, 0, e => e.refused, WRITE_WITHIN_MS);
+      await hydrateAndSettle(p.page, ALL_TOOLS);
+      const v1 = await viewOf(p.page), refusedN = c.log.filter(e => e.refused).length;
+      err12.push(...p.errors); await p.page.close();
+      const p2 = await openPage(ctx, 'index.html');
+      const v2 = await viewOf(p2.page);
+      err12.push(...p2.errors); await p2.page.close();
+      check('12e: while the account refuses the tool (23514, migration 0013 not applied) the class stays on the device, shown and whole, the old roster went up as usual, and no page error',
+        refusedN >= 1 && classRows(c).length === 0 && !!c.find('roster', 'w_0', 'Dashboard') && same(v1.view, [['w_0', 1, true]]) && same(v2.view, [['w_0', 1, true]]), JSON.stringify({ refusedN, v1: v1.view, v2: v2.view }));
+      c.refuse = null;
+      const at = c.log.length;
+      const p3 = await openPage(ctx, 'index.html');
+      const w3 = c.writesSince(at).map(FakeCloud.label);
+      err12.push(...p3.errors); await p3.page.close();
+      check('12e: once the account accepts the tool, the next load sends the class up by itself (one insert)', same(w3, ['POST Classes/class/w_0']) && classRows(c).length === 1, JSON.stringify({ w3 }));
+      await ctx.close();
+    }
+    check('12: 0 pageerrors across the shared-roster stories', err12.length === 0, err12.join(' | '));
   }
   const profileCalls = cloud.log.filter(e => e.table === 'profiles').length, unexpected = cloud.log.filter(e => e.unexpected).map(e => e.m + ' ' + e.path);
   console.log('  fake cloud: ' + cloud.log.length + ' requests, ' + profileCalls + ' to the missing profiles table' + (unexpected.length ? ', unexpected: ' + unexpected.join(', ') : ''));

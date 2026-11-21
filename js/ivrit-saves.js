@@ -78,7 +78,7 @@
   'use strict';
 
   /* ---------- constants ---------- */
-  var TOOLS = ['Suite', 'Worksheet', 'FlashCards', 'Dictionary', 'TorahTrainer', 'TropeTutor', 'Dashboard', 'LetterLearner', 'EmojiTorah', 'NameTags'];
+  var TOOLS = ['Suite', 'Worksheet', 'FlashCards', 'Dictionary', 'TorahTrainer', 'TropeTutor', 'Classes', 'Dashboard', 'LetterLearner', 'EmojiTorah', 'NameTags'];   // Classes before the Dashboard and Name Tags: a hydration runs in this order, and the shared classes land before the old rosters and lists are looked at
   var KIND_RE = /^[A-Za-z]{1,32}$/;
   var SHAPES = ['map', 'mapIn', 'single', 'tree', 'scalar'];
   var MERGES = ['item', 'assign', 'deepMax', 'max', 'page'];
@@ -354,7 +354,19 @@
     { tool: 'NameTags', kind: 'settings', lsKey: 'hebrewNameTags_settings', shape: 'single', merge: 'assign', ivritKey: 'nameTagSettings', label: 'shared.cloud.kind_settings' },
     { tool: 'NameTags', kind: 'list', lsKey: 'hebrewNameTags_lists', shape: 'map', merge: 'item', ivritKey: 'nameTagLists', label: 'shared.cloud.kind_roster' },
     { tool: 'Dashboard', kind: 'roster', lsKey: 'hebrewDashboard_settings', shape: 'mapIn', path: 'rosters', nameField: 'name', merge: 'page', ivritKey: 'dashboardRosters', label: 'shared.cloud.kind_roster',
-      skipUpload: function (name, value) { return isUntouchedDefaultClass(value); } }
+      skipUpload: function (name, value) { return isUntouchedDefaultClass(value); } },
+    // the shared class roster (js/ivrit-classes.js, the only writer of the key; docs/reference/class-roster.md) —
+    // one row per class, named by the class id and merged by that file's pure mergeClass (students unioned by id,
+    // the later edit of a field wins, a deleted student stays deleted), and one small row naming the classes a
+    // teacher deleted, so no device re-creates one from its old Dashboard roster or Name Tags list. The record
+    // merges by the built-in deepMax (the later stamp of each id), so every page resolves it; an empty one is
+    // never sent. Two entries on one key, as the Dashboard's settings and rosters are — and in the same order, the
+    // whole-key row first: rows land in registry order, and a class landing first would create the key under the
+    // record's download ("a local item appeared meanwhile"). Every roster page reaches the tool with
+    // alsoPull: ['Classes'] and hands attach() merges.class and a re-read hook.
+    { tool: 'Classes', kind: 'retired', lsKey: 'ivritSuite_classes', shape: 'single', merge: 'deepMax', omit: ['classes'], ivritKey: 'classesRetired', label: 'shared.cloud.kind_class_removed',
+      skipUpload: function (name, value) { return !isPlainObject(value) || !isPlainObject(value.retired) || !Object.keys(value.retired).length; } },
+    { tool: 'Classes', kind: 'class', lsKey: 'ivritSuite_classes', shape: 'mapIn', path: 'classes', nameField: 'name', envelope: { v: 1 }, merge: 'page', ivritKey: 'classes', label: 'shared.cloud.kind_roster' }
   ];
   var extraEntries = [];   // entries a page registered through attach({ entries }) — the test harness
 
@@ -393,7 +405,7 @@
                      Dictionary: ['home.card.dictionary.name', 'Hebrew Word Lookup'], TorahTrainer: ['home.card.torah.name', 'Torah Trainer'],
                      TropeTutor: ['home.card.trope.name', 'Trope Tutor'], Dashboard: ['home.card.dashboard.name', 'Hebrew Classroom Dashboard'],
                      LetterLearner: ['shared.cloud.tool_letterlearner', 'Letter Learner'], EmojiTorah: ['shared.cloud.tool_emojitorah', 'Parsha Emojis'],
-                     NameTags: ['shared.cloud.tool_nametags', 'Name Tags'],
+                     NameTags: ['shared.cloud.tool_nametags', 'Name Tags'], Classes: ['shared.cloud.tool_classes', 'Class lists'],
                      Suite: ['shared.cloud.tool_suite', 'IvritSuite'] };
   // The dashboard mints one empty class named "My class" on every fresh device (the literal, in both
   // languages, plus the localized default); untouched, it is a seed, not a class list worth a row.
