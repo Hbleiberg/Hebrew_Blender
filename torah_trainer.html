@@ -689,6 +689,10 @@ body.dark .tt-looping { background: rgba(224,168,50,0.14); }
   -webkit-box-decoration-break: clone; box-decoration-break: clone;
 }
 body.dark .tt-bulk-selected { background: rgba(224,168,50,0.16); }
+/* Both rings are drawn at the row's own edge, where its verse number begins: they ran through the number's first
+   digit (0px from its ink). The plate stands 8px out instead, its padding cancelling its margin, so nothing in the row
+   moves. The bible page's wrapped spans keep theirs: an inline span's padding would shift its line's words. */
+.tt-verse.tt-looping, .tt-verse.tt-bulk-selected, .tt-grid-row.tt-looping, .tt-grid-row.tt-bulk-selected { padding-inline:8px; margin-inline:-8px; }
 /* That gold tint composites over the dark plate to rgb(54,50,43), which drops --muted
    (#8a94a8) metadata to 4.18:1 at 11.2px — under the 4.5:1 small text needs, and only
    once a verse is selected. Same lighter grey the generator already uses for small muted
