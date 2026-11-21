@@ -1,9 +1,10 @@
-# The shared class roster (`ivritSuite_classes`) — DRAFT, awaiting approval
+# The shared class roster (`ivritSuite_classes`)
 
-> **Status: a design, not yet built.** Nothing described here exists in the code. Phase 1 starts only after
-> the maintainer approves this file on its pull request; it is then rewritten in the present tense as the
-> reference for the finished system. Binding rules live in `CLAUDE.md`; keep this file free of session ids,
-> dates, digests and line numbers.
+> **Status: half built.** Phase 1 exists — `js/ivrit-classes.js` (the store, the merge, the reading of old
+> data, file import, the editor), the two account rows, the hub's wiring, the strings and the tests. **No tool
+> page reads the shared classes yet** (Phase 2, §13): the Dashboard, Name Tags and Flash Cards still use their
+> own keys, and the editor has no button that opens it. Sections 6 and 7.7 describe Phase 2 and are marked so.
+> Binding rules live in `CLAUDE.md`; keep this file free of session ids, dates, digests and line numbers.
 
 One class and its students, entered once and used by the Classroom Dashboard, Name Tags, Flash Cards and
 the Torah Trainer's reading assignments. Modeled on the suite-wide word lists (`ivritSuite_wordLists`).
@@ -15,7 +16,7 @@ the Torah Trainer's reading assignments. Modeled on the suite-wide word lists (`
 | Where the shared code lives | One file, `js/ivrit-classes.js` (data, the editor and its CSS), loaded by each carrier and precached — not a pasted `═══` block | One copy of the code that handles student names; Node can load it for the migration tests; no sha check across five carriers. The repo already ships shared engines this way (`js/trope-staff.js`, `js/coloring-art.js`) |
 | Which account tool the rows sync under | A new tool value, `Classes` | `Suite` is skipped by the sign-out removal on purpose, so student names would stay on a shared device; an existing tool's kinds would reach other pages' re-read hooks under names they already use (`settings`). Costs migration `0013` (accounts rule 7) |
 | Mirrors of the old keys | None. New pages never write `hebrewDashboard_settings.rosters` or `hebrewNameTags_lists`, except to remove what a teacher deleted (§7.7) | Writing them doubles classes in two measured ways: the Dashboard saves its whole settings blob from memory, so an open Dashboard tab overwrites a mirror another page wrote and uploads the stale class; and Name Tags lists sync as keep-both items, so two devices' mirrors meeting in the account make a "(from another device)" list |
-| An edit made on an old cached page | Imported, add-only: new students added, blanks filled, nothing removed or replaced (§7.6) | Nothing typed on an old page is lost. Accepted cost: a student deleted on a new page can come back if an old page still lists them |
+| An edit made on an old cached page | Imported, add-only: new students added, blanks filled, nothing removed or replaced (§7.5) | Nothing typed on an old page is lost. Accepted cost: a student deleted on a new page can come back if an old page still lists them |
 
 ## 2. Where the code differs from the brief
 
@@ -99,18 +100,21 @@ slow clock can still make an edit that counts as later than what it is editing.
 ## 4. The account rows
 
 Two rows in `IVRIT_SYNC_REGISTRY`, both under the new tool `Classes`, which goes **before** `Dashboard` in
-`var TOOLS` (a hydration runs in that order, so the classes land before the old rosters are looked at):
+`var TOOLS` (a hydration runs in that order, so the classes land before the old rosters are looked at). The
+whole-key row is listed **first**, as the Dashboard's settings row is listed before its rosters: rows land in
+registry order, and a class landing first would create the key under the record's own download.
 
 ```js
-{ tool: 'Classes', kind: 'class', lsKey: 'ivritSuite_classes', shape: 'mapIn', path: 'classes', nameField: 'name',
-  envelope: { v: 1 }, merge: 'page', ivritKey: 'classes', label: 'shared.cloud.kind_roster' },
 { tool: 'Classes', kind: 'retired', lsKey: 'ivritSuite_classes', shape: 'single', merge: 'deepMax', omit: ['classes'],
-  ivritKey: 'classesRetired', label: 'shared.cloud.kind_class_removed' }
+  ivritKey: 'classesRetired', label: 'shared.cloud.kind_class_removed', skipUpload: /* no class was ever deleted */ },
+{ tool: 'Classes', kind: 'class', lsKey: 'ivritSuite_classes', shape: 'mapIn', path: 'classes', nameField: 'name',
+  envelope: { v: 1 }, merge: 'page', ivritKey: 'classes', label: 'shared.cloud.kind_roster' }
 ```
 
 Two entries on one key is the Dashboard's own pattern (its settings row omits the rosters its roster rows
 carry). The `retired` row uses the module's built-in `deepMax`, so every page — the hub included — can
-resolve it with no page code.
+resolve it with no page code; an empty record is never sent (`skipUpload`), and the store never holds an empty
+`retired` (it would read as a change to that row).
 
 - **One row per class**, named by the class id, labelled by its name.
 - **A new `saves.tool` value needs a migration** (accounts rule 7):
@@ -121,10 +125,12 @@ resolve it with no page code.
 - **Every roster page** adds `alsoPull: ['Classes']`, `merges: { class: IvritClasses.mergeClass }` and an
   `onLocalChanged` branch for `class` / `retired` that tells the module to re-read. The hub passes the merge
   too, so a conflict it meets is resolved there rather than left.
-- **Changes to `js/ivrit-saves.js`:** `TOOLS`, `TOOL_NAMES`, the two rows, and one behavior: a tool reached
-  through `alsoPull` also takes the attaching page's `editing` hook (today it takes `merges`,
-  `onLocalChanged`, `paused` and `hydrate`), so a class landing from another tab waits while the editor has a
-  cell focused. Nothing else in the module changes.
+- **Changes to `js/ivrit-saves.js`:** `TOOLS`, `TOOL_NAMES` and the two rows — nothing else. No hook was
+  added for a tool reached through `alsoPull`: the editor redraws around whatever holds the focus, keeping
+  what is typed but not yet saved, so a class landing from another tab or device needs no waiting.
+- **While `0013` is not applied** the server refuses every `Classes` insert with `23514`. The class stays
+  whole on the device and goes up by itself at the first load after the migration (proved by the golden
+  replay's step 12e).
 
 ### `mergeClass(a, b)` — pure, lossless, never a dialog
 
@@ -138,8 +144,8 @@ is called "mine", and merging a copy with itself changes nothing.
   on purpose is not undone.
 - **A deleted student** (`gone`) stays deleted unless the other copy edited that student **after** the
   deletion: the later human action wins (accounts rule 7).
-- **Order:** the copy with the later `t.order` gives the order; students only the other copy has are
-  appended.
+- **Order:** the copy whose students were reordered later (`t.students`) gives the order; students only the
+  other copy has are appended. (`t.order` stamps the class's own place among the classes.)
 - **`created`** is the earlier, **`updated`** the later; **unknown fields** survive.
 
 ### Deletions
@@ -166,9 +172,9 @@ rule 2 is untouched) and exposes `window.IvritClasses`:
 | `list()`, `get(id)`, `onChange(fn)` | What every tool reads. `list()` returns the stored classes plus the not-yet-migrated old ones (§7.2). `onChange` fires on this page's writes, on another tab's (`storage`), and when the page's `onLocalChanged` forwards a landing |
 | Operations (`addClass`, `renameClass`, `setStudentField`, `removeStudent`, `moveStudent`, `setLink`, …) | **Each one re-reads the store, applies one stamped change, and writes.** Nothing holds a whole class in memory and writes it back, so a class another tab or device just sent is never overwritten |
 | `mergeClass` | §4 |
-| The legacy reader | Migration, the fold, the ledger and the delete-only scrub (§7) |
+| The legacy reader | The live view, the copy step (`adopt`), the fold and the add-only import of an old page's edits (§7) |
 | `importFile(data, mode)`, `exportAll()` | `.ivrit` and AllTools (§8) |
-| The CSV code | Name Tags' parser, header table, script sorter, name matcher and add-by-name merge, **moved here unchanged** (`ntParseDelimited`, `NT_HEADERS`, `ntImportRows`, `ntSplitName`, `ntMatchKey`, `ntMergeRows`, the export with its BOM and formula guard); Name Tags then calls them here |
+| The CSV code | Name Tags' parser, header table, script sorter, name matcher and add-by-name merge, **copied here unchanged in behavior** (Name Tags switches to this copy and drops its own in Phase 2) (`ntParseDelimited`, `NT_HEADERS`, `ntImportRows`, `ntSplitName`, `ntMatchKey`, `ntMergeRows`, the export with its BOM and formula guard) |
 | `openEditor({ classId, opener, host })` | The one roster editor, below |
 
 ### The editor
@@ -204,7 +210,7 @@ panel, Flash Cards' profile manager.
 - **Untrusted data:** names arrive from other devices and from files. Storage is read with a prototype-safe
   parser and merged without `Object.assign`; nothing reaches `innerHTML`.
 
-## 6. What each tool keeps for itself
+## 6. What each tool keeps for itself (Phase 2)
 
 Everything below is keyed by `classId` / `studentId`, never by name.
 
@@ -302,16 +308,18 @@ copied; and a copy is made only once the account has been heard from.**
 computed with the ids above and never written. So the day the update arrives, every tool shows every class —
 signed out, offline with a stored session, in a classroom with no internet — without a single write.
 
-An old source is **copied into the store** only when:
+An old source is **copied into the store** (`adopt`) only when:
 
-1. **the account has just been heard from** — `Classes` hydrated successfully in this page load — and the
-   source is not already a class there and not in `retired`; or
+1. **the account has just been heard from** — `Classes` hydrated successfully in this page load — **and so was
+   the old key's own tool** (`Dashboard` for the rosters, `NameTags` for the lists; a page that did not hear a
+   tool's rows may be holding a stale copy of them), and the source is not already a class and not in
+   `retired`; or
 2. **a person edits that class** in the editor (that one class is copied, stamped, and edited).
 
 A signed-out device therefore runs on the live view until a class is edited, and its first sign-in card
-shows its old lists once, not twice.
+shows its old lists once, not twice (the classes are made after the card's answer, never offered on it).
 
-*A change from the approved plan:* the plan also copied at load on a signed-out device and needed a new
+*A change from the first plan:* that plan also copied at load on a signed-out device and needed a new
 `IvritSaves.remembers()` to tell the device's own lists from an account's cached ones. The live view makes
 that copy unnecessary, so neither exists.
 
@@ -332,38 +340,41 @@ A roster and a list are the same class when they have **the same name and the sa
 (after trimming, NFC, ignoring nikkud, capitals and spacing — the CSV import's matcher: every name both have
 agrees and they share at least one). Then the roster-id class is the class: it takes the list's Hebrew names,
 transliterations and extra lines wherever its own are blank, and the list's id goes to `retired` with a fixed
-stamp. The rule reads only the two sources, so every device folds the same way; a device holding only one of
-the two simply receives the folded class.
+stamp (`1`, so every device writes the same bytes and any later edit of a class outranks it). The rule reads
+only the two sources, so every device folds the same way; a device holding only one of the two simply
+receives the folded class. A list already a class of its own, or a roster whose class was deleted, is never
+folded.
 
 **A near-match is never merged silently.** Same name but different students: both stay, and a one-time
 notice in the editor names the pair and offers *Merge into…*, which a person confirms.
 
-### 7.5 The ledger
-
-`ivritSuite_classesLegacy` — per device, erase-only, never exported or synced:
-
-```jsonc
-{ "v": 1, "seen": { "dash/<rosterId>": { "lines": { "<exact line>": "<studentId>" } },
-                    "nt/<list name>":  { "rows":  { "<row key>#<n>": "<studentId>" } } },
-  "told": { "<idA>|<idB>": 1 } }          // near-match notices already shown
-```
-
-It records, for each old source, exactly what was last taken from it. It is the base every later comparison
-is made against — the old text is **never re-parsed and re-matched** against the class, which is what would
-turn "David K." into a second student.
-
-### 7.6 An edit made on an old page
+### 7.5 An edit made on an old page
 
 An old tab left open, or a device offline on the old version, still writes the old keys, and those still
-sync between old pages. A new page that finds an old source differing from its ledger imports **only the
-difference, add-only**: a line or row the ledger has not seen is matched against the class by name; a match
-fills blanks, no match adds a student with a computed id; a line that disappeared changes nothing. Then the
-ledger is updated.
+sync between old pages. Every `adopt` therefore looks again at each old source that is already a class and
+takes **only what the class lacks, add-only, by id first**:
 
-Accepted consequences: a name *changed* on an old page arrives as an added student beside the old one, and a
-student deleted on a new page returns if an old page still lists them.
+- a line or row whose computed id is already a student changes nothing but that student's blank fields — so
+  a student renamed in the editor is not doubled by the old line that still spells the old name;
+- one whose computed id is in the class's `gone` list is not added again (deleted here on purpose);
+- anything else is matched by name; a match fills blanks, and only a student matching nobody is added, under
+  the same computed id on every device;
+- a line that disappeared changes nothing.
 
-### 7.7 The delete-only scrub
+Because the ids are computed from the old data, this needs no record of what was imported before, and running
+it on every load writes nothing once the class holds the line. Signed out, it runs at load for classes
+already copied.
+
+Accepted consequences: a name *changed* on an old page arrives as an added student beside the old one; and
+once a list has been folded into its roster (§7.4) its id is retired, so later edits made to that **list** on
+an old page are no longer imported — the roster's are.
+
+### 7.6 The per-device memory
+
+`ivritSuite_classesLegacy` — per device, erase-only, never exported or synced — holds only which near-match
+notices were answered with *Keep both*: `{ "v": 1, "told": { "<idA>|<idB>": 1 } }`.
+
+### 7.7 The delete-only scrub (Phase 2)
 
 A deleted student's name must really leave the account, including the old rows that still hold it. So on the
 page that owns an old key — the Dashboard for its rosters, Name Tags for its lists — the old source of a
@@ -384,20 +395,23 @@ promise otherwise.
 - **A file's `tool` mapping:** the hub's `exportAllSettings`, `importAllSettings`, `eraseAllSettings` and the
   AllTools `IVRIT_CFG.gather` / `apply` register `ivritSuite_classes` under the bundle key `classes`
   (`exportAll()`: the stored classes and the live view together, so a signed-out teacher's backup holds
-  every class). Each roster page's own `IVRIT_CFG` carries the same key. `ivritSuite_classesLegacy` and
-  `hebrewNameTags_activeClass` are erase-only.
+  every class). Each roster page's own `IVRIT_CFG` carries the same key once that page is wired (Phase 2).
+  `ivritSuite_classesLegacy` is erase-only, as `hebrewNameTags_activeClass` will be.
 - **An old `.ivrit` or AllTools file** carrying `dashboardRosters`, `dashboardSettings.rosters` or
-  `nameTagLists` still imports, **straight into the new store**, through the same reader with the same
-  computed ids — so importing a file twice, or on two devices, makes each class once. `flashCardProfiles`
-  import exactly as now.
+  `nameTagLists` still imports into the new store, through the same reader with the same computed ids — so
+  importing a file twice, or on two devices, makes each class once. The hub also still writes those sections
+  into the old keys as it always did (the tool pages read them until Phase 2); the two land on the same ids.
+  `flashCardProfiles` import exactly as now.
 - **A file from this version carries both generations** (the old keys are still on the device). On import,
-  an old section is read only for a source that no class in the file or on the device already stands for.
-- **A restore is a deliberate act:** a student in the file who is in `gone` here comes back, and a class in
-  `retired` comes back, both stamped now. That is why a file import is its own function and not `mergeClass`.
-- **Merge / Replace / fill:** a Merge adds classes and students and fills blanks; a `partial` file (an
-  account backup) only fills what is missing; **only an AllTools Replace replaces the class store** — a
-  single tool's file never wipes classes it did not contain. Signed in, Merge stays the only choice, as
-  everywhere.
+  an old section is read only for a source that no class in the file already stands for.
+- **A restore is a deliberate act, whatever the file:** a student in the file who is in `gone` here comes
+  back (the same student, by id), and a class in `retired` comes back, both stamped now. That is why a file
+  import is its own function and not `mergeClass`. Students are matched by id, then by name; nothing typed is
+  replaced — a backup is older than what it is restored over.
+- **Merge / fill / Replace:** a Merge and a `partial` file (an account backup, `fill`) land the same way —
+  they add classes and students, fill blanks and bring back what was deleted; **only an AllTools Replace
+  replaces the class store** (and takes the file's record of deleted classes with it). Signed in, Merge stays
+  the only choice, as everywhere. A file that adds nothing to what the device already shows writes nothing.
 - **Retiring the old rows.** The registry rows `Dashboard`/`roster` and `NameTags`/`list` stay as they are in
   this release: sign-out still removes those keys, an account never opened on the new version still reaches
   a new device, and old tabs still sync with each other. They can be dropped from the registry in a later
@@ -459,28 +473,34 @@ copies. They are unchanged.
 
 ## 11. How it is proved
 
-- **`scripts/smoke-classes.mjs`** (Node, loads the file directly): merging a copy with itself changes
-  nothing; `merge(a, b)` and `merge(b, a)` are the same bytes; three devices in any order agree; a deletion
-  beats unstamped data and a later edit beats a deletion; a stamped clear wins; unknown fields survive;
-  migrating twice gives the same bytes; "David K." imports once; a near-match is never folded.
-- **`scripts/smoke-migration.mjs`** (the golden replay), extended. Its device A already holds old rosters and
-  lists; `Classes` joins `EXPECTED_ROWS`, the tool list and the page map. New steps:
-  - a device holding only the rosters: nothing doubled;
-  - two devices, both offline, each on the live view, then both sign in: one class each, same bytes on A, B
-    and the account;
-  - A deletes a class; a fresh C never shows it and sends nothing for it;
-  - A deletes a student; the earlier backup restores her;
-  - a context served the **old** page adds one roster line: exactly one student arrives, and the next load
-    writes nothing;
-  - **a reload round A, B, A, B with zero writes** — the check that nothing ping-pongs;
-  - no duplicate row anywhere, and `ivritSuite_classes` gets no "the loader normalized it" allowance.
-- **`scripts/smoke-sync.mjs`:** a sign-out from the hub and from Name Tags removes the classes; offline with
-  a stored session shows the live view and writes nothing; a Dashboard tab and a Name Tags tab open
-  together, an edit in one and a pick in the other — the account keeps the edit; a refused `23514`; the hub
-  resolves a class conflict; the first-sign-in card after signed-out use.
-- `smoke-tools`, `smoke-account`, `smoke-saves`; `test-rls-assignments` and `smoke-assignments` for the
-  linking commit; `check-i18n`, `check-inline-js`; the Playwright recipe on all four pages (light and dark,
-  desktop and ~800px, English and Hebrew).
+- **`node scripts/smoke-classes.mjs`** (Node; the file loaded once per "device" with its own storage and
+  clock): merging a copy with itself changes nothing; `merge(a, b)` and `merge(b, a)` are the same bytes; three
+  devices in any order agree; a deletion beats unstamped data and a later edit beats a deletion; a stamped
+  clear wins; unknown fields and hostile ids survive; reading writes nothing; two devices copying the same old
+  data write the same bytes and copying twice changes nothing; a rosters-only copy merges into the folded one;
+  an old page's added line arrives once ("David K." is never imported again), and a deletion or a rename made
+  here holds; a deleted class is never re-created; files import once, restore what was deleted and replace
+  nothing typed; a near-match is never folded.
+- **`scripts/smoke-migration.mjs`** (the golden replay, `--sdk` required). Along its main story the old
+  rosters and lists go up as one class each — never offered on the first-sign-in card, no time stamp — and
+  device A, device B and the account hold the same classes. Step 12 then runs, on accounts of their own:
+  a roster and a list that are one class go up as ONE and a rosters-only device sends nothing; two devices
+  offline with a stored session show their class and write nothing, then come online at once — one row, and
+  **four more loads, A, B, A, B, send nothing**; a class deleted on one device is gone on the other (a copy in
+  its recovery bin) and a fresh device does not make it again from the old roster; a removed student is
+  restored by the account backup, once; a name added on the old Dashboard page arrives as exactly one student
+  and the next load sends nothing; a class changed on two devices merges on the hub with no dialog; a button
+  sign-out removes the classes; and while the account refuses the tool (`23514`) the class stays whole and
+  goes up once it is accepted.
+- The other seven backend smokes run unchanged (`js/ivrit-saves.js` changed), with `check-i18n`,
+  `check-inline-js` and `test-rls-assignments`.
+- The editor is checked in a browser from the hub (`IvritClasses.openEditor()`): light and dark, 1280 / 800 /
+  390 px, English and Hebrew, zero page errors, measured contrast, the focus trap, Escape closing the
+  innermost thing first, focus back to the opener, Tab through a newly typed row, a landing while a cell holds
+  unsaved text, a language switch while open.
+- **Phase 2 adds**, per tool: the Playwright recipe on that page, `smoke-tools`, and for the reading
+  assignments `test-rls-assignments` and `smoke-assignments`; step 12's "old Dashboard page" then needs a copy
+  of the page as it is today, since the live page will read the shared classes.
 
 ## 12. Settled with the maintainer
 
@@ -494,12 +514,13 @@ copies. They are unchanged.
 | Names on the Dashboard | A *Names shown* setting: Hebrew, English or both; the default is both, Hebrew first (§6.1) |
 | Migration `0013` | Applied through the Supabase connector once Phase 1 is pushed and green, on the maintainer's word at that moment; read back afterwards (§4) |
 
-## 13. Phases after approval
+## 13. Phases
 
-- **Phase 1**, one commit each: `js/ivrit-classes.js` with `scripts/smoke-classes.mjs`; the registry rows and
-  the `editing` hook in `js/ivrit-saves.js`; the hub (`alsoPull`, the merge, the three AllTools functions,
-  `IVRIT_CFG`, the inventory count); `sw.js` (`CORE_ASSETS`, `VERSION`), the locale rows and the legal text.
-- **Phase 2**, one commit per tool: Name Tags (the parser moves out, the panel becomes Class + Edit class),
-  the Dashboard, Flash Cards, `reading_assignments.html`.
-- This file is then rewritten as the reference, `CLAUDE.md` gets its row in the reference index and its
-  binding sentences, and the history goes to the improvement log only.
+- **Phase 1 — done:** `js/ivrit-classes.js` with `scripts/smoke-classes.mjs`; the registry rows; the hub
+  (`alsoPull`, the merge, the three AllTools functions, `IVRIT_CFG`, the inventory count); `sw.js`, the locale
+  rows and the legal text; the golden replay's step 12. **Not to be merged by itself**: the hub now also puts a
+  restored file's classes into a store no tool page reads yet.
+- **Phase 2 — not started**, one commit per tool: Name Tags (its CSV code replaced by this file's, the panel
+  becomes Class + Edit class), the Dashboard, Flash Cards, `reading_assignments.html`; then the delete-only
+  scrub (§7.7).
+- The history goes to the improvement log only.
