@@ -1179,7 +1179,9 @@ traditions were imported from, and was rebuilt on the suite's own pieces, so it 
   of the sheet says which. The sign tables wrap to the sheet and a long figure shrinks to its
   column. The cards and phrase rows stack as blocks on paper, not grid rows, so the break rules hold: a heading or a
   card's head stays with what follows it, and a figure, a phrase row and the footer stay whole (Chrome honours none of
-  that across a grid's rows, and printed blank sheets with it there).
+  that across a grid's rows, and printed blank sheets with it there). The header prints white under navy ink, its
+  links and toggles off (the suite's header-on-paper rule, `shared-components.md`; the title `h1` sets its own white,
+  so the rule names it).
 - **The hub's Trope card** holds two links, so it is a group, not a link; the What's-new card (its announcement
   of the atlas) lists it first, and its *Show me* finds the Trope card by its `aria-labelledby` (never as the first
   `.page-card-group`) and focuses the Atlas button.

@@ -473,6 +473,12 @@ html[lang="he"] footer [style*="letter-spacing:0.08em"] { letter-spacing:normal 
   .at-bar, body.dark .at-bar { position:static; background:none; border:0; box-shadow:none; }
   .at-keypick { margin-inline-start:0; }
   .at-sel, body.dark .at-sel { -webkit-appearance:none; appearance:none; border:0; background:none; padding:0; min-height:0; color:var(--text); }
+  /* The header's navy plate is a background, which paper drops, so its white title and gold-light tagline printed
+     white on white (the page's own name a pale grey, 2.3:1): on paper the plate is white under the lockup's navy ink,
+     the other pages' rule (pattern header-ink-on-a-plate-print-drops; the title sets its own white, so it is named). */
+  header, body.dark header { background:#fff !important; color:#1a2744; }
+  header h1 { color:#1a2744; }
+  header p { color:#6b6050; }
   .at-layout { display:block; }
   .at-grid { max-height:none; overflow:visible; }
   /* Paper has no sideways scroll: the sign tables wrap to the sheet instead of clipping their last column. */

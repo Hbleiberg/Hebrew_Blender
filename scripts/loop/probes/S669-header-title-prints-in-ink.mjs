@@ -17,7 +17,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 const { chromium } = pkg;
 const ROOT = process.env.ROOT || path.resolve(path.dirname(new URL(import.meta.url).pathname), '..', '..', '..');
-const OPEN = { 'trope_atlas.html': 'queued S669: the atlas had spent its two touches', 'Hebrew_Font_Maker.html': 'an app with no print design at all (S669 P4)' };
+const OPEN = { 'Hebrew_Font_Maker.html': 'an app with no print design at all (S669 P4)' };
 const SKIP = /^(account-test|saves-test|i18n-test|googlee)/;
 const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.json': 'application/json', '.webmanifest': 'application/manifest+json', '.svg': 'image/svg+xml', '.png': 'image/png', '.ttf': 'font/ttf', '.woff2': 'font/woff2', '.css': 'text/css' };
 const server = http.createServer((req, res) => {
