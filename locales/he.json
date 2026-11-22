@@ -6584,6 +6584,7 @@
   "tefillah.trans.style_modern": "עברית מודרנית [ברירת מחדל]",
   "tefillah.trans.style_sbl": "SBL אקדמי",
   "tefillah.trans.style_simple": "פשוט עם הטעמה",
+  "tefillah.trans.tanakh_note": "ב-Sefaria אין לסידור תרגום ברישיון פתוח למזמור זה, ולכן מוצג תרגום של אותם פסוקים מספר תהילים. כשפסוק נכפל בתוך שורה, התרגום מביא אותו פעם אחת.",
   "tefillah.trans.unavailable_chip": "אין תעתיק",
   "tefillah.trans.unavailable_tip": "התעתיק מופעל, אך לא ניתן היה לטעון את הספרייה — לרוב אין חיבור, או שרשת בית הספר חוסמת אותה. העמודה מושמטת במקום להידפס ריקה.",
   "tefillah.trans.version_opt": "{title} — {license}",

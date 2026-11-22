@@ -194,6 +194,41 @@ export function englishEnds(lines) {
   return { from: first.slice(0, 3).join(' '), to: last.slice(-3).join(' ') };
 }
 
+// ── Lines that are Tanakh verses ─────────────────────────────────────────────────────────────
+// Sefaria's siddurim hold no open translation of Hallel, but each of its lines is whole verses of a
+// psalm, and the Book of Psalms has several open translations. A part can name the verses each of its
+// lines holds:
+//   "verses": { "lines": [null, "Psalms 115:1-11", "Psalms 115:12-18"] }
+// one entry per line of the part, in order (null: an instruction, or a line with no verse of its own),
+// and on a whole node also "he": the Hebrew edition whose lines were counted. An entry is one chapter
+// and its verses, in the order the line says them: "Psalms 118:5-24", "Psalms 118:1,3".
+// The page then offers the open translations of those verses and sets each line's beside it. Nothing is
+// taken on trust: the checker and the page both compare the line's own letters with the verses' Hebrew
+// (versesFit) and pair nothing when they differ.
+export const VERSES_RE = /^(Psalms) (\d{1,3}):(\d{1,3}(?:-\d{1,3})?(?:,\d{1,3}(?:-\d{1,3})?)*)$/;
+export function parseVerses(s) {
+  const m = typeof s === 'string' ? VERSES_RE.exec(s) : null;
+  if (!m) return null;
+  const ranges = m[3].split(',').map((r) => { const [a, b] = r.split('-').map(Number); return [a, b === undefined ? a : b]; });
+  return ranges.every(([a, b]) => a >= 1 && b >= a) ? { book: m[1], chapter: +m[2], ranges } : null;
+}
+export const lettersOnly = (s) => skeleton(s).replace(/\s/g, '');
+// Does this siddur line say these verses? Its pointed words (an unpointed word is an instruction or a
+// citation) must open with the first range's first verse, and hold each later range's first verse
+// after it, in order. `verseText(n)` is the Tanakh's Hebrew of verse n. Eight letters decide.
+export function versesFit(linePlain, ranges, verseText) {
+  const line = lettersOnly(pointedWords(linePlain).join(' '));
+  let pos = 0;
+  for (let i = 0; i < ranges.length; i++) {
+    const key = lettersOnly(verseText(ranges[i][0]) || '').slice(0, 8);
+    if (key.length < 4) return false;
+    const at = i === 0 ? (line.startsWith(key) ? 0 : -1) : line.indexOf(key, pos);
+    if (at < 0) return false;
+    pos = at + key.length;
+  }
+  return true;
+}
+
 // The file is written by this function only (by --stamp), so a hand edit and a stamped copy read alike.
 export function formatCatalog(cat) {
   const j = (v) => JSON.stringify(v);

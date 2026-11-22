@@ -15,6 +15,9 @@
  *   - a translation the catalog pins to the Hebrew by position shows line against line although it is shorter, a line
  *     of it with no word ("[]") shows nothing, and a pin whose stamped words no longer match, or that was read against
  *     another Hebrew edition than the one on screen, pairs nothing;
+ *   - lines the catalog says are Tanakh verses get those verses' translation beside them, in a version the visitor
+ *     picks from the open ones, credited to its book; a line that does not open with its verses, a map of the wrong
+ *     length or one counted in another Hebrew edition gets none, and only the Book of Psalms may be named;
  *   - a Torah source: verses numbered chapter:verse, trope classes on the verses only, the siddur's added line marked;
  *   - every text on screen is credited with its edition and licence;
  *   - ?prayer= and ?nusach= open only what the catalog lists, and no request ever names anything else;
@@ -101,7 +104,19 @@ NODES[N('Pinned')] = {
         [OTHER]: { license: 'Public Domain', lines: [words(81, 3).join(' '), words(84, 3).join(' ')] } },
   en: { [EN_P]: { license: 'CC0', lines: ['A heading in English', 'Pin two, the <i>second</i> line.', '[]', 'Pin four &mdash; the fourth line.'] } },
 };
+// Lines that are Tanakh verses: an instruction, verses 1-2 in one line, then verse 3 said twice and verse 4. No English of its own.
+const PS = [words(20, 4), words(24, 3), words(27, 4), words(31, 3)];
+const JPS = 'The Holy Scriptures: A New Translation (JPS 1917)', PS_B = 'A Second Psalms Translation', PS_CLOSED = 'A Closed Psalms Translation';
+NODES[N('Psalm')] = {
+  he: { [OPEN]: { license: 'CC0', lines: [bare(WORDS[80]), [...PS[0], ...PS[1]].join(' '), [...PS[2], ...PS[2], ...PS[3]].join(' ')] },
+        [OTHER]: { license: 'Public Domain', lines: [[...PS[0], ...PS[1], ...PS[2], ...PS[3]].join(' ')] } },
+  en: {},
+};
 const TANAKH = {
+  'Psalms.113': { sections: [113], he: PS.map(verse), ens: {
+    [PS_B]: { license: 'CC-BY', text: ['Second one.', 'Second two.', 'Second three.', 'Second four.'] },
+    [PS_CLOSED]: { license: 'Copyright: Somebody', text: ['Closed.', 'Closed.', 'Closed.', 'Closed.'] },
+    [JPS]: { license: 'Public Domain', text: ['Verse one.', 'Verse two.', 'Verse three.', 'Verse four.'] } } },
   'Deuteronomy.6.4': { sections: [6, 4], he: [verse(words(60, 6))], en: ['A fixture verse.'] },
   'Deuteronomy.6.5-6': { sections: [6, 5], he: [verse(words(66, 5)), verse(words(71, 6))], en: ['Another one.', 'And a third.'] },
 };
@@ -127,6 +142,12 @@ const CATALOG = { v: 1, hebrewPreference: ['Metsudah', 'Open'], groups: [{ key: 
   P('pinned-moved', { ashkenaz: ranged(N('Pinned'), 2, 5, OPEN, { en: { v: EN_P, from: 'pin two the', to: 'some other words' } }) }),
   P('pinned-whole', { ashkenaz: Object.assign({ ref: N('Pinned') }, enPin(N('Pinned'), EN_P, 1, 6, { he: OPEN })) }),
   P('pinned-other-edition', { ashkenaz: Object.assign({ ref: N('Pinned') }, enPin(N('Pinned'), EN_P, 1, 6, { he: OTHER })) }),
+  P('verses', { ashkenaz: ranged(N('Psalm'), 1, 3, OPEN, { verses: { lines: [null, 'Psalms 113:1-2', 'Psalms 113:3-4'] } }) }),
+  P('verses-swapped', { ashkenaz: ranged(N('Psalm'), 1, 3, OPEN, { verses: { lines: [null, 'Psalms 113:3-4', 'Psalms 113:1-2'] } }) }),
+  P('verses-short', { ashkenaz: ranged(N('Psalm'), 1, 3, OPEN, { verses: { lines: ['Psalms 113:1-2', 'Psalms 113:3-4'] } }) }),
+  P('verses-whole', { ashkenaz: { ref: N('Psalm'), verses: { he: OPEN, lines: [null, 'Psalms 113:1-2', 'Psalms 113:3,4'] } } }),
+  P('verses-other-edition', { ashkenaz: { ref: N('Psalm'), verses: { he: OTHER, lines: ['Psalms 113:1-4'] } } }),
+  P('verses-odd', { ashkenaz: ranged(N('Psalm'), 1, 3, OPEN, { verses: { lines: [null, 'Deuteronomy 6:4', 'Psalms 113:3-4'] } }) }),   // only Psalms may be named: the map is dropped
   P('pinned-odd', { ashkenaz: ranged(N('Pinned'), 2, 5, OPEN, { en: 'A Shorter Translation' }) }),                    // a pin this page cannot read: dropped, the part kept
   P('torah', { ashkenaz: N('Plain'), torah: ['Deuteronomy 6:4', ranged(N('Plain'), 1, 1, MET, { added: true }), 'Deuteronomy 6:5-6'] }),
   P('os', { ashkenaz: N('Plain'), opensiddur: 'os-fixture' }),
@@ -155,8 +176,10 @@ function answer(url) {
   const versions = u.searchParams.getAll('version');
   if (TANAKH[ref]) {
     const t = TANAKH[ref], out = [{ language: 'he', versionTitle: TANAKH_HE.title, license: TANAKH_HE.license, text: t.he }];
-    if (versions.some((v) => v === 'english|' + TANAKH_EN.title)) out.push({ language: 'en', versionTitle: TANAKH_EN.title, license: TANAKH_EN.license, text: t.en });
-    return { sections: t.sections, versions: out, available_versions: [{ language: 'he', versionTitle: TANAKH_HE.title, license: TANAKH_HE.license }, { language: 'en', actualLanguage: 'en', versionTitle: TANAKH_EN.title, license: TANAKH_EN.license }] };
+    const ens = t.ens || { [TANAKH_EN.title]: { license: TANAKH_EN.license, text: t.en } };
+    for (const [title, e] of Object.entries(ens)) if (versions.some((v) => v === 'english|' + title)) out.push({ language: 'en', versionTitle: title, license: e.license, text: e.text });
+    return { sections: t.sections, versions: out, available_versions: [{ language: 'he', versionTitle: TANAKH_HE.title, license: TANAKH_HE.license },
+      ...Object.entries(ens).map(([title, e]) => ({ language: 'en', actualLanguage: 'en', versionTitle: title, license: e.license }))] };
   }
   const node = NODES[ref];
   if (!node) return { error: 'no such ref' };
@@ -317,6 +340,20 @@ try {
     check('a whole node pinned against the edition on screen pairs by position, past the translation\u2019s end too', s.rows.length === 5 && /A heading in English/.test(s.text) && s.trans.join('|') === 'Pin two, the second line.||Pin four \u2014 the fourth line.||' && !s.block && !s.versionNote, JSON.stringify({ rows: s.rows, trans: s.trans, block: s.block }));
     s = await go('pinned-other-edition');
     check('…and one pinned against another Hebrew edition stays a block', s.block && /Pin two/.test(s.blockText) && !s.blockText.includes('[]') && s.trans.every((x) => !x) && s.versionNote.length > 10, JSON.stringify({ block: s.block, trans: s.trans }));
+    // lines that are Tanakh verses: their translation beside them, in a version the visitor picks
+    s = await go('verses');
+    check('lines that are Tanakh verses show those verses beside them, JPS 1917 first', s.rows.length === 2 && s.trans.join('|') === 'Verse one. Verse two.|Verse three. Verse four.' && !s.block, JSON.stringify(s.trans));
+    check('…only the open translations of the verses are offered, credited to their book, with a note', s.versions.join('|') === [PS_B, JPS].join('|') && /Psalms/.test(s.credits) && s.credits.includes(JPS) && /Public Domain/.test(s.credits) && s.versionNote.length > 10 && !/Closed/.test(s.text), JSON.stringify({ versions: s.versions, credits: s.credits, note: s.versionNote }));
+    await t.page.evaluate((title) => { const sel = document.getElementById('ttVersionSelect'); sel.value = title; sel.dispatchEvent(new Event('change', { bubbles: true })); }, PS_B);
+    await t.page.waitForTimeout(600); await settled(t.page);
+    s = await snapshot(t.page);
+    check('…and another translation can be picked', s.trans.join('|') === 'Second one. Second two.|Second three. Second four.' && s.credits.includes(PS_B) && !s.credits.includes(JPS), JSON.stringify({ trans: s.trans, credits: s.credits }));
+    s = await go('verses-whole');
+    check('a whole node counted in the edition on screen: the same, a verse list ("3,4") read in order', s.rows.length === 2 && s.trans.join('|') === 'Second one. Second two.|Second three. Second four.', JSON.stringify(s.trans));
+    for (const [key, why] of [['verses-swapped', 'a line that does not open with its verses'], ['verses-short', 'a map with the wrong number of lines'], ['verses-other-edition', 'a map counted in another Hebrew edition'], ['verses-odd', 'a map naming a book other than Psalms']]) {
+      s = await go(key);
+      check(why + ': no translation, and the prayer still opens', s.rows.length >= 1 && !s.empty && s.trans.every((x) => !x) && !/Verse one|Second one/.test(s.text) && !s.credits.includes(PS_B), JSON.stringify({ rows: s.rows.length, trans: s.trans, credits: s.credits }));
+    }
     check('no page error', t.errors.length === 0, t.errors.join(' | '));
     await t.close();
   }

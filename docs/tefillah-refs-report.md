@@ -1,6 +1,6 @@
 ## Tefillah Trainer — catalog refs checked against Sefaria
 
-75 prayers, 211 sources checked. Lines = Sefaria segments shown (pointed = lines that hold prayer text; the rest are instructions or headings). ✓ = the translation has as many lines as the Hebrew node, so the page shows it line against line; ⇄ = it has fewer or more lines, but the catalog pins it to the Hebrew by position (line n beside line n), read by a person and listed line by line at the end of this report; ✗ = neither, so a whole node shows it as one block and a line range shows none. An equal count is the test the page can make, not proof of a correct pairing. First … last = the first two and last two pointed words of the lines shown (consonants only).
+75 prayers, 211 sources checked. Lines = Sefaria segments shown (pointed = lines that hold prayer text; the rest are instructions or headings). ✓ = the translation has as many lines as the Hebrew node, so the page shows it line against line; ⇄ = it has fewer or more lines, but the catalog pins it to the Hebrew by position (line n beside line n), read by a person and listed line by line at the end of this report; ◇ = the siddur node has no open translation, but its lines are whole Tanakh verses (checked against the verses' Hebrew, listed at the end) and the page offers these translations of them; ✗ = neither, so a whole node shows it as one block and a line range shows none. An equal count is the test the page can make, not proof of a correct pairing. First … last = the first two and last two pointed words of the lines shown (consonants only).
 
 | Prayer | Nusach | Ref | Lines (pointed) | Hebrew edition | Other open Hebrew editions | Open English translations | Te'amim | First … last words |
 |---|---|---|---|---|---|---|---|---|
@@ -167,30 +167,30 @@
 | Hallel — blessing before | ashkenaz | Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Berakhah before the Hallel | 1 (1) | Daat Siddur Ashkenaz [Public Domain] | — | none | no | ברוך אתה … את ההלל |
 | Hallel — blessing before | sefard | Siddur Sefard, Rosh Chodesh, Hallel:1-3 | 3 (1) | Torat Emet 357 [Public Domain] | — | none | no | ברוך אתה … את ההלל |
 | Hallel — blessing before | edot | Siddur Edot HaMizrach, Rosh Hodesh, Hallel:1-5 | 5 (2) | Shaliehsaboo Edition [CC0] | Torat Emet 357 [Public Domain] | none | no | ברשות מורי … את ההלל |
-| Hallel — Psalm 113 | ashkenaz | Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 113 | 1 (1) | The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981 [CC BY] | Daat Siddur Ashkenaz [Public Domain] | none | no | הללויה הללו … שמחה הללויה |
-| Hallel — Psalm 113 | sefard | Siddur Sefard, Rosh Chodesh, Hallel:4 | 1 (1) | Torat Emet 357 [Public Domain] | — | none | no | הללויה הללו … שמחה הללויה |
-| Hallel — Psalm 113 | edot | Siddur Edot HaMizrach, Rosh Hodesh, Hallel:6 | 1 (1) | Shaliehsaboo Edition [CC0] | Torat Emet 357 [Public Domain] | none | yes | הללויה הללו … שמחה הללויה |
-| Hallel — Psalm 114 | ashkenaz | Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 114 | 1 (1) | The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981 [CC BY] | Daat Siddur Ashkenaz [Public Domain] | none | no | בצאת ישראל … למעינו מים |
-| Hallel — Psalm 114 | sefard | Siddur Sefard, Rosh Chodesh, Hallel:5 | 1 (1) | Torat Emet 357 [Public Domain] | — | none | no | בצאת ישראל … למעינו מים |
-| Hallel — Psalm 114 | edot | Siddur Edot HaMizrach, Rosh Hodesh, Hallel:7 | 1 (1) | Shaliehsaboo Edition [CC0] | Torat Emet 357 [Public Domain] | none | yes | בצאת ישראל … למעינו מים |
-| Hallel — Psalm 115 | ashkenaz | Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 115 | 2 (2) | The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981 [CC BY] | Daat Siddur Ashkenaz [Public Domain] ≠ 1 lines | none | no | לא לנו … עולם הללויה |
-| Hallel — Psalm 115 | sefard | Siddur Sefard, Rosh Chodesh, Hallel:6-8 | 3 (2) | Torat Emet 357 [Public Domain] | — | none | no | לא לנו … עולם הללויה |
-| Hallel — Psalm 115 | edot | Siddur Edot HaMizrach, Rosh Hodesh, Hallel:8-10 | 3 (2) | Shaliehsaboo Edition [CC0] | Torat Emet 357 [Public Domain] | none | yes | לא לנו … הללו יה |
-| Hallel — Psalm 116 | ashkenaz | Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 116 | 2 (2) | The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981 [CC BY] | Daat Siddur Ashkenaz [Public Domain] ≠ 1 lines | none | no | אהבתי כי … ירושלם הללויה |
-| Hallel — Psalm 116 | sefard | Siddur Sefard, Rosh Chodesh, Hallel:9-11 | 3 (2) | Torat Emet 357 [Public Domain] | — | none | no | אהבתי כי … ירושלים הללויה |
-| Hallel — Psalm 116 | edot | Siddur Edot HaMizrach, Rosh Hodesh, Hallel:11-13 | 3 (2) | Shaliehsaboo Edition [CC0] | Torat Emet 357 [Public Domain] | none | yes | אהבתי כי … ירושלם הללויה |
-| Hallel — Psalm 117 | ashkenaz | Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 117 | 1 (1) | The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981 [CC BY] | Daat Siddur Ashkenaz [Public Domain] | none | no | הללו את … לעולם הללויה |
-| Hallel — Psalm 117 | sefard | Siddur Sefard, Rosh Chodesh, Hallel:12 | 1 (1) | Torat Emet 357 [Public Domain] | — | none | no | הללו את … לעולם הללויה |
-| Hallel — Psalm 117 | edot | Siddur Edot HaMizrach, Rosh Hodesh, Hallel:14 | 1 (1) | Shaliehsaboo Edition [CC0] | Torat Emet 357 [Public Domain] | none | yes | הללו את … לעולם הללויה |
-| Hallel — Psalm 118 | ashkenaz | Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 118 | 13 (13) | The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981 [CC BY] | Daat Siddur Ashkenaz [Public Domain] ≠ 1 lines | none | no | הודו ליהוה … לעולם חסדו |
-| Hallel — Psalm 118 | sefard | Siddur Sefard, Rosh Chodesh, Hallel:13-24 | 12 (12) | Torat Emet 357 [Public Domain] | — | none | no | הודו ליהוה … לעולם חסדו |
-| Hallel — Psalm 118 | edot | Siddur Edot HaMizrach, Rosh Hodesh, Hallel:15-23 | 9 (9) | Shaliehsaboo Edition [CC0] | Torat Emet 357 [Public Domain] | none | yes | הודו ליהוה … לעולם חסדו |
+| Hallel — Psalm 113 | ashkenaz | Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 113 | 1 (1) | The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981 [CC BY] | Daat Siddur Ashkenaz [Public Domain] | ◇ THE JPS TANAKH: Gender-Sensitive Edition [CC BY-NC]<br>◇ Tanakh: The Holy Scriptures, published by JPS [CC BY-NC]<br>◇ The Holy Scriptures: A New Translation (JPS 1917) [Public Domain]<br>◇ Sefaria Community Translation [CC0]<br>◇ The Rashi Ketuvim by Rabbi Shraga Silverstein [CC BY]<br>◇ The Koren Jerusalem Bible [CC BY-NC] | no | הללויה הללו … שמחה הללויה |
+| Hallel — Psalm 113 | sefard | Siddur Sefard, Rosh Chodesh, Hallel:4 | 1 (1) | Torat Emet 357 [Public Domain] | — | ◇ THE JPS TANAKH: Gender-Sensitive Edition [CC BY-NC]<br>◇ Tanakh: The Holy Scriptures, published by JPS [CC BY-NC]<br>◇ The Holy Scriptures: A New Translation (JPS 1917) [Public Domain]<br>◇ Sefaria Community Translation [CC0]<br>◇ The Rashi Ketuvim by Rabbi Shraga Silverstein [CC BY]<br>◇ The Koren Jerusalem Bible [CC BY-NC] | no | הללויה הללו … שמחה הללויה |
+| Hallel — Psalm 113 | edot | Siddur Edot HaMizrach, Rosh Hodesh, Hallel:6 | 1 (1) | Shaliehsaboo Edition [CC0] | Torat Emet 357 [Public Domain] | ◇ THE JPS TANAKH: Gender-Sensitive Edition [CC BY-NC]<br>◇ Tanakh: The Holy Scriptures, published by JPS [CC BY-NC]<br>◇ The Holy Scriptures: A New Translation (JPS 1917) [Public Domain]<br>◇ Sefaria Community Translation [CC0]<br>◇ The Rashi Ketuvim by Rabbi Shraga Silverstein [CC BY]<br>◇ The Koren Jerusalem Bible [CC BY-NC] | yes | הללויה הללו … שמחה הללויה |
+| Hallel — Psalm 114 | ashkenaz | Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 114 | 1 (1) | The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981 [CC BY] | Daat Siddur Ashkenaz [Public Domain] | ◇ THE JPS TANAKH: Gender-Sensitive Edition [CC BY-NC]<br>◇ Tanakh: The Holy Scriptures, published by JPS [CC BY-NC]<br>◇ The Holy Scriptures: A New Translation (JPS 1917) [Public Domain]<br>◇ The Rashi Ketuvim by Rabbi Shraga Silverstein [CC BY]<br>◇ The Koren Jerusalem Bible [CC BY-NC] | no | בצאת ישראל … למעינו מים |
+| Hallel — Psalm 114 | sefard | Siddur Sefard, Rosh Chodesh, Hallel:5 | 1 (1) | Torat Emet 357 [Public Domain] | — | ◇ THE JPS TANAKH: Gender-Sensitive Edition [CC BY-NC]<br>◇ Tanakh: The Holy Scriptures, published by JPS [CC BY-NC]<br>◇ The Holy Scriptures: A New Translation (JPS 1917) [Public Domain]<br>◇ The Rashi Ketuvim by Rabbi Shraga Silverstein [CC BY]<br>◇ The Koren Jerusalem Bible [CC BY-NC] | no | בצאת ישראל … למעינו מים |
+| Hallel — Psalm 114 | edot | Siddur Edot HaMizrach, Rosh Hodesh, Hallel:7 | 1 (1) | Shaliehsaboo Edition [CC0] | Torat Emet 357 [Public Domain] | ◇ THE JPS TANAKH: Gender-Sensitive Edition [CC BY-NC]<br>◇ Tanakh: The Holy Scriptures, published by JPS [CC BY-NC]<br>◇ The Holy Scriptures: A New Translation (JPS 1917) [Public Domain]<br>◇ The Rashi Ketuvim by Rabbi Shraga Silverstein [CC BY]<br>◇ The Koren Jerusalem Bible [CC BY-NC] | yes | בצאת ישראל … למעינו מים |
+| Hallel — Psalm 115 | ashkenaz | Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 115 | 2 (2) | The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981 [CC BY] | Daat Siddur Ashkenaz [Public Domain] ≠ 1 lines | ◇ THE JPS TANAKH: Gender-Sensitive Edition [CC BY-NC]<br>◇ Tanakh: The Holy Scriptures, published by JPS [CC BY-NC]<br>◇ The Holy Scriptures: A New Translation (JPS 1917) [Public Domain]<br>◇ The Rashi Ketuvim by Rabbi Shraga Silverstein [CC BY]<br>◇ The Koren Jerusalem Bible [CC BY-NC] | no | לא לנו … עולם הללויה |
+| Hallel — Psalm 115 | sefard | Siddur Sefard, Rosh Chodesh, Hallel:6-8 | 3 (2) | Torat Emet 357 [Public Domain] | — | ◇ THE JPS TANAKH: Gender-Sensitive Edition [CC BY-NC]<br>◇ Tanakh: The Holy Scriptures, published by JPS [CC BY-NC]<br>◇ The Holy Scriptures: A New Translation (JPS 1917) [Public Domain]<br>◇ The Rashi Ketuvim by Rabbi Shraga Silverstein [CC BY]<br>◇ The Koren Jerusalem Bible [CC BY-NC] | no | לא לנו … עולם הללויה |
+| Hallel — Psalm 115 | edot | Siddur Edot HaMizrach, Rosh Hodesh, Hallel:8-10 | 3 (2) | Shaliehsaboo Edition [CC0] | Torat Emet 357 [Public Domain] | ◇ THE JPS TANAKH: Gender-Sensitive Edition [CC BY-NC]<br>◇ Tanakh: The Holy Scriptures, published by JPS [CC BY-NC]<br>◇ The Holy Scriptures: A New Translation (JPS 1917) [Public Domain]<br>◇ The Rashi Ketuvim by Rabbi Shraga Silverstein [CC BY]<br>◇ The Koren Jerusalem Bible [CC BY-NC] | yes | לא לנו … הללו יה |
+| Hallel — Psalm 116 | ashkenaz | Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 116 | 2 (2) | The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981 [CC BY] | Daat Siddur Ashkenaz [Public Domain] ≠ 1 lines | ◇ THE JPS TANAKH: Gender-Sensitive Edition [CC BY-NC]<br>◇ Tanakh: The Holy Scriptures, published by JPS [CC BY-NC]<br>◇ The Holy Scriptures: A New Translation (JPS 1917) [Public Domain]<br>◇ The Rashi Ketuvim by Rabbi Shraga Silverstein [CC BY]<br>◇ The Koren Jerusalem Bible [CC BY-NC] | no | אהבתי כי … ירושלם הללויה |
+| Hallel — Psalm 116 | sefard | Siddur Sefard, Rosh Chodesh, Hallel:9-11 | 3 (2) | Torat Emet 357 [Public Domain] | — | ◇ THE JPS TANAKH: Gender-Sensitive Edition [CC BY-NC]<br>◇ Tanakh: The Holy Scriptures, published by JPS [CC BY-NC]<br>◇ The Holy Scriptures: A New Translation (JPS 1917) [Public Domain]<br>◇ The Rashi Ketuvim by Rabbi Shraga Silverstein [CC BY]<br>◇ The Koren Jerusalem Bible [CC BY-NC] | no | אהבתי כי … ירושלים הללויה |
+| Hallel — Psalm 116 | edot | Siddur Edot HaMizrach, Rosh Hodesh, Hallel:11-13 | 3 (2) | Shaliehsaboo Edition [CC0] | Torat Emet 357 [Public Domain] | ◇ THE JPS TANAKH: Gender-Sensitive Edition [CC BY-NC]<br>◇ Tanakh: The Holy Scriptures, published by JPS [CC BY-NC]<br>◇ The Holy Scriptures: A New Translation (JPS 1917) [Public Domain]<br>◇ The Rashi Ketuvim by Rabbi Shraga Silverstein [CC BY]<br>◇ The Koren Jerusalem Bible [CC BY-NC] | yes | אהבתי כי … ירושלם הללויה |
+| Hallel — Psalm 117 | ashkenaz | Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 117 | 1 (1) | The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981 [CC BY] | Daat Siddur Ashkenaz [Public Domain] | ◇ THE JPS TANAKH: Gender-Sensitive Edition [CC BY-NC]<br>◇ Tanakh: The Holy Scriptures, published by JPS [CC BY-NC]<br>◇ The Holy Scriptures: A New Translation (JPS 1917) [Public Domain]<br>◇ The Rashi Ketuvim by Rabbi Shraga Silverstein [CC BY]<br>◇ The Koren Jerusalem Bible [CC BY-NC] | no | הללו את … לעולם הללויה |
+| Hallel — Psalm 117 | sefard | Siddur Sefard, Rosh Chodesh, Hallel:12 | 1 (1) | Torat Emet 357 [Public Domain] | — | ◇ THE JPS TANAKH: Gender-Sensitive Edition [CC BY-NC]<br>◇ Tanakh: The Holy Scriptures, published by JPS [CC BY-NC]<br>◇ The Holy Scriptures: A New Translation (JPS 1917) [Public Domain]<br>◇ The Rashi Ketuvim by Rabbi Shraga Silverstein [CC BY]<br>◇ The Koren Jerusalem Bible [CC BY-NC] | no | הללו את … לעולם הללויה |
+| Hallel — Psalm 117 | edot | Siddur Edot HaMizrach, Rosh Hodesh, Hallel:14 | 1 (1) | Shaliehsaboo Edition [CC0] | Torat Emet 357 [Public Domain] | ◇ THE JPS TANAKH: Gender-Sensitive Edition [CC BY-NC]<br>◇ Tanakh: The Holy Scriptures, published by JPS [CC BY-NC]<br>◇ The Holy Scriptures: A New Translation (JPS 1917) [Public Domain]<br>◇ The Rashi Ketuvim by Rabbi Shraga Silverstein [CC BY]<br>◇ The Koren Jerusalem Bible [CC BY-NC] | yes | הללו את … לעולם הללויה |
+| Hallel — Psalm 118 | ashkenaz | Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 118 | 13 (13) | The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981 [CC BY] | Daat Siddur Ashkenaz [Public Domain] ≠ 1 lines | ◇ THE JPS TANAKH: Gender-Sensitive Edition [CC BY-NC]<br>◇ Tanakh: The Holy Scriptures, published by JPS [CC BY-NC]<br>◇ The Holy Scriptures: A New Translation (JPS 1917) [Public Domain]<br>◇ The Rashi Ketuvim by Rabbi Shraga Silverstein [CC BY]<br>◇ The Koren Jerusalem Bible [CC BY-NC] | no | הודו ליהוה … לעולם חסדו |
+| Hallel — Psalm 118 | sefard | Siddur Sefard, Rosh Chodesh, Hallel:13-24 | 12 (12) | Torat Emet 357 [Public Domain] | — | ◇ THE JPS TANAKH: Gender-Sensitive Edition [CC BY-NC]<br>◇ Tanakh: The Holy Scriptures, published by JPS [CC BY-NC]<br>◇ The Holy Scriptures: A New Translation (JPS 1917) [Public Domain]<br>◇ The Rashi Ketuvim by Rabbi Shraga Silverstein [CC BY]<br>◇ The Koren Jerusalem Bible [CC BY-NC] | no | הודו ליהוה … לעולם חסדו |
+| Hallel — Psalm 118 | edot | Siddur Edot HaMizrach, Rosh Hodesh, Hallel:15-23 | 9 (9) | Shaliehsaboo Edition [CC0] | Torat Emet 357 [Public Domain] | ◇ THE JPS TANAKH: Gender-Sensitive Edition [CC BY-NC]<br>◇ Tanakh: The Holy Scriptures, published by JPS [CC BY-NC]<br>◇ The Holy Scriptures: A New Translation (JPS 1917) [Public Domain]<br>◇ The Rashi Ketuvim by Rabbi Shraga Silverstein [CC BY]<br>◇ The Koren Jerusalem Bible [CC BY-NC] | yes | הודו ליהוה … לעולם חסדו |
 | Hallel — blessing after | ashkenaz | Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Berakhah after the Hallel | 2 (2) | The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981 [CC BY] | Daat Siddur Ashkenaz [Public Domain] | none | no | יהללוך יהוה … מהלל בתשבחות |
 | Hallel — blessing after | sefard | Siddur Sefard, Rosh Chodesh, Hallel:25 | 1 (1) | Torat Emet 357 [Public Domain] | — | none | no | יהללוך יהוה … מהלל בתשבחות |
 | Hallel — blessing after | edot | Siddur Edot HaMizrach, Rosh Hodesh, Hallel:24-25 | 2 (1) | Shaliehsaboo Edition [CC0] | Torat Emet 357 [Public Domain] | none | no | יהללוך יהוה … בתשבחות אמן |
-| Hallel — full | ashkenaz | 8 parts: Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Berakhah before the Hallel … Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Berakhah after the Hallel | 23 (23) | Daat Siddur Ashkenaz [Public Domain]<br>The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981 [CC BY] | Daat Siddur Ashkenaz [Public Domain]<br>Daat Siddur Ashkenaz [Public Domain] ≠ 1 lines | none | no | ברוך אתה … מהלל בתשבחות |
-| Hallel — full | sefard | Siddur Sefard, Rosh Chodesh, Hallel:1-25 | 25 (21) | Torat Emet 357 [Public Domain] | — | none | no | ברוך אתה … מהלל בתשבחות |
-| Hallel — full | edot | Siddur Edot HaMizrach, Rosh Hodesh, Hallel:1-25 | 25 (19) | Shaliehsaboo Edition [CC0] | Torat Emet 357 [Public Domain] | none | yes | ברשות מורי … בתשבחות אמן |
+| Hallel — full | ashkenaz | 8 parts: Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Berakhah before the Hallel … Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Berakhah after the Hallel | 23 (23) | Daat Siddur Ashkenaz [Public Domain]<br>The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981 [CC BY] | Daat Siddur Ashkenaz [Public Domain]<br>Daat Siddur Ashkenaz [Public Domain] ≠ 1 lines | ◇ THE JPS TANAKH: Gender-Sensitive Edition [CC BY-NC]<br>◇ Tanakh: The Holy Scriptures, published by JPS [CC BY-NC]<br>◇ The Holy Scriptures: A New Translation (JPS 1917) [Public Domain]<br>✗ Sefaria Community Translation [CC0] (not for every psalm)<br>◇ The Rashi Ketuvim by Rabbi Shraga Silverstein [CC BY]<br>◇ The Koren Jerusalem Bible [CC BY-NC] | no | ברוך אתה … מהלל בתשבחות |
+| Hallel — full | sefard | Siddur Sefard, Rosh Chodesh, Hallel:1-25 | 25 (21) | Torat Emet 357 [Public Domain] | — | ◇ THE JPS TANAKH: Gender-Sensitive Edition [CC BY-NC]<br>◇ Tanakh: The Holy Scriptures, published by JPS [CC BY-NC]<br>◇ The Holy Scriptures: A New Translation (JPS 1917) [Public Domain]<br>◇ The Rashi Ketuvim by Rabbi Shraga Silverstein [CC BY]<br>◇ The Koren Jerusalem Bible [CC BY-NC] | no | ברוך אתה … מהלל בתשבחות |
+| Hallel — full | edot | Siddur Edot HaMizrach, Rosh Hodesh, Hallel:1-25 | 25 (19) | Shaliehsaboo Edition [CC0] | Torat Emet 357 [Public Domain] | ◇ THE JPS TANAKH: Gender-Sensitive Edition [CC BY-NC]<br>◇ Tanakh: The Holy Scriptures, published by JPS [CC BY-NC]<br>◇ The Holy Scriptures: A New Translation (JPS 1917) [Public Domain]<br>◇ The Rashi Ketuvim by Rabbi Shraga Silverstein [CC BY]<br>◇ The Koren Jerusalem Bible [CC BY-NC] | yes | ברשות מורי … בתשבחות אמן |
 | Hamotzi | ashkenaz | Siddur Ashkenaz, Berachot, Birkat Hanehenin, Eating, Barachot Rishonot:2 | 1 (1) | Daat Siddur Ashkenaz [Public Domain] | — | ⇄ Sefaria Community Translation [CC0] (pinned: 1 of 1 lines translated) | no | ברוך אתה … מן הארץ |
 | Hamotzi | sefard | Siddur Sefard, Mealtime Blessings:5-6 | 2 (1) | Torat Emet 357 [Public Domain] | — | ✗ Sefaria Community Translation [CC0] | no | ברוך אתה … מן הארץ |
 | Mezonot | ashkenaz | Siddur Ashkenaz, Berachot, Birkat Hanehenin, Eating, Barachot Rishonot:3 | 1 (1) | Daat Siddur Ashkenaz [Public Domain] | — | ✗ Sefaria Community Translation [CC0] | no | ברוך אתה … מיני מזונות |
@@ -218,9 +218,13 @@
 
 **No source in this nusach (null)** (16): ma-tovu (edot), adon-olam (edot), yigdal (edot), ahavah-rabbah (sefard), ahavah-rabbah (edot), mourners-kaddish (edot), vayehi-binsoa (edot), shema-echad (edot), etz-chayim-hi (edot), candle-lighting (ashkenaz), hamotzi (edot), shehecheyanu (ashkenaz), shehecheyanu (edot), birkat-hamazon-short (ashkenaz), birkat-hamazon-short (sefard), birkat-hamazon-short (edot)
 
-**No openly licensed English translation** (38): shema-echad (ashkenaz), birchot-hatorah-aliyah (edot), shalom-aleichem (edot), lecha-dodi (edot), havdalah (sefard), hallel-blessing-before (ashkenaz), hallel-blessing-before (sefard), hallel-blessing-before (edot), hallel-psalm-113 (ashkenaz), hallel-psalm-113 (sefard), hallel-psalm-113 (edot), hallel-psalm-114 (ashkenaz), hallel-psalm-114 (sefard), hallel-psalm-114 (edot), hallel-psalm-115 (ashkenaz), hallel-psalm-115 (sefard), hallel-psalm-115 (edot), hallel-psalm-116 (ashkenaz), hallel-psalm-116 (sefard), hallel-psalm-116 (edot), hallel-psalm-117 (ashkenaz), hallel-psalm-117 (sefard), hallel-psalm-117 (edot), hallel-psalm-118 (ashkenaz), hallel-psalm-118 (sefard), hallel-psalm-118 (edot), hallel-blessing-after (ashkenaz), hallel-blessing-after (sefard), hallel-blessing-after (edot), hallel-full (ashkenaz), hallel-full (sefard), hallel-full (edot), mezonot (sefard), hagafen (sefard), haetz (sefard), haadamah (sefard), shehakol (sefard), shehecheyanu (sefard)
+**No openly licensed English translation** (17): shema-echad (ashkenaz), birchot-hatorah-aliyah (edot), shalom-aleichem (edot), lecha-dodi (edot), havdalah (sefard), hallel-blessing-before (ashkenaz), hallel-blessing-before (sefard), hallel-blessing-before (edot), hallel-blessing-after (ashkenaz), hallel-blessing-after (sefard), hallel-blessing-after (edot), mezonot (sefard), hagafen (sefard), haetz (sefard), haadamah (sefard), shehakol (sefard), shehecheyanu (sefard)
 
 **Shown line against line through a pinned translation (⇄)** (38): baruch-sheamar (edot), ashrei (edot), yishtabach (edot), amidah-avot (edot), amidah-gevurot (edot), amidah-kedushat-hashem (edot), amidah-kedusha (edot), amidah-binah (edot), amidah-teshuvah (edot), amidah-selichah (edot), amidah-geulah (edot), amidah-refuah (edot), amidah-birkat-hashanim (edot), amidah-kibbutz-galuyot (edot), amidah-din (edot), amidah-birkat-haminim (edot), amidah-tzadikim (edot), amidah-binyan-yerushalayim (edot), amidah-malchut-beit-david (edot), amidah-shomea-tefillah (edot), amidah-avodah (edot), amidah-hodaah (edot), amidah-shalom (edot), amidah-full (edot), elohai-netzor (edot), oseh-shalom (edot), aleinu (edot), candle-lighting (sefard), candle-lighting (edot), kiddush-friday-night (sefard), kiddush-friday-night (edot), havdalah (edot), hamotzi (ashkenaz), mezonot (edot), hagafen (edot), haetz (edot), haadamah (edot), shehakol (edot)
+
+**Translated through the Tanakh verses their lines hold (◇)** (21): hallel-psalm-113 (ashkenaz), hallel-psalm-113 (sefard), hallel-psalm-113 (edot), hallel-psalm-114 (ashkenaz), hallel-psalm-114 (sefard), hallel-psalm-114 (edot), hallel-psalm-115 (ashkenaz), hallel-psalm-115 (sefard), hallel-psalm-115 (edot), hallel-psalm-116 (ashkenaz), hallel-psalm-116 (sefard), hallel-psalm-116 (edot), hallel-psalm-117 (ashkenaz), hallel-psalm-117 (sefard), hallel-psalm-117 (edot), hallel-psalm-118 (ashkenaz), hallel-psalm-118 (sefard), hallel-psalm-118 (edot), hallel-full (ashkenaz), hallel-full (sefard), hallel-full (edot)
+
+**Verses counted in a Hebrew edition the page does not show first (they apply only once a visitor picks that edition)** (0): none
 
 **Translations exist but none matches the Hebrew line for line (a whole node shows one as a block; a line range shows none)** (11): psalm-150 (edot), barchu (edot), shema (torah), chatzi-kaddish (edot), ein-keloheinu (edot), hamotzi (sefard), mezonot (ashkenaz), hagafen (ashkenaz), haetz (ashkenaz), haadamah (ashkenaz), shehakol (ashkenaz)
 
@@ -424,3 +428,107 @@ Each table is one siddur node: the lines the catalog pins, the Hebrew edition th
 | 9 | בָּרוּךְ אַתָּה יְהֹוָה, אֱלֹהֵינוּ מֶלֶךְ הָעוֹלָם, בּוֹרֵא … | Blessed are You, L·rd, Our G·d, King of the Universe Who … |
 | 10 | על דבר שאין גדולו מן הארץ כגון … |  |
 | 11 | בָּרוּךְ אַתָּה יְהֹוָה, אֱלֹהֵינוּ מֶלֶךְ הָעוֹלָם, שֶׁהַכֹּל … | Blessed are You, L·rd, Our G·d, King of the Universe that … |
+
+## Lines that are Tanakh verses
+
+Each table is one siddur node in the Hebrew edition whose lines were counted. *Verses* is what the catalog says the line holds; *Found* is how many of those verses' openings the checker found in the line's own letters (a spelling that differs from the Tanakh's misses one; the first verse must open the line and the last must be in it, or the check fails). The English is those verses in The Holy Scriptures: A New Translation (JPS 1917), first and last words; the page sets the whole of it beside the line, in whichever open translation the visitor picks. A row marked — is a line of prayer text with no verse of its own, shown without a translation.
+
+### Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 113 — The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981
+
+| Line | Hebrew opens | Hebrew closes | Verses | Found | English opens | English closes |
+|---|---|---|---|---|---|---|
+| 1 | הַלְלוּיָהּ הַלְלוּ עַבְדֵי יְהֹוָה הַלְלוּ … | … אֵם־הַבָּנִים שְׂמֵחָה הַלְלוּיָהּ: | 113:1-9 | 9 of 9 | Hallelujah. Praise, O ye servants of the LORD, … | … joyful mother of children. Hallelujah. |
+
+### Siddur Sefard, Rosh Chodesh, Hallel — Torat Emet 357
+
+| Line | Hebrew opens | Hebrew closes | Verses | Found | English opens | English closes |
+|---|---|---|---|---|---|---|
+| 3 | בָּרוּךְ אַתָּה יְהֹוָה, אֱלֹהֵינוּ מֶלֶךְ … | … לִקְרֹא אֶת הַהַלֵּל: | — |  |  |  |
+| 4 | הַלְלוּיָהּ הַלְלוּ עַבְדֵי יְהֹוָה. הַלְלוּ … | … הַבָּנִים שְׂמֵחָה. הַלְלוּיָהּ: | 113:1-9 | 9 of 9 | Hallelujah. Praise, O ye servants of the LORD, … | … joyful mother of children. Hallelujah. |
+| 5 | בְּצֵאת יִשְׂרָאֵל מִמִּצְרָיִם, בֵּית יַעֲקֹב … | … חַלָּמִישׁ לְמַעְינוֹ מָיִם: | 114:1-8 | 8 of 8 | When Israel came forth out of Egypt, The … | … into a fountain of waters. |
+| 7 | לֹא לָנוּ יְהֹוָה לֹא לָנוּ. … | … עֶזְרָם וּמָגִנָּם הוּא: | 115:1-11 | 11 of 11 | Not unto us, O LORD, not unto us, … | … their help and their shield. |
+| 8 | יְהֹוָה זְכָרָנוּ יְבָרֵךְ, יְבָרֵךְ אֶת … | … וְעַד עוֹלָם, הַלְלוּיָהּ: | 115:12-18 | 7 of 7 | The LORD hath been mindful of us, He … | … forth and for ever. Hallelujah. |
+| 10 | אָהַבְתִּי כִּי יִשְׁמַע יְהֹוָה אֶת … | … כָּל הָאָדָם כֹּזֵב: | 116:1-11 | 11 of 11 | I love that the LORD should hear my … | … haste: 'All men are liars.' |
+| 11 | מָה אָשִׁיב לַיהֹוָה, כָּל תַּגְמוּלוֹהִי … | … בְּתוֹכֵכִי יְרוּשָׁלָיִם, הַלְלוּיָהּ: | 116:12-19 | 8 of 8 | How can I repay unto the LORD All … | … of thee, O Jerusalem. Hallelujah. |
+| 12 | הַלְלוּ אֶת יְהֹוָה כָּל גּוֹיִם, … | … יְהֹוָה לְעוֹלָם, הַלְלוּיָהּ: | 117:1-2 | 2 of 2 | O praise the LORD, all ye nations; Laud … | … LORD endureth for ever. Hallelujah. |
+| 13 | הוֹדוּ לַיהֹוָה כִּי טוֹב - … | … כִּי לְעוֹלָם חַסְדּוֹ: | 118:1 | 1 of 1 | 'O give thanks unto the LORD, for He … | … His mercy endureth for ever. |
+| 14 | והקהל אומרים: הוֹדוּ לַיהֹוָה כִּי … | … כִּי לְעוֹלָם חַסְדּוֹ: | 118:1,2 | 2 of 2 | 'O give thanks unto the LORD, for He … | … His mercy endureth for ever, |
+| 15 | יֹאמַר נָא יִשְׂרָאֵל - כִּי … | … כִּי לְעוֹלָם חַסְדּוֹ: | 118:2 | 1 of 1 | So let Israel now say, For His mercy … | … His mercy endureth for ever, |
+| 16 | והקהל אומרים: הוֹדוּ לַיהֹוָה כִּי … | … כִּי לְעוֹלָם חַסְדּוֹ: | 118:1,3 | 2 of 2 | 'O give thanks unto the LORD, for He … | … His mercy endureth for ever. |
+| 17 | יֹאמְרוּ נָא בֵית אַהֲרֹן - … | … כִּי לְעוֹלָם חַסְדּוֹ: | 118:3 | 1 of 1 | So let the house of Aaron now say, … | … His mercy endureth for ever. |
+| 18 | והקהל אומרים: הוֹדוּ לַיהֹוָה כִּי … | … כִּי לְעוֹלָם חַסְדּוֹ: | 118:1,4 | 2 of 2 | 'O give thanks unto the LORD, for He … | … His mercy endureth for ever. |
+| 19 | יֹאמְרוּ נָא יִרְאֵי יְהֹוָה - … | … כִּי לְעוֹלָם חַסְדּוֹ: | 118:4 | 1 of 1 | So let them now that fear the LORD … | … His mercy endureth for ever. |
+| 20 | והקהל אומרים: הוֹדוּ לַיהֹוָה כִּי … | … כִּי לְעוֹלָם חַסְדּוֹ: | 118:1 | 1 of 1 | 'O give thanks unto the LORD, for He … | … His mercy endureth for ever. |
+| 21 | מִן הַמֵּצַר קָרָאתִי יָהּ. עָנָנִי … | … נָגִילָה וְנִשְׂמְחָה בוֹ: | 118:5-24 | 19 of 20 | Out of my straits I called upon the … | … and be glad in it. |
+| 22 | אָנָּא יְהֹוָה הוֹשִׁיעָה נָּא: אָנָּא … | … יְהֹוָה הוֹשִׁיעָה נָּא: | 118:25 | 1 of 1 | We beseech Thee, O LORD, save now! We … | … make us now to prosper! |
+| 23 | אָנָּא יְהֹוָה הַצְלִיחָה נָּא: אָנָּא … | … יְהֹוָה הַצְלִיחָה נָּא: | — |  |  |  |
+| 24 | בָּרוּךְ הַבָּא בְּשֵׁם יְהֹוָה. בֵּרַכְנוּכֶם … | … כִּי לְעוֹלָם חַסְדּוֹ: | 118:26-29 | 4 of 4 | Blessed be he that cometh in the name … | … His mercy endureth for ever. |
+| 25 | יְהַלְלוּךָ יְהֹוָה אֱלֹהֵינוּ עַל כָּל … | … מֶלֶךְ מְהֻלָּל בַּתִּשְׁבָּחוֹת: | — |  |  |  |
+
+### Siddur Edot HaMizrach, Rosh Hodesh, Hallel — Shaliehsaboo Edition
+
+| Line | Hebrew opens | Hebrew closes | Verses | Found | English opens | English closes |
+|---|---|---|---|---|---|---|
+| 3 | בִּרְשׁוּת מוֹרַי וְרַבּוֹתַי. והציבור עונים: … | … והציבור עונים: שָׁמַיִם. | — |  |  |  |
+| 5 | בָּרוּךְ אַתָּה יְהֹוָה, אֱלֹהֵינוּ מֶלֶךְ … | … לִגְמוֹר אֶת הַהַלֵּל: | — |  |  |  |
+| 6 | הַלְלוּיָהּ ׀ (תהילים קי״ג:א׳-ב׳) הַלְלוּ … | … אֵם־הַבָּנִים שְׂמֵחָה הַלְלוּיָהּ׃ | 113:1-9 | 9 of 9 | Hallelujah. Praise, O ye servants of the LORD, … | … joyful mother of children. Hallelujah. |
+| 7 | בְּצֵאת (תהילים קי״ד:א׳-ב׳) יִשְׂרָאֵל מִמִּצְרָיִם … | … אֲגַם־מָיִם חַלָּמִישׁ לְמַעְיְנוֹ־מָיִם׃ | 114:1-8 | 8 of 8 | When Israel came forth out of Egypt, The … | … into a fountain of waters. |
+| 9 | לֹא (תהילים קט״ו:א׳-ב׳) לָנוּ יְהֹוָה … | … עֶזְרָם וּמָגִנָּם הוּא׃ | 115:1-11 | 11 of 11 | Not unto us, O LORD, not unto us, … | … their help and their shield. |
+| 10 | יְהֹוָה זְכָרָנוּ יְבָרֵךְ יְבָרֵךְ אֶת־בֵּית … | … וְעַד־עוֹלָם הַלְלוּ יָהּ׃ | 115:12-18 | 7 of 7 | The LORD hath been mindful of us, He … | … forth and for ever. Hallelujah. |
+| 12 | אָהַבְתִּי (תהילים קט״ז:א׳-ב׳) כִּי־יִשְׁמַע ׀ … | … בְחׇפְזִי כׇּל־הָאָדָם כֹּזֵב׃ | 116:1-11 | 11 of 11 | I love that the LORD should hear my … | … haste: 'All men are liars.' |
+| 13 | מָה־אָשִׁיב לַיהֹוָה כׇּל־תַּגְמוּלוֹהִי עָלָי׃ כּוֹס־יְשׁוּעוֹת … | … בְּתוֹכֵכִי יְרוּשָׁלָ‍ִם הַלְלוּיָהּ׃ | 116:12-19 | 8 of 8 | How can I repay unto the LORD All … | … of thee, O Jerusalem. Hallelujah. |
+| 14 | הַלְלוּ (תהילים קי״ז:א׳-ב׳) אֶת־יְהֹוָה כׇּל־גּוֹיִם … | … וֶאֱמֶת־יְהֹוָה לְעוֹלָם הַלְלוּיָהּ׃ | 117:1-2 | 2 of 2 | O praise the LORD, all ye nations; Laud … | … LORD endureth for ever. Hallelujah. |
+| 15 | הוֹדוּ (תהילים קי״ח:א׳) לַיהֹוָה כִּי־טוֹב … | … כִּי לְעוֹלָם חַסְדּוֹ׃ | 118:1 | 1 of 1 | 'O give thanks unto the LORD, for He … | … His mercy endureth for ever. |
+| 16 | יֹאמַר־נָא יִשְׂרָאֵל כִּי לְעוֹלָם חַסְדּוֹ׃ | … כִּי לְעוֹלָם חַסְדּוֹ׃ | 118:2 | 1 of 1 | So let Israel now say, For His mercy … | … His mercy endureth for ever, |
+| 17 | יֹאמְרוּ־נָא בֵית־אַהֲרֹן כִּי לְעוֹלָם חַסְדּוֹ׃ | … כִּי לְעוֹלָם חַסְדּוֹ׃ | 118:3 | 1 of 1 | So let the house of Aaron now say, … | … His mercy endureth for ever. |
+| 18 | יֹאמְרוּ־נָא יִרְאֵי יְהֹוָה כִּי לְעוֹלָם … | … כִּי לְעוֹלָם חַסְדּוֹ׃ | 118:4 | 1 of 1 | So let them now that fear the LORD … | … His mercy endureth for ever. |
+| 19 | מִן־הַמֵּצַר קָרָאתִי יָּהּ עָנָנִי בַמֶּרְחָב … | … צַדִּיקִים יָבֹאוּ בוֹ׃ | 118:5-20 | 16 of 16 | Out of my straits I called upon the … | … righteous shall enter into it. |
+| 20 | אוֹדְךָ כִּי עֲנִיתָנִי וַתְּהִי־לִי לִישׁוּעָה׃ … | … נָגִילָה וְנִשְׂמְחָה בוֹ׃ | 118:21-24 | 4 of 4 | I will give thanks unto Thee, for Thou … | … and be glad in it. |
+| 21 | אָנָּא יְהֹוָה הוֹשִׁיעָה נָּא, אָנָּא … | … יְהֹוָה הוֹשִׁיעָה נָּא | 118:25 | 1 of 1 | We beseech Thee, O LORD, save now! We … | … make us now to prosper! |
+| 22 | אָנָּא יְהֹוָה הַצְלִיחָה נָא, אָנָּא … | … יְהֹוָה הַצְלִיחָה נָא׃ | — |  |  |  |
+| 23 | בָּרוּךְ הַבָּא בְּשֵׁם יְהֹוָה בֵּרַכְנוּכֶם … | … כִּי לְעוֹלָם חַסְדּוֹ׃ | 118:26-29 | 4 of 4 | Blessed be he that cometh in the name … | … His mercy endureth for ever. |
+| 25 | יְהַלְלוּךָ יְהֹוָה אֱלֹהֵינוּ כָּל מַעֲשֶׂיךָ, … | … מְהֻלָּל בַּתִּשְׁבָּחוֹת. אָמֵן: | — |  |  |  |
+
+### Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 114 — The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981
+
+| Line | Hebrew opens | Hebrew closes | Verses | Found | English opens | English closes |
+|---|---|---|---|---|---|---|
+| 1 | בְּצֵאת יִשְׂרָאֵל מִמִּצְרָיִם בֵּית יַעֲקֹב … | … אֲגַם־מָיִם חַלָּמִישׁ לְמַעְיְנוֹ־מָיִם: | 114:1-8 | 8 of 8 | When Israel came forth out of Egypt, The … | … into a fountain of waters. |
+
+### Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 115 — The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981
+
+| Line | Hebrew opens | Hebrew closes | Verses | Found | English opens | English closes |
+|---|---|---|---|---|---|---|
+| 1 | בראש חודש ובחוה"מ פסח מדלגין: … | … עֶזְרָם וּמָגִנָּם הוּא: | 115:1-11 | 11 of 11 | Not unto us, O LORD, not unto us, … | … their help and their shield. |
+| 2 | יְהֹוָה זְכָרָנוּ יְבָרֵךְ יְבָרֵךְ אֶת־בֵּית … | … מֵעַתָּה וְעַד־עוֹלָם הַלְלוּיָהּ: | 115:12-18 | 7 of 7 | The LORD hath been mindful of us, He … | … forth and for ever. Hallelujah. |
+
+### Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 116 — The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981
+
+| Line | Hebrew opens | Hebrew closes | Verses | Found | English opens | English closes |
+|---|---|---|---|---|---|---|
+| 1 | בראש חודש ובחוה"מ פסח מדלגין: … | … בְחָפְזִי כָּל־הָאָדָם כֹּזֵב: | 116:1-11 | 11 of 11 | I love that the LORD should hear my … | … haste: 'All men are liars.' |
+| 2 | מָה־אָשִׁיב לַיהֹוָה כָּל־תַּגְמוּלוֹהִי עָלָי: כּוֹס־יְשׁוּעוֹת … | … בְּתוֹכֵכִי יְרוּשָׁלָםִ הַלְלוּיָהּ: | 116:12-19 | 8 of 8 | How can I repay unto the LORD All … | … of thee, O Jerusalem. Hallelujah. |
+
+### Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 117 — The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981
+
+| Line | Hebrew opens | Hebrew closes | Verses | Found | English opens | English closes |
+|---|---|---|---|---|---|---|
+| 1 | הַלְלוּ אֶת־יְהֹוָה כָּל־גּוֹיִם שַׁבְּחוּהוּ כָּל־הָאֻמִּים: … | … וֶאֱמֶת־יְהֹוָה לְעוֹלָם הַלְלוּיָהּ: | 117:1-2 | 2 of 2 | O praise the LORD, all ye nations; Laud … | … LORD endureth for ever. Hallelujah. |
+
+### Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 118 — The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981
+
+| Line | Hebrew opens | Hebrew closes | Verses | Found | English opens | English closes |
+|---|---|---|---|---|---|---|
+| 1 | הוֹדוּ לַיהֹוָה כִּי־טוֹב כִּי לְעוֹלָם … | … כִּי לְעוֹלָם חַסְדּוֹ: | 118:1 | 1 of 1 | 'O give thanks unto the LORD, for He … | … His mercy endureth for ever. |
+| 2 | יֹאמַר־נָא יִשְׂרָאֵל כִּי לְעוֹלָם חַסְדּוֹ: | … כִּי לְעוֹלָם חַסְדּוֹ: | 118:2 | 1 of 1 | So let Israel now say, For His mercy … | … His mercy endureth for ever, |
+| 3 | הוֹדוּ לַיהֹוָה כִּי־טוֹב כִּי לְעוֹלָם … | … כִּי לְעוֹלָם חַסְדּוֹ: | 118:1 | 1 of 1 | 'O give thanks unto the LORD, for He … | … His mercy endureth for ever. |
+| 4 | יֹאמְרוּ־נָא בֵית־אַהֲרֹן כִּי לְעוֹלָם חַסְדּוֹ: | … כִּי לְעוֹלָם חַסְדּוֹ: | 118:3 | 1 of 1 | So let the house of Aaron now say, … | … His mercy endureth for ever. |
+| 5 | הוֹדוּ לַיהֹוָה כִּי־טוֹב כִּי לְעוֹלָם … | … כִּי לְעוֹלָם חַסְדּוֹ: | 118:1 | 1 of 1 | 'O give thanks unto the LORD, for He … | … His mercy endureth for ever. |
+| 6 | יֹאמְרוּ־נָא יִרְאֵי יְהֹוָה כִּי לְעוֹלָם … | … כִּי לְעוֹלָם חַסְדּוֹ: | 118:4 | 1 of 1 | So let them now that fear the LORD … | … His mercy endureth for ever. |
+| 7 | הוֹדוּ לַיהֹוָה כִּי־טוֹב כִּי לְעוֹלָם … | … כִּי לְעוֹלָם חַסְדּוֹ: | 118:1 | 1 of 1 | 'O give thanks unto the LORD, for He … | … His mercy endureth for ever. |
+| 8 | מִן־הַמֵּצַר קָרָאתִי יָהּ עָנָנִי בַמֶּרְחָב … | … נָגִילָה וְנִשְׂמְחָה בוֹ: | 118:5-24 | 20 of 20 | Out of my straits I called upon the … | … and be glad in it. |
+| 9 | אָנָּא יְהֹוָה הוֹשִׁיעָה נָּא: | … יְהֹוָה הוֹשִׁיעָה נָּא: | 118:25 | 1 of 1 | We beseech Thee, O LORD, save now! We … | … make us now to prosper! |
+| 10 | אָנָּא יְהֹוָה הוֹשִׁיעָה נָּא: | … יְהֹוָה הוֹשִׁיעָה נָּא: | — |  |  |  |
+| 11 | אָנָּא יְהֹוָה הַצְלִיחָה נָא: | … יְהֹוָה הַצְלִיחָה נָא: | — |  |  |  |
+| 12 | אָנָּא יְהֹוָה הַצְלִיחָה נָא: | … יְהֹוָה הַצְלִיחָה נָא: | — |  |  |  |
+| 13 | בָּרוּךְ הַבָּא בְּשֵׁם יְהֹוָה בֵּרַכְנוּכֶם … | … כִּי לְעוֹלָם חַסְדּוֹ: | 118:26-29 | 4 of 4 | Blessed be he that cometh in the name … | … His mercy endureth for ever. |

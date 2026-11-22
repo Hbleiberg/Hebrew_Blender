@@ -6584,6 +6584,7 @@
   "tefillah.trans.style_modern": "Modern Israeli [DEFAULT]",
   "tefillah.trans.style_sbl": "SBL Academic",
   "tefillah.trans.style_simple": "Simple stressed",
+  "tefillah.trans.tanakh_note": "Sefaria's siddur has no open translation of this psalm, so the translation shown is of the same verses in the Book of Psalms. Where a line repeats a verse, the translation gives it once.",
   "tefillah.trans.unavailable_chip": "No transliteration",
   "tefillah.trans.unavailable_tip": "Transliteration is switched on, but its library could not be loaded — often no connection, or a school network blocking it. The column is left out rather than printed empty.",
   "tefillah.trans.version_opt": "{title} — {license}",

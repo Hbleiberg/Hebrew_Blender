@@ -14,14 +14,16 @@
  * divide the node the same way; each openly licensed English translation and whether its line
  * count matches the Hebrew (what the page shows line against line); a translation the catalog pins
  * to the Hebrew by position ("en", see tefillah-sefaria.mjs), with every paired line printed at the
- * end for a person to read; whether real te'amim are present; and the first and last pointed words
- * of the lines shown.
+ * end for a person to read; the Tanakh verses a part's lines are said to hold ("verses"), each line
+ * compared with the verses' own Hebrew, and the open translations of those verses the page then
+ * offers; whether real te'amim are present; and the first and last pointed words of the lines shown.
  *
  * It fails (exit 1) on: a ref that does not resolve, a node that is not a leaf, a pinned edition
  * Sefaria no longer serves under an open licence, a source with no openly licensed Hebrew, a
  * range whose first / last words differ from the ones stamped in the catalog, or a pinned
  * translation that is gone, not open, empty over those lines, translated where the Hebrew has no
- * line, or whose first / last words differ from its stamp.
+ * line, or whose first / last words differ from its stamp, or a line that does not open with the
+ * verses the catalog says it holds.
  *
  * docs/tefillah-refs-report.md is this script's output: after a catalog edit, re-run with --out and commit both.
  *
@@ -33,6 +35,7 @@ import path from 'node:path';
 import {
   SEFARIA_API, SIDDUR_INDEXES, NUSACHIM, sefariaJSON, leafPaths, fetchVersion, splitRef, isTanakhRef, sourceParts,
   licenseName, isOpenLicense, flatText, plainText, lineKind, hasTeamim, rangeEnds, englishWords, englishEnds, formatCatalog,
+  parseVerses, versesFit, lettersOnly,
 } from './tefillah-sefaria.mjs';
 
 const ROOT = path.resolve(new URL('..', import.meta.url).pathname);
@@ -46,6 +49,35 @@ const cat = JSON.parse(fs.readFileSync(CATALOG, 'utf8'));
 const problems = [];        // blocking
 const notes = { noEnglish: [], unmatched: [], editionsDiffer: [], nulls: [], licences: new Map(), sharedSegment: [], pinned: [], pinOffDefault: [] };
 const pairings = new Map();  // "<node> — <Hebrew edition> ⇄ <translation>" → Map(line number → [Hebrew, English]) for the review section
+const versePairs = new Map();  // "<node> — <Hebrew edition>" → Map(line number → [Hebrew, verses, found, English]) for the review section
+notes.tanakh = []; notes.versesOffDefault = []; notes.unmappedText = [];
+// One Tanakh chapter: its Hebrew verses, the open English translations Sefaria lists for it, and one of them
+// (JPS 1917 where there is one) for the review table.
+const JPS_1917 = /JPS\s*1917|1917.*JPS|Holy Scriptures.*1917|Holy Scriptures.*New Translation/i;
+const _chapters = new Map();
+async function tanakhChapter(book, chapter) {
+  const key = book + ' ' + chapter;
+  if (_chapters.has(key)) return _chapters.get(key);
+  let out = null;
+  try {
+    const base = `${SEFARIA_API}/v3/texts/${encodeURIComponent(key)}`;
+    const d = await sefariaJSON(`${base}?version=hebrew&return_format=text_only`);
+    const hv = (d.versions || []).find((v) => v.language === 'he');
+    if (!d.error && hv) {
+      const open = (d.available_versions || []).filter((v) => isEnglish(v) && isOpenLicense(v.license));
+      const show = open.find((v) => JPS_1917.test(v.versionTitle)) || open[0] || null;
+      let sample = null;
+      if (show) {
+        const e = await sefariaJSON(`${base}?version=${encodeURIComponent('english|' + show.versionTitle)}&return_format=text_only`);
+        const ev = (e.versions || []).find((v) => v.language === 'en');
+        if (ev && ev.versionTitle === show.versionTitle && isOpenLicense(ev.license)) sample = { title: ev.versionTitle, lines: flatText(ev.text) };
+      }
+      out = { he: flatText(hv.text).map((t) => t.replace(/\{[^}]*\}/g, '')), open, sample };
+    }
+  } catch (e) { out = null; }
+  _chapters.set(key, out);
+  return out;
+}
 const short = (t) => String(t).trim();
 const lic = (l) => licenseName(l) || `NOT OPEN (${l || 'none'})`;
 const isEnglish = (v) => v.language === 'en' && (v.actualLanguage || 'en') === 'en';
@@ -148,6 +180,59 @@ async function checkSiddurPart(part, where, leaves) {
       }
     }
   }
+  // Lines that are Tanakh verses: every named line must open with its verses, and the translations offered are the
+  // open ones of every chapter the part names.
+  if (part.verses != null) {
+    const vv = part.verses;
+    const bad = (msg) => { problems.push(`${where}: ${part.ref}: the verses ${msg}`); };
+    if (!vv || typeof vv !== 'object' || !Array.isArray(vv.lines)) bad('must be { "lines": [ … ] }');
+    else if (!ranged && (typeof vv.he !== 'string' || !vv.he)) bad('of a whole node must name the Hebrew edition whose lines were counted ("he")');
+    else if (ranged && vv.he !== undefined) bad('of a line range take their Hebrew edition from the part, not from "verses"');
+    else {
+      let against = he;
+      if (!ranged && vv.he !== he.versionTitle) {
+        const o = openHe.find((v) => v.versionTitle === vv.he) ? (await fetchVersion(node, 'hebrew', vv.he)).version : null;
+        against = o && o.versionTitle === vv.he && isOpenLicense(o.license) ? o : null;
+        if (against) notes.versesOffDefault.push(`${node}: counted in ${short(vv.he)}, the page shows ${short(he.versionTitle)} first`);
+      }
+      const a = ranged ? from : 1, b = ranged ? to : (against ? against.lines.length : 0);
+      if (!against) bad(`name ${JSON.stringify(vv.he)}, which is not an open Hebrew edition of ${node}`);
+      else if (vv.lines.length !== b - a + 1) bad(`name ${vv.lines.length} lines; the part has ${b - a + 1}`);
+      else {
+        const key = `${node} — ${short(against.versionTitle)}`;
+        if (!versePairs.has(key)) versePairs.set(key, new Map());
+        let offered = null, ok = true, mapped = 0;
+        for (let i = a; i <= b; i++) {
+          const entry = vv.lines[i - a], linePlain = plainText(against.lines[i - 1] || '');
+          if (entry === null) {
+            if (lineKind(linePlain) === 'text') versePairs.get(key).set(i, [linePlain, '—', '', '']);
+            continue;
+          }
+          const pv = parseVerses(entry);
+          if (!pv) { bad(`entry ${JSON.stringify(entry)} is not "Psalms <chapter>:<verses>"`); ok = false; continue; }
+          const chap = await tanakhChapter(pv.book, pv.chapter);
+          if (!chap) { bad(`entry ${entry}: ${pv.book} ${pv.chapter} does not resolve`); ok = false; continue; }
+          if (pv.ranges.some(([, y]) => y > chap.he.length)) { bad(`entry ${entry} is outside the chapter's ${chap.he.length} verses`); ok = false; continue; }
+          const verse = (n) => chap.he[n - 1];
+          const line = lettersOnly(linePlain.split(' ').filter((w) => /[\u05B0-\u05BC\u05C1\u05C2\u05C7]/.test(w)).join(' '));
+          const all = pv.ranges.flatMap(([x, y]) => Array.from({ length: y - x + 1 }, (_, k) => x + k));
+          const found = all.filter((n) => line.includes(lettersOnly(verse(n)).slice(0, 6))).length;
+          const lastIn = pv.ranges.every(([, y]) => line.includes(lettersOnly(verse(y)).slice(0, 8)));
+          if (!versesFit(linePlain, pv.ranges, verse)) { bad(`line ${i} does not open with ${entry}`); ok = false; }
+          else if (!lastIn) { bad(`line ${i} opens with ${entry} but does not hold its last verse`); ok = false; }
+          else mapped++;
+          if (!chap.open.length) { bad(`entry ${entry}: Sefaria lists no openly licensed English translation of ${pv.book} ${pv.chapter}`); ok = false; }
+          offered = offered ? offered.filter((x) => chap.open.some((y) => y.versionTitle === x.versionTitle)) : chap.open.slice();
+          const eng = chap.sample ? all.map((n) => plainText(chap.sample.lines[n - 1] || '')).join(' ') : '';
+          versePairs.get(key).set(i, [linePlain, entry.replace(/^\w+ /, ''), `${found} of ${all.length}`, eng]);
+        }
+        if (ok && mapped && offered) {
+          if (!offered.length) bad('name chapters that share no openly licensed English translation');
+          for (const v of offered) english.push({ title: short(v.versionTitle), licence: lic(v.license), match: true, n: total, raw: v.versionTitle, tanakh: true });
+        }
+      }
+    }
+  }
   return {
     ref: part.ref, added: !!part.added, node, lines: shown.length, pointed: kinds.filter((k) => k === 'text').length,
     edition: `${short(he.versionTitle)} [${lic(he.license)}]`, others, english, teamim: shown.some((raw) => hasTeamim(plainText(raw))), ends,
@@ -177,19 +262,28 @@ function row(prayer, nusach, parts) {
   const others = uniq(parts.flatMap((p) => p.others)).join('<br>') || '—';
   // A translation counts for the source only if every siddur part offers it; ✓ when it matches in all of them,
   // ⇄ when the catalog pins it to the Hebrew by position in at least one part and it pairs in every part.
+  // ◇ is a translation of the Tanakh verses the lines hold: it counts when every part that names verses offers it
+  // (a blessing before or after the psalms has no verses and no translation).
   const titles = uniq(parts.flatMap((p) => p.english.map((e) => e.title)));
+  const versed = parts.filter((p) => p.english.some((e) => e.tanakh));
   const eng = titles.map((t) => {
     const per = parts.map((p) => p.english.find((e) => e.title === t));
+    const first = per.find(Boolean);
+    if (first.tanakh) {
+      const all = versed.every((p) => p.english.some((e) => e.title === t && e.tanakh));
+      return `${all ? '◇' : '✗'} ${t} [${first.licence}]${all ? '' : ' (not for every psalm)'}`;
+    }
     const everywhere = per.every(Boolean);
     const match = everywhere && per.every((e) => e.match || e.pinned);
     const pins = per.filter((e) => e && e.pinned);
     const mark = match ? (pins.length ? '⇄' : '✓') : '✗';
     const how = pins.length ? ` (pinned: ${pins.length === 1 ? pins[0].pinnedLines + ' lines translated' : pins.length + ' parts'}${pins[0].pinnedHe ? ', with ' + pins[0].pinnedHe : ''})` : '';
-    return `${mark} ${t} [${per.find(Boolean).licence}]${how}${everywhere ? '' : ' (not in every part)'}`;
+    return `${mark} ${t} [${first.licence}]${how}${everywhere ? '' : ' (not in every part)'}`;
   });
   const lines = parts.reduce((n, p) => n + p.lines, 0), pointed = parts.reduce((n, p) => n + p.pointed, 0);
   const ends = `${parts[0].ends.from} … ${parts[parts.length - 1].ends.to}`;
   if (!titles.length) notes.noEnglish.push(`${prayer.key} (${nusach})`);
+  else if (eng.some((e) => e.startsWith('◇'))) notes.tanakh.push(`${prayer.key} (${nusach})`);
   else if (eng.some((e) => e.startsWith('⇄'))) notes.pinned.push(`${prayer.key} (${nusach})`);
   else if (!eng.some((e) => e.startsWith('✓'))) notes.unmatched.push(`${prayer.key} (${nusach})`);
   return `| ${prayer.en} | ${nusach} | ${ref} | ${lines} (${pointed}) | ${editions} | ${others} | ${eng.join('<br>') || 'none'} | ${parts.some((p) => p.teamim) ? 'yes' : 'no'} | ${ends} |`;
@@ -242,7 +336,7 @@ async function main() {
 
   const out = [];
   out.push(`## Tefillah Trainer — catalog refs checked against Sefaria`, '');
-  out.push(`${cat.prayers.length} prayers, ${rows.length} sources checked. Lines = Sefaria segments shown (pointed = lines that hold prayer text; the rest are instructions or headings). ✓ = the translation has as many lines as the Hebrew node, so the page shows it line against line; ⇄ = it has fewer or more lines, but the catalog pins it to the Hebrew by position (line n beside line n), read by a person and listed line by line at the end of this report; ✗ = neither, so a whole node shows it as one block and a line range shows none. An equal count is the test the page can make, not proof of a correct pairing. First … last = the first two and last two pointed words of the lines shown (consonants only).`, '');
+  out.push(`${cat.prayers.length} prayers, ${rows.length} sources checked. Lines = Sefaria segments shown (pointed = lines that hold prayer text; the rest are instructions or headings). ✓ = the translation has as many lines as the Hebrew node, so the page shows it line against line; ⇄ = it has fewer or more lines, but the catalog pins it to the Hebrew by position (line n beside line n), read by a person and listed line by line at the end of this report; ◇ = the siddur node has no open translation, but its lines are whole Tanakh verses (checked against the verses' Hebrew, listed at the end) and the page offers these translations of them; ✗ = neither, so a whole node shows it as one block and a line range shows none. An equal count is the test the page can make, not proof of a correct pairing. First … last = the first two and last two pointed words of the lines shown (consonants only).`, '');
   out.push('| Prayer | Nusach | Ref | Lines (pointed) | Hebrew edition | Other open Hebrew editions | Open English translations | Te\'amim | First … last words |');
   out.push('|---|---|---|---|---|---|---|---|---|');
   out.push(...rows, '');
@@ -250,6 +344,8 @@ async function main() {
   list('No source in this nusach (null)', notes.nulls);
   list('No openly licensed English translation', notes.noEnglish);
   list('Shown line against line through a pinned translation (⇄)', notes.pinned);
+  list('Translated through the Tanakh verses their lines hold (◇)', notes.tanakh);
+  list('Verses counted in a Hebrew edition the page does not show first (they apply only once a visitor picks that edition)', [...new Set(notes.versesOffDefault)]);
   list('Translations exist but none matches the Hebrew line for line (a whole node shows one as a block; a line range shows none)', notes.unmatched);
   list('Pinned against a Hebrew edition the page does not show first (the pairing applies only once a visitor picks that edition)', [...new Set(notes.pinOffDefault)]);
   list('Hebrew editions that divide a node differently', [...new Set(notes.editionsDiffer)]);
@@ -263,6 +359,18 @@ async function main() {
     for (const [key, lines] of pairings) {
       out.push(`### ${key}`, '', '| Line | Hebrew | English |', '|---|---|---|');
       for (const i of [...lines.keys()].sort((x, y) => x - y)) { const [h, t] = lines.get(i); out.push(`| ${i} | ${cut(h, 7)} | ${cut(t, 11)} |`); }
+      out.push('');
+    }
+  }
+  // Every line the catalog says is Tanakh verses, for a person to read.
+  if (versePairs.size) {
+    const cut = (t, n) => { const w = t.replace(/[\u0591-\u05AF\u05BD]/g, '').split(' '); return (w.length > n ? w.slice(0, n).join(' ') + ' …' : w.join(' ')).replace(/\|/g, '\\|'); };
+    const tail = (t, n) => { const w = t.replace(/[\u0591-\u05AF\u05BD]/g, '').split(' '); return (w.length > n ? '… ' + w.slice(-n).join(' ') : '').replace(/\|/g, '\\|'); };
+    out.push('## Lines that are Tanakh verses', '');
+    out.push('Each table is one siddur node in the Hebrew edition whose lines were counted. *Verses* is what the catalog says the line holds; *Found* is how many of those verses\' openings the checker found in the line\'s own letters (a spelling that differs from the Tanakh\'s misses one; the first verse must open the line and the last must be in it, or the check fails). The English is those verses in ' + ([..._chapters.values()].find((c) => c && c.sample) || { sample: { title: 'the first open translation' } }).sample.title + ', first and last words; the page sets the whole of it beside the line, in whichever open translation the visitor picks. A row marked — is a line of prayer text with no verse of its own, shown without a translation.', '');
+    for (const [key, lines] of versePairs) {
+      out.push(`### ${key}`, '', '| Line | Hebrew opens | Hebrew closes | Verses | Found | English opens | English closes |', '|---|---|---|---|---|---|---|');
+      for (const i of [...lines.keys()].sort((x, y) => x - y)) { const [h, v, found, t] = lines.get(i); out.push(`| ${i} | ${cut(h, 5)} | ${tail(h, 3)} | ${v} | ${found} | ${cut(t, 8)} | ${tail(t, 5)} |`); }
       out.push('');
     }
   }
