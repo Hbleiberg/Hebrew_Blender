@@ -22,7 +22,7 @@ maintainer, never fixed. The fixture smoke builds its texts from ordinary vocabu
 
 ## The catalog — `data/tefillah/catalog.json`
 
-A curated list, not the Sefaria tree. Fetched as `data/tefillah/catalog.json?v=1` (`CATALOG_URL`); `sw.js` precaches
+A curated list, not the Sefaria tree. Fetched as `data/tefillah/catalog.json?v=2` (`CATALOG_URL`); `sw.js` precaches
 that exact URL (`DATA_PRECACHE`), so **an edit bumps the `?v=` in both places**.
 
 ```jsonc

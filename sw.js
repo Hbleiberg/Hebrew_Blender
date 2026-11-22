@@ -1,5 +1,5 @@
 /* IvritSuite service worker — bump VERSION to invalidate the cache on deploy. */
-const VERSION = 'v1486';
+const VERSION = 'v1487';
 const CACHE = 'ivritsuite-' + VERSION;
 // Version-independent cache for the big data/ corpora (dictionary words / emoji / parshiyot /
 // pockettorah). Kept OUT of the version-scoped CACHE so a routine VERSION bump no longer evicts
@@ -66,7 +66,7 @@ const CORE_ASSETS = [
 // Data a page cannot open without, fetched once at install into DATA_CACHE under the exact URL the page asks for
 // (cache-first and keyed by ?v=: when the page's ?v= moves, this entry moves with it). The Tefillah Trainer's prayer
 // catalog: with it, the picker works on a first offline visit; the prayer texts themselves come from Sefaria.
-const DATA_PRECACHE = ['/data/tefillah/catalog.json?v=1'];
+const DATA_PRECACHE = ['/data/tefillah/catalog.json?v=2'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
