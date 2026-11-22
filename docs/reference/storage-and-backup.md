@@ -26,6 +26,7 @@
 | `classes` | `ivritSuite_classes` | The suite-wide class roster (`{ v:1, classes: { id: class }, retired }`): one class and its students for every roster-using tool. **Written only by `js/ivrit-classes.js`**; the export is `IvritClasses.exportAll()` (the stored classes plus the ones still only a view of an old Dashboard roster or Name Tags list) and every import goes through `IvritClasses.importFile(data, mode)`, which also reads an older file's `dashboardRosters`, `dashboardSettings.rosters` and `nameTagLists` — never a hand-rolled merge (`docs/reference/class-roster.md`). Its per-device memory `ivritSuite_classesLegacy` is erase-only |
 | `torahTrainerSettings` | `hebrewTorahTrainer_settings` | Torah Trainer settings |
 | `torahTrainerFavorites` | `hebrewTorahTrainer_favorites` | Torah Trainer favorite readings (the drawer's Favorites tab): a flat map by name, `{ [name]: { v:1, ref, color, ts, settings? } }` — `ref` is one of the three practice-link forms (`parsha` / `holiday` / `ref`), `settings` an optional display snapshot in the `LINK_DISPLAY` vocabulary; merged via `ivritSafeAssign`. Its tree is `torahTrainerFavoriteFolders` in the folder-trees row above. The Torah Trainer has no `IVRIT_CFG` of its own, so both travel only through this file and the account (`docs/reference/torah-and-trope.md` → *Settings drawer → Favorites*) |
+| `tefillahTrainerSettings` / `tefillahTrainerFavorites` / `tefillahTrainerFavoriteFolders` | `hebrewTefillahTrainer_settings` / `hebrewTefillahTrainer_favorites` / `hebrewTefillahTrainer_favoritesFolders` | The Tefillah Trainer: its settings (an object blob merged via `ivritSafeAssign`), its favorite prayers (a flat map by name, `{ [name]: { v:1, ref: { kind:'prayer', prayer, nusach }, color, ts, settings? } }`, merged by name — a favorite is a pointer the page looks up in its catalog on every open) and their folder tree (`ftImportTree`). The page's own `.ivrit` file carries the same three. `docs/reference/tefillah-trainer.md` |
 | `tropeTutorSettings` | `hebrewTropeTutor_settings` | Trope Tutor settings (tradition, melody, key and voice, tune speed and practice, font, drill toggles, playback rate); object blob merged via `ivritSafeAssign`, empty = never-set (skipped on import) |
 | `letterLearnerSettings` | `hebrewLetterLearner_settings` | Letter Learner options (which vowels show, the Fonts tab, the dagesh-pair layout, word audio, this device's chosen voice, the Coloring sheet's `color*` fields — orientation, paper size, pages per sheet, letter or hint, colored in or line art, the Include switches, the size sliders, the words' font — and the bulk print popup's chosen letters, copies and order); object blob merged via `ivritSafeAssign`, empty = never-set (skipped on import). The page has no `IVRIT_CFG` of its own, so it travels only through this file and the account |
 | `emojiTorahSettings` | `hebrewEmojiTorah_settings` | Parsha Emojis coloring-sheet options (colored in or line art, paper size, orientation, pages per sheet, the printed text's language — absent until chosen, meaning the site's language — the six Include switches, the seven size sliders, copies and order; the chosen parshiyot are not stored); object blob merged via `ivritSafeAssign`, empty = never-set (skipped on import). The page has no `IVRIT_CFG` of its own, so it travels only through this file and the account |
@@ -155,7 +156,7 @@ Users back up and restore via a downloadable **`.ivrit` file** (a plain JSON tex
 
 The toggle choice is remembered site-wide in `localStorage['hebrewBlender_inputMode']` (`'auto'` | `'manual'`).
 
-Implemented on: `hebrew_blend_generator.html` (tool `Worksheet`), `classroom_dashboard.html` (`Dashboard`), `flash_cards.html` (`FlashCards`), `name_tags.html` (`NameTags`), and `index.html` (`AllTools`). The Dictionary, Torah Trainer, Trope Tutor, Letter Learner and Parsha Emojis page have no `IVRIT_CFG` of their own — their settings (and the Torah Trainer's favorite readings + folder tree, its one saved-item list) are backed up **only** through the `AllTools` file on `index.html` and, with an account, the cloud rows.
+Implemented on: `hebrew_blend_generator.html` (tool `Worksheet`), `classroom_dashboard.html` (`Dashboard`), `flash_cards.html` (`FlashCards`), `name_tags.html` (`NameTags`), `tefillah_trainer.html` (`TefillahTrainer`), and `index.html` (`AllTools`). The Dictionary, Torah Trainer, Trope Tutor, Letter Learner and Parsha Emojis page have no `IVRIT_CFG` of their own — their settings (and the Torah Trainer's favorite readings + folder tree, its one saved-item list) are backed up **only** through the `AllTools` file on `index.html` and, with an account, the cloud rows.
 
 ### File format
 
@@ -211,7 +212,7 @@ Implemented on: `hebrew_blend_generator.html` (tool `Worksheet`), `classroom_das
 
 Each file defines a small **`IVRIT_CFG`** object, then pastes the **shared engine** verbatim (the block between the `═══ IvritSuite .ivrit save-file engine ═══` comment markers — it is byte-for-byte identical across the four tool pages (generator, flash cards, dashboard, name tags; the `showAppToast` interleave that once broke this was extracted into its own shared block, re-unifying the engine); copy it, don't rewrite it. The restore-success path calls the shared **`showAppToast`** (non-blocking toast), not a blocking `alert()`. **Exception:** `index.html` carries a deliberately adapted AllTools superset of the engine — extra `wlMergeIntoStorage`, a legacy-blob payload shape, and a "reload open tool pages" success `alert()` (kept as a blocking, actionable instruction; index has no `showAppToast`) — do not "fix" it back to the shared text).
 
-**Shared `app-toast` block.** `showAppToast(msg, ms)` (no `ms`: 2.6 s for a short message, then 50 ms per character, 8 s at most, so a two-line message is readable; an explicit `ms` wins), `appToastEl()` (the `#appToast` `role=status` region, made empty at `DOMContentLoaded` so a screen reader already knows the live region when the first message lands) + `let _appToastTimer` live in a byte-identical `/* ═══ shared: app-toast ═══ … ═══ end shared: app-toast ═══ */` JS block placed immediately **before** the `.ivrit` engine block, with a matching `/* ═══ shared: app-toast CSS ═══ … */` block (the `#appToast` rules + a self-contained `@media (prefers-reduced-motion)` neutralizer) in each `<style>`. Both blocks are identical across `hebrew_blend_generator.html`, `classroom_dashboard.html`, `flash_cards.html`, `hebrew_dictionary.html`, `letter_learner.html` and `name_tags.html` — copy verbatim, like `ivritsuite-fonts` / folder-tree. The dictionary has **no `.ivrit` engine** (AllTools-only backup), so its copy sits immediately before the shared `ivritsuite-fonts` block instead, and the Letter Learner (neither engine nor fonts store) keeps its copy before its fullscreen idle-hide block — the placement rule is "before the page's first shared block", and the marker comment's carrier list must be re-trued in **all** carriers whenever one is added, so the blocks stay byte-identical. `index.html` does **not** carry it. Torah Trainer's `showHintToast` and the Trope Tutor's `showToast` are separate sibling toasts with distinct ids/selectors — not part of this block; each likewise makes its region empty at load (`hintToastEl()` / `toastEl()`).
+**Shared `app-toast` block.** `showAppToast(msg, ms)` (no `ms`: 2.6 s for a short message, then 50 ms per character, 8 s at most, so a two-line message is readable; an explicit `ms` wins), `appToastEl()` (the `#appToast` `role=status` region, made empty at `DOMContentLoaded` so a screen reader already knows the live region when the first message lands) + `let _appToastTimer` live in a byte-identical `/* ═══ shared: app-toast ═══ … ═══ end shared: app-toast ═══ */` JS block placed immediately **before** the `.ivrit` engine block, with a matching `/* ═══ shared: app-toast CSS ═══ … */` block (the `#appToast` rules + a self-contained `@media (prefers-reduced-motion)` neutralizer) in each `<style>`. Both blocks are identical across `hebrew_blend_generator.html`, `classroom_dashboard.html`, `flash_cards.html`, `hebrew_dictionary.html`, `letter_learner.html`, `name_tags.html` and `tefillah_trainer.html` — copy verbatim, like `ivritsuite-fonts` / folder-tree. The dictionary has **no `.ivrit` engine** (AllTools-only backup), so its copy sits immediately before the shared `ivritsuite-fonts` block instead, and the Letter Learner (neither engine nor fonts store) keeps its copy before its fullscreen idle-hide block — the placement rule is "before the page's first shared block", and the marker comment's carrier list must be re-trued in **all** carriers whenever one is added, so the blocks stay byte-identical. `index.html` does **not** carry it. Torah Trainer's `showHintToast` and the Trope Tutor's `showToast` are separate sibling toasts with distinct ids/selectors — not part of this block; each likewise makes its region empty at load (`hintToastEl()` / `toastEl()`).
 
 ```js
 const IVRIT_CFG = {
@@ -306,7 +307,7 @@ All seven saved-item lists are organized by a **nested folder tree** with drag-a
 touch-friendly **"Move ▾"** menu, via one shared component:
 
 - Generator presets, Flash Cards presets, Flash Cards profiles, Dashboard presets, Dashboard
-  saved schedules, Torah Trainer favorite readings. (Flash Cards' active-profile dropdown stays a flat list.)
+  saved schedules, Torah Trainer favorite readings, Tefillah Trainer favorite prayers. (Flash Cards' active-profile dropdown stays a flat list.)
 
 ### Sidecar overlay model — never restructure the stores
 The item store stays a flat `{name:...}` object and is the **source of truth for which items
@@ -320,11 +321,11 @@ seeding working untouched. Tree shape:
 Six folder keys (naming `hebrew<Tool>_<thing>Folders`): `hebrewBlender_presetsFolders`,
 `hebrewFlashCards_presetsFolders`, `hebrewFlashCards_profilesFolders`,
 `hebrewDashboard_presetsFolders`, `hebrewDashboard_schedulesFolders`,
-`hebrewTorahTrainer_favoritesFolders`.
+`hebrewTorahTrainer_favoritesFolders`, `hebrewTefillahTrainer_favoritesFolders`.
 
 ### Shared component (one byte-identical block per file, like the `.ivrit` engine)
 Marked `/* ═══ IvritSuite folder-tree component (shared, identical across pages) ═══ */` (JS) plus a
-matching `.ft-*` CSS block. Carried by generator, flash_cards, dashboard, torah_trainer (which render trees
+matching `.ft-*` CSS block. Carried by generator, flash_cards, dashboard, torah_trainer, tefillah_trainer (which render trees
 and have the `.ft-*` CSS; the Torah Trainer's Favorites list adds its own color dot to each row from
 `buildItemRow` and positions it with CSS `order` rather than touching the block) **and `index.html`**, which
 deliberately uses only the block's data helpers
@@ -375,7 +376,8 @@ mountFolderTree({ treeKey, container, listItemNames(), buildItemRow(name)→acti
    `ftImportTree(key, incoming, mode==='replace')`) so folders travel with the tool's `.ivrit`.
    **Never `Object.assign` a tree** — that clobbers `root`; always go through `ftImportTree`.
    (The Torah Trainer has no `IVRIT_CFG`, so its favorites tree skips this step: it travels through
-   AllTools and the account only, like the rest of that page's data.)
+   AllTools and the account only, like the rest of that page's data. The Tefillah Trainer has one, and its tree
+   rides its `.ivrit` file.)
 4. Give each item a **Duplicate (⧉)** button. The per-tool `duplicate<Thing>(name)` deep-copies the
    stored value under `ftDuplicateName(name, existsFn)` (file-system style: "X" → "X 1" → "X 2"; the
    trailing number is the base for the next free one), then places the copy right after the original

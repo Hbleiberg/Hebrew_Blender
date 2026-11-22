@@ -226,6 +226,17 @@ const PAGES = [
     }
   },
   {
+    file: 'tefillah_trainer.html', tool: 'TefillahTrainer', host: '#cloudSavesPanel',
+    seed: {
+      hebrewTefillahTrainer_settings: JSON.stringify({ prayerKey: 'modeh-ani', nusach: 'ashkenaz', layout: 'interlinear', showTranslit: true, hebFont: 'Frank Ruhl Libre', hebFontSize: 2.4, vowelColorScheme: 'default', showLineNumbers: false }),
+      hebrewTefillahTrainer_favorites: JSON.stringify({ 'Morning — Modeh Ani': { v: 1, ref: { kind: 'prayer', prayer: 'modeh-ani', nusach: 'ashkenaz' }, color: '#e69f00', ts: 1700000000000 } }),
+      hebrewTefillahTrainer_favoritesFolders: JSON.stringify({ v: 1, root: [{ t: 'folder', id: 'pf', name: 'Morning', collapsed: false, children: [{ t: 'item', name: 'Morning — Modeh Ani' }] }] })
+    },
+    rows: ['favorite:Morning — Modeh Ani', 'settings:default'],
+    expand: `openSettingsAtPanel('cloud');`,
+    urlKeep: 'prayer=shema&nusach=sefard'
+  },
+  {
     file: 'torah_trainer.html', tool: 'TorahTrainer', host: '#cloudSavesPanel',
     seed: {
       hebrewTorahTrainer_settings: JSON.stringify({ parshahKey: 'bereshit', scope: 'parsha-full', layout: 'stacked', showTranslit: true, hebFont: 'Frank Ruhl Libre', hebFontSize: 2.4, vowelColorScheme: 'default', lastPos: { readingKey: 'bereshit', verse: '1:3', ts: 1700000000000 }, panelsCollapsed: { 'torah.settings.panel_copy': true }, karaokeBarCollapsed: false }),

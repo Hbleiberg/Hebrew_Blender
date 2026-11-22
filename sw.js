@@ -1,5 +1,5 @@
 /* IvritSuite service worker — bump VERSION to invalidate the cache on deploy. */
-const VERSION = 'v1483';
+const VERSION = 'v1484';
 const CACHE = 'ivritsuite-' + VERSION;
 // Version-independent cache for the big data/ corpora (dictionary words / emoji / parshiyot /
 // pockettorah). Kept OUT of the version-scoped CACHE so a routine VERSION bump no longer evicts
@@ -17,6 +17,7 @@ const CORE_ASSETS = [
   '/name_tags.html',
   '/flash_cards.html',
   '/torah_trainer.html',
+  '/tefillah_trainer.html',
   '/trope_tutor.html',
   '/trope_atlas.html',
   '/letter_learner.html',
@@ -62,9 +63,17 @@ const CORE_ASSETS = [
   '/icons/icon-512.png'
 ];
 
+// Data a page cannot open without, fetched once at install into DATA_CACHE under the exact URL the page asks for
+// (cache-first and keyed by ?v=: when the page's ?v= moves, this entry moves with it). The Tefillah Trainer's prayer
+// catalog: with it, the picker works on a first offline visit; the prayer texts themselves come from Sefaria.
+const DATA_PRECACHE = ['/data/tefillah/catalog.json?v=1'];
+
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE)
+    caches.open(DATA_CACHE)
+      .then((cache) => Promise.all(DATA_PRECACHE.map((url) => cache.match(url).then((hit) => hit || cache.add(new Request(url, { cache: 'no-cache' })).catch(() => {})))))
+      .catch(() => {})
+      .then(() => caches.open(CACHE))
       // add() per-asset so a single 404 can't abort the whole install
       // each asked with cache:'no-cache', so the HTTP cache (GitHub Pages: max-age=600 on every file) is revalidated rather
       // than believed — a bump deployed within those ten minutes of a visit otherwise precaches the previous deploy's files

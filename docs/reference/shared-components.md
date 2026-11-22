@@ -262,7 +262,7 @@ Maker's `.ws-split` workspace rails predate this block and deliberately stay on 
 `/* ═══ shared: sidebar-resize ═══ … */` (JS — `mountSidebarResize(cfg)`) and
 `/* ═══ shared: sidebar-resize CSS ═══ … */` (the `.sbr-*` rules). **Copy both verbatim; never
 rewrite.** Carriers: `hebrew_dictionary.html`, `hebrew_blend_generator.html`,
-`classroom_dashboard.html`, `torah_trainer.html`, `letter_learner.html`, `name_tags.html`. When a page adopts or drops them,
+`classroom_dashboard.html`, `torah_trainer.html`, `letter_learner.html`, `name_tags.html`, `tefillah_trainer.html`. When a page adopts or drops them,
 re-true the carrier list in the marker comments of **all** carriers and re-verify byte-identity
 by sha (same rule as the keyboard/app-toast blocks). Per-page wiring — the cfg object inside a
 small `init…Resize()` mount call — lives **below** the end marker. The CSS block is
@@ -390,7 +390,7 @@ pointer, key, touch or wheel activity in fullscreen the block sets `body.fs-idle
 clears it, and leaving fullscreen clears it. Nothing is saved.
 - **Carriers (byte-identical JS, `/* ═══ shared: fullscreen idle-hide ═══ */`):** `Hebrew_Font_Maker.html`,
   `classroom_dashboard.html`, `flash_cards.html`, `hebrew_blend_generator.html`, `hebrew_dictionary.html`,
-  `torah_trainer.html`, `trope_tutor.html`, `letter_learner.html` (8). Pasted directly above each page's `toggleFullscreen()`;
+  `torah_trainer.html`, `trope_tutor.html`, `letter_learner.html`, `tefillah_trainer.html` (9). Pasted directly above each page's `toggleFullscreen()`;
   sha-verify after touching it.
 - **Host contract (per-page CSS, deliberately not identical):** one rule
   `body.fs-idle <exit control>:not(:focus-visible) { opacity: 0; pointer-events: none; }` plus `opacity`
@@ -423,7 +423,7 @@ buttons was overlooked); its Holiday Torah Readings (calendar) and Share (link) 
 drawer, so the calendar glyph is the Calendar tab's and the link glyph the Share tab's (and its Copy link's).
 Carriers: `index`, `hebrew_blend_generator`, `hebrew_dictionary`, `classroom_dashboard`, `flash_cards`,
 `torah_trainer`, `trope_tutor`, `Hebrew_Font_Maker`, `resources`, `contact`, `privacy`, `terms`,
-`account`, `404`, `letter_learner`, `parsha_emojis`, `name_tags`, `trope_atlas`, `reading_assignments`, `letter_discrimination`, `holiday_guide`, and the generated `parsha/` and `holidays/` pages and `jewish-coloring-pages` (their copies are taken
+`account`, `404`, `letter_learner`, `parsha_emojis`, `name_tags`, `trope_atlas`, `reading_assignments`, `letter_discrimination`, `holiday_guide`, `tefillah_trainer`, and the generated `parsha/` and `holidays/` pages and `jewish-coloring-pages` (their copies are taken
 from `parsha_emojis` by `scripts/build-parsha-pages.mjs` and `scripts/build-coloring-hub.mjs`, and from `holiday_guide` by `scripts/build-holiday-pages.mjs`, so they cannot drift); the chip's glyph lives in `js/ivrit-account.js` (`ICON_USER`).
 
 ### The two byte-identical parts
@@ -887,8 +887,8 @@ card is never focused off the screen; the per-file engines still leave it where 
 settings mutations**. It **never auto-launches** — entry is a header **Tour** button (the shared `hi-help` icon + the word) with a one-time
 first-visit pulse gated by a `hebrew<Tool>_tourSeen` flag (set once so the pulse never returns).
 - **Implemented on:** `hebrew_blend_generator.html`, `hebrew_dictionary.html`, `classroom_dashboard.html`,
-  `torah_trainer.html`, `Hebrew_Font_Maker.html`, `flash_cards.html`, `trope_tutor.html`, `letter_learner.html` and
-  `name_tags.html` — **all 9 tools**. The last three share one engine as a `═══`-marked block,
+  `torah_trainer.html`, `Hebrew_Font_Maker.html`, `flash_cards.html`, `trope_tutor.html`, `letter_learner.html`,
+  `name_tags.html` and `tefillah_trainer.html` — **all 10 tools**. The last four share one engine as a `═══`-marked block,
   `/* ═══ shared: tour engine ═══ … ═══ end shared: tour engine ═══ */` (JS only, byte-identical — sha-verify it):
   each page declares `TOUR_SEEN_KEY` (its `hebrew<Tool>_tourSeen` key) and `TOUR_STEPS` (`{ target(), titleKey,
   bodyKey }`) **above** the block, and keeps its own markup (`#tourBtn`, `#tourSpot`, `#tourCard`) and CSS. A step

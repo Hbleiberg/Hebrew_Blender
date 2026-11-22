@@ -115,13 +115,17 @@ The site loads **Google Analytics 4** (`gtag.js`) from `googletagmanager.com` on
 
 The active translation's title and license are displayed in the page footer per the attribution requirement of CC BY / CC BY-SA / CC BY-NC / CC BY-NC-SA.
 
-**Sefaria logo (attribution mark) — `index.html` and `torah_trainer.html`:** both pages display Sefaria's
+**Used by `tefillah_trainer.html`:** siddur texts (Sefaria's *Siddur Ashkenaz*, *Siddur Sefard* and *Siddur Edot HaMizrach*) and their translations, and the Tanakh verses of the Shema, are fetched at runtime via `/api/v3/texts/...`; no text is stored in this repository. Each edition has its own license. The page offers only Public Domain, CC0, CC BY, CC BY-SA, CC BY-NC and CC BY-NC-SA editions (checked on the version Sefaria returns; `unknown` and NoDerivatives are refused), and shows each text's edition title and license under the prayer, on the print-out and the handout, and under a copied heading. The editions its catalog draws on today: *The Metsudah siddur, 1981* and the *Translation based on the Metsudah linear siddur, by Avrohom Davis, 1981* (CC BY), *Daat Siddur Ashkenaz* (Public Domain), *Torat Emet 357* (Public Domain), the *Shaliehsaboo Edition* (CC0) and the *Sefaria Community Translation* (CC0); the Shema's Torah text shows *Miqra according to the Masorah* (CC BY-SA) with JPS 1917 (Public Domain). `docs/tefillah-refs-report.md` lists the edition and license of every prayer.
+
+**Open Siddur Project texts — `tefillah_trainer.html`:** none are in the repository yet. `data/tefillah/opensiddur/` will hold snapshot files written by `scripts/build-tefillah-opensiddur.mjs`, each carrying its own license (Public Domain, CC0, CC BY or CC BY-SA), its contributors and its page, all shown beside the text; a text is never relabelled with this site's license.
+
+**Sefaria logo (attribution mark) — `index.html`, `torah_trainer.html` and `tefillah_trainer.html`:** these pages display Sefaria's
 wordmark as the visible attribution next to the link to https://www.sefaria.org — on the home page beside
-the Torah Trainer card, and in the Torah Trainer's "Hebrew text via …" footer line. Two variants are used
+the Torah Trainer and Tefillah Trainer cards, in the Torah Trainer's "Hebrew text via …" footer line and in the Tefillah Trainer's "Texts via …" one. Two variants are used
 (`sefaria-light` / `sefaria-dark`, swapped by theme) and both are **hot-linked**, not redistributed:
 `https://files.readme.io/87c5652-image.png` and `https://files.readme.io/dcee0a8-image.png`, served from
 the CDN behind Sefaria's developer documentation. `files.readme.io` is allowlisted in the `img-src`
-directive of those two pages' CSP meta tags, and nowhere else.
+directive of those three pages' CSP meta tags, and nowhere else.
 
 The logo is Sefaria's **trademark**, used here nominatively to credit the source of the text. That is a
 separate question from the text licenses above: the CC / public-domain terms covering Sefaria's *content*

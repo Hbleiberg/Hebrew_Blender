@@ -73,6 +73,16 @@ A reader for the weekly Torah portion (parsha) with toggleable translit, transla
 - **Verse looping** — loop a single verse for practice (with configurable silence between repeats) plus an audio-bar loop-stop control
 - Hebrew TTS (per-verse + read-all), transliteration styles (on their own line or under each word), Hebrew font picker, fullscreen for projection
 
+### Tefillah Trainer (`tefillah_trainer.html`)
+Practice reading the siddur: pick a prayer and a nusach, then read it with toggleable transliteration, translation and vowel coloring. No audio yet.
+
+- **A curated list of prayers**, from the morning blessings to the bedtime Shema, each in the nusachim whose text Sefaria holds under an open license — Ashkenaz, Sefard and Edot HaMizrach — with a search box and Service and Day filters. A nusach that lacks a prayer is simply not offered for it.
+- **Every word is its source's own** — texts and translations come verbatim from Sefaria, and each is shown under the prayer with its edition and its license. Only openly licensed editions are offered (Public Domain, CC0, CC BY, CC BY-SA, CC BY-NC, CC BY-NC-SA).
+- **The Shema from the Torah text** — with te'amim and trope color coding, the siddur's added lines marked, and links that open each passage in the Torah Trainer.
+- **Side by side, interlinear or page view**, line numbers, the siddur's instructions as small print (or hidden), per-vowel color coding (Default / TaL AM), every transliteration scheme, and the Hebrew font picker with My Fonts.
+- **Favorites with folders, print, a student handout, a practice link and rich-text copy** — a copied passage carries its source and license.
+- **Open Siddur texts**, with masculine / feminine / both forms where a text gives them, are read from snapshot files; none ship yet (`data/tefillah/opensiddur/README.md`).
+
 ### Trope Tutor (`trope_tutor.html`)
 An interactive tutor for the Torah cantillation marks (trope / te'amim) — the companion to the Torah Trainer's trope color coding.
 
@@ -167,7 +177,7 @@ These work the same across the tools (all pages are served from one origin, so s
 - **AllTools backup** — the gear modal on the landing page bundles every tool's settings into one export/import/erase, either as an `.ivrit` file or a JSON blob.
 - **My Fonts** — custom fonts made (or uploaded) in the Hebrew Font Maker are stored in the browser and appear in **every** tool's font picker automatically; you can upload your own `.ttf`/`.otf`/`.woff`/`.woff2` from any picker.
 - **Nikkud color-coding** — vowel-by-color rendering with two selectable schemes, **Default** and **TaL AM** (matching the TaL AM curriculum poster), in three styles (color / highlight / underline).
-- **Guided tours** — nine tools (Generator, Dictionary, Dashboard, Flash Cards, Torah Trainer, Trope Tutor, Letter Learner, Name Tags, Font Maker) have a **Tour** button (it pulses once on a first visit; a tour never starts by itself) whose walk-through never changes your data.
+- **Guided tours** — ten tools (Generator, Dictionary, Dashboard, Flash Cards, Torah Trainer, Tefillah Trainer, Trope Tutor, Letter Learner, Name Tags, Font Maker) have a **Tour** button (it pulses once on a first visit; a tour never starts by itself) whose walk-through never changes your data.
 - **Share links** — the Generator and Dictionary produce shareable `?s=` URLs; Flash Cards uses a paste-in teacher share code.
 - **Installable PWA + offline shell** — `manifest.webmanifest` + `sw.js` let the suite install to a home screen and run its app shell offline; iOS launch/splash screens live in `splash/`. (Remote resources — Google Fonts, Sefaria, PocketTorah audio — are not available offline.)
 
@@ -185,7 +195,7 @@ In each tool's **Backup** area there's an **Automatic Input / Manual Input** tog
 How it works:
 
 - A save file stores **both** your full collection of named presets **and** your current on-screen settings, so restoring brings everything back.
-- The landing-page **AllTools** save file bundles *every* tool at once (Generator, Dashboard, Flash Cards, Dictionary, Torah Trainer, and Trope Tutor settings/progress — plus any fonts you built in the Hebrew Font Maker).
+- The landing-page **AllTools** save file bundles *every* tool at once (Generator, Dashboard, Flash Cards, Dictionary, Torah Trainer, Tefillah Trainer, and Trope Tutor settings/progress — plus any fonts you built in the Hebrew Font Maker).
 - Each file knows which tool it came from (recorded inside the file, so it still works even if you rename it). Dropping the wrong kind of file onto a tool warns you first.
 - On restore you choose **Merge** (add to what you have) or **Replace** (start fresh from the file).
 
@@ -201,7 +211,7 @@ settings), `js/ivrit-account.js` (sign-in, sign-out, the header chip, the requir
 `js/ivrit-saves.js` (bringing the account onto a device at load, writing changes through, the status line) and
 `js/ivrit-projects.js` (Font Maker projects) — plus two throwaway pages for trying it out,
 `account-test.html` and `saves-test.html`. The chip and the status line are on the home page, the Worksheet
-Generator, Flash Cards, the Dictionary, the Torah Trainer, the Trope Tutor and the Classroom Dashboard;
+Generator, Flash Cards, the Dictionary, the Torah Trainer, the Tefillah Trainer, the Trope Tutor and the Classroom Dashboard;
 the Font Maker keeps whole projects instead (next paragraph) and, like the account page, takes the
 suite-wide preferences and My Fonts from the account.
 How it works inside: `docs/reference/accounts-and-cloud.md`.
@@ -278,7 +288,7 @@ reaches the account two seconds after your last change and every other signed-in
 Sync, Upload or Download buttons anywhere. Where the old panels sat, one status line says *Saved in your
 account · just now*, *Saving…*, *Couldn't save — will retry* (with Retry) or *Offline — your changes are saved to your
 account when you are back online*: the Generator and Flash Cards under *Advanced* next to the `.ivrit` backup, the
-Dictionary inside the Word Lists manager, the Torah Trainer, Trope Tutor and Classroom Dashboard in their
+Dictionary inside the Word Lists manager, the Torah Trainer, Tefillah Trainer, Trope Tutor and Classroom Dashboard in their
 settings drawer, and the home page's *Import / Export All Settings* modal under *Your account*. Nothing asks you
 to choose between two versions: an item changed in two places is kept twice (the other copy named "… (from
 another device)"), a tool's settings take the account's copy the first time a device syncs them (the device's
@@ -400,6 +410,7 @@ upgrade of an older device's sync memory (nothing deleted, nothing removed from 
 | `flash_cards.html` | Interactive flash cards with profiles and weakness tracking — Beta |
 | `classroom_dashboard.html` | Live classroom projector / SmartBoard dashboard |
 | `torah_trainer.html` | Weekly parsha reader with translit, vowel coloring, cantillation, TTS, PocketTorah karaoke, and verse looping |
+| `tefillah_trainer.html` (+ `data/tefillah/catalog.json`, `data/tefillah/opensiddur/`, `scripts/tefillah-sefaria.mjs`, `scripts/walk-tefillah-index.mjs`, `scripts/check-tefillah-refs.mjs`, `scripts/build-tefillah-opensiddur.mjs`, `scripts/smoke-tefillah.mjs`, `docs/tefillah-refs-report.md`) | Siddur reading practice: a curated catalog of prayers by nusach, read live from Sefaria (each text shown with its edition and license), the Shema from the Torah text, favorites, print, handout and copy. The scripts walk Sefaria's siddur indexes, check every catalog ref, build Open Siddur snapshot files and prove the reading model against fixtures |
 | `trope_tutor.html` | Learn + drill the Torah cantillation marks with real chanted examples (PocketTorah clips via a pre-built index) |
 | `trope_atlas.html` | Side-by-side reference to the cantillation signs: each sign's names, rank and role, its melody on a staff in every reading tradition (playable, movable into a common key), and the chart phrases by clause |
 | `letter_learner.html` | Alef-bet learner for kindergarten / Mechina: every letter as a card that opens a picture hint, four illustrated words, the letter with every vowel read aloud and five fonts; options sync to the account. Three buttons under the header switch the page: Letters (Block), Letters (Cursive) — the same cards in Israeli handwriting (the self-hosted `'IvritSuite Ktav'` face), each opening the printed and handwritten forms, a picture built on the handwritten shape with its trick (the "Hebrew Cursive Letter Tricks" write-up), the look-alike pairs and the same words in cursive (`?mode=cursive`; `?letter=<id>` serves both letter modes, and `&tab=coloring` — any of the card's tabs — opens it on that tab) — and Vowels: every vowel sign as a card that opens its sound family's shape, gesture, colour and story (`?mode=vowels`, `?vowel=<id>`). Under the grid, *Free aleph bet coloring sheets* links every letter card — the pairs and the five finals too — straight to its coloring sheet (`?letter=<id>&tab=coloring`; the pair tiles hide while the pairs are folded) — the page's crawlable text for alef-bet coloring-sheet searches. Linked from the hub's *Discover* card (all six block batches and the three cursive batches are in; the review sheets in `docs/letter_learner_review/` are rendered from the page itself by `scripts/letter-learner-review-sheet.mjs`; the block hints are drawn on Frank Ruhl Libre outlines traced by `scripts/letter-learner-trace-glyph.py`, and the cursive letterforms were traced from the TaL AM alef-bet frieze by `scripts/letter-learner-trace-chart.py` — dev tools the page never loads) |

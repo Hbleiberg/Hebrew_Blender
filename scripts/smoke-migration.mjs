@@ -100,7 +100,7 @@ const UID = '11111111-1111-4111-8111-111111111111';
 const EMAIL = 'teacher@example.org';
 // The name step never opens: the session's user carries a display name.
 const SESSION = { access_token: 'x', refresh_token: 'y', expires_at: 4102444800, token_type: 'bearer', user: { id: UID, email: EMAIL, user_metadata: { full_name: 'Test Teacher' }, app_metadata: { provider: 'email' } } };
-const ALL_TOOLS = ['Suite', 'Worksheet', 'FlashCards', 'Dictionary', 'TorahTrainer', 'TropeTutor', 'Classes', 'Dashboard', 'LetterLearner', 'EmojiTorah', 'NameTags'];
+const ALL_TOOLS = ['Suite', 'Worksheet', 'FlashCards', 'Dictionary', 'TorahTrainer', 'TefillahTrainer', 'TropeTutor', 'Classes', 'Dashboard', 'LetterLearner', 'EmojiTorah', 'NameTags'];
 
 /* ---------- the fake cloud ---------- */
 // The account's rows, answered the way PostgREST would for the queries the module makes: GET (eq. and in.(…)
@@ -233,6 +233,7 @@ async function openContext(browser, cloud, seed, opts) {
 const PAGES = [
   { file: 'trope_tutor.html', tool: 'TropeTutor', writer: 'saveSettings(); saveSettingsFlush(); saveProgress();' },   // the flush writes only a pending save
   { file: 'torah_trainer.html', tool: 'TorahTrainer', writer: 'saveSettings(); saveSettingsFlush();' },
+  { file: 'tefillah_trainer.html', tool: 'TefillahTrainer', writer: 'saveSettings(); saveSettingsFlush();' },
   { file: 'flash_cards.html', tool: 'FlashCards', writer: 'saveSettings();' },
   { file: 'hebrew_blend_generator.html', tool: 'Worksheet', writer: 'rememberSetup(true);' },
   { file: 'hebrew_dictionary.html', tool: 'Dictionary', writer: 'saveDictSessionFlush(); saveEmojiSettings();' },
@@ -244,6 +245,7 @@ const PAGES = [
 // The tools each page hydrates (its own, Suite, and its alsoPull) — settled() is asked about exactly these.
 const TOOLS_OF = {
   'index.html': ALL_TOOLS, 'trope_tutor.html': ['TropeTutor', 'Suite'], 'torah_trainer.html': ['TorahTrainer', 'Suite'],
+  'tefillah_trainer.html': ['TefillahTrainer', 'Suite'],
   'flash_cards.html': ['FlashCards', 'Suite', 'Dictionary', 'Classes'], 'hebrew_blend_generator.html': ['Worksheet', 'Suite', 'Dictionary'],
   'hebrew_dictionary.html': ['Dictionary', 'Suite'], 'classroom_dashboard.html': ['Dashboard', 'Suite', 'Classes'], 'letter_learner.html': ['LetterLearner', 'Suite'],
   'parsha_emojis.html': ['EmojiTorah', 'Suite'], 'name_tags.html': ['NameTags', 'Suite', 'Classes']
@@ -392,6 +394,10 @@ function buildDeviceA(D) {
     lastPos: { readingKey: 'bereshit', verse: '1:3', ts: 1700000000000 }, karaokeBarCollapsed: true, panelsCollapsed: { 'torah.settings.panel_copy': true }, loopVerse: '1:2' }));
   s.hebrewTorahTrainer_favorites = J({ 'Bereshit — Aliyah 1': { v: 1, ref: { kind: 'parsha', parshahKey: 'Bereshit', scope: 'parsha-aliyah-1' }, color: '#e69f00', ts: 1700000000000 }, 'Shavuot — Day 1': { v: 1, ref: { kind: 'holiday', holidayKey: 'shavuot-1' }, color: '#0072b2', ts: 1700000001000, settings: { layout: 'stacked', showTranslit: true } } });
   s.hebrewTorahTrainer_favoritesFolders = J({ v: 1, root: [{ t: 'folder', id: 'tf', name: 'Year 1', collapsed: false, children: [{ t: 'folder', id: 'tf1', name: 'Fall', collapsed: false, children: [{ t: 'item', name: 'Bereshit — Aliyah 1' }] }] }, { t: 'item', name: 'Shavuot — Day 1' }] });
+  s.hebrewTefillahTrainer_settings = J(mutate('hebrewTefillahTrainer_settings', base('hebrewTefillahTrainer_settings'), {
+    prayerKey: 'ashrei', nusach: 'sefard', layout: 'biblepage', hebFontSize: 2.0, showLineNumbers: false, showInstructions: false, genderedForms: 'f', translitStyle: 'sbl' }));
+  s.hebrewTefillahTrainer_favorites = J({ 'Morning — Modeh Ani': { v: 1, ref: { kind: 'prayer', prayer: 'modeh-ani', nusach: 'ashkenaz' }, color: '#e69f00', ts: 1700000000000 }, 'Ashrei (Sefard)': { v: 1, ref: { kind: 'prayer', prayer: 'ashrei', nusach: 'sefard' }, color: '#0072b2', ts: 1700000001000, settings: { layout: 'interlinear', showTranslit: true } } });
+  s.hebrewTefillahTrainer_favoritesFolders = J({ v: 1, root: [{ t: 'folder', id: 'pf', name: 'Morning', collapsed: false, children: [{ t: 'item', name: 'Morning — Modeh Ani' }] }, { t: 'item', name: 'Ashrei (Sefard)' }] });
   s.hebrewFlashCards_settings = J(mutate('hebrewFlashCards_settings', base('hebrewFlashCards_settings'), { mode: 1, cardCount: 12, selectedLetters: ['א', 'ב', 'ג'], selectedVowels: ['a', 'patah'], ttsRate: 1.25 }));
   s.hebrewFlashCards_presets = J({ 'Deck A': { settings: { mode: 2, cardCount: 12 }, order: 1700000000000 }, 'Deck B': { settings: { mode: 1, cardCount: 8 }, order: 1700000001000 } });
   s.hebrewFlashCards_presetsFolders = J({ v: 1, root: [{ t: 'folder', id: 'fa', name: 'Fall', collapsed: false, children: [{ t: 'folder', id: 'fa1', name: 'Week 1', collapsed: false, children: [{ t: 'item', name: 'Deck A' }] }] }, { t: 'item', name: 'Deck B' }] });
@@ -448,7 +454,7 @@ const signInHere = (page) => page.evaluate((s) => { Object.keys(s).forEach(k => 
 // 39 rows, six of them folder trees. Classes: the shared roster's four — one per old Dashboard roster and Name Tags list
 // (the roster and the list both named Kitah Alef hold different students, so they stay two) — made by the home page from
 // the old keys once the account was heard from, never offered on the card.
-const EXPECTED_ROWS = { Suite: 2, TropeTutor: 2, TorahTrainer: 4, FlashCards: 8, Worksheet: 4, Dictionary: 2, Dashboard: 8, LetterLearner: 1, EmojiTorah: 1, NameTags: 3, Classes: 4 };
+const EXPECTED_ROWS = { Suite: 2, TropeTutor: 2, TorahTrainer: 4, TefillahTrainer: 4, FlashCards: 8, Worksheet: 4, Dictionary: 2, Dashboard: 8, LetterLearner: 1, EmojiTorah: 1, NameTags: 3, Classes: 4 };
 const EXPECTED_TOTAL = Object.values(EXPECTED_ROWS).reduce((a, b) => a + b, 0);
 // A font the teacher made: it lives in IndexedDB, not localStorage, so the dump-and-classify pass below
 // cannot see it — it is seeded on A and looked for on B by name.
@@ -487,7 +493,7 @@ try {
       await page.close();
     }
     await ctx.close();
-    const have = ['hebrewTropeTutor_settings', 'hebrewTorahTrainer_settings', 'hebrewFlashCards_settings', 'hebrewBlender_lastState', 'hebrewDashboard_settings', 'hebrewEmojiTorah_settings', 'hebrewNameTags_settings'].filter(k => !D[k]);
+    const have = ['hebrewTropeTutor_settings', 'hebrewTorahTrainer_settings', 'hebrewTefillahTrainer_settings', 'hebrewFlashCards_settings', 'hebrewBlender_lastState', 'hebrewDashboard_settings', 'hebrewEmojiTorah_settings', 'hebrewNameTags_settings'].filter(k => !D[k]);
     const fcOmit = (REG.find(e => e.tool === 'FlashCards' && e.kind === 'settings') || {}).omit || [];
     check('0: the Flash Cards settings row omits the four fields the machine decides, and nothing else', JSON.stringify(fcOmit.slice().sort()) === JSON.stringify(['audioEnabled', 'hideHomeBtn', 'sheetDuplex', 'ttsRate']), JSON.stringify(fcOmit));
     check('0: every settings-blob page wrote its default store; the registry and the suite-wide keys were read', have.length === 0 && REG.length >= 20 && suiteKeys.size === 12, JSON.stringify({ missing: have, reg: REG.length, suite: suiteKeys.size }));
@@ -760,7 +766,7 @@ try {
     const cards = await page.evaluate(() => window.__cards);
     const writes = cloud.writesSince(before).map(FakeCloud.label);
     // the account's settings win on every tool: every field the account's row has is what this device now holds
-    const SETTINGS = [['TropeTutor', 'settings', 'hebrewTropeTutor_settings'], ['TorahTrainer', 'settings', 'hebrewTorahTrainer_settings'], ['FlashCards', 'settings', 'hebrewFlashCards_settings'], ['Worksheet', 'lastState', 'hebrewBlender_lastState'], ['Dashboard', 'settings', 'hebrewDashboard_settings']];
+    const SETTINGS = [['TropeTutor', 'settings', 'hebrewTropeTutor_settings'], ['TorahTrainer', 'settings', 'hebrewTorahTrainer_settings'], ['TefillahTrainer', 'settings', 'hebrewTefillahTrainer_settings'], ['FlashCards', 'settings', 'hebrewFlashCards_settings'], ['Worksheet', 'lastState', 'hebrewBlender_lastState'], ['Dashboard', 'settings', 'hebrewDashboard_settings']];
     const local = await page.evaluate((keys) => { const o = {}; keys.forEach(k => { o[k] = JSON.parse(localStorage.getItem(k) || 'null'); }); return o; }, SETTINGS.map(x => x[2]));
     const lost = [];
     SETTINGS.forEach(([tool, kind, key]) => { const row = cloud.find(kind, 'default', tool); if (!row) { lost.push(key + ': no row'); return; } Object.keys(row.data).forEach(f => { if (!same(row.data[f], (local[key] || {})[f])) lost.push(key + '.' + f); }); });

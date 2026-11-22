@@ -364,12 +364,6 @@ _(none)_
 
 ## Done
 
-- [x] 2026-11-21 | PR #418 (the maintainer's brief, no loop session) | js/ivrit-classes.js, the hub, name_tags, classroom_dashboard, flash_cards, reading_assignments, `0013`, sw.js | **One class roster shared by the Dashboard, Name Tags, Flash Cards and reading assignments** (`ivritSuite_classes`, tool `Classes`; old rosters and lists shown as a live view, copied only after the account answers, never doubled) | the classes, migration, sync, tools and assignments smokes green; `0013` live; `docs/reference/class-roster.md`
-
-- [x] 2026-11-21 | `a013e161` | classroom_dashboard.html | (PR #418; the open picker-direction P4) **A Hebrew name beside a Latin one no longer leads the Latin part with its last mark**: each script run in its own isolate (`pickerNameHTML`, *Names shown*) | browser pass, EN + HE, light + dark
-
-- [x] 2026-11-21 | `704dc61e` | flash_cards.html | (PR #418; the profiles-from-a-class-list seed) **Make profiles for this class**: one linked profile per student who has none, beside *Link profiles…* (each suggestion confirmed) | browser pass; the share code holds no class or student (smoke-tools)
-
 - [x] 2026-11-21 | (S671 close-out) | branch/deploy note | **S671 = H on `trope_atlas.html` (its 2nd, S583 → S671; 27 commits to the page since): 3 lessons + the student cell by real input, FOUND 2 frictions + 1 P4 + 2 seeds, FIXED 2 (one closes the S665 P4) + the S653 ring from the queue; the S670 toggle P4 refuted.** Draft PR #417 (continued), `sw.js` v1467 → v1470; nothing live changed.
 
 - [x] 2026-11-21 | `40ac2bb1` | torah_trainer.html, sw.js | (S671, the S653 M P4, its rows) **A selected or looping verse's ring clears its verse number** (the plate 8px out, padding cancelling margin: 0 → 8px) | probe S671 54 / 54 by real clicks, 3 cells × 3 layouts (before: 9 gap cells fail); nothing in or after the row moves

@@ -78,7 +78,7 @@
   'use strict';
 
   /* ---------- constants ---------- */
-  var TOOLS = ['Suite', 'Worksheet', 'FlashCards', 'Dictionary', 'TorahTrainer', 'TropeTutor', 'Classes', 'Dashboard', 'LetterLearner', 'EmojiTorah', 'NameTags'];   // Classes before the Dashboard and Name Tags: a hydration runs in this order, and the shared classes land before the old rosters and lists are looked at
+  var TOOLS = ['Suite', 'Worksheet', 'FlashCards', 'Dictionary', 'TorahTrainer', 'TefillahTrainer', 'TropeTutor', 'Classes', 'Dashboard', 'LetterLearner', 'EmojiTorah', 'NameTags'];   // Classes before the Dashboard and Name Tags: a hydration runs in this order, and the shared classes land before the old rosters and lists are looked at
   var KIND_RE = /^[A-Za-z]{1,32}$/;
   var SHAPES = ['map', 'mapIn', 'single', 'tree', 'scalar'];
   var MERGES = ['item', 'assign', 'deepMax', 'max', 'page'];
@@ -304,6 +304,11 @@
     // Favorite readings (the Favorites tab): one row per favorite, plus the folder tree the page merges with ftMergeTrees.
     { tool: 'TorahTrainer', kind: 'favorite', lsKey: 'hebrewTorahTrainer_favorites', shape: 'map', merge: 'item', ivritKey: 'torahTrainerFavorites', label: 'shared.cloud.kind_favorite' },
     { tool: 'TorahTrainer', kind: 'favoriteFolders', lsKey: 'hebrewTorahTrainer_favoritesFolders', shape: 'tree', merge: 'page', follows: 'favorite', ivritKey: 'torahTrainerFavoriteFolders' },
+    // tefillah_trainer.html — the same three rows: one settings blob (every field travels: the page keeps no reading
+    // position), one row per favorite prayer (a pointer into the page's catalog), and their folder tree.
+    { tool: 'TefillahTrainer', kind: 'settings', lsKey: 'hebrewTefillahTrainer_settings', shape: 'single', merge: 'assign', ivritKey: 'tefillahTrainerSettings', label: 'shared.cloud.kind_settings' },
+    { tool: 'TefillahTrainer', kind: 'favorite', lsKey: 'hebrewTefillahTrainer_favorites', shape: 'map', merge: 'item', ivritKey: 'tefillahTrainerFavorites', label: 'shared.cloud.kind_favorite_prayer' },
+    { tool: 'TefillahTrainer', kind: 'favoriteFolders', lsKey: 'hebrewTefillahTrainer_favoritesFolders', shape: 'tree', merge: 'page', follows: 'favorite', ivritKey: 'tefillahTrainerFavoriteFolders' },
     // flash_cards.html — decks (the page calls them presets) and their folders, the live settings, the best
     // streak, and one row per student profile (privacy.legal.* says student names reach the account while a
     // teacher is signed in) with the profile folders; the page supplies the tree and profile merges
@@ -403,6 +408,7 @@
   // The tool names the status line and the card show (the home page's card titles, present in every dictionary).
   var TOOL_NAMES = { Worksheet: ['home.card.generator.name', 'Hebrew Worksheet Generator'], FlashCards: ['home.card.flashcards.name', 'Hebrew Flash Cards'],
                      Dictionary: ['home.card.dictionary.name', 'Hebrew Word Lookup'], TorahTrainer: ['home.card.torah.name', 'Torah Trainer'],
+                     TefillahTrainer: ['home.card.tefillah.name', 'Tefillah Trainer'],
                      TropeTutor: ['home.card.trope.name', 'Trope Tutor'], Dashboard: ['home.card.dashboard.name', 'Hebrew Classroom Dashboard'],
                      LetterLearner: ['shared.cloud.tool_letterlearner', 'Letter Learner'], EmojiTorah: ['shared.cloud.tool_emojitorah', 'Parsha Emojis'],
                      NameTags: ['shared.cloud.tool_nametags', 'Name Tags'], Classes: ['shared.cloud.tool_classes', 'Class lists'],

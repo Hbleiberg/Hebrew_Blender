@@ -46,9 +46,9 @@ VERSION = "1.2"   # shown as "v{VERSION}" on the splash — bump whatever value 
 2. Run `python3 splash/gen_splash.py` — re-renders every `splash/splash-*.png`
    and rewrites `splash/apple-startup-links.html`.
 3. Only if `DEVICES` changed (NOT for a plain version bump): re-sync the
-   `apple-touch-startup-image` block in **18 HTML pages** (every root page but `account.html`, the `emoji_torah.html` forwarding stub, `trope_review.html`, the unlisted `reading_assignments.html` and `letter_discrimination.html`, and the three test harnesses: 404,
+   `apple-touch-startup-image` block in **19 HTML pages** (every root page but `account.html`, the `emoji_torah.html` forwarding stub, `trope_review.html`, the unlisted `reading_assignments.html` and `letter_discrimination.html`, and the three test harnesses: 404,
    Hebrew_Font_Maker, classroom_dashboard, contact, flash_cards, hebrew_blend_generator,
-   hebrew_dictionary, holiday_guide, index, letter_learner, name_tags, parsha_emojis, privacy, resources, terms, torah_trainer, trope_atlas, trope_tutor) from
+   hebrew_dictionary, holiday_guide, index, letter_learner, name_tags, parsha_emojis, privacy, resources, tefillah_trainer, terms, torah_trainer, trope_atlas, trope_tutor) from
    `splash/apple-startup-links.html` (the block is identical in each). A version
    bump alone keeps the same filenames, so the pages need no change.
 4. Commit & push.
@@ -101,6 +101,9 @@ Notes:
   and no value at all on `trope/trope_approvals.json`, which `sw.js` serves network-first (an approval is live without a bump),
   `trope/trope_phrase_examples.json?v=1`,
   `hebrew_emojis.json?v=2`,
+  `tefillah/catalog.json?v=1` (the Tefillah Trainer's prayer catalog — the one corpus `sw.js` also fetches at
+  install, `DATA_PRECACHE`, under that exact URL: **a bump changes it in both files**) and the Tefillah Trainer's Open Siddur
+  snapshot files via **`OPENSIDDUR_DATA_V`** (`tefillah/opensiddur/<key>.json?v=1`, none yet),
   `parshiyot.json?v=1`, `pockettorah/manifest.json?v=1`, `pockettorah/aliyah.json?v=1`
   (the last four had originally shipped with no buster at all), `leyning/weekday.json?v=1` and
   `leyning/triennial.json?v=1` (the Torah Trainer's Triennial and Weekday cycles, fetched only once such a
@@ -221,6 +224,13 @@ recipe:
   `HolidayGuide.md`, the page or `build-holiday-pages.mjs` changes; a change to `js/coloring-art.js` also needs the
   parsha proof (`holiday-guide.md` → *The line art*).
 
+### The Tefillah Trainer's fixture smoke
+
+`node scripts/smoke-tefillah.mjs` (port 8096, no `--sdk`, signed out) serves its own catalog and its own Sefaria answers,
+built from vocabulary words, and checks the reading model's refusals and renderings (`docs/reference/tefillah-trainer.md`
+→ *Checks*). Run it after any change to how the page loads, licenses, ranges or renders a text. The page's account
+layer is covered by `smoke-tools` and `smoke-migration` below.
+
 ### Backend smokes — the accounts / cloud layer
 
 **The generic recipe above cannot see a signed-in page.** Route-aborting every external origin also
@@ -238,7 +248,7 @@ in-memory PostgREST / Auth / Storage — no network, no real project, nothing to
 |---|---|---|---|
 | `scripts/smoke-account.mjs` | optional | 8080 | anonymous with the CDN blocked (0 `pageerror`, no `sb-*` key), the chip, SRI, the URL contracts, the first email sign-in on a device (the code field appears after the send and the code signs in), the emailed link (`#ivsignin=`: stripped, filled in, nothing sent before *Verify code*; the sent-to-elsewhere, expired and signed-in cases need `--sdk`), the required-name step (a nameless sign-in gets one step, *Not now* after a failed save, *Sign out instead*, none when `getUser()` fails or the account is named), and every page that loads the analytics tag reporting a `page_location` that leaves the code out (a page with the tag and no snippet fails it) |
 | `scripts/smoke-saves.mjs` | optional | 8080 | the local round trip signed out, canonical hashing, the state table and the hydration-action table, the status line failing soft with the API unreachable |
-| `scripts/smoke-tools.mjs` | optional | 8080 | the eight wired tool pages and the hub: the status host's sign-in line, no overlay by itself, the full localStorage dump byte-identical to a control run with the account scripts blocked; a remembered session with the API unreachable fails soft with no name step and no card |
+| `scripts/smoke-tools.mjs` | optional | 8080 | the nine wired tool pages and the hub: the status host's sign-in line, no overlay by itself, the full localStorage dump byte-identical to a control run with the account scripts blocked; a remembered session with the API unreachable fails soft with no name step and no card |
 | `scripts/smoke-sync.mjs` | **required** | 8081 | the signed-in model: a fresh device hydrates with no clicks, write-through (insert / conditional update / conditional delete / nothing on an unchanged hash, the `pagehide` flush, the `online` retry), the two-tab rules, deletions propagating both ways, folder trees converging, fonts (the eleventh refused quietly), the device-extras card, the sign-out cases (memory-confirmed rows gone, preferences kept, an unsynced item surviving, a second tab following, an account deleted elsewhere removing nothing, the v1-memory upgrade), the Trope watermark, Erase All signed in; then the data-safety cases `D1`…`D44`: a stale tab merged with another tab's write, a refused update merged field by field across devices, a v1 hint never reverting an edit, a self-ended session keeping the memory, the dashboard's `.ivrit` Merge keeping every class, per-device fields surviving a sign-out, a following tab keeping its change for the next sign-in, *Reset all settings* writing the defaults, the replaced copy's note, an empty listing removing nothing, a deletion before the first hydration honoured, *Remove* holding back across a reload, an old broadcast ignored, a sign-out checking the account first, the Trope watermark on restore, Flash Cards keeping an unknown field, a stale second tab at the sign-out never reverting a newer settings field, an older copy restored while signed out kept beside the account's newer one, a setting both devices changed keeping the other version downloadable, a hidden background tab not replaying its older copy, a listing shortened by a deletion between two pages refused, the Dictionary's `?wl=` link leaving the remembered setup alone, a board typed in an unfocused window surviving another tab's download, a stale tab that closes offline never reverting the account at the next load, a slow listing never letting the starter card replace the account's settings, an item the account lost leaving the device only into the recovery bin, an account backup restored on the hub or the generator filling in without replacing, an old-module tab's keep-it-here deletion honoured, a second conflict keeping its own version beside the first, an account deleted here leaving its kept copies on the device (shown signed out), a setting changed while signed out after a sign-out kept for download at the next sign-in (and untouched defaults not kept twice), Trope practice done signed out merged under an old reset, a nearly full storage stopping instead of reverting edits or looping (and dropping a merge base to make room), an item too big for the account counted by the confirms, a device's own preferences kept at a first sign-in, an item edited during a hydration that would remove it kept, a re-saved font's unsent deletion undone, a stale tab hidden and shown again never sending its older settings over another tab's, a Trope progress the page minted by itself never asked about on the first sign-in or sent until an answer, Bulk preset edit sending only the preset it changed while another device's download lands, a Torah Trainer deep link's reading kept over an account another device moved, a Flash Cards `?wl=` list that was only in the account opened once its sync has ended and sent with the account's lesson, the generator's *Start fresh* holding through the next load and over a device still holding the older setup, a Torah Trainer practice link's look staying on screen, unsaved, over an account another device has moved, the generator's Real Words display choices (transliteration hidden, the translation on the worksheet) showing on another device with nothing sent over them |
 | `scripts/smoke-fontmaker.mjs` | **required** | 8082 | cloud projects + Storage: upload/download/list/remove, Overwrite vs Keep both, a refused 413, `?start=` param stripping; the page's `Suite` listing answered, no overlay anonymous; signing out with unsaved changes to a cloud project (saved to the account before the logout, no reload, the snapshot clean), another tab's sign-out leaving the Font Maker tab and its work in place, *Continue* from a snapshot taken mid-save resuming the cloud save (and holding the latest edit), a My Fonts removal made before the SDK loads sent at the next load, the next teacher on a shared browser never receiving the previous teacher's project (an automatic save of a project another account owns is never inserted into this one), an edit made while a cloud save is in flight staying unsaved and going in the next one |
 | `scripts/smoke-account-page.mjs` | **required** | 8083 | `account.html`: the listing, the required display name, the download-everything zip (parsed in Node, per-entry CRC), the two-step deletion (the backup offer following the listing: loading / empty / failed; a download that missed photos carrying its warning into the confirmation until Cancel), delete-account accepted and refused, no name step on this page |
@@ -436,12 +446,15 @@ pages, not the other way round — `grep -o 'Content-Security-Policy[^>]*' *.htm
   bucket, say) would swap that one origin in `media-src` and nothing else. Reading assignments add
   `recordings.ivritsuite.com` (the audio Worker, `workers/audio/`) in `connect-src` — a recording is fetched with the
   sign-in token and played from a `blob:` URL, so `media-src` gains nothing.
+- **Tefillah Trainer:** `www.sefaria.org` in `connect-src` (the siddur and Tanakh texts) and, like the Torah Trainer,
+  `esm.sh` + `cdn.jsdelivr.net` for the transliteration module. No `media-src` (the page plays no audio) and no
+  `opensiddur.org` anywhere: Open Siddur texts are same-origin snapshot files (`docs/reference/tefillah-trainer.md`).
 - **`reading_assignments.html`** (the teacher's page, unlisted): the account page's CSP plus `recordings.ivritsuite.com`
   in `connect-src` and `blob:` in `media-src`; no analytics tag at all (student data), no `data:`.
 - **Trope Tutor:** `raw.githubusercontent.com` (PocketTorah) + `audio.ivritsuite.com` (the Total Torah verse files, the
   Year Round [Conservative] melody's clips) + `blob:` in `media-src` only — deliberately neither `sefaria.org`
   nor `esm.sh` (its indexes and clips are pre-built).
-- **Home, Torah Trainer:** `files.readme.io` in `img-src` — the host of Sefaria's attribution wordmark (hot-linked,
+- **Home, Torah Trainer, Tefillah Trainer:** `files.readme.io` in `img-src` — the host of Sefaria's attribution wordmark (hot-linked,
   documented in `THIRD_PARTY_LICENSES.md`).
 - **Contact / Resources:** `js.hcaptcha.com` + `*.hcaptcha.com` in `script-src` (Contact also `web3forms.com`, its
   client script); `*.hcaptcha.com` in `style-src`, `img-src` and `frame-src`; `api.web3forms.com` + `*.hcaptcha.com`
