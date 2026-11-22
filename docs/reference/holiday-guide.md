@@ -2,7 +2,7 @@
 
 Jewish holiday coloring pages and a picture guide to the holidays: every holiday's own symbol, when it falls and
 what it is, the symbols that go with it, and a builder that prints those symbols as a coloring sheet. The page is
-**published**: the home page's Discover card links it (its third button), it is in `sitemap.xml`, `llms*.txt` and
+**published**: the home page links it (the *Holiday Guide* tile in the *Explore* group), it is in `sitemap.xml`, `llms*.txt` and
 `sw.js` `CORE_ASSETS`, and the tool pages' *Related Hebrew Tools* footers and the 404 page link it. It is a page of
 the suite in every respect: CSP, i18n (`holidayguide.*`, and `holidaypage.*` on the generated pages), the AllTools
 registration of its key, its smoke. It offers no account, carries no tour (as `parsha_emojis.html`) and fetches no
@@ -173,13 +173,14 @@ fails unless `holiday_guide.html`'s robots tag says `index, follow` too. Being p
 `node scripts/smoke-holiday-pages.mjs` fails while one of them disagrees with the switch:
 
 - the switch and the hub's robots tag;
-- `index.html`: the Discover card's *Holiday Guide* button (`home.card.discover.cta_holidayguide`), the `ItemList`
+- `index.html`: the *Holiday Guide* tile (`home.tile.holidayguide.*`; the smoke looks for the literal
+  `href="holiday_guide.html"`), the `ItemList`
   and navigation entries, and the What's-new card's line for it (beside Name Tags');
 - `/holiday_guide.html`, `/js/holiday-guide-data.js` and `/js/holiday-page.js` in `sw.js` `CORE_ASSETS`;
 - `sitemap.xml` (the builder's block; `node scripts/update-sitemap.mjs` owns the dates) and `llms*.txt`
   (`node scripts/update-llms-txt.mjs` lists the holiday pages as one line).
 
-To hide it again, undo each: `PUBLISHED = false` and the hub's robots tag back to `noindex, follow`, the button and
+To hide it again, undo each: `PUBLISHED = false` and the hub's robots tag back to `noindex, follow`, the tile (and its group's `--n`) and
 the two JSON-LD entries out of `index.html` (with the footer links on the tool pages and the 404 page's link), the
 three `CORE_ASSETS` entries out and `VERSION` bumped, then `node scripts/build-holiday-pages.mjs` (it removes the
 sitemap block) and both generators.

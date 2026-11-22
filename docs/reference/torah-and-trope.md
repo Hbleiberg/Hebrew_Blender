@@ -1115,8 +1115,8 @@ from the "Ta'amei HaMikra Trope Atlas", transcribed from scans with AI help; the
 
 ## Trope Atlas (`trope_atlas.html`)
 
-A reference page, reached from the hub's Trope card — a `role="group"` card like Discover, its two buttons the
-Tutor's and the Atlas's — and listed like any tool page (the sitemap, the hub's `ItemList` and
+A reference page, reached from the hub's *Trope Atlas* tile (in the *Torah & trope* group, beside the Tutor's) and
+listed like any tool page (the sitemap, the hub's `ItemList` and
 `SiteNavigationElement`, `CORE_ASSETS`, its own `WebApplication` and `BreadcrumbList` JSON-LD): every cantillation sign
 of the 21 books with its Hebrew, Ashkenazi and Sephardi names, Unicode, rank and role; one figure per sign in every
 offered melody (the melody table, a grid or stacked cards); every row of one melody at a time (the phrase browser,
@@ -1189,9 +1189,8 @@ traditions were imported from, and was rebuilt on the suite's own pieces, so it 
   that across a grid's rows, and printed blank sheets with it there). The header prints white under navy ink, its
   links and toggles off (the suite's header-on-paper rule, `shared-components.md`; the title `h1` sets its own white,
   so the rule names it).
-- **The hub's Trope card** holds two links, so it is a group, not a link; the What's-new card (its announcement
-  of the atlas) lists it first, and its *Show me* finds the Trope card by its `aria-labelledby` (never as the first
-  `.page-card-group`) and focuses the Atlas button.
+- **The hub's tile** is its own link in the *Torah & trope* group (`home.md`); the What's-new card's *Show me* finds
+  the tile of the announcement's first item by its `href`, never by position.
 
 ## Recording sources — PocketTorah and Total Torah (`torah_trainer.html`)
 

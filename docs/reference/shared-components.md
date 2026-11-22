@@ -443,7 +443,7 @@ from `parsha_emojis` by `scripts/build-parsha-pages.mjs` and `scripts/build-colo
   needed nothing), `hi-layout` and `hi-weather` (the dashboard's drawer tabs Display and Weather — a board with
   a header bar and a side column, and a sun behind a cloud; the dashboard is their only carrier so far, markup
   only as well; the strip's other five tabs reuse `hi-calendar`, `hi-group`, `hi-pencil`, `hi-bookmark` and
-  `hi-gear`), `hi-target` (the Trope Tutor's Drill tab — two rings round a filled centre; its only carrier, markup only), `hi-type` (the Resources page's Fonts view toggle, beside Links' `hi-book`, and the hub's *Hebrew Fonts* link on the Resources card — a serifed T, symmetric so it needs no RTL flip; it replaced the colour 🔤 in both labels; markup only), `hi-mail` (the hub's *Contact & Support* link — an envelope, symmetric as well; it replaced ✉️ in that label; its only carrier, markup only),
+  `hi-gear`), `hi-target` (the Trope Tutor's Drill tab — two rings round a filled centre; its only carrier, markup only), `hi-type` (the Resources page's Fonts view toggle, beside Links' `hi-book` — a serifed T, symmetric so it needs no RTL flip; it replaced the colour 🔤 in that label; its only carrier, markup only),
   `hi-cloud`, `hi-keyboard`, `hi-search`, `hi-warning`,
   `hi-undo` / `hi-redo`, `hi-up` / `hi-down`, `hi-book` (now also on `torah_trainer.html`, its drawer's Text
   tab, copied verbatim from the Trope Tutor), `hi-folder` / `hi-folder-plus` and `hi-move` —
@@ -563,8 +563,12 @@ the standard lockup with a navy wordmark, both precached in `sw.js`.
   every other page the lockup is a link home** before the page's own title, `.bl-div` drawing the divider between them,
   named by `shared.header.logo_home` (`data-i18n-aria-label`); the page's Home or Back button stays. A page title no
   longer repeats the brand ("Contact & Support", not "IvritSuite — Contact & Support").
+- **There is one lockup:** the cube with the IvritSuite wordmark, in those two files. No version carries a Hebrew line
+  under the wordmark, in any file (an SVG, a raster, a splash screen, a social card); one that turns up is deleted with
+  every reference to it.
 - **Size is a custom property:** `--lockup-h` (38px) and `--lockup-h-sm` (32px under 600px); the home page and the 404
-  set 50 / 42 on their heading. The `<img>`'s `width`/`height` attributes keep the aspect ratio before the file loads.
+  set 50 / 42 on their heading, the home page 56px from 1280px up, and the home page's footer carries the lockup at
+  48 / 38 (`home.md`). The `<img>`'s `width`/`height` attributes keep the aspect ratio before the file loads.
 - The lockup never shrinks (`flex-shrink:0`), so it moves every page's wrap gate: a change to its size or to the
   divider is a header-control change (below).
 - **The title row.** Beside the lockup and the button row, a tool page's title column can be squeezed long before
@@ -590,7 +594,9 @@ brand names, pinned English like the credits (`dir="ltr" lang="en"`, never a key
 header-icons CSS block; the ink is each page's own footer link colour, and a page that styles its footer links inline
 (the flash cards, the generator) restates that look for the row in one page rule. The Font Maker's footer is one compact
 row by design, so there the group sits inline among its credits (`.footer-social.is-inline`). The generated `parsha/`
-and `holidays/` pages take the row from their generators' templates. An account address changes in every footer and
+and `holidays/` pages take the row from their generators' templates. The home page's navy footer shows the same
+row, markup unchanged, as round icon buttons through its own CSS, the names kept for a screen reader (`home.md` →
+*Footer*). An account address changes in every footer and
 both templates at once.
 
 ### The header's wrap gate (every page)
@@ -708,7 +714,7 @@ copy without writing. Both modules are precached, so a rebuilt one needs the `sw
 The Trainer's emoji gallery as a page of its own, with a coloring-sheet printer; it stores only that printer's
 options (one synced `settings` row, tool `EmojiTorah` — the page was `emoji_torah.html` before its launch, and its
 tool id, `hebrewEmojiTorah_*` keys, `emojitorah.*` i18n keys and `et-` code keep that name). It is linked from the
-hub's *Discover* card (beside `letter_learner`), every *Related Hebrew Tools* footer and the Torah Trainer gallery's
+hub's *Parsha Emojis* tile (in the *Explore* group), every *Related Hebrew Tools* footer and the Torah Trainer gallery's
 heading row, indexed, in `sitemap.xml`,
 the hub's `ItemList` (so in `llms.txt`'s Tools) and `sw.js` `CORE_ASSETS`. **`emoji_torah.html` is a forwarding
 stub**: `noindex`, a canonical to the new page, a 0-second `meta refresh` and a `location.replace` that keeps the
@@ -878,7 +884,7 @@ picture's `?v=`, and its footer nav is copied) and after the Letter Learner's li
   pictures and the Alef sheet cut out of the Letter Learner's own card. `--og` re-renders it (bump `OG_V` in the
   script so a shared link refetches it); it is rendered by itself only when missing.
 - **Listed like a tool:** its `<url>` in `sitemap.xml` (hand-kept, beside the tools'), the hub's `ItemList` and
-  navigation entries (so `llms.txt`'s Tools), the Discover card's *All coloring pages* button, the 404 page's link,
+  navigation entries (so `llms.txt`'s Tools), the hub's *Coloring Pages* tile (in the *Teach & print* group), the 404 page's link,
   and `sw.js` `CORE_ASSETS`. The strings are `coloringhub.*`.
 
 ## Shared UX components — the conventions all tools are converging on

@@ -336,10 +336,10 @@ push, is what updates the live site.
   the script. Sits alongside the `sw.js VERSION` bump in the end-of-session checklist above.
 - **An unlisted page** (today: the research beta `letter_discrimination.html`; `holiday_guide.html` with its generated `holidays/` pages, and `name_tags.html`, were launched from here — one switch would hide the Holiday Guide again, `holiday-guide.md` → *Publishing*) is a production page reached by its address
   only: `<meta name="robots" content="noindex, follow">`, no `<url>` block in `sitemap.xml` (so neither generator
-  ever lists it — both read their page set from the sitemap), no card, link or `ItemList` entry on `index.html`, and
+  ever lists it — both read their page set from the sitemap), no tile, link or `ItemList` entry on `index.html`, and
   not in `sw.js` `CORE_ASSETS` (an unannounced page costs no visitor's install; it is still cached network-first on
   its first visit). Everything else holds as for any page — CSP, i18n, the smokes, the AllTools registration of its
-  keys (code in the hub, not a link). Launching it is the reverse: the sitemap block, the hub's card and `ItemList`
+  keys (code in the hub, not a link). Launching it is the reverse: the sitemap block, the hub's tile and `ItemList`
   entry, `CORE_ASSETS`, `robots` back to `index, follow`, then both generators.
   **It refuses to run on a shallow clone** (exit 1, nothing written): `git log -1` returns the
   shallow boundary commit for any file not touched inside the window, so on a `--depth 1` clone

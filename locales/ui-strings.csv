@@ -3586,58 +3586,27 @@ home.alltools.myfonts.use_status,“{name}” is now the font in every tool — 
 home.alltools.no_data_alert,This file has no all-tools data. Try importing it on its own tool's page instead.,בקובץ זה אין נתוני כל-הכלים. נסו לייבא אותו בעמוד הכלי הייעודי שלו במקום זאת.,alert (AllTools .ivrit apply),
 home.alltools.note,"Back up <b>all</b> presets, saved schedules, settings, and saved fonts from the Generator, Dashboard, Flash Cards, Dictionary, Torah Trainer, Trope Tutor, Letter Learner, Parsha Emojis, and Font Maker together. <b>Automatic Input</b> saves and restores a single <b>.ivrit</b> file; <b>Manual Input</b> uses a copy-and-paste text block.","גבו <b>את כל</b> התבניות, מערכות השעות השמורות, ההגדרות והגופנים השמורים מהמחולל, לוח המחוונים, כרטיסי הזיכרון, המילון, מאמן התורה, מאמן הטעמים, לומדים אותיות, אימוג׳י הפרשות ויוצר הגופנים — יחד. <b>קלט אוטומטי</b> שומר ומשחזר קובץ <b>.ivrit</b> יחיד; <b>קלט ידני</b> משתמש בבלוק טקסט להעתקה והדבקה.",modal intro note,html; mixed UI+content — do not translate tool names
 home.alltools.note_signed_in,"You are signed in, so every tool's presets, settings and saved items live in your account and follow you to any device. This file is for sharing them or keeping an offline copy: <b>Automatic Input</b> saves and restores a single <b>.ivrit</b> file; <b>Manual Input</b> uses a copy-and-paste text block. Restoring a file merges its items into your account.","אתם מחוברים, ולכן התבניות, ההגדרות והפריטים השמורים של כל הכלים חיים בחשבון שלכם ועוקבים אחריכם לכל מכשיר. הקובץ הזה נועד לשיתוף או לעותק לא מקוון: <b>קלט אוטומטי</b> שומר ומשחזר קובץ <b>.ivrit</b> יחיד; <b>קלט ידני</b> משתמש בבלוק טקסט להעתקה והדבקה. שחזור קובץ ממזג את הפריטים שבו לחשבון שלכם.",AllTools modal note while signed in (swapped in by initCloudSaves),html
-home.alltools.open_button,Import / Export All Settings,ייבוא / ייצוא כל ההגדרות,button opening settings modal,svg-icon-in-markup
+home.alltools.open_button,Import / Export All Settings,ייבוא / ייצוא כל ההגדרות,Home page footer: the button opening the settings window (the long label; words alone),
 home.alltools.save_button,Save All Settings to .ivrit file,שמירת כל ההגדרות לקובץ .ivrit,button (auto mode),leading-emoji
 home.alltools.textarea_placeholder,"Click 'Export All Settings' to generate a backup, or paste a backup here and click 'Import All Settings'…","לחצו על 'ייצוא כל ההגדרות' כדי ליצור גיבוי, או הדביקו כאן גיבוי ולחצו על 'ייבוא כל ההגדרות'…",textarea placeholder,
 home.badge.beta,Beta,בטא,tool card badge (flash cards; font maker),
-home.bookmark.button,Bookmark this page,הוספת העמוד לסימניות,button,svg-icon-in-markup
+home.bookmark.button,Bookmark this page,הוספת העמוד לסימניות,Home page footer button (the long label; words alone),
 home.bookmark.tip_desktop,Press {key}+D to bookmark this page.,הקישו {key}+D כדי להוסיף את העמוד לסימניות.,tip below bookmark button,template ({key}=⌘/Ctrl)
 home.bookmark.tip_mobile,"Tap the share/menu button in your browser and choose ""Add to Home Screen"" or ""Add Bookmark"".","הקישו על כפתור השיתוף/התפריט בדפדפן שלכם ובחרו ""הוספה למסך הבית"" או ""הוספת סימנייה"".",tip below bookmark button,
-home.card.dashboard.cta,Open the Hebrew classroom display →,פתחו את תצוגת כיתת העברית ←,tool card button,
-home.card.dashboard.cta_nametags,Name Tags →,תגי שם ←,Classroom Dashboard card's second button (the Name Tags page: printable name tags from a class list),
-home.card.dashboard.desc,"Live Hebrew date, time, weather, and days of the week for the Hebrew classroom — SmartBoard and projector ready — plus printable Hebrew name tags and desk tents from your class list. Free for teachers.","תאריך עברי, שעה, מזג אוויר וימות השבוע בזמן אמת עבור כיתת העברית — מוכן ללוח חכם ולמקרן — ועוד תגי שם ושלטי שולחן בעברית להדפסה מרשימת הכיתה. חינם למורים.",tool card description,scope-ambiguous (card desc)
 home.card.dashboard.name,Hebrew Classroom Dashboard,לוח מחוונים לכיתת עברית,tool card title,
-home.card.discover.cta_letterlearner,Letter Learner →,לומדים אותיות ←,Discover card button (the Letter Learner),
-home.card.discover.cta_parshaemojis,Parsha Emojis →,אימוג׳י הפרשות ←,Discover card button (the Parsha Emojis),
-home.card.discover.cta_holidayguide,Holiday Guide →,מדריך החגים ←,Discover card button (the Holiday Guide),
-home.card.discover.desc,"Meet the alef-bet, the weekly parsha and the Jewish holidays: a picture, words and sounds for every Hebrew letter, an emoji drawing for every Torah portion, the symbols of every holiday, and coloring pages for all three.","הכירו את האלף־בית, את פרשת השבוע ואת חגי ישראל: ציור, מילים וצלילים לכל אות עברית, ציור אימוג׳י לכל פרשה, הסמלים של כל חג, ודפי צביעה לשלושתם.",Discover card description,
-home.card.discover.name,Discover,גלו,"Discover card title (the card that links the Letter Learner, the Parsha Emojis and the Holiday Guide)",
-home.card.dictionary.cta,Look up Hebrew words →,חפשו מילים בעברית ←,tool card button,
-home.card.dictionary.desc,"Free Hebrew dictionary to browse and filter Hebrew vocabulary by theme, length, part of speech, era, and letter position — useful for Hebrew learning at every level.","מילון עברי חינמי לעיון וסינון אוצר מילים עברי לפי נושא, אורך, חלק דיבר, תקופה ומיקום האות — שימושי ללימוד עברית בכל רמה.",tool card description,scope-ambiguous (card desc)
 home.card.dictionary.name,Hebrew Word Lookup,חיפוש מילים בעברית,tool card title,
-home.card.flashcards.cta,Practice Hebrew flash cards →,תרגלו כרטיסי זיכרון בעברית ←,tool card button,
-home.card.flashcards.desc,"Free Hebrew flash cards for reading practice — decode one, two, or three Hebrew letters at a time with full nikkud support. Optimized for mobile.","כרטיסי זיכרון בעברית חינמיים לתרגול קריאה — פענחו אות עברית אחת, שתיים או שלוש בכל פעם, עם תמיכה מלאה בניקוד. מותאם למובייל.",tool card description,scope-ambiguous (card desc)
 home.card.flashcards.name,Hebrew Flash Cards,כרטיסי זיכרון בעברית,tool card title (Beta badge),
-home.card.fontmaker.cta,Make your own Hebrew font →,צרו גופן עברי משלכם ←,tool card button,
-home.card.fontmaker.desc,"Turn your own handwritten Hebrew letters into a real, installable font — trace each letter, place nikkud & trop, then export TTF, WOFF2, or UFO.","הפכו את אותיות היד העבריות שלכם לגופן אמיתי הניתן להתקנה — שרטטו כל אות, מקמו ניקוד וטעמים, ואז ייצאו TTF, WOFF2 או UFO.",tool card description,scope-ambiguous (card desc)
-home.card.fontmaker.name,Hebrew Font Maker,יוצר הגופנים העברי,tool card title (Beta badge),
-home.card.generator.cta,Make printable Hebrew worksheets →,צרו דפי עבודה עבריים להדפסה ←,tool card button,
-home.card.generator.desc,"Create free printable Hebrew worksheets, bingo cards, and decoding drills with nikkud — customizable Hebrew reading practice for emerging readers.","צרו דפי עבודה עבריים חינמיים להדפסה, כרטיסי בינגו ותרגילי פענוח עם ניקוד — תרגול קריאה בעברית הניתן להתאמה עבור קוראים מתחילים.",tool card description,scope-ambiguous (card desc)
 home.card.generator.name,Hebrew Worksheet Generator,מחולל דפי עבודה בעברית,tool card title,
-home.card.resources.cta,Browse free Hebrew teaching resources →,עיינו במשאבים חינמיים להוראת עברית ←,tool card button,
-home.card.resources.desc,"A curated directory of free Hebrew learning resources, printables, dictionaries, fonts, and Jewish education tools — organized by category and age group.","מדריך אוצר של משאבים חינמיים ללימוד עברית, חומרים להדפסה, מילונים, גופנים וכלים לחינוך יהודי — מאורגן לפי קטגוריה וקבוצת גיל.",tool card description,scope-ambiguous (card desc)
-home.card.resources.fonts_link,Hebrew Fonts →,גופנים עבריים ←,resources card secondary link,the hi-type icon is markup
-home.card.resources.fonts_link_title,Browse & share Hebrew fonts,עיון ושיתוף של גופנים עבריים,link tooltip,aria/title
-home.card.resources.name,Hebrew Teaching Resources,משאבים להוראת עברית,tool card title,
-home.card.torah.cta,Practice Torah reading →,תרגלו קריאה בתורה ←,tool card button,
-home.card.torah.desc,"Read the weekly parsha with vowel coloring, transliteration, English translations, cantillation toggle, and chanted-audio karaoke (PocketTorah) — plus the holiday readings and the five Megillot.","קראו את פרשת השבוע עם צביעת תנועות, תעתיק, תרגומים לאנגלית, מתג טעמים, וקריוקי אודיו של הקראה בטעמים (PocketTorah) — וגם את קריאות החגים ואת חמש המגילות.",tool card description,scope-ambiguous (card desc)
 home.card.torah.name,Torah Trainer,מאמן התורה,tool card title,
-home.card.torah.sefaria_title,Texts from Sefaria,טקסטים מ-Sefaria,Sefaria attribution link tooltip,aria/title
-home.card.tefillah.cta,Practice the siddur →,תרגלו את הסידור ←,tool card button,
-home.card.tefillah.desc,"Practice reading the siddur: pick a prayer and a nusach, then read it with vowel coloring, transliteration and translation. Texts from Sefaria.","תרגלו קריאה בסידור: בחרו תפילה ונוסח, וקראו עם צביעת תנועות, תעתיק ותרגום. הטקסטים מ-Sefaria.",tool card description,
 home.card.tefillah.name,Tefillah Trainer,מאמן התפילה,tool card title; also the tool's name on the account status line,
-home.card.trope.cta,Practice trope →,תרגלו טעמים ←,tool card button,
-home.card.trope.cta_atlas,Trope Atlas →,אטלס הטעמים ←,Trope card's second button (the Trope Atlas: every sign in every melody side by side),
-home.card.trope.desc,"Learn the Torah cantillation marks (trope / te'amim) — symbols, Ashkenazi and Sephardi names, and melodies with real chanted examples — then drill yourself with three quiz modes.","למדו את טעמי המקרא (trope / te'amim) — הסימנים, השמות האשכנזיים והספרדיים, והמנגינות עם דוגמאות הקראה אמיתיות — ואז תרגלו את עצמכם בשלושה מצבי חידון.",tool card description,scope-ambiguous (card desc)
 home.card.trope.name,Trope Tutor,מאמן הטעמים,tool card title,
-home.contact_link,Contact & Support,יצירת קשר ותמיכה,link button,the hi-mail icon is markup
-home.hero.subtitle,Free Hebrew Learning Tools for Teachers and Students,כלים חינמיים ללימוד עברית למורים ולתלמידים,hero subheading,
+home.contact_link,Contact & Support,יצירת קשר ותמיכה,Home page footer link (the long label; words alone),
 home.whatsnew.close_aria,Close,סגירה,What's-new card close button (aria-label),aria/title
 home.whatsnew.item_holidayguide,"<a href=""holiday_guide.html"">Holiday Guide</a>: the symbols of every Jewish holiday, a countdown to the next one, and coloring sheets to print.","<a href=""holiday_guide.html"">מדריך החגים</a>: הסמלים של כל חג, ספירה לאחור עד החג הבא, ודפי צביעה להדפסה.",What's-new card item (links the Holiday Guide),html
 home.whatsnew.item_nametags,"<a href=""name_tags.html"">Name Tags</a>: printable Hebrew name tags and desk tents from your class list, with transliteration, bubble letters and Avery label sheets.","<a href=""name_tags.html"">תגי שם</a>: תגי שם ושלטי שולחן בעברית להדפסה מרשימת הכיתה, עם תעתיק, אותיות בועה ודפי מדבקות Avery.",What's-new card item (links the Name Tags page),html
-home.whatsnew.lede,"A new tool in the Hebrew Classroom Dashboard card, and one in the Discover card:","כלי חדש בכרטיס “לוח מחוונים לכיתת עברית”, ועוד אחד בכרטיס “גלו”:",What's-new card intro line (two items: Name Tags and the Holiday Guide),
+home.whatsnew.lede,Two new tools on the home page:,שני כלים חדשים בדף הבית:,What's-new card intro line (two items: Name Tags and the Holiday Guide),HE REVIEW
 home.whatsnew.ok,Got it,הבנתי,What's-new card dismiss button,
-home.whatsnew.show,Show me,הראו לי,What's-new card button: scrolls to the Classroom Dashboard card (its Name Tags button),
+home.whatsnew.show,Show me,הראו לי,What's-new card button: scrolls to the Name Tags tile,
 home.whatsnew.title,New on IvritSuite,חדש ב־IvritSuite,What's-new card title (shown once to a returning visitor),
 notfound.a11y.skip_to_links,Skip to the links,דילוג לקישורים,Skip-link (a11y),aria/skip-link
 notfound.home_button,Back to the Promised Home Page,חזרה לדף הבית המובטח,primary button,the arrow is the shared hi-arrow icon in the markup (mirrors in RTL)
@@ -7826,7 +7795,6 @@ coloringhub.faq.q5,Is there a coloring page for this week's parsha?,יש דף צ
 coloringhub.faq.a5,"Yes. This page shows this week's Torah portion and the next holiday first, and every parasha has a page of its own that says when it is next read.","כן. בראש העמוד מופיעים פרשת השבוע והחג הבא, ולכל פרשה יש עמוד משלה שכתוב בו מתי קוראים אותה בפעם הבאה.","Jewish coloring pages hub (jewish-coloring-pages.html, generated by scripts/build-coloring-hub.mjs): answer (twinned in the FAQPage JSON-LD)",
 shared.nav.link_coloringpages,Jewish and Hebrew coloring pages →,"דפי צביעה: אותיות, פרשות וחגים ←","Footer Related Hebrew Tools nav: link to jewish-coloring-pages.html, the list of every coloring page",
 shared.coloring.all_link,"All Jewish and Hebrew coloring pages: alef bet, parsha and holidays","כל דפי הצביעה: אלף־בית, פרשות השבוע וחגים","Link under the list of coloring sheets on the Letter Learner, Parsha Emojis and the Holiday Guide: to jewish-coloring-pages.html, which lists all three sets",
-home.card.discover.cta_coloringpages,All coloring pages →,כל דפי הצביעה ←,Home page Discover card: button to jewish-coloring-pages.html,
 notfound.link.coloringpages,Coloring Pages,דפי צביעה,404 page: link to jewish-coloring-pages.html,
 shared.classes.title,Class lists,רשימות כיתה,Shared roster editor: dialog title,shared; js/ivrit-classes.js
 shared.classes.close,Close,סגירה,"Shared roster editor: close button (aria-label, title)",shared; js/ivrit-classes.js
@@ -8357,3 +8325,59 @@ tefillah.backup.manual_placeholder,The backup text appears here…,טקסט הג
 tefillah.backup.manual_source,the pasted backup,הגיבוי שהודבק,The {source} of a restore from the manual textarea,
 tefillah.credits.gender_note,"Where the source gives a word in two gendered forms, this page shows the one chosen in Settings.","במקום שבו המקור מביא מילה בשתי צורות, זכר ונקבה, הדף מציג את הצורה שנבחרה בהגדרות.",credits footnote: an Open Siddur text shown with one gendered form,
 torah.about.tefillah_link,Practice the siddur → Tefillah Trainer,תרגול קריאה בסידור ← מאמן התפילה,"Torah Trainer, More tab, About: link to the Tefillah Trainer",
+home.hero.headline,Free Jewish Learning tools. Something for everyone.,כלים חינמיים ללימוד יהודי. משהו לכולם.,Home page: the headline over the tool groups,HE REVIEW
+home.hero.lede,"For teachers, students and families, Torah readers and creators. Free for classrooms, and nothing to install.","למורים, לתלמידים ולמשפחות, לקוראים בתורה וליוצרים. חינם לכיתות, ואין צורך להתקין דבר.",Home page: the sentence under the headline,HE REVIEW
+home.group.teach.for,For teachers,למורים,Home page tool group: who the group is for (small caps line over the group title),HE REVIEW
+home.group.teach.title,Teach & print,ללמד ולהדפיס,Home page tool group: the group's title,HE REVIEW
+home.group.read.for,For students & families,לתלמידים ולמשפחות,Home page tool group: who the group is for (small caps line over the group title),HE REVIEW
+home.group.read.title,Learn to read,לומדים לקרוא,Home page tool group: the group's title,HE REVIEW
+home.group.torah.for,For b’nai mitzvah & Torah readers,לבני ובנות מצווה ולקוראים בתורה,Home page tool group: who the group is for (small caps line over the group title),HE REVIEW
+home.group.torah.title,Torah & trope,תורה וטעמים,Home page tool group: the group's title,HE REVIEW
+home.group.create.for,For creators,ליוצרים,Home page tool group: who the group is for (small caps line over the group title),HE REVIEW
+home.group.create.title,Make your own,צרו משלכם,Home page tool group: the group's title,HE REVIEW
+home.group.explore.for,For everyone,לכולם,Home page tool group: who the group is for (small caps line over the group title),HE REVIEW
+home.group.explore.title,Explore,גלו,Home page tool group: the group's title,HE REVIEW
+home.tile.generator.name,Worksheet Generator,מחולל דפי עבודה,Home page tool tile: the tool's short name,HE REVIEW
+home.tile.generator.desc,"Print worksheets, bingo cards and decoding drills.","הדפיסו דפי עבודה, כרטיסי בינגו ותרגילי פענוח.",Home page tool tile: one sentence on what the tool does,HE REVIEW
+home.tile.nametags.name,Name Tags,תגי שם,Home page tool tile: the tool's short name,HE REVIEW
+home.tile.nametags.desc,Name tags and desk tents from your class list.,תגי שם ושלטי שולחן מרשימת הכיתה.,Home page tool tile: one sentence on what the tool does,HE REVIEW
+home.tile.coloring.name,Coloring Pages,דפי צביעה,Home page tool tile: the tool's short name,HE REVIEW
+home.tile.coloring.desc,"Jewish coloring pages, ready to print.","דפי צביעה יהודיים, מוכנים להדפסה.",Home page tool tile: one sentence on what the tool does,HE REVIEW
+home.tile.dashboard.name,Classroom Dashboard,לוח מחוונים לכיתה,Home page tool tile: the tool's short name,HE REVIEW
+home.tile.dashboard.desc,"Hebrew date, time and weather for your board.","תאריך עברי, שעה ומזג אוויר ללוח הכיתה.",Home page tool tile: one sentence on what the tool does,HE REVIEW
+home.tile.letterlearner.name,Letter Learner,לומדים אותיות,Home page tool tile: the tool's short name,HE REVIEW
+home.tile.letterlearner.desc,"Picture cards, words and sounds for every letter.","כרטיסי תמונה, מילים וצלילים לכל אות.",Home page tool tile: one sentence on what the tool does,HE REVIEW
+home.tile.flashcards.name,Flash Cards,כרטיסי זיכרון,Home page tool tile: the tool's short name,HE REVIEW
+home.tile.flashcards.desc,Decode one to three letters at a time.,פענחו אות אחת עד שלוש בכל פעם.,Home page tool tile: one sentence on what the tool does,HE REVIEW
+home.tile.tefillah.name,Tefillah Trainer,מאמן התפילה,Home page tool tile: the tool's short name,HE REVIEW
+home.tile.tefillah.desc,"Practice reading the siddur, prayer by prayer.","תרגלו קריאה בסידור, תפילה אחר תפילה.",Home page tool tile: one sentence on what the tool does,HE REVIEW
+home.tile.dictionary.name,Word Lookup,חיפוש מילים,Home page tool tile: the tool's short name,HE REVIEW
+home.tile.dictionary.desc,"Find Hebrew words by theme, length or letter.","מצאו מילים בעברית לפי נושא, אורך או אות.",Home page tool tile: one sentence on what the tool does,HE REVIEW
+home.tile.torah.name,Torah Trainer,מאמן התורה,Home page tool tile: the tool's short name,HE REVIEW
+home.tile.torah.desc,Practice the weekly parsha with chanted audio.,תרגלו את פרשת השבוע עם הקלטת קריאה בטעמים.,Home page tool tile: one sentence on what the tool does,HE REVIEW
+home.tile.trope.name,Trope Tutor,מאמן הטעמים,Home page tool tile: the tool's short name,HE REVIEW
+home.tile.trope.desc,Learn cantillation marks and their melodies.,למדו את טעמי המקרא ואת מנגינותיהם.,Home page tool tile: one sentence on what the tool does,HE REVIEW
+home.tile.atlas.name,Trope Atlas,אטלס הטעמים,Home page tool tile: the tool's short name,HE REVIEW
+home.tile.atlas.desc,A map of the whole trope system.,מפה של כל מערכת הטעמים.,Home page tool tile: one sentence on what the tool does,HE REVIEW
+home.tile.fontmaker.name,Font Maker,יוצר הגופנים,Home page tool tile: the tool's short name,HE REVIEW
+home.tile.fontmaker.desc,Turn your handwriting into a Hebrew font.,הפכו את כתב היד שלכם לגופן עברי.,Home page tool tile: one sentence on what the tool does,HE REVIEW
+home.tile.myfonts.name,My Fonts,הגופנים שלי,Home page tool tile: the tool's short name,HE REVIEW
+home.tile.myfonts.desc,"Your fonts, ready to use in every tool.","הגופנים שלכם, מוכנים לשימוש בכל כלי.",Home page tool tile: one sentence on what the tool does,HE REVIEW
+home.tile.parshaemojis.name,Parsha Emojis,אימוג׳י הפרשות,Home page tool tile: the tool's short name,HE REVIEW
+home.tile.parshaemojis.desc,An emoji drawing for each Torah portion.,ציור אימוג׳י לכל פרשת שבוע.,Home page tool tile: one sentence on what the tool does,HE REVIEW
+home.tile.holidayguide.name,Holiday Guide,מדריך החגים,Home page tool tile: the tool's short name,HE REVIEW
+home.tile.holidayguide.desc,Symbols for each Jewish holiday.,הסמלים של כל חג יהודי.,Home page tool tile: one sentence on what the tool does,HE REVIEW
+home.tile.resources.name,Teaching Resources,משאבים להוראה,Home page tool tile: the tool's short name,HE REVIEW
+home.tile.resources.desc,A directory of free Hebrew resources.,מאגר משאבים חינמיים ללימוד עברית.,Home page tool tile: one sentence on what the tool does,HE REVIEW
+home.badge.new,New,חדש,Home page tool tile badge (a tool added recently),HE REVIEW
+home.footer.settings_header,Your settings,ההגדרות שלכם,"Home page footer: heading of the column with the account, My Fonts, backup and bookmark links",HE REVIEW
+home.footer.follow_header,Follow,עקבו אחרינו,Home page footer: heading over the social links,HE REVIEW
+home.footer.fonts_link,Hebrew Fonts,גופנים עבריים,Home page footer link to resources.html?view=fonts (the directory of Hebrew fonts),HE REVIEW
+home.footer.sefaria_note,Torah and siddur texts from,טקסטי התורה והסידור מ־,Home page footer: the words before the Sefaria logo (the Torah Trainer and Tefillah Trainer read their texts from Sefaria),HE REVIEW
+home.footer.short.account,Account,חשבון,"Home page footer on a phone: the short label of the ""Your account"" link",HE REVIEW
+home.footer.short.myfonts,My Fonts,הגופנים שלי,"Home page footer on a phone: the short label of the ""My IvritSuite Fonts"" link",HE REVIEW
+home.footer.short.backup,Import / Export,ייבוא / ייצוא,"Home page footer on a phone: the short label of the ""Import / Export All Settings"" link",HE REVIEW
+home.footer.short.bookmark,Bookmark,סימנייה,"Home page footer on a phone: the short label of the ""Bookmark this page"" link",HE REVIEW
+home.footer.short.contact,Contact,יצירת קשר,"Home page footer on a phone: the short label of the ""Contact & Support"" link",HE REVIEW
+home.footer.short.privacy,Privacy,פרטיות,"Home page footer on a phone: the short label of the ""Privacy Policy"" link",HE REVIEW
+home.footer.short.terms,Terms,תנאים,"Home page footer on a phone: the short label of the ""Terms of Use"" link",HE REVIEW

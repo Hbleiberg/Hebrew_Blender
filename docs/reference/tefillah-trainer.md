@@ -7,7 +7,7 @@ the drawer are the Trainer's, so `docs/reference/torah-and-trope.md` still descr
 its tabs, vowel and trope coloring, transliteration, the copy bar, the handout, practice links and the link view,
 favorites). **There is no audio.** This file covers what is the page's own.
 
-The page is **public**: a hub card after the Torah Trainer's (`home.card.tefillah.*`), `index, follow` with the shared
+The page is **public**: a hub tile in the *Learn to read* group (`home.tile.tefillah.*`, with the hand-kept *New* badge; `home.card.tefillah.name` stays for the account's listing), `index, follow` with the shared
 `og-card.png`, JSON-LD (WebApplication, BreadcrumbList, FAQPage, HowTo — the FAQ and How-To text are the About tab's
 CSV rows), `sitemap.xml`, `llms*.txt`, `sw.js` `CORE_ASSETS`, the 404 page and every tool page's *Related Hebrew
 Tools* footer (`shared.nav.link_tefillah`). The Torah Trainer's More → About links to it (`torah.about.tefillah_link`).

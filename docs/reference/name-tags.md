@@ -1,19 +1,18 @@
 # Name Tags (`name_tags.html`)
 
-Printable student name tags from a class list. The page is **public**: the home page's Classroom Dashboard card
-links it (its second button, `home.card.dashboard.cta_nametags` — the two tools show the same class lists, below),
+Printable student name tags from a class list. The page is **public**: the home page links it (the *Name Tags* tile in the *Teach & print* group, beside the
+Classroom Dashboard's — the two tools show the same class lists, below),
 it is `index, follow` with its own social tags (the shared `og-card.png`) and JSON-LD, and it is in `sitemap.xml`,
 `llms*.txt`, `sw.js` `CORE_ASSETS` and the 404 page's tool list. It is a full tool page: CSP, i18n (`nametags.*`),
 the account chip and sync, `.ivrit` files, the AllTools registration of its keys, a tour, and the backend smokes.
 
-- **The hub's Classroom Dashboard card** holds two links, so it is a `role="group"` card like Trope and Discover, found
-  by `aria-labelledby="dashboardTitle"`; its description names both tools. Every tool page's *Related Hebrew Tools*
+- **The hub's Name Tags tile** is `.tool-tile[href="name_tags.html"]` (`home.md`). Every tool page's *Related Hebrew Tools*
   footer links it (`shared.nav.link_nametags`) right after the classroom display, and first on the Dashboard's own
   list (its class lists' companion); the parsha and holiday pages carry it through their builders' copied footer.
   The Trope Atlas's short trope-only list leaves it out, as it leaves out the Dashboard. Name Tags' own footer carries
   the same *Related Hebrew Tools* list (after its FAQ and How-To fold-outs), the Dashboard first.
   The hub's one-time What's-new card announces it with the Holiday Guide (`WN_ID` `2026-11-name-tags`,
-  `home.whatsnew.item_nametags` first); its *Show me* scrolls to the Classroom Dashboard card and focuses the Name Tags button.
+  `home.whatsnew.item_nametags` first); its *Show me* scrolls to the Name Tags tile, rings it once and focuses it.
 
 ## Storage
 
