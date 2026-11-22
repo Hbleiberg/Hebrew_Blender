@@ -26,7 +26,7 @@ const KIND = { text: 'T', instruction: 'i', empty: '-', other: 'o' };
 function brief(p) {
   if (FULL) return p;
   const n = p.split(' ').length;
-  return n <= 9 ? p.replace(/[֑-ֽ֯]/g, '') : `${firstWords(p, 6)} … ${lastWords(p, 3)}`;
+  return n <= 9 ? p.replace(/[\u0591-\u05AF\u05BD]/g, '') : `${firstWords(p, 6)} … ${lastWords(p, 3)}`;
 }
 
 async function printLines(node) {

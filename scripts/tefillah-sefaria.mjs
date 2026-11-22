@@ -109,13 +109,13 @@ export function plainText(html) {
     .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'")
     .replace(/\s+/g, ' ').trim();
 }
-const NIKKUD_RE = /[ְ-ׇּׁׂ]/;
+const NIKKUD_RE = /[\u05B0-\u05BC\u05C1\u05C2\u05C7]/;
 const HEB_RE = /[א-ת]/;
 export const hasHebrew = (s) => HEB_RE.test(s);
 export const hasNikkud = (s) => NIKKUD_RE.test(s);
 // Real cantillation. The Metsudah editions use U+0592 (over a sheva na) and U+05AF (a pause circle)
 // as editorial marks, so those two never count; U+05BD is meteg, not an accent.
-export const hasTeamim = (s) => /[֑֓-֮]/.test(s);
+export const hasTeamim = (s) => /[\u0591\u0593-\u05AE]/.test(s);
 // What a line is, by the page's own rule: unpointed Hebrew is an instruction or a heading.
 export function lineKind(plain) {
   if (!plain) return 'empty';
@@ -123,10 +123,10 @@ export function lineKind(plain) {
   return hasNikkud(plain) ? 'text' : 'instruction';
 }
 export function firstWords(plain, n = 4) {
-  return plain.replace(/[֑-ֽ֯]/g, '').split(' ').slice(0, n).join(' ');
+  return plain.replace(/[\u0591-\u05AF\u05BD]/g, '').split(' ').slice(0, n).join(' ');
 }
 export function lastWords(plain, n = 3) {
-  const w = plain.replace(/[֑-ֽ֯]/g, '').split(' ');
+  const w = plain.replace(/[\u0591-\u05AF\u05BD]/g, '').split(' ');
   return w.slice(Math.max(0, w.length - n)).join(' ');
 }
 
