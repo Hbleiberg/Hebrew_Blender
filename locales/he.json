@@ -6234,7 +6234,7 @@
   "tefillah.copy.copy_all": "העתקת הכול",
   "tefillah.copy.fullscreen_note": "צאו ממסך מלא כדי לבחור שורות — סרגל ההעתקה נמצא מתחת לסרגל הכלים.",
   "tefillah.copy.inc_heading": "כולל שורת כותרת",
-  "tefillah.copy.inc_heading_tip": "מוסיף את שם התפילה והנוסח בשורה הראשונה של הטקסט המועתק, כך שקטע מודבק מציין מהיכן הגיע.",
+  "tefillah.copy.inc_heading_tip": "מוסיף את שם התפילה והנוסח בשורה הראשונה של הטקסט המועתק, ומתחתיהם את המהדורה והרישיון של כל טקסט, כך שקטע מודבק מציין מהיכן הגיע.",
   "tefillah.copy.inc_ref": "כולל מספרי שורות",
   "tefillah.copy.inc_trans": "כולל תרגום",
   "tefillah.copy.inc_translit": "כולל תעתיק",

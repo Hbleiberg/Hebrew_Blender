@@ -2480,7 +2480,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
           <label class="toggle"><input type="checkbox" id="ttCopyIncTrans"><span class="slider"></span></label>
         </div>
         <div class="form-row">
-          <label><span id="lblCopyIncHeading" data-i18n="tefillah.copy.inc_heading">Include a heading line</span> <span class="tip-wrap" data-i18n-tip="tefillah.copy.inc_heading_tip" data-tip="Puts the prayer's name and nusach on the first line of the copied text, so a pasted passage says where it came from."><i class="tip-icon">?</i></span></label>
+          <label><span id="lblCopyIncHeading" data-i18n="tefillah.copy.inc_heading">Include a heading line</span> <span class="tip-wrap" data-i18n-tip="tefillah.copy.inc_heading_tip" data-tip="Puts the prayer's name and nusach on the first line of the copied text, with each text's edition and license under it, so a pasted passage says where it came from."><i class="tip-icon">?</i></span></label>
           <label class="toggle"><input type="checkbox" id="ttCopyIncHeading" aria-labelledby="lblCopyIncHeading"><span class="slider"></span></label>
         </div>
         <div class="form-row tt-color-row" style="flex-wrap:wrap;">
@@ -4799,9 +4799,9 @@ function renderBiblePage(verses, withTranslit, withTrans, wordIdxRef, underWord)
 /* ── Credits: every text on screen, with its source, its version title and its own licence ──
    Built from what is displayed (a handout shows no translation, so it credits none), with DOM calls only: a version
    title and its source address are Sefaria's strings. The block sits under the reading and prints with it. */
-function creditRows() {
+function creditRows(wantTrans) {
   const rows = [], seen = new Set();
-  const withTrans = settings.showTranslation;
+  const withTrans = wantTrans === undefined ? settings.showTranslation : !!wantTrans;   // a copy asks by its own option
   for (const p of (currentParts || [])) {
     const work = p.kind === 'tanakh' ? p.ref.replace(/ \d.*$/, '') : p.kind === 'opensiddur' ? '' : p.ref.split(',')[0];
     const add = (role, t) => {
@@ -4814,6 +4814,15 @@ function creditRows() {
     if (withTrans && p.en && !p.en.hidden && p.en.lines.some(Boolean)) add('translation', p.en);
   }
   return rows;
+}
+// The credits as plain lines: what a copied passage carries under its heading, so a pasted text still says whose
+// words it holds and under which licence.
+function creditLinesPlain(wantTrans) {
+  return creditRows(wantTrans).map(r => {
+    const role = I18n.t(r.role === 'hebrew' ? 'tefillah.credits.hebrew' : 'tefillah.credits.translation');
+    const src = (r.work ? r.work + ' — ' : '') + r.title + (r.contributors ? ' (' + r.contributors + ')' : '');
+    return role + ' ' + src + ' · ' + licenseLabel(r.license) + ' · ' + I18n.t(r.via === 'opensiddur' ? 'tefillah.credits.via_opensiddur' : 'tefillah.credits.via_sefaria');
+  });
 }
 function renderCredits() {
   const box = document.getElementById('ttCredits');
@@ -6645,7 +6654,7 @@ function buildCopyPlain(verses) {
   if (!verses || !verses.length) return '';
   const gap = '\n'.repeat(Math.max(0, Math.min(3, settings.copyBlankLines ?? 0)));
   const parts = verses.map(verseCopyParts);
-  const head = (settings.copyIncludeHeading && currentRangeLabel) ? currentRangeLabel + '\n\n' : '';
+  const head = (settings.copyIncludeHeading && currentRangeLabel) ? [currentRangeLabel, ...creditLinesPlain(settings.copyIncludeTrans)].join('\n') + '\n\n' : '';
   if (settings.copyLayout === 'grouped' && verses.length > 1) {
     const block = sel => parts.map(sel).filter(Boolean).join('\n' + gap).trim();
     const blocks = [
@@ -6770,17 +6779,20 @@ function buildCopyHTML(verses) {
     // An empty <p></p> is dropped by Word's importer and collapsed by Gmail; a &nbsp; one is not.
     const gap = '<p style="margin:0">&nbsp;</p>'.repeat(Math.max(0, Math.min(3, settings.copyBlankLines ?? 0)));
     const heb = v => `<p dir="rtl" lang="he" style="${hebStyle}">` +
-                     (settings.copyIncludeRef ? `<span dir="ltr" style="font-size:0.7em;">${v.chapter}:${v.verse}</span> ` : '') +
+                     ((settings.copyIncludeRef && v.num) ? `<span dir="ltr" style="font-size:0.7em;">${esc(v.num)}</span> ` : '') +
                      _copyHebHTML(v, opts) + '</p>';
-    // stripHTML is this page's own sanitizer for exactly this string (8-tag allowlist, every
-    // attribute removed, parsed inert) — so JPS italics for supplied words survive the paste
-    // without widening the trust boundary past what #ttReading already renders.
+    // A transliteration and a translation are plain text here: each passes esc() where its row is built.
     const ltr = t => `<p dir="ltr" style="margin:0 0 4pt;">${t}</p>`;
     const out = [];
     // The label is in the UI's language (the Hebrew UI's mixes Hebrew and Latin), so it pastes in the UI's direction,
     // reading as the print band does — never pinned ltr.
     if (settings.copyIncludeHeading && currentRangeLabel)
-      out.push(`<p dir="${getComputedStyle(document.documentElement).direction === 'rtl' ? 'rtl' : 'ltr'}" style="font-weight:bold;margin:0 0 8pt;">${esc(currentRangeLabel)}</p>`);
+    {
+      const dir = getComputedStyle(document.documentElement).direction === 'rtl' ? 'rtl' : 'ltr';
+      const credits = creditLinesPlain(settings.copyIncludeTrans);
+      out.push(`<p dir="${dir}" style="font-weight:bold;margin:0 0 ${credits.length ? 2 : 8}pt;">${esc(currentRangeLabel)}</p>`);
+      credits.forEach((l, i) => out.push(`<p dir="${dir}" style="font-size:8pt;color:#555555;margin:0 0 ${i === credits.length - 1 ? 8 : 1}pt;">${esc(l)}</p>`));
+    }
     const rows = verses.map(v => {
       const p = verseCopyParts(v);
       return { v, tr: p.tr ? esc(p.tr) : '',
