@@ -1906,9 +1906,26 @@ Both pages sync one settings blob (and the Trope Tutor its mastery progress) thr
 - **Torah Trainer's translation version is display-only when it cannot be honoured.** `settings.translationVersion`
   is the teacher's choice and is written only by the Version box (and once, as a first-ever default, by
   `populateVersionDropdown`). When a book's licence-filtered list does not offer it, or the version returns no
-  English for a passage, the substitute (JPS 1917, else the first safe version) lives in `_versionFallback`,
-  `effectiveVersion()` is what every `fetchSefariaText` call and the Version box / footer show, and the stored
-  choice travels through a sync untouched. The fallback is cleared on a book change and by a new choice.
+  translation for a passage, or Sefaria returns it under a licence that is not open, the substitute (JPS 1917, else
+  the first English version by licence rank) lives in `_versionFallback`, `effectiveVersion()` is what the fetch
+  asks for and the Version box shows, and the stored choice travels through a sync untouched. The substitute is
+  decided anew at the start of every `fetchAndRender` (from the book's list where it is already cached, else by
+  trying the stored choice and checking the answer), a new choice clears it, and `populateVersionDropdown` keeps
+  the one the text path set — it used to clear it, leaving the box and the footer naming a version not on screen.
+- **Which translations the Torah Trainer may show.** The licence rule is the Tefillah Trainer's `licenseName` /
+  `isOpenLicense`, word for word (only Public Domain, CC0, CC BY, CC BY-SA, CC BY-NC, CC BY-NC-SA; NoDerivatives and
+  `unknown` refused): keep the two copies alike. It is applied to the book's list (`offeredVersions`) **and to the
+  version Sefaria returns** (`fetchSefariaText` drops a translation that is not the one asked for or is not open,
+  before the cache, so render, copy and print never see it). A version is requested as `translation|<title>`
+  (`english|<title>` is matched against the language family and returned nothing for a French title). The list
+  shows the English versions, then an *Other languages* group, split by the title's own `[xx]` tag before
+  Sefaria's `actualLanguage` (`versionLangOf`: the field calls a Romanian and two Turkish versions English); the
+  default and every automatic substitute are English; while another language is on screen the two "English"
+  headings read "Translation" (`transHeading`) and the cells carry its `lang`.
+- **The footer credits what is on screen.** `_shownTrans` / `_shownHeb` are the returned versions of the reading on
+  screen (`parseSefariaResponse` keeps `_he` / `_en`): `updateTransFooter` names the translation and the licence it
+  came back under, `updateHebFooter` appends the Hebrew edition and its licence to "Hebrew text via Sefaria" (a
+  pinned-English credit; the Hebrew is credited, not gated).
 - **The Torah Trainer's favorites are two rows beside the settings blob** — `favorite` (one row per saved
   reading) and `favoriteFolders` (its tree, merged through the page's `merges: { favoriteFolders: ftMergeTrees }`).
   `onLocalChanged(kind)` branches on the kind: the two favorites kinds only re-render the list

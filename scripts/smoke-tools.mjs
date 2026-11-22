@@ -293,7 +293,7 @@ const PAGES = [
         const snap = () => ({
           options: [...sel.options].map(o => o.value), grouped: [...sel.querySelectorAll('optgroup option')].map(o => o.value), groups: sel.querySelectorAll('optgroup').length,
           text: document.getElementById('ttReading').textContent, effective: effectiveVersion(), box: sel.value,
-          footer: document.getElementById('ttFooterTrans').textContent,
+          footer: document.getElementById('ttFooterTrans').textContent, hebFooter: document.getElementById('ttFooterHeb').textContent,
           heading: (document.querySelector('.tt-col-translation h3') || {}).textContent || '', colLang: document.querySelector('.tt-col-translation') ? document.querySelector('.tt-col-translation').getAttribute('lang') : null,
           inMemory: settings.translationVersion,
         });
@@ -310,6 +310,7 @@ const PAGES = [
       check(tag + ' F: the refused choice stays the stored choice', rf.stored === 'Relicensed' && rf.first.inMemory === 'Relicensed', JSON.stringify({ stored: rf.stored, inMemory: rf.first.inMemory }));
       check(tag + ' F: other languages sit in their own group, by the title’s tag before Sefaria’s field', rf.first.groups === 1 && rf.first.grouped.join('|') === [rf.FR, rf.RO].join('|') && rf.first.heading === rf.english && !rf.first.colLang, JSON.stringify({ grouped: rf.first.grouped, heading: rf.first.heading }));
       check(tag + ' F: a French version is asked for as a translation, shows, and the heading reads Translation', /Au commencement\./.test(rf.french.text) && rf.french.heading === rf.translation && rf.french.colLang === 'fr' && rf.french.footer.includes(rf.FR) && rf.asked.some(a => a.indexOf('translation|' + rf.FR) > -1) && !rf.asked.some(a => /english\|/.test(a)), JSON.stringify({ heading: rf.french.heading, lang: rf.french.colLang, footer: rf.french.footer, asked: rf.asked.slice(-2) }));
+      check(tag + ' F: the footer names the Hebrew edition and licence Sefaria returned, and claims no other', /A Hebrew Edition/.test(rf.first.hebFooter) && /CC BY-SA/.test(rf.first.hebFooter) && !/public domain/i.test(rf.first.hebFooter), rf.first.hebFooter);
       check(tag + ' F: 0 pageerrors', f.errors.length === 0, f.errors.join(' | '));
       await f.ctx.close();
     }

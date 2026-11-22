@@ -3455,7 +3455,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
 <footer>
   <div class="footer-credits">
     <!-- pinned-English credits (never translated): dir="ltr" keeps each phrase in English order in the RTL UI, and lang="en" has a screen reader voice it in English -->
-    <span dir="ltr" lang="en">Hebrew text via <a href="https://www.sefaria.org" target="_blank" rel="noopener" class="sefaria-attr"><img src="https://files.readme.io/87c5652-image.png" alt="Sefaria" class="sefaria-light" loading="lazy"><img src="https://files.readme.io/dcee0a8-image.png" alt="Sefaria" class="sefaria-dark" loading="lazy"></a> · public domain</span>
+    <span dir="ltr" lang="en">Hebrew text via <a href="https://www.sefaria.org" target="_blank" rel="noopener" class="sefaria-attr"><img src="https://files.readme.io/87c5652-image.png" alt="Sefaria" class="sefaria-light" loading="lazy"><img src="https://files.readme.io/dcee0a8-image.png" alt="Sefaria" class="sefaria-dark" loading="lazy"></a><span id="ttFooterHeb"></span></span>
     <span id="ttFooterTrans" data-i18n="torah.footer.translation_static">Translation: (none selected)</span>
     <!-- The audio credit follows the Chanting choice (syncRecSrcControls): PocketTorah's, Cantor Brown's, or both while
          the reading on screen mixes them (a verse with no Total Torah recording plays PocketTorah). -->
@@ -7027,7 +7027,7 @@ async function fetchAndRender() {
     }
     _shownHeb = verses._he || null;
     _shownTrans = (verses._engCount > 0 && verses._en) ? verses._en : null;
-    updateTransFooter();
+    updateTransFooter(); updateHebFooter();
     currentVerses = verses;
     syncShareBtn();   // the practice link names the first rendered verse, so re-sync per render
     _readingHasShem = detectShem(verses);   // before renderText so the chip renders in the same pass
@@ -11224,6 +11224,16 @@ async function pickFallbackVersion(book, failedTitle) {
   const safe = offeredVersions(versions).filter(v => versionTitleOf(v) !== (failedTitle || '').trim());
   if (!safe.length) return null;
   return defaultVersionOf(safe) || null;
+}
+// The Hebrew text's own edition and licence, as Sefaria returned them for the reading on screen: a pinned-English
+// credit like its neighbours, appended to "Hebrew text via Sefaria" (which claims no licence by itself — the line
+// once said "public domain"; Sefaria's default Hebrew is Miqra according to the Masorah, CC BY-SA). The text is
+// credited, not gated: the page shows the Hebrew Sefaria serves, as it always has.
+function updateHebFooter() {
+  const el = document.getElementById('ttFooterHeb');
+  if (!el) return;
+  const lic = _shownHeb && _shownHeb.title ? licenseName(_shownHeb.license) : '';
+  el.textContent = _shownHeb && _shownHeb.title ? ' \u00B7 ' + _shownHeb.title + (lic ? ' \u00B7 ' + lic : '') : '';   // i18n-ignore: a brand credit, Sefaria's own edition title and a licence code
 }
 function updateTransFooter() {
   const el = document.getElementById('ttFooterTrans');

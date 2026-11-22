@@ -110,9 +110,9 @@ reason on the status line and the Try again card): a prayer with a silent gap wo
   flags per word, which reach the page as its own classes `tt-b` / `tt-sm`.
 - **The licence rule** (`licenseName`): only Public Domain, CC0, CC BY, CC BY-SA, CC BY-NC and CC BY-NC-SA. `unknown`,
   an empty value, a "Copyright: …" string and every NoDerivatives licence are refused, and the check is made on the
-  version **Sefaria returned**, not the one it listed (it has listed an edition as open and answered with another). This
-  is stricter than the Torah Trainer's `isPermissiveLicense`. `scripts/tefillah-sefaria.mjs` holds the same function
-  for the scripts: keep the two alike.
+  version **Sefaria returned**, not the one it listed (it has listed an edition as open and answered with another). The
+  Torah Trainer carries the same function, word for word, and `scripts/tefillah-sefaria.mjs` holds it for the
+  scripts: keep the three alike.
 - **Hebrew edition**: a ranged part reads the edition its catalog entry pins (`edition_gone` when Sefaria no longer
   offers it openly). A whole node reads the stored choice (`settings.hebEdition`) where the node has it, else the
   first open edition matching `hebrewPreference`; the Text tab's *Hebrew text* section lists the others only where a
