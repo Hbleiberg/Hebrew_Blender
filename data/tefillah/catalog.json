@@ -1,0 +1,733 @@
+{
+  "v": 1,
+  "hebrewPreference": ["Metsudah","Shaliehsaboo","Torat Emet","Daat"],
+  "groups": [
+    { "key": "morning-waking", "nameKey": "tefillah.group.morning_waking", "en": "Waking and morning blessings", "he": "הַשְׁכָּמַת הַבֹּקֶר וּבִרְכוֹת הַשַּׁחַר" },
+    { "key": "pesukei-dzimra", "nameKey": "tefillah.group.pesukei_dzimra", "en": "Pesukei D'Zimra", "he": "פְּסוּקֵי דְזִמְרָה" },
+    { "key": "shema", "nameKey": "tefillah.group.shema", "en": "Shema and its blessings", "he": "קְרִיאַת שְׁמַע וּבִרְכוֹתֶיהָ" },
+    { "key": "amidah", "nameKey": "tefillah.group.amidah", "en": "Amidah", "he": "עֲמִידָה" },
+    { "key": "concluding", "nameKey": "tefillah.group.concluding", "en": "Concluding prayers", "he": "סִיּוּם הַתְּפִלָּה" },
+    { "key": "torah-service", "nameKey": "tefillah.group.torah_service", "en": "Torah service", "he": "סֵדֶר קְרִיאַת הַתּוֹרָה" },
+    { "key": "shabbat-holidays", "nameKey": "tefillah.group.shabbat_holidays", "en": "Shabbat and holidays", "he": "שַׁבָּת וּמוֹעֲדִים" },
+    { "key": "blessings", "nameKey": "tefillah.group.blessings", "en": "Blessings", "he": "בְּרָכוֹת" },
+    { "key": "bedtime", "nameKey": "tefillah.group.bedtime", "en": "Bedtime", "he": "לִפְנֵי הַשֵּׁנָה" }
+  ],
+  "prayers": [
+    { "key": "modeh-ani", "nameKey": "tefillah.prayer.modeh_ani", "en": "Modeh Ani", "he": "מוֹדֶה אֲנִי",
+      "group": "morning-waking", "service": "shacharit", "days": ["weekday","shabbat"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Preparatory Prayers, Modeh Ani",
+        "sefard": { "ref": "Siddur Sefard, Upon Arising, Modeh Ani:1-4", "he": "The Metsudah siddur, 1981", "from": "מודה אני", "to": "לעולם ועד" },
+        "edot": "Siddur Edot HaMizrach, Preparatory Prayers, Modeh Ani",
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "netilat-yadayim", "nameKey": "tefillah.prayer.netilat_yadayim", "en": "Netilat Yadayim", "he": "נְטִילַת יָדַיִם",
+      "group": "morning-waking", "service": "shacharit", "days": ["weekday","shabbat"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Preparatory Prayers, Netilat Yadayim",
+        "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Morning Blessings:1", "he": "The Metsudah siddur, 1981", "from": "ברוך אתה", "to": "נטילת ידים" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Preparatory Prayers, Morning Blessings:2-3", "he": " Shaliehsaboo Edition", "from": "ברוך אתה", "to": "נטילת ידים" },
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "asher-yatzar", "nameKey": "tefillah.prayer.asher_yatzar", "en": "Asher Yatzar", "he": "אֲשֶׁר יָצַר",
+      "group": "morning-waking", "service": "shacharit", "days": ["weekday","shabbat"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Preparatory Prayers, Asher Yatzar",
+        "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Morning Blessings:2", "he": "The Metsudah siddur, 1981", "from": "ברוך אתה", "to": "ומפליא לעשות" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Preparatory Prayers, Morning Blessings:4-5", "he": " Shaliehsaboo Edition", "from": "ברוך אתה", "to": "ומפליא לעשות" },
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "elohai-neshama", "nameKey": "tefillah.prayer.elohai_neshama", "en": "Elohai Neshama", "he": "אֱלֹהַי נְשָׁמָה",
+      "group": "morning-waking", "service": "shacharit", "days": ["weekday","shabbat"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Preparatory Prayers, Elokai Neshama",
+        "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Morning Blessings:3", "he": "The Metsudah siddur, 1981", "from": "אלהי נשמה", "to": "לפגרים מתים" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Preparatory Prayers, Morning Blessings:6-7", "he": " Shaliehsaboo Edition", "from": "אלהי נשמה", "to": "לפגרים מתים" },
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "birchot-hatorah", "nameKey": "tefillah.prayer.birchot_hatorah", "en": "Birchot HaTorah", "he": "בִּרְכוֹת הַתּוֹרָה",
+      "group": "morning-waking", "service": "shacharit", "days": ["weekday","shabbat"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Preparatory Prayers, Torah Blessings",
+        "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Blessings on Torah:1-3", "he": "The Metsudah siddur, 1981", "from": "ברוך אתה", "to": "נותן התורה" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Preparatory Prayers, Torah Blessings:1-4", "he": " Shaliehsaboo Edition", "from": "ברוך אתה", "to": "נותן התורה" },
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "birchot-hashachar", "nameKey": "tefillah.prayer.birchot_hashachar", "en": "Birchot HaShachar", "he": "בִּרְכוֹת הַשַּׁחַר",
+      "group": "morning-waking", "service": "shacharit", "days": ["weekday","shabbat"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Preparatory Prayers, Morning Blessings",
+        "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Blessings on Torah:8-26", "he": "The Metsudah siddur, 1981", "from": "ברוך אתה", "to": "של גיהנם" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Preparatory Prayers, Morning Blessings:8-27", "he": " Shaliehsaboo Edition", "from": "ברוך אתה", "to": "בן ברית" },
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "ma-tovu", "nameKey": "tefillah.prayer.ma_tovu", "en": "Ma Tovu", "he": "מַה טֹּבוּ",
+      "group": "morning-waking", "service": "shacharit", "days": ["weekday","shabbat"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Preparatory Prayers, Ma Tovu",
+        "sefard": { "ref": "Siddur Sefard, Upon Arising, Upon Entering Synagogue:3-4", "he": "The Metsudah siddur, 1981", "from": "מה טבו", "to": "באמת ישעך" },
+        "edot": null,
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "adon-olam", "nameKey": "tefillah.prayer.adon_olam", "en": "Adon Olam", "he": "אֲדוֹן עוֹלָם",
+      "group": "morning-waking", "service": "shacharit", "days": ["weekday","shabbat"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Preparatory Prayers, Adon Olam",
+        "sefard": { "ref": "Siddur Sefard, Upon Arising, Upon Entering Synagogue:5-15", "he": "The Metsudah siddur, 1981", "from": "אדון עולם", "to": "ולא אירא" },
+        "edot": null,
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "yigdal", "nameKey": "tefillah.prayer.yigdal", "en": "Yigdal", "he": "יִגְדַּל",
+      "group": "morning-waking", "service": "shacharit", "days": ["weekday","shabbat"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Preparatory Prayers, Yigdal",
+        "sefard": { "ref": "Siddur Sefard, Upon Arising, Upon Entering Synagogue:16-42", "he": "The Metsudah siddur, 1981", "from": "יגדל אלהים", "to": "שם תהלתו" },
+        "edot": null,
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "baruch-sheamar", "nameKey": "tefillah.prayer.baruch_sheamar", "en": "Baruch She'amar", "he": "בָּרוּךְ שֶׁאָמַר",
+      "group": "pesukei-dzimra", "service": "shacharit", "days": ["weekday","shabbat"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Pesukei Dezimra, Barukh She'amar",
+        "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Hodu:12-13", "he": "The Metsudah siddur, 1981", "from": "ברוך שאמר", "to": "מהלל בתשבחות" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Pesukei D'Zimra:2", "he": " Shaliehsaboo Edition", "from": "ברוך שאמר", "to": "מהלל בתשבחות" },
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "ashrei", "nameKey": "tefillah.prayer.ashrei", "en": "Ashrei", "he": "אַשְׁרֵי",
+      "group": "pesukei-dzimra", "service": ["shacharit","mincha"], "days": ["weekday","shabbat"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Pesukei Dezimra, Ashrei",
+        "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Hodu:18-19", "he": "The Metsudah siddur, 1981", "from": "אשרי יושבי", "to": "עולם הללויה" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Pesukei D'Zimra:6-7", "he": " Shaliehsaboo Edition", "from": "אשרי יושבי", "to": "עולם הללויה" },
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "psalm-150", "nameKey": "tefillah.prayer.psalm_150", "en": "Psalm 150", "he": "מִזְמוֹר ק״נ",
+      "group": "pesukei-dzimra", "service": "shacharit", "days": ["weekday","shabbat"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Pesukei Dezimra, Psalm 150",
+        "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Hodu:28-29", "he": "The Metsudah siddur, 1981", "from": "הללויה הללו", "to": "יה הללויה" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Pesukei D'Zimra:12", "he": " Shaliehsaboo Edition", "from": "הללויה הללו", "to": "יה הללויה" },
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "yishtabach", "nameKey": "tefillah.prayer.yishtabach", "en": "Yishtabach", "he": "יִשְׁתַּבַּח",
+      "group": "pesukei-dzimra", "service": "shacharit", "days": ["weekday","shabbat"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Pesukei Dezimra, Yishtabach",
+        "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Yishtabach:1-2", "he": "The Metsudah siddur, 1981", "from": "ישתבח שמך", "to": "חי העולמים" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Pesukei D'Zimra:19", "he": " Shaliehsaboo Edition", "from": "ישתבח שמך", "to": "העולמים אמן" },
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "barchu", "nameKey": "tefillah.prayer.barchu", "en": "Barchu", "he": "בָּרְכוּ",
+      "group": "shema", "service": ["shacharit","maariv"], "days": ["weekday","shabbat"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Blessings of the Shema, Barchu",
+        "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, The Shema:1-5", "he": "The Metsudah siddur, 1981", "from": "ברכו את", "to": "לעולם ועד" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Pesukei D'Zimra:24-26", "he": " Shaliehsaboo Edition", "from": "ברכו את", "to": "לעולם ועד" },
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "yotzer-or", "nameKey": "tefillah.prayer.yotzer_or", "en": "Yotzer Or", "he": "יוֹצֵר אוֹר",
+      "group": "shema", "service": "shacharit", "days": ["weekday","shabbat"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Blessings of the Shema, First Blessing before Shema",
+        "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, The Shema:6-14", "he": "The Metsudah siddur, 1981", "from": "ברוך אתה", "to": "יוצר המאורות" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, The Shema:2-6", "he": " Shaliehsaboo Edition", "from": "ברוך אתה", "to": "יוצר המאורות" },
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "ahavah-rabbah", "nameKey": "tefillah.prayer.ahavah_rabbah", "en": "Ahavah Rabbah", "he": "אַהֲבָה רַבָּה",
+      "group": "shema", "service": "shacharit", "days": ["weekday","shabbat"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Blessings of the Shema, Second Blessing before Shema",
+        "sefard": null,
+        "edot": null,
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "shema", "nameKey": "tefillah.prayer.shema", "en": "Shema", "he": "שְׁמַע",
+      "group": "shema", "service": ["shacharit","maariv"], "days": ["weekday","shabbat"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Blessings of the Shema, Shema",
+        "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, The Shema:17-29", "he": "The Metsudah siddur, 1981", "from": "אל מלך", "to": "אלהיכם אמת" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, The Shema:10-16", "he": " Shaliehsaboo Edition", "from": "שמע ישראל", "to": "אלהיכם אמת" },
+        "torah": [
+          "Deuteronomy 6:4",
+          { "ref": "Siddur Ashkenaz, Weekday, Shacharit, Blessings of the Shema, Shema:5", "he": "The Metsudah siddur, 1981", "from": "ברוך שם", "to": "לעולם ועד", "added": true },
+          "Deuteronomy 6:5-9",
+          "Deuteronomy 11:13-21",
+          "Numbers 15:37-41",
+          { "ref": "Siddur Ashkenaz, Weekday, Shacharit, Blessings of the Shema, Shema:12", "he": "The Metsudah siddur, 1981", "from": "יהוה אלהיכם", "to": "אלהיכם אמת", "added": true }
+        ],
+        "opensiddur": null
+      } },
+    { "key": "vahavta", "nameKey": "tefillah.prayer.vahavta", "en": "V'ahavta", "he": "וְאָהַבְתָּ",
+      "group": "shema", "service": ["shacharit","maariv"], "days": ["weekday","shabbat"],
+      "sources": {
+        "ashkenaz": { "ref": "Siddur Ashkenaz, Weekday, Shacharit, Blessings of the Shema, Shema:6", "he": "The Metsudah siddur, 1981", "from": "ואהבת את", "to": "ביתך ובשעריך" },
+        "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, The Shema:23", "he": "The Metsudah siddur, 1981", "from": "ואהבת את", "to": "ביתך ובשעריך" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, The Shema:13", "he": " Shaliehsaboo Edition", "from": "ואהבת את", "to": "ביתך ובשעריך" },
+        "torah": [
+          "Deuteronomy 6:5-9"
+        ],
+        "opensiddur": null
+      } },
+    { "key": "emet-vyatziv", "nameKey": "tefillah.prayer.emet_vyatziv", "en": "Emet V'yatziv", "he": "אֱמֶת וְיַצִּיב",
+      "group": "shema", "service": "shacharit", "days": ["weekday","shabbat"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Blessings of the Shema, Blessing after Shema",
+        "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, The Shema:30-38", "he": "The Metsudah siddur, 1981", "from": "ויציב ונכון", "to": "גאל ישראל" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, The Shema:17-21", "he": " Shaliehsaboo Edition", "from": "ויציב ונכון", "to": "גאל ישראל" },
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "mi-chamocha", "nameKey": "tefillah.prayer.mi_chamocha", "en": "Mi Chamocha", "he": "מִי כָמֹכָה",
+      "group": "shema", "service": ["shacharit","maariv"], "days": ["weekday","shabbat"],
+      "sources": {
+        "ashkenaz": { "ref": "Siddur Ashkenaz, Weekday, Shacharit, Blessings of the Shema, Blessing after Shema:6-8", "he": "The Metsudah siddur, 1981", "from": "מי כמכה", "to": "לעולם ועד" },
+        "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, The Shema:35-37", "he": "The Metsudah siddur, 1981", "from": "מי כמכה", "to": "לעולם ועד" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, The Shema:21", "he": " Shaliehsaboo Edition", "from": "תהילות לאל", "to": "גאל ישראל" },
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "amidah-avot", "nameKey": "tefillah.prayer.amidah_avot", "en": "Amidah — Avot", "he": "אָבוֹת",
+      "group": "amidah", "service": ["shacharit","mincha","maariv"], "days": ["weekday","shabbat"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Patriarchs",
+        "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:1-7", "he": "The Metsudah siddur, 1981", "from": "אדני שפתי", "to": "מגן אברהם" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:2-3", "he": " Shaliehsaboo Edition", "from": "אדני שפתי", "to": "מגן אברהם" },
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "amidah-gevurot", "nameKey": "tefillah.prayer.amidah_gevurot", "en": "Amidah — Gevurot", "he": "גְּבוּרוֹת",
+      "group": "amidah", "service": ["shacharit","mincha","maariv"], "days": ["weekday","shabbat"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Divine Might",
+        "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:8-19", "he": "The Metsudah siddur, 1981", "from": "אתה גבור", "to": "מחיה המתים" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:4-6", "he": " Shaliehsaboo Edition", "from": "אתה גבור", "to": "מחיה המתים" },
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "amidah-kedushat-hashem", "nameKey": "tefillah.prayer.amidah_kedushat_hashem", "en": "Amidah — Kedushat HaShem", "he": "קְדֻשַּׁת הַשֵּׁם",
+      "group": "amidah", "service": ["shacharit","mincha","maariv"], "days": ["weekday","shabbat"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Holiness of God",
+        "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:34-39", "he": "The Metsudah siddur, 1981", "from": "אתה קדוש", "to": "המלך הקדוש" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:10", "he": " Shaliehsaboo Edition", "from": "אתה קדוש", "to": "המלך הקדוש" },
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "amidah-kedusha", "nameKey": "tefillah.prayer.amidah_kedusha", "en": "Amidah — Kedusha", "he": "קְדֻשָּׁה",
+      "group": "amidah", "service": ["shacharit","mincha"], "days": ["weekday","shabbat"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Kedushah",
+        "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:20-33", "he": "The Metsudah siddur, 1981", "from": "נקדישך ונעריצך", "to": "ודר הללויה" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:7-9", "he": " Shaliehsaboo Edition", "from": "נקדישך ונעריצך", "to": "ודר הללויה" },
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "amidah-binah", "nameKey": "tefillah.prayer.amidah_binah", "en": "Amidah — Binah", "he": "בִּינָה",
+      "group": "amidah", "service": ["shacharit","mincha","maariv"], "days": ["weekday"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Knowledge",
+        "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:40-41", "he": "The Metsudah siddur, 1981", "from": "אתה חונן", "to": "חונן הדעת" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:11", "he": " Shaliehsaboo Edition", "from": "אתה חונן", "to": "חונן הדעת" },
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "amidah-teshuvah", "nameKey": "tefillah.prayer.amidah_teshuvah", "en": "Amidah — Teshuvah", "he": "תְּשׁוּבָה",
+      "group": "amidah", "service": ["shacharit","mincha","maariv"], "days": ["weekday"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Repentance",
+        "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:42-43", "he": "The Metsudah siddur, 1981", "from": "השיבנו אבינו", "to": "הרוצה בתשובה" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:12", "he": " Shaliehsaboo Edition", "from": "השיבנו אבינו", "to": "הרוצה בתשובה" },
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "amidah-selichah", "nameKey": "tefillah.prayer.amidah_selichah", "en": "Amidah — Selichah", "he": "סְלִיחָה",
+      "group": "amidah", "service": ["shacharit","mincha","maariv"], "days": ["weekday"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Forgiveness",
+        "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:44-45", "he": "The Metsudah siddur, 1981", "from": "סלח לנו", "to": "המרבה לסלוח" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:13", "he": " Shaliehsaboo Edition", "from": "סלח לנו", "to": "המרבה לסלח" },
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "amidah-geulah", "nameKey": "tefillah.prayer.amidah_geulah", "en": "Amidah — Geulah", "he": "גְּאֻלָּה",
+      "group": "amidah", "service": ["shacharit","mincha","maariv"], "days": ["weekday"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Redemption",
+        "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:46-48", "he": "The Metsudah siddur, 1981", "from": "ראה נא", "to": "עננו" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:14", "he": " Shaliehsaboo Edition", "from": "ראה נא", "to": "גואל ישראל" },
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "amidah-refuah", "nameKey": "tefillah.prayer.amidah_refuah", "en": "Amidah — Refuah", "he": "רְפוּאָה",
+      "group": "amidah", "service": ["shacharit","mincha","maariv"], "days": ["weekday"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Healing",
+        "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:49-53", "he": "The Metsudah siddur, 1981", "from": "רפאנו יהוה", "to": "עמו ישראל" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:18", "he": " Shaliehsaboo Edition", "from": "רפאנו יהוה", "to": "עמו ישראל" },
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "amidah-birkat-hashanim", "nameKey": "tefillah.prayer.amidah_birkat_hashanim", "en": "Amidah — Birkat HaShanim", "he": "בִּרְכַּת הַשָּׁנִים",
+      "group": "amidah", "service": ["shacharit","mincha","maariv"], "days": ["weekday"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Prosperity",
+        "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:54-61", "he": "The Metsudah siddur, 1981", "from": "ברך עלינו", "to": "ברך עלינו" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:19-22", "he": " Shaliehsaboo Edition", "from": "ברכנו יהוה", "to": "מברך השנים" },
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "amidah-kibbutz-galuyot", "nameKey": "tefillah.prayer.amidah_kibbutz_galuyot", "en": "Amidah — Kibbutz Galuyot", "he": "קִבּוּץ גָּלֻיּוֹת",
+      "group": "amidah", "service": ["shacharit","mincha","maariv"], "days": ["weekday"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Gathering the Exiles",
+        "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:62-63", "he": "The Metsudah siddur, 1981", "from": "תקע בשופר", "to": "עמו ישראל" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:23", "he": " Shaliehsaboo Edition", "from": "תקע בשופר", "to": "עמו ישראל" },
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "amidah-din", "nameKey": "tefillah.prayer.amidah_din", "en": "Amidah — Din", "he": "דִּין",
+      "group": "amidah", "service": ["shacharit","mincha","maariv"], "days": ["weekday"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Justice",
+        "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:64-69", "he": "The Metsudah siddur, 1981", "from": "השיבה שופטינו", "to": "המלך המשפט" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:24", "he": " Shaliehsaboo Edition", "from": "השיבה שופטינו", "to": "המלך המשפט" },
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "amidah-birkat-haminim", "nameKey": "tefillah.prayer.amidah_birkat_haminim", "en": "Amidah — Birkat HaMinim", "he": "בִּרְכַּת הַמִּינִים",
+      "group": "amidah", "service": ["shacharit","mincha","maariv"], "days": ["weekday"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Against Enemies",
+        "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:70-71", "he": "The Metsudah siddur, 1981", "from": "ולמלשינים אל", "to": "ומכניע זדים" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:25", "he": " Shaliehsaboo Edition", "from": "למינים ולמלשינים", "to": "ומכניע מינים" },
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "amidah-tzadikim", "nameKey": "tefillah.prayer.amidah_tzadikim", "en": "Amidah — Tzadikim", "he": "צַדִּיקִים",
+      "group": "amidah", "service": ["shacharit","mincha","maariv"], "days": ["weekday"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, The Righteous",
+        "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:72-73", "he": "The Metsudah siddur, 1981", "from": "על הצדיקים", "to": "ומבטח לצדיקים" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:26", "he": " Shaliehsaboo Edition", "from": "על הצדיקים", "to": "ומבטח לצדיקים" },
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "amidah-binyan-yerushalayim", "nameKey": "tefillah.prayer.amidah_binyan_yerushalayim", "en": "Amidah — Binyan Yerushalayim", "he": "בִּנְיַן יְרוּשָׁלַיִם",
+      "group": "amidah", "service": ["shacharit","mincha","maariv"], "days": ["weekday"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Rebuilding Jerusalem",
+        "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:74-75", "he": "The Metsudah siddur, 1981", "from": "ולירושלים עירך", "to": "בונה ירושלים" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:27", "he": " Shaliehsaboo Edition", "from": "תשכון בתוך", "to": "בונה ירושלים" },
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "amidah-malchut-beit-david", "nameKey": "tefillah.prayer.amidah_malchut_beit_david", "en": "Amidah — Malchut Beit David", "he": "מַלְכוּת בֵּית דָּוִד",
+      "group": "amidah", "service": ["shacharit","mincha","maariv"], "days": ["weekday"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Kingdom of David",
+        "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:76-77", "he": "The Metsudah siddur, 1981", "from": "את צמח", "to": "קרן ישועה" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:28", "he": " Shaliehsaboo Edition", "from": "את צמח", "to": "קרן ישועה" },
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "amidah-shomea-tefillah", "nameKey": "tefillah.prayer.amidah_shomea_tefillah", "en": "Amidah — Shomea Tefillah", "he": "שׁוֹמֵעַ תְּפִלָּה",
+      "group": "amidah", "service": ["shacharit","mincha","maariv"], "days": ["weekday"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Response to Prayer",
+        "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:78-79", "he": "The Metsudah siddur, 1981", "from": "אב הרחמן", "to": "שומע תפלה" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:29-32", "he": " Shaliehsaboo Edition", "from": "שמע קולנו", "to": "שומע תפלה" },
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "amidah-avodah", "nameKey": "tefillah.prayer.amidah_avodah", "en": "Amidah — Avodah", "he": "עֲבוֹדָה",
+      "group": "amidah", "service": ["shacharit","mincha","maariv"], "days": ["weekday","shabbat"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Temple Service",
+        "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:82-91", "he": "The Metsudah siddur, 1981", "from": "רצה יהוה", "to": "שכינתו לציון" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:33-40", "he": " Shaliehsaboo Edition", "from": "רצה יהוה", "to": "שכינתו לציון" },
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "amidah-hodaah", "nameKey": "tefillah.prayer.amidah_hodaah", "en": "Amidah — Hodaah", "he": "הוֹדָאָה",
+      "group": "amidah", "service": ["shacharit","mincha","maariv"], "days": ["weekday","shabbat"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Thanksgiving",
+        "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:92-107", "he": "The Metsudah siddur, 1981", "from": "מודים אנחנו", "to": "נאה להודות" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:41-50", "he": " Shaliehsaboo Edition", "from": "מודים אנחנו", "to": "נאה להודות" },
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "amidah-shalom", "nameKey": "tefillah.prayer.amidah_shalom", "en": "Amidah — Shalom", "he": "שָׁלוֹם",
+      "group": "amidah", "service": ["shacharit","mincha","maariv"], "days": ["weekday","shabbat"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Peace",
+        "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:116-121", "he": "The Metsudah siddur, 1981", "from": "שים שלום", "to": "ישראל בשלום" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:66", "he": " Shaliehsaboo Edition", "from": "שים שלום", "to": "בשלום אמן" },
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "amidah-full", "nameKey": "tefillah.prayer.amidah_full", "en": "Amidah — full (weekday)", "he": "עֲמִידָה",
+      "group": "amidah", "service": ["shacharit","mincha","maariv"], "days": ["weekday"],
+      "sources": {
+        "ashkenaz": [
+          "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Patriarchs",
+          "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Divine Might",
+          "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Holiness of God",
+          "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Kedushah",
+          "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Knowledge",
+          "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Repentance",
+          "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Forgiveness",
+          "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Redemption",
+          "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Healing",
+          "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Prosperity",
+          "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Gathering the Exiles",
+          "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Justice",
+          "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Against Enemies",
+          "Siddur Ashkenaz, Weekday, Shacharit, Amidah, The Righteous",
+          "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Rebuilding Jerusalem",
+          "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Kingdom of David",
+          "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Response to Prayer",
+          "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Temple Service",
+          "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Thanksgiving",
+          "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Birkat Kohanim",
+          "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Peace",
+          "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Concluding Passage"
+        ],
+        "sefard": "Siddur Sefard, Weekday Shacharit, Amidah",
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:1-72", "he": " Shaliehsaboo Edition", "from": "אדני שפתי", "to": "בלבב שלם" },
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "elohai-netzor", "nameKey": "tefillah.prayer.elohai_netzor", "en": "Elohai Netzor", "he": "אֱלֹהַי נְצוֹר",
+      "group": "amidah", "service": ["shacharit","mincha","maariv"], "days": ["weekday","shabbat"],
+      "sources": {
+        "ashkenaz": { "ref": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Concluding Passage:2", "he": "The Metsudah siddur, 1981", "from": "אלהי נצור", "to": "צורי וגואלי" },
+        "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:123", "he": "The Metsudah siddur, 1981", "from": "אלהי נצור", "to": "צורי וגואלי" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:68", "he": " Shaliehsaboo Edition", "from": "אלהי נצר", "to": "למען קדשתך" },
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "oseh-shalom", "nameKey": "tefillah.prayer.oseh_shalom", "en": "Oseh Shalom", "he": "עוֹשֶׂה שָׁלוֹם",
+      "group": "amidah", "service": ["shacharit","mincha","maariv"], "days": ["weekday","shabbat"],
+      "sources": {
+        "ashkenaz": { "ref": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Concluding Passage:3", "he": "The Metsudah siddur, 1981", "from": "עשה השלום", "to": "ואמרו אמן" },
+        "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:124", "he": "The Metsudah siddur, 1981", "from": "עשה השלום", "to": "ואמרו אמן" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:71", "he": " Shaliehsaboo Edition", "from": "עשה שלום", "to": "ואמרו אמן" },
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "aleinu", "nameKey": "tefillah.prayer.aleinu", "en": "Aleinu", "he": "עָלֵינוּ",
+      "group": "concluding", "service": ["shacharit","mincha","maariv"], "days": ["weekday","shabbat"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Concluding Prayers, Alenu",
+        "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Aleinu:1-3", "he": "The Metsudah siddur, 1981", "from": "עלינו לשבח", "to": "ושמו אחד" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Alenu:1-4", "he": " Shaliehsaboo Edition", "from": "עלינו לשבח", "to": "יהוה אחד" },
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "mourners-kaddish", "nameKey": "tefillah.prayer.mourners_kaddish", "en": "Mourner's Kaddish", "he": "קַדִּישׁ יָתוֹם",
+      "group": "concluding", "service": ["shacharit","mincha","maariv"], "days": ["weekday","shabbat"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Concluding Prayers, Mourner's Kaddish",
+        "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Aleinu:5-9", "he": "The Metsudah siddur, 1981", "from": "יתגדל ויתקדש", "to": "ואמרו אמן" },
+        "edot": null,
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "chatzi-kaddish", "nameKey": "tefillah.prayer.chatzi_kaddish", "en": "Chatzi Kaddish", "he": "חֲצִי קַדִּישׁ",
+      "group": "concluding", "service": ["shacharit","mincha","maariv"], "days": ["weekday","shabbat"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Pesukei Dezimra, Half Kaddish",
+        "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Yishtabach:5-9", "he": "The Metsudah siddur, 1981", "from": "יתגדל ויתקדש", "to": "ואמרו אמן" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Pesukei D'Zimra:22-23", "he": " Shaliehsaboo Edition", "from": "יתגדל ויתקדש", "to": "אמן אמן" },
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "ein-keloheinu", "nameKey": "tefillah.prayer.ein_keloheinu", "en": "Ein Keloheinu", "he": "אֵין כֵּאלֹהֵינוּ",
+      "group": "concluding", "service": ["shacharit","shabbat"], "days": ["weekday","shabbat"],
+      "sources": {
+        "ashkenaz": { "ref": "Siddur Ashkenaz, Weekday, Shacharit, Concluding Prayers, Korbanot (Israel), Ein Kelohenu:2-3", "he": "The Metsudah siddur, 1981", "from": "אין כאלהינו", "to": "קטרת הסמים" },
+        "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Kaveh:2", "he": "The Metsudah siddur, 1981", "from": "אין כאלהינו", "to": "בא מועד" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Kaveh:3", "he": " Shaliehsaboo Edition", "from": "אין כאלהינו", "to": "בא מועד" },
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "vayehi-binsoa", "nameKey": "tefillah.prayer.vayehi_binsoa", "en": "Vayehi Binsoa", "he": "וַיְהִי בִּנְסֹעַ",
+      "group": "torah-service", "service": "shacharit", "days": ["weekday","shabbat"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Torah Reading, Removing the Torah from Ark, Vayehi Binsoa",
+        "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Torah Reading:4-5", "he": "The Metsudah siddur, 1981", "from": "ויהי בנסע", "to": "ישראל בקדשתו" },
+        "edot": null,
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "shema-echad", "nameKey": "tefillah.prayer.shema_echad", "en": "Shema / Echad (Torah service)", "he": "שְׁמַע · אֶחָד",
+      "group": "torah-service", "service": ["shacharit","shabbat"], "days": ["shabbat"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Shabbat, Shacharit, Torah Reading, Removing the Torah from the Ark, Shema Yisrael (Gadlu)",
+        "sefard": { "ref": "Siddur Sefard, Shabbat Morning Services, Shabbat Torah Reading:18-20", "he": "Torat Emet 357", "from": "שמע ישראל", "to": "שמו יחדו" },
+        "edot": null,
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "birchot-hatorah-aliyah", "nameKey": "tefillah.prayer.birchot_hatorah_aliyah", "en": "Birchot HaTorah for an aliyah", "he": "בִּרְכוֹת הַתּוֹרָה לָעוֹלֶה",
+      "group": "torah-service", "service": "shacharit", "days": ["weekday","shabbat"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Torah Reading, Reading from Sefer, Birkat HaTorah",
+        "sefard": "Siddur Sefard, Shabbat Morning Services, Blessings on Torah Reading",
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Torah Reading:10-18", "he": " Shaliehsaboo Edition", "from": "השם עמכם", "to": "נותן התורה" },
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "etz-chayim-hi", "nameKey": "tefillah.prayer.etz_chayim_hi", "en": "Etz Chayim Hi", "he": "עֵץ חַיִּים הִיא",
+      "group": "torah-service", "service": "shacharit", "days": ["weekday","shabbat"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Torah Reading, Returning Sefer to Aron, Uvenucho Yomar",
+        "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Ashrei:29-30", "he": "The Metsudah siddur, 1981", "from": "ובנחה יאמר", "to": "ימינו כקדם" },
+        "edot": null,
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "candle-lighting", "nameKey": "tefillah.prayer.candle_lighting", "en": "Candle lighting", "he": "הַדְלָקַת נֵרוֹת",
+      "group": "shabbat-holidays", "service": "shabbat", "days": ["shabbat"],
+      "sources": {
+        "ashkenaz": null,
+        "sefard": { "ref": "Siddur Sefard, Shabbat Candle Lighting:1-3", "he": "Torat Emet 357", "from": "ברוך אתה", "to": "של שבת" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Shabbat Candle Lighting:4-5", "he": " Shaliehsaboo Edition", "from": "ברוך אתה", "to": "ויום טוב" },
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "shalom-aleichem", "nameKey": "tefillah.prayer.shalom_aleichem", "en": "Shalom Aleichem", "he": "שָׁלוֹם עֲלֵיכֶם",
+      "group": "shabbat-holidays", "service": "shabbat", "days": ["shabbat"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Shabbat, Shabbat Evening, Shalom Aleichem",
+        "sefard": { "ref": "Siddur Sefard, Shabbat Evening Meal, Shalom Aleichem:1-6", "he": "Torat Emet 357", "from": "שלום עליכם", "to": "ועד עולם" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Shabbat Evening, Shalom Alekhem:2-9", "he": " Shaliehsaboo Edition", "from": "שלום עליכם", "to": "ועד עולם" },
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "lecha-dodi", "nameKey": "tefillah.prayer.lecha_dodi", "en": "Lecha Dodi", "he": "לְכָה דוֹדִי",
+      "group": "shabbat-holidays", "service": "shabbat", "days": ["shabbat"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Shabbat, Kabbalat Shabbat, Lekha Dodi",
+        "sefard": { "ref": "Siddur Sefard, Kabbalat Shabbat:16-38", "he": "Torat Emet 357", "from": "לכה דודי", "to": "שבת נקבלה" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Kabbalat Shabbat:9-24", "he": " Shaliehsaboo Edition", "from": "לכה דודי", "to": "שבת מלכתא" },
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "kiddush-friday-night", "nameKey": "tefillah.prayer.kiddush_friday_night", "en": "Kiddush (Friday night)", "he": "קִדּוּשׁ לְלֵיל שַׁבָּת",
+      "group": "shabbat-holidays", "service": "shabbat", "days": ["shabbat"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Shabbat, Shabbat Evening, Kiddush",
+        "sefard": { "ref": "Siddur Sefard, Shabbat Evening Meal, Shabbat Eve Kiddush:1-8", "he": "Torat Emet 357", "from": "לשם יחוד", "to": "מקדש השבת" },
+        "edot": "Siddur Edot HaMizrach, Shabbat Evening, Kiddush",
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "havdalah", "nameKey": "tefillah.prayer.havdalah", "en": "Havdalah", "he": "הַבְדָּלָה",
+      "group": "shabbat-holidays", "service": "shabbat", "days": ["shabbat"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Shabbat, Havdalah",
+        "sefard": "Siddur Sefard, Motzaei Shabbat , Havdala",
+        "edot": "Siddur Edot HaMizrach, Havdalah, Havdala",
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "hallel-blessing-before", "nameKey": "tefillah.prayer.hallel_blessing_before", "en": "Hallel — blessing before", "he": "הַלֵּל · בְּרָכָה שֶׁלְּפָנָיו",
+      "group": "shabbat-holidays", "service": "holidays", "days": ["weekday","shabbat"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Berakhah before the Hallel",
+        "sefard": { "ref": "Siddur Sefard, Rosh Chodesh, Hallel:1-3", "he": "Torat Emet 357", "from": "ברוך אתה", "to": "את ההלל" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Rosh Hodesh, Hallel:1-5", "he": " Shaliehsaboo Edition", "from": "ברשות מורי", "to": "את ההלל" },
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "hallel-psalm-113", "nameKey": "tefillah.prayer.hallel_psalm_113", "en": "Hallel — Psalm 113", "he": "הַלֵּל · מִזְמוֹר קי״ג",
+      "group": "shabbat-holidays", "service": "holidays", "days": ["weekday","shabbat"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 113",
+        "sefard": { "ref": "Siddur Sefard, Rosh Chodesh, Hallel:4", "he": "Torat Emet 357", "from": "הללויה הללו", "to": "שמחה הללויה" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Rosh Hodesh, Hallel:6", "he": " Shaliehsaboo Edition", "from": "הללויה הללו", "to": "שמחה הללויה" },
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "hallel-psalm-114", "nameKey": "tefillah.prayer.hallel_psalm_114", "en": "Hallel — Psalm 114", "he": "הַלֵּל · מִזְמוֹר קי״ד",
+      "group": "shabbat-holidays", "service": "holidays", "days": ["weekday","shabbat"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 114",
+        "sefard": { "ref": "Siddur Sefard, Rosh Chodesh, Hallel:5", "he": "Torat Emet 357", "from": "בצאת ישראל", "to": "למעינו מים" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Rosh Hodesh, Hallel:7", "he": " Shaliehsaboo Edition", "from": "בצאת ישראל", "to": "למעינו מים" },
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "hallel-psalm-115", "nameKey": "tefillah.prayer.hallel_psalm_115", "en": "Hallel — Psalm 115", "he": "הַלֵּל · מִזְמוֹר קט״ו",
+      "group": "shabbat-holidays", "service": "holidays", "days": ["weekday","shabbat"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 115",
+        "sefard": { "ref": "Siddur Sefard, Rosh Chodesh, Hallel:6-8", "he": "Torat Emet 357", "from": "לא לנו", "to": "עולם הללויה" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Rosh Hodesh, Hallel:8-10", "he": " Shaliehsaboo Edition", "from": "לא לנו", "to": "הללו יה" },
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "hallel-psalm-116", "nameKey": "tefillah.prayer.hallel_psalm_116", "en": "Hallel — Psalm 116", "he": "הַלֵּל · מִזְמוֹר קט״ז",
+      "group": "shabbat-holidays", "service": "holidays", "days": ["weekday","shabbat"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 116",
+        "sefard": { "ref": "Siddur Sefard, Rosh Chodesh, Hallel:9-11", "he": "Torat Emet 357", "from": "אהבתי כי", "to": "ירושלים הללויה" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Rosh Hodesh, Hallel:11-13", "he": " Shaliehsaboo Edition", "from": "אהבתי כי", "to": "ירושלם הללויה" },
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "hallel-psalm-117", "nameKey": "tefillah.prayer.hallel_psalm_117", "en": "Hallel — Psalm 117", "he": "הַלֵּל · מִזְמוֹר קי״ז",
+      "group": "shabbat-holidays", "service": "holidays", "days": ["weekday","shabbat"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 117",
+        "sefard": { "ref": "Siddur Sefard, Rosh Chodesh, Hallel:12", "he": "Torat Emet 357", "from": "הללו את", "to": "לעולם הללויה" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Rosh Hodesh, Hallel:14", "he": " Shaliehsaboo Edition", "from": "הללו את", "to": "לעולם הללויה" },
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "hallel-psalm-118", "nameKey": "tefillah.prayer.hallel_psalm_118", "en": "Hallel — Psalm 118", "he": "הַלֵּל · מִזְמוֹר קי״ח",
+      "group": "shabbat-holidays", "service": "holidays", "days": ["weekday","shabbat"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 118",
+        "sefard": { "ref": "Siddur Sefard, Rosh Chodesh, Hallel:13-24", "he": "Torat Emet 357", "from": "הודו ליהוה", "to": "לעולם חסדו" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Rosh Hodesh, Hallel:15-23", "he": " Shaliehsaboo Edition", "from": "הודו ליהוה", "to": "לעולם חסדו" },
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "hallel-blessing-after", "nameKey": "tefillah.prayer.hallel_blessing_after", "en": "Hallel — blessing after", "he": "הַלֵּל · בְּרָכָה שֶׁלְּאַחֲרָיו",
+      "group": "shabbat-holidays", "service": "holidays", "days": ["weekday","shabbat"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Berakhah after the Hallel",
+        "sefard": { "ref": "Siddur Sefard, Rosh Chodesh, Hallel:25", "he": "Torat Emet 357", "from": "יהללוך יהוה", "to": "מהלל בתשבחות" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Rosh Hodesh, Hallel:24-25", "he": " Shaliehsaboo Edition", "from": "יהללוך יהוה", "to": "בתשבחות אמן" },
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "hallel-full", "nameKey": "tefillah.prayer.hallel_full", "en": "Hallel — full", "he": "הַלֵּל",
+      "group": "shabbat-holidays", "service": "holidays", "days": ["weekday","shabbat"],
+      "sources": {
+        "ashkenaz": [
+          "Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Berakhah before the Hallel",
+          "Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 113",
+          "Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 114",
+          "Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 115",
+          "Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 116",
+          "Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 117",
+          "Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 118",
+          "Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Berakhah after the Hallel"
+        ],
+        "sefard": { "ref": "Siddur Sefard, Rosh Chodesh, Hallel:1-25", "he": "Torat Emet 357", "from": "ברוך אתה", "to": "מהלל בתשבחות" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Rosh Hodesh, Hallel:1-25", "he": " Shaliehsaboo Edition", "from": "ברשות מורי", "to": "בתשבחות אמן" },
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "hamotzi", "nameKey": "tefillah.prayer.hamotzi", "en": "Hamotzi", "he": "הַמּוֹצִיא",
+      "group": "blessings", "service": "blessings", "days": ["weekday","shabbat"],
+      "sources": {
+        "ashkenaz": { "ref": "Siddur Ashkenaz, Berachot, Birkat Hanehenin, Eating, Barachot Rishonot:2", "he": "Daat Siddur Ashkenaz", "from": "ברוך אתה", "to": "מן הארץ" },
+        "sefard": { "ref": "Siddur Sefard, Mealtime Blessings:5-6", "he": "Torat Emet 357", "from": "ברוך אתה", "to": "מן הארץ" },
+        "edot": null,
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "mezonot", "nameKey": "tefillah.prayer.mezonot", "en": "Mezonot", "he": "מְזוֹנוֹת",
+      "group": "blessings", "service": "blessings", "days": ["weekday","shabbat"],
+      "sources": {
+        "ashkenaz": { "ref": "Siddur Ashkenaz, Berachot, Birkat Hanehenin, Eating, Barachot Rishonot:3", "he": "Daat Siddur Ashkenaz", "from": "ברוך אתה", "to": "מיני מזונות" },
+        "sefard": { "ref": "Siddur Sefard, Birchat HaMazon, Blessing on Foods:4-5", "he": "Torat Emet 357", "from": "ברוך אתה", "to": "מיני מזונות" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Blessings on Enjoyments:2-3", "he": " Shaliehsaboo Edition", "from": "ברוך אתה", "to": "מיני מזונות" },
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "hagafen", "nameKey": "tefillah.prayer.hagafen", "en": "Hagafen", "he": "הַגָּפֶן",
+      "group": "blessings", "service": "blessings", "days": ["weekday","shabbat"],
+      "sources": {
+        "ashkenaz": { "ref": "Siddur Ashkenaz, Berachot, Birkat Hanehenin, Eating, Barachot Rishonot:4", "he": "Daat Siddur Ashkenaz", "from": "ברוך אתה", "to": "פרי הגפן" },
+        "sefard": { "ref": "Siddur Sefard, Birchat HaMazon, Blessing on Foods:2-3", "he": "Torat Emet 357", "from": "ברוך אתה", "to": "פרי הגפן" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Blessings on Enjoyments:4-5", "he": " Shaliehsaboo Edition", "from": "ברוך אתה", "to": "פרי הגפן" },
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "haetz", "nameKey": "tefillah.prayer.haetz", "en": "Ha'etz", "he": "הָעֵץ",
+      "group": "blessings", "service": "blessings", "days": ["weekday","shabbat"],
+      "sources": {
+        "ashkenaz": { "ref": "Siddur Ashkenaz, Berachot, Birkat Hanehenin, Eating, Barachot Rishonot:5", "he": "Daat Siddur Ashkenaz", "from": "ברוך אתה", "to": "פרי העץ" },
+        "sefard": "Siddur Sefard, Blessings, Ha'etz",
+        "edot": { "ref": "Siddur Edot HaMizrach, Blessings on Enjoyments:6-7", "he": " Shaliehsaboo Edition", "from": "ברוך אתה", "to": "פרי העץ" },
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "haadamah", "nameKey": "tefillah.prayer.haadamah", "en": "Ha'adamah", "he": "הָאֲדָמָה",
+      "group": "blessings", "service": "blessings", "days": ["weekday","shabbat"],
+      "sources": {
+        "ashkenaz": { "ref": "Siddur Ashkenaz, Berachot, Birkat Hanehenin, Eating, Barachot Rishonot:6", "he": "Daat Siddur Ashkenaz", "from": "ברוך אתה", "to": "פרי האדמה" },
+        "sefard": "Siddur Sefard, Blessings, Ha'adamah",
+        "edot": { "ref": "Siddur Edot HaMizrach, Blessings on Enjoyments:8-9", "he": " Shaliehsaboo Edition", "from": "ברוך אתה", "to": "פרי האדמה" },
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "shehakol", "nameKey": "tefillah.prayer.shehakol", "en": "Shehakol", "he": "שֶׁהַכֹּל",
+      "group": "blessings", "service": "blessings", "days": ["weekday","shabbat"],
+      "sources": {
+        "ashkenaz": { "ref": "Siddur Ashkenaz, Berachot, Birkat Hanehenin, Eating, Barachot Rishonot:7", "he": "Daat Siddur Ashkenaz", "from": "ברוך אתה", "to": "נהיה בדברו" },
+        "sefard": "Siddur Sefard, Blessings, Shehakol",
+        "edot": { "ref": "Siddur Edot HaMizrach, Blessings on Enjoyments:10-11", "he": " Shaliehsaboo Edition", "from": "ברוך אתה", "to": "נהיה בדברו" },
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "shehecheyanu", "nameKey": "tefillah.prayer.shehecheyanu", "en": "Shehecheyanu", "he": "שֶׁהֶחֱיָנוּ",
+      "group": "blessings", "service": "blessings", "days": ["weekday","shabbat"],
+      "sources": {
+        "ashkenaz": null,
+        "sefard": "Siddur Sefard, Blessings, Shehecheyanu",
+        "edot": null,
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "birkat-hamazon", "nameKey": "tefillah.prayer.birkat_hamazon", "en": "Birkat HaMazon", "he": "בִּרְכַּת הַמָּזוֹן",
+      "group": "blessings", "service": "blessings", "days": ["weekday","shabbat"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Berachot, Birkat HaMazon",
+        "sefard": "Siddur Sefard, Birchat HaMazon, Birchat HaMazon",
+        "edot": "Siddur Edot HaMizrach, Post Meal Blessing",
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "birkat-hamazon-short", "nameKey": "tefillah.prayer.birkat_hamazon_short", "en": "Birkat HaMazon (short)", "he": "בִּרְכַּת הַמָּזוֹן (קְצָרָה)",
+      "group": "blessings", "service": "blessings", "days": ["weekday","shabbat"],
+      "sources": {
+        "ashkenaz": null,
+        "sefard": null,
+        "edot": null,
+        "torah": null,
+        "opensiddur": null
+      } },
+    { "key": "shema-al-hamitah", "nameKey": "tefillah.prayer.shema_al_hamitah", "en": "Shema al HaMitah", "he": "קְרִיאַת שְׁמַע עַל הַמִּטָּה",
+      "group": "bedtime", "service": "maariv", "days": ["weekday","shabbat"],
+      "sources": {
+        "ashkenaz": "Siddur Ashkenaz, Weekday, Maariv, Keri'at Shema al Hamita",
+        "sefard": "Siddur Sefard, Bedtime Shema",
+        "edot": "Siddur Edot HaMizrach, Bedtime Shema",
+        "torah": null,
+        "opensiddur": null
+      } }
+  ]
+}
