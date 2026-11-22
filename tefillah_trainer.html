@@ -286,6 +286,14 @@ html[lang="he"] .settings-header h2, html[lang="he"] .tt-set-sub, html[lang="he"
 }
 .tt-ctrl input[type="search"]:focus { outline:2px solid var(--focus-ring); outline-offset:0; }
 .tt-filter-note { font-size:0.75rem; color:var(--muted); }
+/* A filter's label and its list wrap as one piece (the label used to stay on the search row while its list dropped
+   to the next). */
+.tt-pair { display:inline-flex; align-items:center; gap:6px; min-width:0; }
+/* The Find button: phone width only (the rule beside the page's other phone rules shows it). While a search or a
+   filter is in force the group cannot fold, so the button is aria-disabled and says why in its title. */
+.tt-ctrl.tt-find-ctrl { display:none; }
+#prayerFindBtn[aria-expanded="true"] { border-color:var(--gold); box-shadow:inset 0 -2px 0 var(--gold); }
+#prayerFindBtn[aria-disabled="true"] { opacity:0.6; cursor:default; }
 /* An instruction or a heading of the siddur: unpointed, so never a word to read. Small, muted, never colored. */
 .tt-inst { font-size:0.62em; color:var(--muted); font-weight:400; line-height:1.5; }
 .tt-instline { display:flex; flex-direction:column; gap:2px; padding:4px 0; }
@@ -1729,6 +1737,27 @@ body.fullscreen #ttFsBar.visible .tt-fs-plate { pointer-events: auto; }
   .tt-grid-col.tt-col-translit { order:-1; }
 }
 
+/* The picker on a phone. Measured on an iPhone 13 the header took 152px and the picker 230px, so the prayer started
+   415px down a 664px screen (450 of 568 on an iPhone SE in Hebrew). The search box and the two filters only narrow
+   the prayer list, so here they fold behind the Find button (syncFindFold: open once pressed, and always while a
+   search or a filter is in force — one in force is never hidden), and the two reveal switches share a row with
+   Settings. The second query is a phone held sideways, which is wider than 720px but has the least height of all.
+   Screen only. */
+@media screen and (max-width: 720px), screen and (pointer: coarse) and (max-height: 500px) {
+  .tt-ctrl.tt-find-ctrl { display:inline-flex; }
+  .tt-controls:not(.tt-find-open) #prayerFilters { display:none; }
+  .tt-ctrl.tt-filters { flex-basis:100%; }
+  .tt-ctrl.tt-filters input[type="search"] { flex:1 1 100%; }   /* its own row, so each label stays beside its list */
+  .tt-stack-toggles { flex-direction:row; flex-wrap:wrap; align-items:center; gap:6px 14px; }
+}
+/* Line by line on a phone: the row label ("Hebrew", "English") sat in a 50px gutter beside every line, which left
+   the Hebrew about four words a line at 390px. It goes above its line, and the text takes the full width. */
+@media screen and (max-width: 600px) {
+  .tt-verse-row:not(.tt-verse-head) { flex-direction:column; align-items:stretch; gap:0; }   /* the head row (number, Copy) stays a row */
+  .tt-verse-row .tt-rowlabel { padding-top:0; min-width:0; }
+  .tt-verse-row > .tt-heb, .tt-verse-row > .tt-translit, .tt-verse-row > .tt-translation { flex:none; }
+}
+
 /* Phone widths: let the header button row wrap onto a second line instead of pushing the
    page sideways (WCAG 1.4.10 reflow). max-width is the operative half — the row is
    flex-shrink:0, so nothing makes it wrap until something caps its width. This page needs
@@ -2122,9 +2151,14 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
     <label for="nusachSelect" data-i18n="tefillah.controls.nusach_label">Nusach:</label>
     <select id="nusachSelect"></select>
   </span>
+  <!-- Phone width only (CSS): the search box and the two filters fold behind this button, so the prayer starts higher
+       on a small screen. syncFindFold is its one writer. -->
+  <span class="tt-ctrl tt-find-ctrl">
+    <button id="prayerFindBtn" class="btn btn-xs btn-secondary hi-btn" type="button" aria-expanded="false" aria-controls="prayerFilters" title="Search and filter the prayer list" data-i18n-title="tefillah.picker.find_title"><svg class="hi hi-sm hi-search" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.6" cy="10.6" r="6.4"/><path d="M15.4 15.4l4.6 4.6"/></svg><span class="hi-lbl" data-i18n="tefillah.picker.find_btn">Find</span></button>
+  </span>
   <span class="tt-ctrl tt-filters" id="prayerFilters" role="group" aria-label="Find a prayer" data-i18n-aria-label="tefillah.picker.group_aria">
     <input type="search" id="prayerSearch" autocomplete="off" spellcheck="false" placeholder="Search prayers…" data-i18n-placeholder="tefillah.picker.search_ph" aria-label="Search prayers" data-i18n-aria-label="tefillah.picker.search_aria">
-    <label for="filterService" data-i18n="tefillah.picker.service_label">Service:</label>
+    <span class="tt-pair"><label for="filterService" data-i18n="tefillah.picker.service_label">Service:</label>
     <select id="filterService">
       <option value="all" data-i18n="tefillah.picker.all">All</option>
       <option value="shacharit" data-i18n="tefillah.service.shacharit">Shacharit</option>
@@ -2133,13 +2167,13 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
       <option value="shabbat" data-i18n="tefillah.service.shabbat">Shabbat</option>
       <option value="holidays" data-i18n="tefillah.service.holidays">Holidays</option>
       <option value="blessings" data-i18n="tefillah.service.blessings">Blessings</option>
-    </select>
-    <label for="filterDay" data-i18n="tefillah.picker.day_label">Day:</label>
+    </select></span>
+    <span class="tt-pair"><label for="filterDay" data-i18n="tefillah.picker.day_label">Day:</label>
     <select id="filterDay">
       <option value="all" data-i18n="tefillah.picker.all">All</option>
       <option value="weekday" data-i18n="tefillah.day.weekday">Weekday</option>
       <option value="shabbat" data-i18n="tefillah.day.shabbat">Shabbat</option>
-    </select>
+    </select></span>
     <span id="prayerFilterNote" class="tt-filter-note" role="status" aria-live="polite" dir="auto"></span>
   </span>
   <!-- The two reveal switches a teacher flips in front of a class: mirrors of the Text tab's Show transliteration /
@@ -4895,7 +4929,7 @@ function renderInterlinear(verses, withTranslit, withTrans, wordIdxRef, underWor
     if (v.inst) { html += instLineHTML(v, withTrans); continue; }
     html += `<div class="tt-verse${v.added ? ' tt-added' : ''}" ${lineAttrs(v)}>`;
     html += `    ${bulkCbHTML(v)}`;
-    html += `  <div class="tt-verse-row" style="align-items:center;">`;
+    html += `  <div class="tt-verse-row tt-verse-head" style="align-items:center;">`;
     html += `    <span class="tt-verse-num"><span class="tt-num">${esc(v.num)}</span>${addedChipHTML(v)}</span>`;
     html += `    <span class="tt-verse-buttons">${lineCopyBtnHTML(v)}</span>`;
     html += `  </div>`;
@@ -7374,6 +7408,7 @@ function populatePrayerPicker() {
   const service = filterValue('filterService', SERVICE_IDS), day = filterValue('filterDay', DAY_IDS);
   const q = (document.getElementById('prayerSearch') || {}).value || '';
   const narrowed = service !== 'all' || day !== 'all' || !!q.trim();
+  syncFindFold(narrowed);
   let shown = 0;
   const curKey = (currentPrayer() || {}).key || '';
   for (const g of catalog.groups) {
@@ -7398,6 +7433,23 @@ function populatePrayerPicker() {
     if (key) { note.dataset.i18nKey = key; note.dataset.i18nParams = JSON.stringify({ count: shown }); note.textContent = I18n.t(key, { count: shown }); }
     else { delete note.dataset.i18nKey; delete note.dataset.i18nParams; note.textContent = ''; }
   }
+}
+// The phone fold (CSS shows #prayerFindBtn only at phone width, and hides #prayerFilters there while .tt-controls
+// lacks .tt-find-open). Open = the button was pressed, or the list is narrowed: a search or a filter in force is
+// never hidden, so while one is, the button cannot fold the group (aria-disabled, and its title says why). Once
+// narrowing has opened it, it stays open until the button is pressed, so it never closes under a finger that has
+// just cleared the search box. Per visit only: no stored key.
+let _findOpened = false;
+function syncFindFold(narrowed) {
+  const btn = document.getElementById('prayerFindBtn'), bar = document.querySelector('.tt-controls');
+  if (!btn || !bar) return;
+  if (narrowed) _findOpened = true;
+  bar.classList.toggle('tt-find-open', _findOpened);
+  btn.setAttribute('aria-expanded', _findOpened ? 'true' : 'false');
+  if (narrowed) btn.setAttribute('aria-disabled', 'true'); else btn.removeAttribute('aria-disabled');
+  const key = narrowed ? 'tefillah.picker.find_locked_title' : 'tefillah.picker.find_title';
+  btn.setAttribute('data-i18n-title', key);
+  btn.title = I18n.t(key);
 }
 function syncPrayerPicker() {
   const fs = document.getElementById('filterService'), fd = document.getElementById('filterDay');
@@ -7435,6 +7487,12 @@ function wirePrayerPicker() {
   };
   document.getElementById('filterService').addEventListener('change', onFilter);
   document.getElementById('filterDay').addEventListener('change', onFilter);
+  const findBtn = document.getElementById('prayerFindBtn');
+  findBtn.addEventListener('click', () => {
+    if (findBtn.getAttribute('aria-disabled') === 'true') return;
+    _findOpened = !_findOpened;
+    syncFindFold(false);
+  });
   const search = document.getElementById('prayerSearch');
   search.addEventListener('input', populatePrayerPicker);
   // Enter in the search box opens the first prayer it leaves (other than the one already open).
@@ -8164,7 +8222,8 @@ window.addEventListener('afterprint', _handoutExit);
 const TOUR_SEEN_KEY = 'hebrewTefillahTrainer_tourSeen';
 const TOUR_STEPS = [
   { target: () => document.getElementById('prayerSelect'), titleKey: 'tefillah.tour.s1_title', bodyKey: 'tefillah.tour.s1_body' },
-  { target: () => document.getElementById('prayerFilters'), titleKey: 'tefillah.tour.s2_title', bodyKey: 'tefillah.tour.s2_body' },
+  // On a phone the filters fold behind the Find button; the step then points at the button (the tour opens nothing).
+  { target: () => { const f = document.getElementById('prayerFilters'); return (f && f.getClientRects().length) ? f : document.getElementById('prayerFindBtn'); }, titleKey: 'tefillah.tour.s2_title', bodyKey: 'tefillah.tour.s2_body' },
   { target: () => document.getElementById('nusachSelect'), titleKey: 'tefillah.tour.s3_title', bodyKey: 'tefillah.tour.s3_body' },
   { target: () => document.querySelector('.tt-stack-toggles'), titleKey: 'tefillah.tour.s4_title', bodyKey: 'tefillah.tour.s4_body' },
   { target: () => document.getElementById('ttReading'), titleKey: 'tefillah.tour.s5_title', bodyKey: 'tefillah.tour.s5_body' },
