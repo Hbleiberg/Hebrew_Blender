@@ -231,15 +231,16 @@ function page(h, imgHash) {
   // Each symbol by its name as the catalog writes it (and the sheet prints it): "Seder Plate", "Star of David".
   const symList = listOf(h.symbols.map((s) => s.en));
   // A result shows about 60 title and 160 description characters: the title keeps the name, its best-known other
-  // spelling, the page's kind and the site; the description names the six symbols. Past 60, an other spelling that
-  // repeats a word of the name ("Shmini Atzeret" beside "Shemini Atzeret / Simchat Torah") is left out — a
-  // translation ("Holocaust Remembrance Day") stays, and only the site's name is cut from the result.
+  // spelling, the page's kind and the site; the description opens with the site's name and names the six symbols
+  // (past 160 it drops its last clause). Past 60, an other spelling that repeats a word of the name ("Shmini
+  // Atzeret" beside "Shemini Atzeret / Simchat Torah") is left out — a translation ("Holocaust Remembrance Day")
+  // stays, and only the site's name is cut from the result.
   const alt1 = h.spelled[0];
   const nameWords = h.en.split(/[\s/]+/);
   const respells = !!alt1 && alt1.split(/\s+/).some((w) => nameWords.includes(w));
   const fullTitle = `${h.en}${alt1 ? ` (${alt1})` : ''} Coloring Page | IvritSuite`;
   const title = fullTitle.length > 60 && respells ? `${h.en} Coloring Page | IvritSuite` : fullTitle;
-  const descHead = `Free printable ${h.en} coloring page: ${symList} to color`;
+  const descHead = `IvritSuite's free printable ${h.en} coloring page: ${symList} to color`;
   const descTail = ', each named in Hebrew and English.';
   const desc = (descHead + descTail).length > 160 ? descHead + '.' : descHead + descTail;
   const img = `/${imgRel(h)}?v=${imgHash.slice(0, 8)}`, imgAbs = `${SITE}${imgRel(h)}`;

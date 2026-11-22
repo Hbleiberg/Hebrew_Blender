@@ -314,7 +314,7 @@ const SCRIPT = `'use strict';
 
 // ── The page ─────────────────────────────────────────────────────────────────────────────────────────────────────
 const TITLE = 'Free Printable Jewish & Hebrew Coloring Pages | IvritSuite';
-const DESC = `Free printable Jewish coloring pages: the Hebrew alef bet, all ${icons.length} weekly Torah portions and the Jewish holidays, each named in Hebrew and English.`;
+const DESC = `IvritSuite's free printable Jewish coloring pages: the Hebrew alef bet, all ${icons.length} weekly Torah portions and the Jewish holidays, each named in Hebrew and English.`;
 const OG_TITLE = 'Jewish & Hebrew Coloring Pages — Free Printables';
 const OG_ALT = 'Three printable Jewish coloring pages: Parshat Noach, the Hebrew letter Alef and Chanukah';
 const URL_ = SITE + OUT;

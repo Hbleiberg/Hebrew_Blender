@@ -211,10 +211,11 @@ function page(ic, imgHash) {
   const slug = slugOf(ic.en), url = `${SITE}${DIR}/${slug}.html`, heName = unpoint(ic.he);
   const prev = byN.get(ic.n === 1 ? 54 : ic.n - 1), next = byN.get(ic.n === 54 ? 1 : ic.n + 1), pair = pairOf(ic.n);
   // A result shows about 60 title and 160 description characters: the title keeps the name, the page's kind and the
-  // site (37–51 characters over the 54 names); a description that would run past 160 drops its summary clause (the
-  // summary itself stays on the page) and keeps the picture.
+  // site (37–51 characters over the 54 names). The description opens with the site's name, so a search for it finds
+  // the description rather than page text; one that would run past 160 drops its summary clause (the summary itself
+  // stays on the page) and keeps the picture.
   const title = `Parshat ${ic.en} Coloring Page | IvritSuite`;
-  const descHead = `Free printable Parshat ${ic.en} coloring page (${pretty(ic.ref)}): ${lowerFirst(ic.alt)} to color`;
+  const descHead = `IvritSuite's free printable Parshat ${ic.en} coloring page (${pretty(ic.ref)}): ${lowerFirst(ic.alt)} to color`;
   const descTail = ', with a short summary in English and Hebrew.';
   const desc = (descHead + descTail).length > 160 ? descHead + '.' : descHead + descTail;
   const img = `/${imgRel(ic)}?v=${imgHash.slice(0, 8)}`, imgAbs = `${SITE}${imgRel(ic)}`;

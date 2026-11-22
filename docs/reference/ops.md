@@ -390,11 +390,13 @@ push, is what updates the live site.
   It is a cheap forward hedge plus a readable inventory for an agent pointed at the site — **not** an
   SEO mechanism, and not a reason to deprioritize the `sitemap.xml` + per-page JSON-LD that search
   engines actually read (and that this script reads *from*).
-- **The home page's search snippet.** Google shows a page's `<meta name="description">` only when it fits
-  the query. If it doesn't, Google builds the snippet from page text that contains the query. A search for
-  the site's name ("ivritsuite") is the usual way people reach the hub, so `index.html`'s description opens
-  with the name **IvritSuite**. Remove the name and the snippet goes back to header labels
-  ("EN, עברית. Sign in. Dark."). Every page's header controls carry `data-nosnippet` on their container.
+- **Search snippets.** Google shows a page's `<meta name="description">` only when it fits the query. If it
+  doesn't, Google builds the snippet from page text that contains the query. A search for the site's name
+  ("ivritsuite"), alone or with a tool's name, is a common way in, so every indexed page's description names
+  **IvritSuite**: the hub's opens with "IvritSuite:", most others with "IvritSuite's". The parsha and holiday
+  builders and the coloring hub's builder write theirs the same way. Without the name, the hub's snippet
+  went back to header labels ("EN, עברית. Sign in. Dark."). A new indexed page's description names the site
+  too. Every page's header controls carry `data-nosnippet` on their container.
   Google honours that attribute on `div`, `span` and `section` only, never on a `button` or `a`. The
   containers are `.hright` on most pages and in the three page builders (parsha, holidays, the coloring
   hub), `.h-right` on Flash Cards and `.hdr-actions` on the Font Maker. The generator has no container,
