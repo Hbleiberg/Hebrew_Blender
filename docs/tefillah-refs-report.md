@@ -1,6 +1,6 @@
 ## Tefillah Trainer — catalog refs checked against Sefaria
 
-75 prayers, 211 sources checked. Lines = Sefaria segments shown (pointed = lines that hold prayer text; the rest are instructions or headings). ✓ = the translation has as many lines as the Hebrew node, so the page shows it line against line; ⇄ = it has fewer or more lines, but the catalog pins it to the Hebrew by position (line n beside line n), read by a person and listed line by line at the end of this report; ◇ = the siddur node has no open translation, but its lines are whole Tanakh verses (checked against the verses' Hebrew, listed at the end) and the page offers these translations of them; ✗ = neither, so a whole node shows it as one block and a line range shows none. An equal count is the test the page can make, not proof of a correct pairing. First … last = the first two and last two pointed words of the lines shown (consonants only).
+75 prayers, 213 sources checked. Lines = Sefaria segments shown (pointed = lines that hold prayer text; the rest are instructions or headings). ✓ = the translation has as many lines as the Hebrew node, so the page shows it line against line; ⇄ = it has fewer or more lines, but the catalog pins it to the Hebrew by position (line n beside line n), read by a person and listed line by line at the end of this report; ◇ = the siddur node has no open translation, but its lines are whole Tanakh verses (checked against the verses' Hebrew, listed at the end) and the page offers these translations of them; ✗ = neither, so a whole node shows it as one block and a line range shows none. An equal count is the test the page can make, not proof of a correct pairing. First … last = the first two and last two pointed words of the lines shown (consonants only).
 
 | Prayer | Nusach | Ref | Lines (pointed) | Hebrew edition | Other open Hebrew editions | Open English translations | Te'amim | First … last words |
 |---|---|---|---|---|---|---|---|---|
@@ -143,13 +143,14 @@
 | Ein Keloheinu | edot | Siddur Edot HaMizrach, Weekday Shacharit, Kaveh:3 | 1 (1) | Shaliehsaboo Edition [CC0] | Torat Emet 357 [Public Domain] ≠ 16 lines | ✗ Sefaria Community Translation [CC0] | yes | אין כאלהינו … בא מועד |
 | Vayehi Binsoa | ashkenaz | Siddur Ashkenaz, Weekday, Shacharit, Torah Reading, Removing the Torah from Ark, Vayehi Binsoa | 3 (1) | The Metsudah siddur, 1981 [CC BY] | — | ✓ Translation based on the Metsudah linear siddur, by Avrohom Davis, 1981 [CC BY] | no | ויהי בנסע … ישראל בקדשתו |
 | Vayehi Binsoa | sefard | Siddur Sefard, Weekday Shacharit, Torah Reading:4-5 | 2 (1) | The Metsudah siddur, 1981 [CC BY] | — | ✓ Translation based on the Metsudah linear siddur, by Avrohom Davis, 1981 [CC BY] | no | ויהי בנסע … ישראל בקדשתו |
-| Shema / Echad (Torah service) | ashkenaz | Siddur Ashkenaz, Shabbat, Shacharit, Torah Reading, Removing the Torah from the Ark, Shema Yisrael (Gadlu) | 3 (3) | Daat Siddur Ashkenaz [Public Domain] | — | none | no | שמע ישראל … שמו יחדו |
+| Shema / Echad (Torah service) | ashkenaz | The Koren Shalem Siddur; Ashkenaz, Shabbat, Reading of the Torah:22-26 | 5 (3) | Hebrew Edition; Koren Publishers Jerusalem, 2017 [CC BY-NC] | — | ✓ English Edition; Koren Publishers Jerusalem, 2017 [CC BY-NC] | no | שמע ישראל … שמו יחדו |
 | Shema / Echad (Torah service) | sefard | Siddur Sefard, Shabbat Morning Services, Shabbat Torah Reading:18-20 | 3 (3) | Torat Emet 357 [Public Domain] | — | ✓ Translation based on the Metsudah linear siddur, by Avrohom Davis, 1981 [CC BY] | no | שמע ישראל … שמו יחדו |
 | Birchot HaTorah for an aliyah | ashkenaz | Siddur Ashkenaz, Weekday, Shacharit, Torah Reading, Reading from Sefer, Birkat HaTorah | 8 (4) | The Metsudah siddur, 1981 [CC BY] | — | ✓ Translation based on the Metsudah linear siddur, by Avrohom Davis, 1981 [CC BY] | no | ברכו את … נותן התורה |
 | Birchot HaTorah for an aliyah | sefard | Siddur Sefard, Shabbat Morning Services, Blessings on Torah Reading | 7 (5) | Torat Emet 357 [Public Domain] | — | ✓ Translation based on the Metsudah linear siddur, by Avrohom Davis, 1981 [CC BY] | no | ברכו את … נותן התורה |
 | Birchot HaTorah for an aliyah | edot | Siddur Edot HaMizrach, Weekday Shacharit, Torah Reading:10-18 | 9 (7) | Shaliehsaboo Edition [CC0] | Torat Emet 357 [Public Domain] | none | no | השם עמכם … נותן התורה |
 | Etz Chayim Hi | ashkenaz | Siddur Ashkenaz, Weekday, Shacharit, Torah Reading, Returning Sefer to Aron, Uvenucho Yomar | 1 (1) | The Metsudah siddur, 1981 [CC BY] | — | ✓ Translation based on the Metsudah linear siddur, by Avrohom Davis, 1981 [CC BY] | no | ובנחה יאמר … ימינו כקדם |
 | Etz Chayim Hi | sefard | Siddur Sefard, Weekday Shacharit, Ashrei:29-30 | 2 (1) | The Metsudah siddur, 1981 [CC BY] | — | ✓ Translation based on the Metsudah linear siddur, by Avrohom Davis, 1981 [CC BY] | no | ובנחה יאמר … ימינו כקדם |
+| Candle lighting | ashkenaz | The Koren Shalem Siddur; Ashkenaz, Shabbat, Candle Lighting:2 | 1 (1) | Hebrew Edition; Koren Publishers Jerusalem, 2017 [CC BY-NC] | — | ✓ English Edition; Koren Publishers Jerusalem, 2017 [CC BY-NC] | no | ברוך אתה … של שבת |
 | Candle lighting | sefard | Siddur Sefard, Shabbat Candle Lighting:1-3 | 3 (1) | Torat Emet 357 [Public Domain] | — | ⇄ Translation based on the Metsudah linear siddur, by Avrohom Davis, 1981 [CC BY] (pinned: 2 of 3 lines translated)<br>✗ Sefaria Community Translation [CC0] | no | ברוך אתה … של שבת |
 | Candle lighting | edot | Siddur Edot HaMizrach, Shabbat Candle Lighting:2-3 | 2 (1) | Torat Emet 357 [Public Domain] | Shaliehsaboo Edition [CC0] ≠ 7 lines | ⇄ Sefaria Community Translation [CC0] (pinned: 1 of 2 lines translated) | no | ברוך אתה … של שבת |
 | Shalom Aleichem | ashkenaz | Siddur Ashkenaz, Shabbat, Shabbat Evening, Shalom Aleichem | 6 (5) | The Metsudah siddur, 1981 [CC BY] | — | ✓ Translation based on the Metsudah linear siddur, by Avrohom Davis, 1981 [CC BY] | no | שלום עליכם … ועד עולם |
@@ -162,10 +163,10 @@
 | Kiddush (Friday night) | sefard | Siddur Sefard, Shabbat Evening Meal, Shabbat Eve Kiddush:1-8 | 8 (6) | Torat Emet 357 [Public Domain] | — | ⇄ Translation based on the Metsudah linear siddur, by Avrohom Davis, 1981 [CC BY] (pinned: 6 of 8 lines translated) | no | לשם יחוד … מקדש השבת |
 | Kiddush (Friday night) | edot | Siddur Edot HaMizrach, Shabbat Evening, Kiddush | 14 (10) | Shaliehsaboo Edition [CC0] | Torat Emet 357 [Public Domain] | ⇄ Sefaria Community Translation [CC0] (pinned: 5 of 14 lines translated, with Shaliehsaboo Edition) | yes | לשם יחוד … מקדש השבת |
 | Havdalah | ashkenaz | Siddur Ashkenaz, Shabbat, Havdalah | 17 (12) | Daat Siddur Ashkenaz [Public Domain] | — | ✓ Sefaria Community Translation [CC0] | no | הנה אל … קדש לחול |
-| Havdalah | sefard | Siddur Sefard, Motzaei Shabbat , Havdala | 8 (6) | Torat Emet 357 [Public Domain] | — | none | no | הנה אל … קדש לחול |
+| Havdalah | sefard | Shabbat Siddur Sefard Linear, Havdalah | 45 (40) | The Metsudah Siddur, Metsudah Publications, 1981 - HE [CC BY] | — | ✓ The Metsudah Siddur, Metsudah Publications, 1981 - EN [CC BY] | no | הנה אל … קדש לחול |
 | Havdalah | edot | Siddur Edot HaMizrach, Havdalah, Havdala | 21 (16) | Shaliehsaboo Edition [CC0] | Torat Emet 357 [Public Domain] | ⇄ Sefaria Community Translation [CC0] (pinned: 13 of 21 lines translated, with Shaliehsaboo Edition) | yes | ראשון לציון … הגפן גפנה |
-| Hallel — blessing before | ashkenaz | Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Berakhah before the Hallel | 1 (1) | Daat Siddur Ashkenaz [Public Domain] | — | none | no | ברוך אתה … את ההלל |
-| Hallel — blessing before | sefard | Siddur Sefard, Rosh Chodesh, Hallel:1-3 | 3 (1) | Torat Emet 357 [Public Domain] | — | none | no | ברוך אתה … את ההלל |
+| Hallel — blessing before | ashkenaz | The Koren Shalem Siddur; Ashkenaz, Festivals, Hallel:2 | 1 (1) | Hebrew Edition; Koren Publishers Jerusalem, 2017 [CC BY-NC] | — | ⇄ English Edition; Koren Publishers Jerusalem, 2017 [CC BY-NC] (pinned: 1 of 1 lines translated) | no | ברוך אתה … את ההלל |
+| Hallel — blessing before | sefard | Weekday Siddur Sefard Linear, Hallel:5-8 | 4 (4) | The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981 [CC BY] | — | ✓ The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981 [en] [CC BY] | no | ברוך אתה … את ההלל |
 | Hallel — blessing before | edot | Siddur Edot HaMizrach, Rosh Hodesh, Hallel:1-5 | 5 (2) | Shaliehsaboo Edition [CC0] | Torat Emet 357 [Public Domain] | none | no | ברשות מורי … את ההלל |
 | Hallel — Psalm 113 | ashkenaz | Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 113 | 1 (1) | The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981 [CC BY] | Daat Siddur Ashkenaz [Public Domain] | ◇ THE JPS TANAKH: Gender-Sensitive Edition [CC BY-NC]<br>◇ Tanakh: The Holy Scriptures, published by JPS [CC BY-NC]<br>◇ The Holy Scriptures: A New Translation (JPS 1917) [Public Domain]<br>◇ The Rashi Ketuvim by Rabbi Shraga Silverstein [CC BY]<br>◇ The Koren Jerusalem Bible [CC BY-NC] | no | הללויה הללו … שמחה הללויה |
 | Hallel — Psalm 113 | sefard | Siddur Sefard, Rosh Chodesh, Hallel:4 | 1 (1) | Torat Emet 357 [Public Domain] | — | ◇ THE JPS TANAKH: Gender-Sensitive Edition [CC BY-NC]<br>◇ Tanakh: The Holy Scriptures, published by JPS [CC BY-NC]<br>◇ The Holy Scriptures: A New Translation (JPS 1917) [Public Domain]<br>◇ The Rashi Ketuvim by Rabbi Shraga Silverstein [CC BY]<br>◇ The Koren Jerusalem Bible [CC BY-NC] | no | הללויה הללו … שמחה הללויה |
@@ -185,30 +186,31 @@
 | Hallel — Psalm 118 | ashkenaz | Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 118 | 13 (13) | The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981 [CC BY] | Daat Siddur Ashkenaz [Public Domain] ≠ 1 lines | ◇ THE JPS TANAKH: Gender-Sensitive Edition [CC BY-NC]<br>◇ Tanakh: The Holy Scriptures, published by JPS [CC BY-NC]<br>◇ The Holy Scriptures: A New Translation (JPS 1917) [Public Domain]<br>◇ The Rashi Ketuvim by Rabbi Shraga Silverstein [CC BY]<br>◇ The Koren Jerusalem Bible [CC BY-NC] | no | הודו ליהוה … לעולם חסדו |
 | Hallel — Psalm 118 | sefard | Siddur Sefard, Rosh Chodesh, Hallel:13-24 | 12 (12) | Torat Emet 357 [Public Domain] | — | ◇ THE JPS TANAKH: Gender-Sensitive Edition [CC BY-NC]<br>◇ Tanakh: The Holy Scriptures, published by JPS [CC BY-NC]<br>◇ The Holy Scriptures: A New Translation (JPS 1917) [Public Domain]<br>◇ The Rashi Ketuvim by Rabbi Shraga Silverstein [CC BY]<br>◇ The Koren Jerusalem Bible [CC BY-NC] | no | הודו ליהוה … לעולם חסדו |
 | Hallel — Psalm 118 | edot | Siddur Edot HaMizrach, Rosh Hodesh, Hallel:15-23 | 9 (9) | Shaliehsaboo Edition [CC0] | Torat Emet 357 [Public Domain] | ◇ THE JPS TANAKH: Gender-Sensitive Edition [CC BY-NC]<br>◇ Tanakh: The Holy Scriptures, published by JPS [CC BY-NC]<br>◇ The Holy Scriptures: A New Translation (JPS 1917) [Public Domain]<br>◇ The Rashi Ketuvim by Rabbi Shraga Silverstein [CC BY]<br>◇ The Koren Jerusalem Bible [CC BY-NC] | yes | הודו ליהוה … לעולם חסדו |
-| Hallel — blessing after | ashkenaz | Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Berakhah after the Hallel | 2 (2) | The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981 [CC BY] | Daat Siddur Ashkenaz [Public Domain] | none | no | יהללוך יהוה … מהלל בתשבחות |
-| Hallel — blessing after | sefard | Siddur Sefard, Rosh Chodesh, Hallel:25 | 1 (1) | Torat Emet 357 [Public Domain] | — | none | no | יהללוך יהוה … מהלל בתשבחות |
+| Hallel — blessing after | ashkenaz | The Koren Shalem Siddur; Ashkenaz, Festivals, Hallel:34 | 1 (1) | Hebrew Edition; Koren Publishers Jerusalem, 2017 [CC BY-NC] | — | ⇄ English Edition; Koren Publishers Jerusalem, 2017 [CC BY-NC] (pinned: 1 of 1 lines translated) | no | יהללוך יהוה … מהלל בתשבחות |
+| Hallel — blessing after | sefard | Weekday Siddur Sefard Linear, Hallel:242-257 | 16 (16) | The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981 [CC BY] | — | ✓ The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981 [en] [CC BY] | no | יהללוך יהוה … מהלל בתשבחות |
 | Hallel — blessing after | edot | Siddur Edot HaMizrach, Rosh Hodesh, Hallel:24-25 | 2 (1) | Shaliehsaboo Edition [CC0] | Torat Emet 357 [Public Domain] | none | no | יהללוך יהוה … בתשבחות אמן |
-| Hallel — full | ashkenaz | 8 parts: Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Berakhah before the Hallel … Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Berakhah after the Hallel | 23 (23) | Daat Siddur Ashkenaz [Public Domain]<br>The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981 [CC BY] | Daat Siddur Ashkenaz [Public Domain]<br>Daat Siddur Ashkenaz [Public Domain] ≠ 1 lines | ◇ THE JPS TANAKH: Gender-Sensitive Edition [CC BY-NC]<br>◇ Tanakh: The Holy Scriptures, published by JPS [CC BY-NC]<br>◇ The Holy Scriptures: A New Translation (JPS 1917) [Public Domain]<br>◇ The Rashi Ketuvim by Rabbi Shraga Silverstein [CC BY]<br>◇ The Koren Jerusalem Bible [CC BY-NC] | no | ברוך אתה … מהלל בתשבחות |
-| Hallel — full | sefard | Siddur Sefard, Rosh Chodesh, Hallel:1-25 | 25 (21) | Torat Emet 357 [Public Domain] | — | ◇ THE JPS TANAKH: Gender-Sensitive Edition [CC BY-NC]<br>◇ Tanakh: The Holy Scriptures, published by JPS [CC BY-NC]<br>◇ The Holy Scriptures: A New Translation (JPS 1917) [Public Domain]<br>◇ The Rashi Ketuvim by Rabbi Shraga Silverstein [CC BY]<br>◇ The Koren Jerusalem Bible [CC BY-NC] | no | ברוך אתה … מהלל בתשבחות |
+| Hallel — full | ashkenaz | 8 parts: The Koren Shalem Siddur; Ashkenaz, Festivals, Hallel:2 … The Koren Shalem Siddur; Ashkenaz, Festivals, Hallel:34 | 22 (22) | Hebrew Edition; Koren Publishers Jerusalem, 2017 [CC BY-NC]<br>The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981 [CC BY] | Daat Siddur Ashkenaz [Public Domain]<br>Daat Siddur Ashkenaz [Public Domain] ≠ 1 lines | ✗ English Edition; Koren Publishers Jerusalem, 2017 [CC BY-NC] (pinned: 2 parts) (not in every part)<br>◇ THE JPS TANAKH: Gender-Sensitive Edition [CC BY-NC]<br>◇ Tanakh: The Holy Scriptures, published by JPS [CC BY-NC]<br>◇ The Holy Scriptures: A New Translation (JPS 1917) [Public Domain]<br>◇ The Rashi Ketuvim by Rabbi Shraga Silverstein [CC BY]<br>◇ The Koren Jerusalem Bible [CC BY-NC] | no | ברוך אתה … מהלל בתשבחות |
+| Hallel — full | sefard | 3 parts: Weekday Siddur Sefard Linear, Hallel:5-8 … Weekday Siddur Sefard Linear, Hallel:242-257 | 41 (39) | The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981 [CC BY]<br>Torat Emet 357 [Public Domain] | — | ✗ The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981 [en] [CC BY] (not in every part)<br>◇ THE JPS TANAKH: Gender-Sensitive Edition [CC BY-NC]<br>◇ Tanakh: The Holy Scriptures, published by JPS [CC BY-NC]<br>◇ The Holy Scriptures: A New Translation (JPS 1917) [Public Domain]<br>◇ The Rashi Ketuvim by Rabbi Shraga Silverstein [CC BY]<br>◇ The Koren Jerusalem Bible [CC BY-NC] | no | ברוך אתה … מהלל בתשבחות |
 | Hallel — full | edot | Siddur Edot HaMizrach, Rosh Hodesh, Hallel:1-25 | 25 (19) | Shaliehsaboo Edition [CC0] | Torat Emet 357 [Public Domain] | ◇ THE JPS TANAKH: Gender-Sensitive Edition [CC BY-NC]<br>◇ Tanakh: The Holy Scriptures, published by JPS [CC BY-NC]<br>◇ The Holy Scriptures: A New Translation (JPS 1917) [Public Domain]<br>◇ The Rashi Ketuvim by Rabbi Shraga Silverstein [CC BY]<br>◇ The Koren Jerusalem Bible [CC BY-NC] | yes | ברשות מורי … בתשבחות אמן |
 | Hamotzi | ashkenaz | Siddur Ashkenaz, Berachot, Birkat Hanehenin, Eating, Barachot Rishonot:2 | 1 (1) | Daat Siddur Ashkenaz [Public Domain] | — | ⇄ Sefaria Community Translation [CC0] (pinned: 1 of 1 lines translated) | no | ברוך אתה … מן הארץ |
-| Hamotzi | sefard | Siddur Sefard, Mealtime Blessings:5-6 | 2 (1) | Torat Emet 357 [Public Domain] | — | ✗ Sefaria Community Translation [CC0] | no | ברוך אתה … מן הארץ |
-| Mezonot | ashkenaz | Siddur Ashkenaz, Berachot, Birkat Hanehenin, Eating, Barachot Rishonot:3 | 1 (1) | Daat Siddur Ashkenaz [Public Domain] | — | ✗ Sefaria Community Translation [CC0] | no | ברוך אתה … מיני מזונות |
-| Mezonot | sefard | Siddur Sefard, Birchat HaMazon, Blessing on Foods:4-5 | 2 (1) | Torat Emet 357 [Public Domain] | — | none | no | ברוך אתה … מיני מזונות |
+| Hamotzi | sefard | Shabbat Siddur Sefard Linear, Order of Shabbos in the Home, Kiddush for Shabbos Eve:31-33 | 3 (3) | The Metsudah Siddur, Metsudah Publications, 1981 - HE [CC BY] | — | ⇄ The Metsudah Siddur, Metsudah Publications, 1981 - EN [CC BY] (pinned: 3 of 3 lines translated) | no | ברוך אתה … מן הארץ |
+| Mezonot | ashkenaz | The Koren Shalem Siddur; Ashkenaz, Giving Thanks, Birkat HaMazon; Grace after Meals:74 | 1 (1) | Hebrew Edition; Koren Publishers Jerusalem, 2017 [CC BY-NC] | — | ✓ English Edition; Koren Publishers Jerusalem, 2017 [CC BY-NC] | no | ברוך אתה … מיני מזונות |
+| Mezonot | sefard | Weekday Siddur Sefard Linear, Berachos Said Before Eating or Drinking:2-4 | 3 (3) | The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981 [CC BY] | — | ⇄ The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981 [en] [CC BY] (pinned: 3 of 3 lines translated) | no | ברוך אתה … מיני מזונות |
 | Mezonot | edot | Siddur Edot HaMizrach, Blessings on Enjoyments:2-3 | 2 (1) | Shaliehsaboo Edition [CC0] | Torat Emet 357 [Public Domain] | ⇄ Sefaria Community Translation [CC0] (pinned: 1 of 2 lines translated) | no | ברוך אתה … מיני מזונות |
-| Hagafen | ashkenaz | Siddur Ashkenaz, Berachot, Birkat Hanehenin, Eating, Barachot Rishonot:4 | 1 (1) | Daat Siddur Ashkenaz [Public Domain] | — | ✗ Sefaria Community Translation [CC0] | no | ברוך אתה … פרי הגפן |
-| Hagafen | sefard | Siddur Sefard, Birchat HaMazon, Blessing on Foods:2-3 | 2 (1) | Torat Emet 357 [Public Domain] | — | none | no | ברוך אתה … פרי הגפן |
+| Hagafen | ashkenaz | The Koren Shalem Siddur; Ashkenaz, Giving Thanks, Birkat HaMazon; Grace after Meals:76 | 1 (1) | Hebrew Edition; Koren Publishers Jerusalem, 2017 [CC BY-NC] | — | ✓ English Edition; Koren Publishers Jerusalem, 2017 [CC BY-NC] | no | ברוך אתה … פרי הגפן |
+| Hagafen | sefard | Weekday Siddur Sefard Linear, Berachos Said Before Eating or Drinking:6-8 | 3 (3) | The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981 [CC BY] | — | ⇄ The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981 [en] [CC BY] (pinned: 3 of 3 lines translated) | no | ברוך אתה … פרי הגפן |
 | Hagafen | edot | Siddur Edot HaMizrach, Blessings on Enjoyments:4-5 | 2 (1) | Shaliehsaboo Edition [CC0] | Torat Emet 357 [Public Domain] | ⇄ Sefaria Community Translation [CC0] (pinned: 1 of 2 lines translated) | no | ברוך אתה … פרי הגפן |
-| Ha'etz | ashkenaz | Siddur Ashkenaz, Berachot, Birkat Hanehenin, Eating, Barachot Rishonot:5 | 1 (1) | Daat Siddur Ashkenaz [Public Domain] | — | ✗ Sefaria Community Translation [CC0] | no | ברוך אתה … פרי העץ |
-| Ha'etz | sefard | Siddur Sefard, Blessings, Ha'etz | 3 (1) | Torat Emet 357 [Public Domain] | — | none | no | ברוך אתה … פרי העץ |
+| Ha'etz | ashkenaz | The Koren Shalem Siddur; Ashkenaz, Giving Thanks, Birkat HaMazon; Grace after Meals:78 | 1 (1) | Hebrew Edition; Koren Publishers Jerusalem, 2017 [CC BY-NC] | — | ✓ English Edition; Koren Publishers Jerusalem, 2017 [CC BY-NC] | no | ברוך אתה … פרי העץ |
+| Ha'etz | sefard | Weekday Siddur Sefard Linear, Berachos Said Before Eating or Drinking:10-12 | 3 (3) | The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981 [CC BY] | — | ⇄ The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981 [en] [CC BY] (pinned: 3 of 3 lines translated) | no | ברוך אתה … פרי העץ |
 | Ha'etz | edot | Siddur Edot HaMizrach, Blessings on Enjoyments:6-7 | 2 (1) | Shaliehsaboo Edition [CC0] | Torat Emet 357 [Public Domain] | ⇄ Sefaria Community Translation [CC0] (pinned: 1 of 2 lines translated) | no | ברוך אתה … פרי העץ |
-| Ha'adamah | ashkenaz | Siddur Ashkenaz, Berachot, Birkat Hanehenin, Eating, Barachot Rishonot:6 | 1 (1) | Daat Siddur Ashkenaz [Public Domain] | — | ✗ Sefaria Community Translation [CC0] | no | ברוך אתה … פרי האדמה |
-| Ha'adamah | sefard | Siddur Sefard, Blessings, Ha'adamah | 3 (1) | Torat Emet 357 [Public Domain] | — | none | no | ברוך אתה … פרי האדמה |
+| Ha'adamah | ashkenaz | The Koren Shalem Siddur; Ashkenaz, Giving Thanks, Birkat HaMazon; Grace after Meals:80 | 1 (1) | Hebrew Edition; Koren Publishers Jerusalem, 2017 [CC BY-NC] | — | ✓ English Edition; Koren Publishers Jerusalem, 2017 [CC BY-NC] | no | ברוך אתה … פרי האדמה |
+| Ha'adamah | sefard | Weekday Siddur Sefard Linear, Berachos Said Before Eating or Drinking:14-16 | 3 (3) | The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981 [CC BY] | — | ⇄ The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981 [en] [CC BY] (pinned: 3 of 3 lines translated) | no | ברוך אתה … פרי האדמה |
 | Ha'adamah | edot | Siddur Edot HaMizrach, Blessings on Enjoyments:8-9 | 2 (1) | Shaliehsaboo Edition [CC0] | Torat Emet 357 [Public Domain] | ⇄ Sefaria Community Translation [CC0] (pinned: 1 of 2 lines translated) | no | ברוך אתה … פרי האדמה |
-| Shehakol | ashkenaz | Siddur Ashkenaz, Berachot, Birkat Hanehenin, Eating, Barachot Rishonot:7 | 1 (1) | Daat Siddur Ashkenaz [Public Domain] | — | ✗ Sefaria Community Translation [CC0] | no | ברוך אתה … נהיה בדברו |
-| Shehakol | sefard | Siddur Sefard, Blessings, Shehakol | 3 (1) | Torat Emet 357 [Public Domain] | — | none | no | ברוך אתה … נהיה בדברו |
+| Shehakol | ashkenaz | The Koren Shalem Siddur; Ashkenaz, Giving Thanks, Birkat HaMazon; Grace after Meals:82 | 1 (1) | Hebrew Edition; Koren Publishers Jerusalem, 2017 [CC BY-NC] | — | ✓ English Edition; Koren Publishers Jerusalem, 2017 [CC BY-NC] | no | ברוך אתה … נהיה בדברו |
+| Shehakol | sefard | Weekday Siddur Sefard Linear, Berachos Said Before Eating or Drinking:18-20 | 3 (3) | The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981 [CC BY] | — | ⇄ The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981 [en] [CC BY] (pinned: 3 of 3 lines translated) | no | ברוך אתה … נהיה בדברו |
 | Shehakol | edot | Siddur Edot HaMizrach, Blessings on Enjoyments:10-11 | 2 (1) | Shaliehsaboo Edition [CC0] | Torat Emet 357 [Public Domain] | ⇄ Sefaria Community Translation [CC0] (pinned: 1 of 2 lines translated) | no | ברוך אתה … נהיה בדברו |
-| Shehecheyanu | sefard | Siddur Sefard, Blessings, Shehecheyanu | 3 (1) | Torat Emet 357 [Public Domain] | — | none | no | ברוך אתה … לזמן הזה |
+| Shehecheyanu | ashkenaz | The Koren Shalem Siddur; Ashkenaz, Giving Thanks, Birkat HaMazon; Grace after Meals:84 | 1 (1) | Hebrew Edition; Koren Publishers Jerusalem, 2017 [CC BY-NC] | — | ✓ English Edition; Koren Publishers Jerusalem, 2017 [CC BY-NC] | no | ברוך אתה … לזמן הזה |
+| Shehecheyanu | sefard | Weekday Siddur Sefard Linear, Berachos Said Before Eating or Drinking:22-25 | 4 (4) | The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981 [CC BY] | — | ⇄ The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981 [en] [CC BY] (pinned: 4 of 4 lines translated) | no | ברוך אתה … לזמן הזה |
 | Birkat HaMazon | ashkenaz | Siddur Ashkenaz, Berachot, Birkat HaMazon | 89 (55) | The Metsudah siddur, 1981 [CC BY] | — | ✓ Translation based on the Metsudah linear siddur, by Avrohom Davis, 1981 [CC BY]<br>✗ Sefaria Community Translation [CC0] | no | על נהרות … ויום הזכרון |
 | Birkat HaMazon | sefard | Siddur Sefard, Birchat HaMazon, Birchat HaMazon | 106 (58) | The Metsudah siddur, 1981 [CC BY] | Torat Emet 357 [Public Domain] | ✓ Translation based on the Metsudah linear siddur, by Avrohom Davis, 1981 [CC BY] | no | על נהרות … ויום הזכרון |
 | Birkat HaMazon | edot | Siddur Edot HaMizrach, Post Meal Blessing | 59 (41) | Shaliehsaboo Edition [CC0] | Torat Emet 357 [Public Domain] | ✓ Sefaria Community Translation [CC0] | yes | למנצח בנגינת … ואמרו אמן |
@@ -216,11 +218,11 @@
 | Shema al HaMitah | sefard | Siddur Sefard, Bedtime Shema | 36 (32) | The Metsudah siddur, 1981 [CC BY] | Torat Emet 357 [Public Domain] ≠ 27 lines | ✓ Translation based on the Metsudah linear siddur, by Avrohom Davis, 1981 [CC BY] | no | רבונו של … ולא אירא |
 | Shema al HaMitah | edot | Siddur Edot HaMizrach, Bedtime Shema | 30 (24) | Shaliehsaboo Edition [CC0] | Torat Emet 357 [Public Domain] | ✓ Sefaria Community Translation [CC0] | yes | לשם יחוד … אל אמת |
 
-**No source in this nusach (null)** (16): ma-tovu (edot), adon-olam (edot), yigdal (edot), ahavah-rabbah (sefard), ahavah-rabbah (edot), mourners-kaddish (edot), vayehi-binsoa (edot), shema-echad (edot), etz-chayim-hi (edot), candle-lighting (ashkenaz), hamotzi (edot), shehecheyanu (ashkenaz), shehecheyanu (edot), birkat-hamazon-short (ashkenaz), birkat-hamazon-short (sefard), birkat-hamazon-short (edot)
+**No source in this nusach (null)** (14): ma-tovu (edot), adon-olam (edot), yigdal (edot), ahavah-rabbah (sefard), ahavah-rabbah (edot), mourners-kaddish (edot), vayehi-binsoa (edot), shema-echad (edot), etz-chayim-hi (edot), hamotzi (edot), shehecheyanu (edot), birkat-hamazon-short (ashkenaz), birkat-hamazon-short (sefard), birkat-hamazon-short (edot)
 
-**No openly licensed English translation** (17): shema-echad (ashkenaz), birchot-hatorah-aliyah (edot), shalom-aleichem (edot), lecha-dodi (edot), havdalah (sefard), hallel-blessing-before (ashkenaz), hallel-blessing-before (sefard), hallel-blessing-before (edot), hallel-blessing-after (ashkenaz), hallel-blessing-after (sefard), hallel-blessing-after (edot), mezonot (sefard), hagafen (sefard), haetz (sefard), haadamah (sefard), shehakol (sefard), shehecheyanu (sefard)
+**No openly licensed English translation** (5): birchot-hatorah-aliyah (edot), shalom-aleichem (edot), lecha-dodi (edot), hallel-blessing-before (edot), hallel-blessing-after (edot)
 
-**Shown line against line through a pinned translation (⇄)** (38): baruch-sheamar (edot), ashrei (edot), yishtabach (edot), amidah-avot (edot), amidah-gevurot (edot), amidah-kedushat-hashem (edot), amidah-kedusha (edot), amidah-binah (edot), amidah-teshuvah (edot), amidah-selichah (edot), amidah-geulah (edot), amidah-refuah (edot), amidah-birkat-hashanim (edot), amidah-kibbutz-galuyot (edot), amidah-din (edot), amidah-birkat-haminim (edot), amidah-tzadikim (edot), amidah-binyan-yerushalayim (edot), amidah-malchut-beit-david (edot), amidah-shomea-tefillah (edot), amidah-avodah (edot), amidah-hodaah (edot), amidah-shalom (edot), amidah-full (edot), elohai-netzor (edot), oseh-shalom (edot), aleinu (edot), candle-lighting (sefard), candle-lighting (edot), kiddush-friday-night (sefard), kiddush-friday-night (edot), havdalah (edot), hamotzi (ashkenaz), mezonot (edot), hagafen (edot), haetz (edot), haadamah (edot), shehakol (edot)
+**Shown line against line through a pinned translation (⇄)** (47): baruch-sheamar (edot), ashrei (edot), yishtabach (edot), amidah-avot (edot), amidah-gevurot (edot), amidah-kedushat-hashem (edot), amidah-kedusha (edot), amidah-binah (edot), amidah-teshuvah (edot), amidah-selichah (edot), amidah-geulah (edot), amidah-refuah (edot), amidah-birkat-hashanim (edot), amidah-kibbutz-galuyot (edot), amidah-din (edot), amidah-birkat-haminim (edot), amidah-tzadikim (edot), amidah-binyan-yerushalayim (edot), amidah-malchut-beit-david (edot), amidah-shomea-tefillah (edot), amidah-avodah (edot), amidah-hodaah (edot), amidah-shalom (edot), amidah-full (edot), elohai-netzor (edot), oseh-shalom (edot), aleinu (edot), candle-lighting (sefard), candle-lighting (edot), kiddush-friday-night (sefard), kiddush-friday-night (edot), havdalah (edot), hallel-blessing-before (ashkenaz), hallel-blessing-after (ashkenaz), hamotzi (ashkenaz), hamotzi (sefard), mezonot (sefard), mezonot (edot), hagafen (sefard), hagafen (edot), haetz (sefard), haetz (edot), haadamah (sefard), haadamah (edot), shehakol (sefard), shehakol (edot), shehecheyanu (sefard)
 
 **Translated through the Tanakh verses their lines hold (◇)** (22): psalm-150 (edot), hallel-psalm-113 (ashkenaz), hallel-psalm-113 (sefard), hallel-psalm-113 (edot), hallel-psalm-114 (ashkenaz), hallel-psalm-114 (sefard), hallel-psalm-114 (edot), hallel-psalm-115 (ashkenaz), hallel-psalm-115 (sefard), hallel-psalm-115 (edot), hallel-psalm-116 (ashkenaz), hallel-psalm-116 (sefard), hallel-psalm-116 (edot), hallel-psalm-117 (ashkenaz), hallel-psalm-117 (sefard), hallel-psalm-117 (edot), hallel-psalm-118 (ashkenaz), hallel-psalm-118 (sefard), hallel-psalm-118 (edot), hallel-full (ashkenaz), hallel-full (sefard), hallel-full (edot)
 
@@ -228,13 +230,13 @@
 
 **Open translations of a named chapter that leave verses out (the page passes over them and stops listing them)** (1): Psalms 113: Sefaria Community Translation has 2 of 9 verses
 
-**Translations exist but none matches the Hebrew line for line (a whole node shows one as a block; a line range shows none)** (10): barchu (edot), shema (torah), chatzi-kaddish (edot), ein-keloheinu (edot), hamotzi (sefard), mezonot (ashkenaz), hagafen (ashkenaz), haetz (ashkenaz), haadamah (ashkenaz), shehakol (ashkenaz)
+**Translations exist but none matches the Hebrew line for line (a whole node shows one as a block; a line range shows none)** (4): barchu (edot), shema (torah), chatzi-kaddish (edot), ein-keloheinu (edot)
 
 **Pinned against a Hebrew edition the page does not show first (the pairing applies only once a visitor picks that edition)** (0): none
 
 **Hebrew editions that divide a node differently** (8): Siddur Edot HaMizrach, Weekday Shacharit, Amida: Shaliehsaboo Edition 108 lines, Torat Emet 357 107, Siddur Edot HaMizrach, Weekday Shacharit, Alenu: Shaliehsaboo Edition 6 lines, Torat Emet 357 3, Siddur Edot HaMizrach, Weekday Shacharit, Kaveh: Shaliehsaboo Edition 19 lines, Torat Emet 357 16, Siddur Edot HaMizrach, Shabbat Candle Lighting: Torat Emet 357 5 lines, Shaliehsaboo Edition 7, Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 115: The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981 2 lines, Daat Siddur Ashkenaz 1, Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 116: The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981 2 lines, Daat Siddur Ashkenaz 1, Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 118: The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981 13 lines, Daat Siddur Ashkenaz 1, Siddur Sefard, Bedtime Shema: The Metsudah siddur, 1981 36 lines, Torat Emet 357 27
 
-**Licence strings Sefaria uses on these nodes:** `CC-BY` ×276 → CC BY; `CC0` ×193 → CC0; `unknown` ×158 → refused; `Public Domain` ×113 → Public Domain; `CC-BY-NC` ×2 → CC BY-NC
+**Licence strings Sefaria uses on these nodes:** `CC-BY` ×298 → CC BY; `CC0` ×187 → CC0; `unknown` ×158 → refused; `Public Domain` ×93 → Public Domain; `CC-BY-NC` ×26 → CC BY-NC
 
 **Problems:** none.
 
@@ -410,11 +412,50 @@ Each table is one siddur node: the lines the catalog pins, the Hebrew edition th
 | 20 | חוה''מ סוכות וְשַׂמְּחֵנוּ בְּיוֹם חַג הַסֻּכּוֹת הַזֶּה … |  |
 | 21 | כִּי אַתָּה טוֹב וּמֵטִיב לַכֹּל, וְנוֹדֶה לְךָ … |  |
 
+### The Koren Shalem Siddur; Ashkenaz, Festivals, Hallel — Hebrew Edition; Koren Publishers Jerusalem, 2017 ⇄ English Edition; Koren Publishers Jerusalem, 2017 [CC BY-NC]
+
+| Line | Hebrew | English |
+|---|---|---|
+| 2 | בָּרוּךְ אַתָּה יהוה אֱלֹהֵינוּ מֶלֶךְ הָעוֹלָם אֲשֶׁר … | בָּרוּךְ Blessed are You, LORD our God, King of the Universe, … |
+| 34 | יְהַלְלוּךָ יהוה אֱלֹהֵינוּ כָּל מַעֲשֶׂיךָ, וַחֲסִידֶיךָ צַדִּיקִים … | יְהַלְלוּךָ All Your works will praise You, LORD our God, and … |
+
 ### Siddur Ashkenaz, Berachot, Birkat Hanehenin, Eating, Barachot Rishonot — Daat Siddur Ashkenaz ⇄ Sefaria Community Translation [CC0]
 
 | Line | Hebrew | English |
 |---|---|---|
 | 2 | על הלחם מברך: בָּרוּךְ אַתָּה יְ‑יָ אֱ‑לֹהֵינוּ … | Praised are you, Lord our G-d, Ruler of the universe, who … |
+
+### Shabbat Siddur Sefard Linear, Order of Shabbos in the Home, Kiddush for Shabbos Eve — The Metsudah Siddur, Metsudah Publications, 1981 - HE ⇄ The Metsudah Siddur, Metsudah Publications, 1981 - EN [CC BY]
+
+| Line | Hebrew | English |
+|---|---|---|
+| 31 | בָּרוּךְ אַתָּה יְהֹוָה | Blessed are You, Adonoy, |
+| 32 | אֱלֹהֵינוּ מֶלֶךְ הָעוֹלָם | our God, King of the Universe, |
+| 33 | הַמּוֹצִיא לֶחֶם מִן הָאָרֶץ: | Who takes bread out from the earth. |
+
+### Weekday Siddur Sefard Linear, Berachos Said Before Eating or Drinking — The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981 ⇄ The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981 [en] [CC BY]
+
+| Line | Hebrew | English |
+|---|---|---|
+| 2 | בָּרוּךְ אַתָּה יְהוָֹה | Blessed are You, Adonoy |
+| 3 | אֱלֺהֵינוּ מֶלֶךְ הָעוֹלָם, | our God, King of the Universe, |
+| 4 | בּוֹרֵא מִינֵי מְזוֹנוֹת: | Who created various kinds of nourishment. |
+| 6 | בָּרוּךְ אַתָּה יְהוָֹה | Blessed are You, Adonoy |
+| 7 | אֱלֺהֵינוּ מֶלֶךְ הָעוֹלָם, | our God, King of the Universe, |
+| 8 | בּוֹרֵא פְּרִי הַגָּפֶן: | Who creates the fruit of the vine. |
+| 10 | בָּרוּךְ אַתָּה יְהוָֹה | Blessed are You, Adonoy |
+| 11 | אֱלֺהֵינוּ מֶלֶךְ הָעוֹלָם, | our God, King of the Universe, |
+| 12 | בּוֹרֵא פְּרִי הָעֵץ: | Who created the fruit of the tree. |
+| 14 | בָּרוּךְ אַתָּה יְהוָֹה | Blessed are You, Adonoy |
+| 15 | אֱלֺהֵינוּ מֶלֶךְ הָעוֹלָם, | our God, King of the Universe, |
+| 16 | בּוֹרֵא פְּרִי הָאֲדָמָה: | Who creates the fruit of the earth. |
+| 18 | בָּרוּךְ אַתָּה יְהוָֹה | Blessed are You, Adonoy |
+| 19 | אֱלֺהֵינוּ מֶלֶךְ הָעוֹלָם, | our God, King of the Universe, |
+| 20 | שֶׁהַכֹּל נִהְיֶה בִּדְבָרוֹ: | by Whose word all things came to be. |
+| 22 | בָּרוּךְ אַתָּה יְהוָֹה | Blessed are You, Adonoy |
+| 23 | אֱלֺהֵינוּ מֶלֶךְ הָעוֹלָם, | our God, King of the Universe, |
+| 24 | שֶׁהֶחֱיָנוּ וְקִיְּמָנוּ | Who has kept us alive and sustained us |
+| 25 | וְהִגִּיעָנוּ לַזְּמַן הַזֶּה: | and brought us to this time. |
 
 ### Siddur Edot HaMizrach, Blessings on Enjoyments — Shaliehsaboo Edition ⇄ Sefaria Community Translation [CC0]
 
@@ -457,7 +498,6 @@ Each table is one siddur node in the Hebrew edition whose lines were counted. *V
 
 | Line | Hebrew opens | Hebrew closes | Verses | Found | English opens | English closes |
 |---|---|---|---|---|---|---|
-| 3 | בָּרוּךְ אַתָּה יְהֹוָה, אֱלֹהֵינוּ מֶלֶךְ … | … לִקְרֹא אֶת הַהַלֵּל: | — |  |  |  |
 | 4 | הַלְלוּיָהּ הַלְלוּ עַבְדֵי יְהֹוָה. הַלְלוּ … | … הַבָּנִים שְׂמֵחָה. הַלְלוּיָהּ: | 113:1-9 | 9 of 9 | Hallelujah. O servants of the LORD, give praise; … | … happy mother of children. Hallelujah. |
 | 5 | בְּצֵאת יִשְׂרָאֵל מִמִּצְרָיִם, בֵּית יַעֲקֹב … | … חַלָּמִישׁ לְמַעְינוֹ מָיִם: | 114:1-8 | 8 of 8 | When Israel went forth from Egypt, the house … | … flinty rock into a fountain. |
 | 7 | לֹא לָנוּ יְהֹוָה לֹא לָנוּ. … | … עֶזְרָם וּמָגִנָּם הוּא: | 115:1-11 | 11 of 11 | Not to us, O LORD, not to us … | … is their help and shield. |
@@ -477,7 +517,6 @@ Each table is one siddur node in the Hebrew edition whose lines were counted. *V
 | 22 | אָנָּא יְהֹוָה הוֹשִׁיעָה נָּא: אָנָּא … | … יְהֹוָה הוֹשִׁיעָה נָּא: | 118:25 | 1 of 1 | O LORD, deliver us! O LORD, let us … | … O LORD, let us prosper! |
 | 23 | אָנָּא יְהֹוָה הַצְלִיחָה נָּא: אָנָּא … | … יְהֹוָה הַצְלִיחָה נָּא: | — |  |  |  |
 | 24 | בָּרוּךְ הַבָּא בְּשֵׁם יְהֹוָה. בֵּרַכְנוּכֶם … | … כִּי לְעוֹלָם חַסְדּוֹ: | 118:26-29 | 4 of 4 | May he who enters be blessed in the … | … His steadfast love is eternal. |
-| 25 | יְהַלְלוּךָ יְהֹוָה אֱלֹהֵינוּ עַל כָּל … | … מֶלֶךְ מְהֻלָּל בַּתִּשְׁבָּחוֹת: | — |  |  |  |
 
 ### Siddur Edot HaMizrach, Rosh Hodesh, Hallel — Shaliehsaboo Edition
 

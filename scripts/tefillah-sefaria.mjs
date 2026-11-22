@@ -13,7 +13,18 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 
 export const SEFARIA_API = 'https://www.sefaria.org/api';
-export const SIDDUR_INDEXES = ['Siddur Ashkenaz', 'Siddur Sefard', 'Siddur Edot HaMizrach'];
+// The siddurim on Sefaria a nusach may read from. The first of each is Sefaria's own siddur, which holds
+// nearly everything; the others are whole published siddurim whose Hebrew and English stand line
+// against line, used for the prayers the first has no open translation of (The Koren Shalem Siddur:
+// CC BY-NC; the two Metsudah linear siddurim, a phrase to a line: CC BY). A `torah` source's added
+// lines are the Ashkenaz siddur's. The page's SIDDUR_NODE_RE lists the same titles: change both.
+export const SIDDUR_BY_NUSACH = {
+  ashkenaz: ['Siddur Ashkenaz', 'The Koren Shalem Siddur; Ashkenaz'],
+  sefard: ['Siddur Sefard', 'Weekday Siddur Sefard Linear', 'Shabbat Siddur Sefard Linear'],
+  edot: ['Siddur Edot HaMizrach'],
+};
+SIDDUR_BY_NUSACH.torah = SIDDUR_BY_NUSACH.ashkenaz;
+export const SIDDUR_INDEXES = [...new Set(Object.values(SIDDUR_BY_NUSACH).flat())];
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const _cache = new Map();
@@ -117,10 +128,13 @@ export const hasNikkud = (s) => NIKKUD_RE.test(s);
 // as editorial marks, so those two never count; U+05BD is meteg, not an accent.
 export const hasTeamim = (s) => /[\u0591\u0593-\u05AE]/.test(s);
 // What a line is, by the page's own rule: unpointed Hebrew is an instruction or a heading.
+// The one unpointed word that is prayer text: the Koren siddur prints the Divine Name bare (the page's BARE_SHEM_RE).
+const BARE_SHEM = /^[^א-ת]*יהוה[^א-ת]*$/;
+const isReadWord = (w) => hasHebrew(w) && (hasNikkud(w) || BARE_SHEM.test(w));
 export function lineKind(plain) {
   if (!plain) return 'empty';
   if (!hasHebrew(plain)) return 'other';
-  return hasNikkud(plain) ? 'text' : 'instruction';
+  return String(plain).replace(/־/g, ' ').split(/\s+/).some(isReadWord) ? 'text' : 'instruction';
 }
 export function firstWords(plain, n = 4) {
   return plain.replace(/[\u0591-\u05AF\u05BD]/g, '').split(' ').slice(0, n).join(' ');
@@ -163,7 +177,7 @@ export function skeleton(s) {
 }
 // The pointed words of a plain line, in order (an unpointed word is an instruction's).
 export function pointedWords(plain) {
-  return String(plain || '').replace(/־/g, ' ').split(/\s+/).filter((w) => hasNikkud(w) && hasHebrew(w));
+  return String(plain || '').replace(/־/g, ' ').split(/\s+/).filter(isReadWord);
 }
 export function rangeEnds(lines) {
   const words = lines.map((raw) => pointedWords(plainText(raw)));

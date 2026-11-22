@@ -33,7 +33,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {
-  SEFARIA_API, SIDDUR_INDEXES, NUSACHIM, sefariaJSON, leafPaths, fetchVersion, splitRef, isTanakhRef, sourceParts,
+  SEFARIA_API, SIDDUR_INDEXES, SIDDUR_BY_NUSACH, NUSACHIM, sefariaJSON, leafPaths, fetchVersion, splitRef, isTanakhRef, sourceParts,
   licenseName, isOpenLicense, flatText, plainText, lineKind, hasTeamim, rangeEnds, englishWords, englishEnds, formatCatalog,
   parseVerses, versesFit, lettersOnly,
 } from './tefillah-sefaria.mjs';
@@ -94,10 +94,11 @@ function pickEdition(open, pref) {
 }
 
 // One siddur part → what the page would show for it, measured.
-async function checkSiddurPart(part, where, leaves) {
+async function checkSiddurPart(part, where, leaves, nusach) {
   const { node, from, to } = splitRef(part.ref);
   const index = SIDDUR_INDEXES.find((t) => node.startsWith(t + ', '));
-  if (!index) { problems.push(`${where}: "${part.ref}" is not in one of the three siddurim`); return null; }
+  if (!index) { problems.push(`${where}: "${part.ref}" is not in one of the siddurim this catalog reads`); return null; }
+  if (!(SIDDUR_BY_NUSACH[nusach] || []).includes(index)) { problems.push(`${where}: ${index} is not a siddur of this nusach`); return null; }
   if (!leaves.get(index).has(node)) { problems.push(`${where}: "${node}" is not a leaf node of ${index}`); return null; }
   let first;
   try { first = await fetchVersion(node, 'hebrew'); } catch (e) { problems.push(`${where}: ${part.ref} does not resolve (${e.message})`); return null; }
@@ -333,7 +334,7 @@ async function main() {
       for (const part of sourceParts(src)) {
         const tanakh = isTanakhRef(part.ref);
         if (tanakh && nusach !== 'torah') { problems.push(`${where}: a Tanakh ref belongs in the torah source`); continue; }
-        const got = tanakh ? await checkTanakhPart(part, where) : await checkSiddurPart(part, where, leaves);
+        const got = tanakh ? await checkTanakhPart(part, where) : await checkSiddurPart(part, where, leaves, nusach);
         if (got) parts.push(got);
       }
       if (parts.length === sourceParts(src).length && parts.length) rows.push(row(prayer, nusach, parts));

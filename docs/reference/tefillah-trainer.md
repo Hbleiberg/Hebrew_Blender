@@ -22,7 +22,7 @@ maintainer, never fixed. The fixture smoke builds its texts from ordinary vocabu
 
 ## The catalog — `data/tefillah/catalog.json`
 
-A curated list, not the Sefaria tree. Fetched as `data/tefillah/catalog.json?v=7` (`CATALOG_URL`); `sw.js` precaches
+A curated list, not the Sefaria tree. Fetched as `data/tefillah/catalog.json?v=8` (`CATALOG_URL`); `sw.js` precaches
 that exact URL (`DATA_PRECACHE`), so **an edit bumps the `?v=` in both places**.
 
 ```jsonc
@@ -40,7 +40,7 @@ or an ordered list of parts. A part is:
 
 | Form | Meaning |
 |---|---|
-| `"Siddur Ashkenaz, Weekday, Shacharit, …, Modeh Ani"` | a whole **leaf node** of one of the three siddur indexes |
+| `"Siddur Ashkenaz, Weekday, Shacharit, …, Modeh Ani"` | a whole **leaf node** of one of the siddurim the nusach may read (below) |
 | `{ "ref": "<leaf>:<a-b>", "he": "<edition>", "from": "…", "to": "…" }` | **lines** `a`–`b` of a leaf node, read from that exact Hebrew edition; `from` / `to` are the consonants of the range's first two and last two pointed words |
 | `{ …, "en": { "v": "<translation>", "from": "…", "to": "…" } }` | a **pinned translation**: line *n* of that translation stands beside line *n* of the part's Hebrew (below) |
 | `{ "ref": "<leaf>", "en": { "v": "…", "he": "<edition>", "from": "…", "to": "…" } }` | a whole node with a pinned translation; `he` names the Hebrew edition the pairing was read against |
@@ -49,6 +49,14 @@ or an ordered list of parts. A part is:
 | `{ …, "added": true }` | inside a `torah` source: a line the siddur adds between the verses |
 | `"modeh-ani"` (the `opensiddur` source) | the key of a snapshot file, `data/tefillah/opensiddur/<key>.json` |
 
+- **Which siddurim.** `SIDDUR_BY_NUSACH` (`scripts/tefillah-sefaria.mjs`) names the Sefaria indexes a nusach may
+  read: its own siddur (*Siddur Ashkenaz*, *Siddur Sefard*, *Siddur Edot HaMizrach*), which holds nearly everything,
+  and for Ashkenaz *The Koren Shalem Siddur; Ashkenaz* (Hebrew and Rabbi Sacks' English, CC BY-NC), for Sefard the
+  two Metsudah linear siddurim, *Weekday Siddur Sefard Linear* and *Shabbat Siddur Sefard Linear* (a phrase to a
+  line, CC BY). The others are used where the first has no open translation: a prayer's source is re-pointed to
+  their lines, so its Hebrew and its translation are one work's and pair by the usual rules. The checker holds a
+  source to its nusach's list; the page's `SIDDUR_NODE_RE` lists the same titles (change both). Edot HaMizrach has
+  no second siddur on Sefaria.
 - **Refs are never guessed.** `scripts/walk-tefillah-index.mjs` prints every leaf path and, with `--lines`, a node line
   by line; a catalog ref is a path it printed and a range is lines it printed. Sefard and Edot HaMizrach hold most
   prayers inside large nodes, so most of their sources are line ranges.
@@ -126,8 +134,12 @@ reason on the status line and the Try again card): a prayer with a silent gap wo
   JPS 1985 for its plainer English, and the checker fails if the first title is missing or short for a chapter),
   else JPS 1917, else by licence rank. The Shema's Torah source keeps its own order (stored, JPS 1917, rank). Each line gets its verses joined in order; the
   credit names the book (`en.work`: "Psalms — <title> · <licence>"), the version list is the verses' (so a full Hallel
-  lists what all six psalms share, and its two blessings, which have none, do not empty it —
-  `readingEnglishVersions` skips parts that offer nothing), and the note under the list says where the translation
+  lists what all six psalms share, and a part that offers nothing does not empty it —
+  `readingEnglishVersions` skips such parts; where the parts share no translation at all, as in a full Hallel whose
+  blessings come from another siddur, it lists what each kind of part shares (`enKind`: a siddur's own parts among
+  themselves, the verse parts among themselves), a choice changes only the parts that have it, and the Version box
+  names the stored choice when any part shows it, else the translation with the most text on screen:
+  `shownEnglishList`), and the note under the list says where the translation
   comes from (`tefillah.trans.tanakh_note`). The chapters' Hebrew is fetched with translation off too: the check and
   the list need it. A failed check or request leaves the part without a translation, never the prayer without text.
   **A translation must have every verse the lines hold**: one that leaves a verse out (Sefaria lists a Community
@@ -149,6 +161,9 @@ reason on the status line and the Try again card): a prayer with a silent gap wo
 - **Line numbers** count only lines that hold prayer text (`1, 2, 3…`); a Torah verse shows `chapter:verse`; the
   siddur's added line among Torah verses is selectable and unnumbered. Hiding numbers or instructions is a body class
   (`hide-linenums`, `hide-inst`), so the numbers never shift.
+- **The Divine Name without points**: the Koren siddur prints it bare. It is the one unpointed word that is prayer
+  text (`BARE_SHEM_RE` / `isReadWord` on the page, `pointedWords` in the scripts — keep the two alike): it is a word
+  to read, is transliterated through `replaceTetragrammaton`, and counts in a range's first and last words.
 - **Instructions**: unpointed Hebrew is an instruction or a heading — a whole unpointed segment is a `.tt-instline`
   row with no `data-vk`, an unpointed word inside a text line is a `.tt-inst` span. They are never colored,
   transliterated or copied as prayer text (`reading` is the line's pointed words). `<small>` is not the test: one

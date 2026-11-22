@@ -3914,7 +3914,7 @@ function tokenizeHebrew(text, wordIdxStartRef, opts, underWord, sink, L) {
     if (tok === '־') { out.push(esc(tok)); continue; }   // maqaf separator, not a word
     if (/[א-ת]/.test(tok)) {
       // An unpointed Hebrew word in a siddur line is an instruction's: small print, not a word to read (no data-twi).
-      if (L && L.kind !== 'tanakh' && rawAligned && !HAS_NIKKUD_RE.test(rawTokens[ti])) { out.push(`<span class="tt-inst">${esc(tok)}</span>`); continue; }
+      if (L && L.kind !== 'tanakh' && rawAligned && !isReadWord(rawTokens[ti])) { out.push(`<span class="tt-inst">${esc(tok)}</span>`); continue; }
       const idx = wordIdxStartRef.value++;
       const inner = (colorNik && showNik)
         ? colorizeHebrew(tok)
@@ -4038,9 +4038,12 @@ function tokenizeTranslit(translitText, firstTwi, hebWordCount) {
    Nothing a URL, a saved favorite or a cloud row carries ever reaches Sefaria: a reading is always
    looked up here by its key, and a ref this page does not recognise is not offered at all.
    ══════════════════════════════════════════════════════ */
-const CATALOG_URL = 'data/tefillah/catalog.json?v=7';
+const CATALOG_URL = 'data/tefillah/catalog.json?v=8';
 const NUSACH_IDS = ['ashkenaz', 'sefard', 'edot', 'opensiddur', 'torah'];
-const SIDDUR_NODE_RE = /^Siddur (?:Ashkenaz|Sefard|Edot HaMizrach), [A-Za-z0-9 ,'&()\-]{1,200}$/;
+// A leaf of one of the siddurim this page may ask Sefaria for: its three own, and three whole published siddurim
+// whose Hebrew and English stand line against line (scripts/tefillah-sefaria.mjs → SIDDUR_BY_NUSACH lists the same
+// titles and says which nusach each serves; the checker holds a source to its nusach's own).
+const SIDDUR_NODE_RE = /^(?:Siddur (?:Ashkenaz|Sefard|Edot HaMizrach)|The Koren Shalem Siddur; Ashkenaz|(?:Weekday|Shabbat) Siddur Sefard Linear), [A-Za-z0-9 ,'&();\-]{1,200}$/;
 const TANAKH_REF_RE = /^(?:Genesis|Exodus|Leviticus|Numbers|Deuteronomy) \d{1,3}:\d{1,3}(?:-\d{1,3})?$/;
 const PRAYER_KEY_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 let catalog = null;                 // { groups, prayers, hebrewPreference } once loaded
@@ -4248,12 +4251,17 @@ function parseSegment(html) {
   for (const t of text.split(/(\s+|־)/)) { flags.push(t ? (tf[pos] || 0) : 0); pos += t.length; }   // one flag per token of the tokenizer's own split
   return { text, flags };
 }
-const isPointedWord = w => HEB_LETTER_RE.test(w) && HAS_NIKKUD_RE.test(w);
+// One unpointed word is prayer text all the same: the Koren siddur prints the Divine Name bare (יהוה, never the
+// prefixed forms, which carry their prefix's vowel). Everything that tells a word to read from an instruction's
+// word asks here, and scripts/tefillah-sefaria.mjs → pointedWords keeps the same rule for the stamps.
+const BARE_SHEM_RE = /^[^א-ת]*יהוה[^א-ת]*$/;
+const isReadWord = w => HAS_NIKKUD_RE.test(w) || BARE_SHEM_RE.test(w);
+const isPointedWord = w => HEB_LETTER_RE.test(w) && isReadWord(w);
 // The words a student reads: an unpointed Hebrew word is an instruction's and is left out (transliteration, the
 // range check and the line's kind all read this).
 function readingWords(text) { return String(text || '').replace(/־/g, ' ').split(/\s+/).filter(isPointedWord); }
 function readingText(text) {
-  return String(text || '').split(/(\s+|־)/).filter(t => !HEB_LETTER_RE.test(t) || HAS_NIKKUD_RE.test(t)).join('').replace(/\s+/g, ' ').replace(/^[\s\u05BE]+|[\s\u05BE]+$/g, '');
+  return String(text || '').split(/(\s+|־)/).filter(t => !HEB_LETTER_RE.test(t) || isReadWord(t)).join('').replace(/\s+/g, ' ').replace(/^[\s\u05BE]+|[\s\u05BE]+$/g, '');
 }
 const skeleton = s => String(s || '').replace(/־/g, ' ').replace(/[^א-ת\s]/g, '').replace(/\s+/g, ' ').trim();
 // The first two and last two pointed words of a run of lines, letters only: what the catalog stamps on a range
@@ -4452,16 +4460,16 @@ async function loadSiddurPart(part, wantEnglish) {
   }
   // No translation of the siddur's own stands beside these lines, and the catalog says they are Tanakh verses
   // (counted in this Hebrew edition): offer the translations of those verses instead.
-  let listed = enVersions;
+  let listed = enVersions, enKind = part.ref.split(',')[0];       // whose translations these are: the siddur's own…
   const verseMap = part.verses && !(en && en.aligned) ? part.verses.find(m => ranged || m.he === he.title) : null;
   if (verseMap) {
     const got = await loadVerseTranslations(verseMap, heLines.map(l => l.text), wantEnglish);
-    if (got) { en = got.en; listed = got.enVersions; }
+    if (got) { en = got.en; listed = got.enVersions; enKind = 'verses'; }      // …or those of the Tanakh verses its lines hold
   }
   return {
     kind: 'siddur', ref: part.ref, added: part.added, firstSeg: from,
     he: { title: he.title, license: he.license, source: he.source, marks: READING_MARK_EDITIONS.test(he.title), lines: heLines },
-    en, enVersions: listed, heEditions: ranged ? [] : openHe
+    en, enVersions: listed, enKind, heEditions: ranged ? [] : openHe
   };
 }
 const JPS_1917_RE = /JPS\s*1917|1917.*JPS|Holy Scriptures.*1917|Holy Scriptures.*New Translation/i;
@@ -4622,22 +4630,43 @@ function resolveLabel(r) {
    Built for the prayer on screen from Sefaria's own answer, licence-filtered every time.
    ══════════════════════════════════════════════════════ */
 // The translations offered by every (non-added) part of the reading that has any, in the first such part's order
-// (a blessing before or after Hallel's psalms has none, and must not empty the list).
+// (a blessing before or after Hallel's psalms may have none, and must not empty the list). Parts that share none —
+// a full Hallel reads its blessings from one siddur and its psalms' translations from the Book of Psalms — offer
+// what each kind of part shares (the siddur's own parts among themselves, the verse parts among themselves — so a
+// translation only one psalm has is still left out): a choice then changes the parts that have it and leaves the
+// others on their own.
 function readingEnglishVersions() {
   const parts = (currentParts || []).filter(p => !p.added && p.enVersions.length);
   if (!parts.length) return [];
-  return parts[0].enVersions.filter(v => parts.every(p => p.enVersions.some(x => x.versionTitle === v.versionTitle)));
+  const shared = list => list[0].enVersions.filter(v => list.every(p => p.enVersions.some(x => x.versionTitle === v.versionTitle)));
+  const common = shared(parts);
+  if (common.length) return common;
+  const kinds = new Map();
+  for (const p of parts) { const k = p.enKind || p.kind; if (!kinds.has(k)) kinds.set(k, []); kinds.get(k).push(p); }
+  const seen = new Set(), all = [];
+  for (const list of kinds.values()) for (const v of shared(list)) if (!seen.has(v.versionTitle)) { seen.add(v.versionTitle); all.push(v); }
+  return all;
 }
-function shownEnglish() {
-  const p = (currentParts || []).find(x => !x.added && x.en);
-  return p ? p.en : null;
+// The translations on screen, one per title, the one with the most text first: what the Version box names when the
+// stored choice is not among them (text, not lines: a psalm is one long paragraph, a linear siddur's blessing is
+// four short lines).
+function shownEnglishList() {
+  const by = new Map();
+  for (const p of (currentParts || [])) {
+    if (p.added || !p.en) continue;
+    const e = by.get(p.en.title) || { en: p.en, size: 0 };
+    e.size += p.en.lines.reduce((n, t) => n + (t ? t.length : 0), 0);
+    by.set(p.en.title, e);
+  }
+  return [...by.values()].sort((a, b) => b.size - a.size).map(x => x.en);
 }
+function shownEnglish() { return shownEnglishList()[0] || null; }
 function syncVersionControls() {
   const sel = document.getElementById('ttVersionSelect');
   const note = document.getElementById('ttVersionNote');
   const list = readingEnglishVersions();
-  const shown = shownEnglish();
-  _versionFallback = shown && shown.title !== settings.translationVersion ? shown.title : null;
+  const shownAll = shownEnglishList(), shown = shownAll[0] || null;
+  _versionFallback = shown && !shownAll.some(e => e.title === settings.translationVersion) ? shown.title : null;
   if (sel) {
     sel.textContent = '';
     if (!list.length) {
@@ -4660,7 +4689,7 @@ function syncVersionControls() {
     const none = !!currentParts && !list.length;
     const hidden = !!shown && shown.hidden;
     const block = !!shown && !shown.aligned && !shown.hidden;
-    const key = none ? 'tefillah.trans.none_note' : hidden ? 'tefillah.trans.hidden_note' : block ? 'tefillah.trans.block_note' : (shown && shown.tanakh) ? 'tefillah.trans.tanakh_note' : '';
+    const key = none ? 'tefillah.trans.none_note' : hidden ? 'tefillah.trans.hidden_note' : block ? 'tefillah.trans.block_note' : shownAll.some(e => e.tanakh) ? 'tefillah.trans.tanakh_note' : '';
     note.hidden = !key;
     if (key) { note.dataset.i18nKey = key; note.textContent = I18n.t(key); } else { delete note.dataset.i18nKey; note.textContent = ''; }
   }

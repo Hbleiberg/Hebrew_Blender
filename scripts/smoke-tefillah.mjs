@@ -112,6 +112,14 @@ NODES[N('Psalm')] = {
         [OTHER]: { license: 'Public Domain', lines: [[...PS[0], ...PS[1], ...PS[2], ...PS[3]].join(' ')] } },
   en: {},
 };
+// A node of another siddur this page may read (its title holds a semicolon, as the Koren siddur's do), with the Divine
+// Name printed without points, as Koren prints it: prayer text, not an instruction.
+const KOREN = 'The Koren Shalem Siddur; Ashkenaz, Smoke; Fixtures';
+const BARE_NAME = [0x5D9, 0x5D4, 0x5D5, 0x5D4].map(ch).join('');
+NODES[KOREN] = {
+  he: { [OPEN]: { license: 'CC-BY-NC', lines: [`${WORDS[40]} ${BARE_NAME} ${WORDS[41]}`, words(42, 3).join(' ')] } },
+  en: { [EN_A]: { license: 'CC-BY-NC', lines: ['Koren one.', 'Koren two.'] } },
+};
 const TANAKH = {
   'Psalms.113': { sections: [113], he: PS.map(verse), ens: {
     [PS_B]: { license: 'CC-BY', text: ['Second one.', 'Second two.', 'Second three.', 'Second four.'] },
@@ -147,6 +155,7 @@ const CATALOG = { v: 1, hebrewPreference: ['Metsudah', 'Open'], versesEnglish: [
   P('verses-swapped', { ashkenaz: ranged(N('Psalm'), 1, 3, OPEN, { verses: { lines: [null, 'Psalms 113:3-4', 'Psalms 113:1-2'] } }) }),
   P('verses-short', { ashkenaz: ranged(N('Psalm'), 1, 3, OPEN, { verses: { lines: ['Psalms 113:1-2', 'Psalms 113:3-4'] } }) }),
   P('verses-whole', { ashkenaz: { ref: N('Psalm'), verses: { he: OPEN, lines: [null, 'Psalms 113:1-2', 'Psalms 113:3,4'] } } }),
+  P('mixed', { ashkenaz: [ranged(N('Long'), 2, 2, MET), ranged(N('Psalm'), 1, 3, OPEN, { verses: { lines: [null, 'Psalms 113:1-2', 'Psalms 113:3-4'] } })] }),   // a siddur line with its own translation, then lines that are verses
   P('verses-two-editions', { ashkenaz: { ref: N('Psalm'), verses: [{ he: OPEN, lines: [null, 'Psalms 113:1-2', 'Psalms 113:3-4'] }, { he: OTHER, lines: ['Psalms 113:1-4'] }] } }),
   P('verses-other-edition', { ashkenaz: { ref: N('Psalm'), verses: { he: OTHER, lines: ['Psalms 113:1-4'] } } }),
   P('verses-odd', { ashkenaz: ranged(N('Psalm'), 1, 3, OPEN, { verses: { lines: [null, 'Deuteronomy 6:4', 'Psalms 113:3-4'] } }) }),   // only Psalms may be named: the map is dropped
@@ -156,6 +165,8 @@ const CATALOG = { v: 1, hebrewPreference: ['Metsudah', 'Open'], versesEnglish: [
   P('os-missing', { opensiddur: 'os-missing' }),
   P('os-closed', { opensiddur: 'os-closed' }),
   P('os-odd', { opensiddur: 'os-odd' }),
+  P('koren', { ashkenaz: ranged(KOREN, 1, 1, OPEN) }),
+  P('other-siddur', { ashkenaz: 'Siddur Chabad, Smoke, Plain' }),                // a siddur this page does not read: the source is dropped
   P('not-a-siddur', { ashkenaz: 'Mishnah Berakhot 1:1' }),                       // a ref this page may not ask for: the source is dropped
 ] };
 // Open Siddur snapshot files (data/tefillah/opensiddur/<key>.json), served by this script
@@ -362,6 +373,21 @@ try {
       s = await go(key);
       check(why + ': no translation, and the prayer still opens', s.rows.length >= 1 && !s.empty && s.trans.every((x) => !x) && !/Verse one|Second one/.test(s.text) && !s.credits.includes(PS_B), JSON.stringify({ rows: s.rows.length, trans: s.trans, credits: s.credits }));
     }
+    // another admitted siddur; the Divine Name printed without points is a word to read, not an instruction
+    s = await go('koren');
+    check('a line of another admitted siddur opens with its translation, credited to that siddur', s.rows.length === 1 && s.trans.join('|') === 'Koren one.' && /The Koren Shalem Siddur; Ashkenaz/.test(s.credits) && /CC BY-NC/.test(s.credits), JSON.stringify({ trans: s.trans, credits: s.credits }));
+    check('…and the Divine Name printed without points is a word to read, not an instruction', s.words.length === 3 && s.words.includes(BARE_NAME) && s.instWords === 0, JSON.stringify({ words: s.words.length, inst: s.instWords }));
+    // parts that share no translation: every one is offered, and a choice changes only the parts that have it
+    s = await go('mixed');
+    check('parts that share no translation list every one, each part in its own; the box names the one covering most lines', s.rows.length === 3 && s.trans.join('|') === 'Long two.|Second one. Second two.|Second three. Second four.' && s.versions.join('|') === [EN_A, PS_B, JPS].join('|') && s.credits.includes(EN_A) && s.credits.includes(PS_B), JSON.stringify({ trans: s.trans, versions: s.versions }));
+    const boxBefore = await t.page.evaluate(() => document.getElementById('ttVersionSelect').value);
+    await t.page.evaluate((title) => { const sel = document.getElementById('ttVersionSelect'); sel.value = title; sel.dispatchEvent(new Event('change', { bubbles: true })); }, JPS);
+    await t.page.waitForTimeout(600); await settled(t.page);
+    s = await snapshot(t.page);
+    const boxAfter = await t.page.evaluate(() => document.getElementById('ttVersionSelect').value);
+    check('…picking a verses translation changes those lines only, and the box keeps the choice', boxBefore === PS_B && boxAfter === JPS && s.trans.join('|') === 'Long two.|Verse one. Verse two.|Verse three. Verse four.', JSON.stringify({ boxBefore, boxAfter, trans: s.trans }));
+    await t.page.evaluate((title) => { const sel = document.getElementById('ttVersionSelect'); sel.value = title; sel.dispatchEvent(new Event('change', { bubbles: true })); }, PS_B);
+    await t.page.waitForTimeout(600); await settled(t.page);
     // one map per Hebrew edition: switching the edition keeps the translation, on that edition's own lines
     s = await go('verses-two-editions');
     const twoBefore = s.trans.join('|');
@@ -396,6 +422,7 @@ try {
     const t = await openPage('?prayer=plain');
     const s = await snapshot(t.page);
     check('a prayer whose only source is not a siddur ref is not offered', !s.options.includes('not-a-siddur'), s.options.join());
+    check('…nor one from a siddur this page does not read, while an admitted one (a title with a semicolon) is', !s.options.includes('other-siddur') && s.options.includes('koren'), s.options.join());
     await t.close();
     const stray = asked.filter((r) => !KNOWN_REFS.has(r));
     check('every request named a ref of the catalog (' + asked.length + ' requests)', asked.length > 10 && stray.length === 0, stray.slice(0, 5).join(' | '));
