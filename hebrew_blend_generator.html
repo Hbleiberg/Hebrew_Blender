@@ -159,7 +159,7 @@ html[lang="he"] [data-i18n="worksheet.advanced.translit_style"] { letter-spacing
 footer .footer-social { font-size:0.72rem; }
 footer .footer-social a { color:var(--gold-text); text-decoration:none; }
 footer .footer-social a:hover { text-decoration:underline; }
-/* ═══ header-icons CSS ═══ shared block, byte-identical on: index, hebrew_blend_generator, hebrew_dictionary, classroom_dashboard, flash_cards, torah_trainer, trope_tutor, Hebrew_Font_Maker, resources, contact, privacy, terms, account, 404, letter_learner, parsha_emojis, name_tags, trope_atlas, letter_discrimination, reading_assignments, holiday_guide, the generated parsha/ pages (copied from parsha_emojis by scripts/build-parsha-pages.mjs), the generated holidays/ pages (copied from holiday_guide by scripts/build-holiday-pages.mjs) and the generated jewish-coloring-pages (copied from parsha_emojis by scripts/build-coloring-hub.mjs) (docs/reference/shared-components.md → Header icons).
+/* ═══ header-icons CSS ═══ shared block, byte-identical on: index, hebrew_blend_generator, hebrew_dictionary, classroom_dashboard, flash_cards, torah_trainer, trope_tutor, Hebrew_Font_Maker, resources, contact, privacy, terms, account, 404, letter_learner, parsha_emojis, name_tags, trope_atlas, letter_discrimination, reading_assignments, holiday_guide, tefillah_trainer, the generated parsha/ pages (copied from parsha_emojis by scripts/build-parsha-pages.mjs), the generated holidays/ pages (copied from holiday_guide by scripts/build-holiday-pages.mjs) and the generated jewish-coloring-pages (copied from parsha_emojis by scripts/build-coloring-hub.mjs) (docs/reference/shared-components.md → Header icons).
    The header controls and the in-page control buttons (play, pause, stop, reset, retry, loop, sound) carry inline
    SVGs from one shared set (.hi-*); ink is currentColor, so each button's own colour applies. .hi-sm is the 13px
    size the tiny settings buttons take, .hi-btn lines an icon up with its label inside a button.
@@ -1277,7 +1277,7 @@ header{--bl-row:160px;}   /* the lockup, its divider and the header's gap: what 
    in LANDSCAPE is 750px, above it. Killed at 760px instead — under a landscape phone, over an iPad
    (810px), which keeps drag-resize deliberately. Width, not (pointer:coarse), is the chosen lever. */
   @media (max-width: 760px) { .sbr-split { display: none; } }
-/* ═══ shared: sidebar-resize CSS ═══ (byte-identical across hebrew_dictionary/hebrew_blend_generator/classroom_dashboard/torah_trainer/letter_learner/name_tags — copy verbatim; pairs with the `shared: sidebar-resize` JS block; self-contained incl. reduced-motion) ═══ */
+/* ═══ shared: sidebar-resize CSS ═══ (byte-identical across hebrew_dictionary/hebrew_blend_generator/classroom_dashboard/torah_trainer/letter_learner/name_tags/tefillah_trainer — copy verbatim; pairs with the `shared: sidebar-resize` JS block; self-contained incl. reduced-motion) ═══ */
 .sbr-split{cursor:col-resize;touch-action:none;-webkit-user-select:none;user-select:none;background:none;border:none;padding:0;z-index:5;}
 .sbr-split::before{content:"";position:absolute;top:0;bottom:0;inset-inline:0;margin-inline:auto;width:2px;background:transparent;border-radius:2px;transition:background 0.12s,width 0.12s;}
 .sbr-split:hover::before,.sbr-split:focus-visible::before,.sbr-split.dragging::before{width:4px;background:var(--gold,#c9922a);}
@@ -2312,7 +2312,7 @@ header{--bl-row:160px;}   /* the lockup, its divider and the header's gap: what 
     .desktop-buttons { display: block; }
   }
 
-  /* ═══ shared: app-toast CSS ═══ (byte-identical across generator/dashboard/flash_cards/dictionary/letter_learner/name_tags; self-contained incl. reduced-motion) ═══ */
+  /* ═══ shared: app-toast CSS ═══ (byte-identical across generator/dashboard/flash_cards/dictionary/letter_learner/name_tags/tefillah_trainer; self-contained incl. reduced-motion) ═══ */
 #appToast {
   position: fixed;
   left: 50%;
@@ -4218,6 +4218,7 @@ html[lang="he"] .beta-tag { letter-spacing: normal; text-transform: none; }   /*
         <li><a href="classroom_dashboard.html" style="color:var(--gold-text);text-decoration:none;font-size:0.8rem;" data-i18n="shared.nav.link_dashboard">Hebrew classroom display →</a></li>
         <li><a href="name_tags.html" style="color:var(--gold-text);text-decoration:none;font-size:0.8rem;" data-i18n="shared.nav.link_nametags">printable Hebrew name tags →</a></li>
         <li><a href="torah_trainer.html" style="color:var(--gold-text);text-decoration:none;font-size:0.8rem;" data-i18n="shared.nav.link_torah">Torah reading practice →</a></li>
+        <li><a href="tefillah_trainer.html" style="color:var(--gold-text);text-decoration:none;font-size:0.8rem;" data-i18n="shared.nav.link_tefillah">siddur reading practice →</a></li>
         <li><a href="parsha_emojis.html" style="color:var(--gold-text);text-decoration:none;font-size:0.8rem;" data-i18n="shared.nav.link_parshaemojis">parsha emojis and coloring pages →</a></li>
         <li><a href="holiday_guide.html" style="color:var(--gold-text);text-decoration:none;font-size:0.8rem;" data-i18n="shared.nav.link_holidayguide">Jewish holiday coloring pages →</a></li>
         <li><a href="trope_tutor.html" style="color:var(--gold-text);text-decoration:none;font-size:0.8rem;" data-i18n="shared.nav.link_trope">learn Torah trope (cantillation) →</a></li>
@@ -6143,7 +6144,7 @@ const IVRIT_CFG = {
   }
 };
 
-/* ═══ shared: app-toast ═══ (byte-identical across generator/dashboard/flash_cards/dictionary/letter_learner/name_tags — copy verbatim; called from the .ivrit engine restore path) ═══ */
+/* ═══ shared: app-toast ═══ (byte-identical across generator/dashboard/flash_cards/dictionary/letter_learner/name_tags/tefillah_trainer — copy verbatim; called from the .ivrit engine restore path) ═══ */
 let _appToastTimer = null;
 // The status region is made, empty, when the page loads rather than with its first message: a screen reader announces
 // a change to a live region it already knows, and one created holding its text may go unheard.
@@ -6737,7 +6738,7 @@ function initDarkMode() {
    `shared: sidebar-resize CSS` block (keep both byte-identical across
    carriers; carriers: hebrew_dictionary.html, hebrew_blend_generator.html,
    classroom_dashboard.html, torah_trainer.html, letter_learner.html,
-   name_tags.html), then mount per handle
+   name_tags.html, tefillah_trainer.html), then mount per handle
    from the page's own init (below the end marker):
 
      mountSidebarResize({
@@ -7593,7 +7594,7 @@ const FS_EXIT_ICON = '<svg class="hi hi-fs-exit" viewBox="0 0 24 24" width="16" 
   else hide();
 })();
 /* ═══ shared: fullscreen idle-hide ═══ (byte-identical across Hebrew_Font_Maker / classroom_dashboard / flash_cards /
-   hebrew_blend_generator / hebrew_dictionary / torah_trainer / trope_tutor / letter_learner — paste verbatim, wire the CSS per page)
+   hebrew_blend_generator / hebrew_dictionary / torah_trainer / trope_tutor / letter_learner / tefillah_trainer — paste verbatim, wire the CSS per page)
    While the page is fullscreen, `body.fs-idle` is set after FS_IDLE_MS with no pointer, key, touch or wheel activity
    and cleared by the next one; leaving fullscreen clears it. The per-page CSS decides what fades — the exit-fullscreen
    control, always with a :focus-visible exception so a keyboard user is never timed out. Pure UI state, nothing saved. */

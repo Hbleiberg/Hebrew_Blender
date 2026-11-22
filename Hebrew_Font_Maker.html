@@ -156,7 +156,7 @@ footer a { display: inline-block; padding-block: 5px; }
   header{flex-wrap:wrap;row-gap:8px;}
   header > .brand-lockup + *{flex-basis:calc(100% - var(--bl-row));}
 }
-/* ═══ header-icons CSS ═══ shared block, byte-identical on: index, hebrew_blend_generator, hebrew_dictionary, classroom_dashboard, flash_cards, torah_trainer, trope_tutor, Hebrew_Font_Maker, resources, contact, privacy, terms, account, 404, letter_learner, parsha_emojis, name_tags, trope_atlas, letter_discrimination, reading_assignments, holiday_guide, the generated parsha/ pages (copied from parsha_emojis by scripts/build-parsha-pages.mjs), the generated holidays/ pages (copied from holiday_guide by scripts/build-holiday-pages.mjs) and the generated jewish-coloring-pages (copied from parsha_emojis by scripts/build-coloring-hub.mjs) (docs/reference/shared-components.md → Header icons).
+/* ═══ header-icons CSS ═══ shared block, byte-identical on: index, hebrew_blend_generator, hebrew_dictionary, classroom_dashboard, flash_cards, torah_trainer, trope_tutor, Hebrew_Font_Maker, resources, contact, privacy, terms, account, 404, letter_learner, parsha_emojis, name_tags, trope_atlas, letter_discrimination, reading_assignments, holiday_guide, tefillah_trainer, the generated parsha/ pages (copied from parsha_emojis by scripts/build-parsha-pages.mjs), the generated holidays/ pages (copied from holiday_guide by scripts/build-holiday-pages.mjs) and the generated jewish-coloring-pages (copied from parsha_emojis by scripts/build-coloring-hub.mjs) (docs/reference/shared-components.md → Header icons).
    The header controls and the in-page control buttons (play, pause, stop, reset, retry, loop, sound) carry inline
    SVGs from one shared set (.hi-*); ink is currentColor, so each button's own colour applies. .hi-sm is the 13px
    size the tiny settings buttons take, .hi-btn lines an icon up with its label inside a button.
@@ -2029,6 +2029,7 @@ html[lang="he"] .tp-label{letter-spacing:normal;text-transform:none;}
           <li><a href="classroom_dashboard.html" data-i18n="shared.nav.link_dashboard">Hebrew classroom display →</a></li>
           <li><a href="name_tags.html" data-i18n="shared.nav.link_nametags">printable Hebrew name tags →</a></li>
           <li><a href="torah_trainer.html" data-i18n="shared.nav.link_torah">Torah reading practice →</a></li>
+          <li><a href="tefillah_trainer.html" data-i18n="shared.nav.link_tefillah">siddur reading practice →</a></li>
           <li><a href="parsha_emojis.html" data-i18n="shared.nav.link_parshaemojis">parsha emojis and coloring pages →</a></li>
           <li><a href="holiday_guide.html" data-i18n="shared.nav.link_holidayguide">Jewish holiday coloring pages →</a></li>
           <li><a href="trope_tutor.html" data-i18n="shared.nav.link_trope">learn Torah trope (cantillation) →</a></li>
@@ -2559,7 +2560,7 @@ function toggleDark() {
   else hide();
 })();
 /* ═══ shared: fullscreen idle-hide ═══ (byte-identical across Hebrew_Font_Maker / classroom_dashboard / flash_cards /
-   hebrew_blend_generator / hebrew_dictionary / torah_trainer / trope_tutor / letter_learner — paste verbatim, wire the CSS per page)
+   hebrew_blend_generator / hebrew_dictionary / torah_trainer / trope_tutor / letter_learner / tefillah_trainer — paste verbatim, wire the CSS per page)
    While the page is fullscreen, `body.fs-idle` is set after FS_IDLE_MS with no pointer, key, touch or wheel activity
    and cleared by the next one; leaving fullscreen clears it. The per-page CSS decides what fades — the exit-fullscreen
    control, always with a :focus-visible exception so a keyboard user is never timed out. Pure UI state, nothing saved. */
