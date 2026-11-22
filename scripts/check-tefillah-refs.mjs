@@ -4,7 +4,7 @@
  * and print the table the catalog is reviewed from. On demand only; never a site build step.
  *
  *   node scripts/check-tefillah-refs.mjs                 check, print the report (markdown) to stdout
- *   node scripts/check-tefillah-refs.mjs --out report.md  …to a file
+ *   node scripts/check-tefillah-refs.mjs --out docs/tefillah-refs-report.md   …to the committed report
  *   node scripts/check-tefillah-refs.mjs --stamp          also write each range's first and last words
  *                                                          (from / to) into the catalog
  *   node scripts/check-tefillah-refs.mjs --only modeh-ani,shema
@@ -18,6 +18,8 @@
  * It fails (exit 1) on: a ref that does not resolve, a node that is not a leaf, a pinned edition
  * Sefaria no longer serves under an open licence, a source with no openly licensed Hebrew, or a
  * range whose first / last words differ from the ones stamped in the catalog.
+ *
+ * docs/tefillah-refs-report.md is this script's output: after a catalog edit, re-run with --out and commit both.
  *
  * Nothing here writes or corrects a text: `from` / `to` are copied from Sefaria's response.
  * Behind a proxy: NODE_USE_ENV_PROXY=1 node scripts/check-tefillah-refs.mjs …
