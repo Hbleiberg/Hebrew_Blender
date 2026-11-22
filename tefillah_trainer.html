@@ -2209,7 +2209,6 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
        so the family list lives in one place. -->
   <div class="tt-trope-legend" id="ttTropeLegend" tabindex="-1" hidden>
     <a class="tt-trope-link" id="ttTropeTutorLink" hidden data-i18n="tefillah.trope_legend.tutor_link">Learn the trope names →</a>
-    <a class="tt-trope-link" id="ttTropeTutorLinkM" hidden></a>
   </div>
   <!-- Print-only sheet-1 key (range label + compact clause key), in flow above the reading.
        Populated by the beforeprint handler; sheets 2..N carry the label in the @page margin
@@ -4109,7 +4108,13 @@ function catalogName(o) {
 function prayerSources(p) {
   return p ? NUSACH_IDS.filter(n => p.sources[n] && (n !== 'opensiddur' || openSiddurHas(p.sources[n][0].key))) : [];
 }
-function currentPrayer() { return prayerByKey.get(settings.prayerKey) || (_shownPrayerFallback ? prayerByKey.get(_shownPrayerFallback) : null) || null; }
+// The prayer on screen: the stored one while the catalog lists it with a text this page can show, else the one
+// ensureDefaultPrayer stands in for it (display only: the stored key is kept for a build that knows it).
+function currentPrayer() {
+  const p = prayerByKey.get(settings.prayerKey);
+  if (p && prayerSources(p).length) return p;
+  return (_shownPrayerFallback && prayerByKey.get(_shownPrayerFallback)) || null;
+}
 // The nusach on screen: the stored one where the prayer has it, else the prayer's first source. Display only —
 // the stored choice is never rewritten here, so a prayer that lacks it does not change what the next one opens in.
 function effectiveNusach(p) {
@@ -7163,7 +7168,7 @@ function syncPrayerPicker() {
 }
 // The one writer of the prayer on screen. `key` is looked up in the catalog; anything else is ignored.
 function choosePrayer(key, nusach) {
-  if (!prayerByKey.has(key)) return false;
+  if (!prayerByKey.has(key) || !prayerSources(prayerByKey.get(key)).length) return false;
   settings.prayerKey = key;
   _shownPrayerFallback = null;
   if (nusach && NUSACH_IDS.includes(nusach)) settings.nusach = nusach;
@@ -7225,10 +7230,12 @@ async function retryReading() {   // the card's Try again for a prayer that did 
   await fetchAndRender();
   if (pressed) _ttFocusAfterRetry();
 }
-// A first visit (or a stored key the catalog no longer has) opens the catalog's first prayer. The stored key is
-// rewritten only when it names nothing: a prayer this build does not know is left for the build that does.
+// A first visit, or a stored key the catalog no longer has or has no text for, opens the catalog's first prayer. The
+// stored key is rewritten only when it names nothing: a prayer this build cannot show is left for the build that can.
 function ensureDefaultPrayer() {
-  if (!catalog || prayerByKey.has(settings.prayerKey)) return;
+  if (!catalog) return;
+  const cur = prayerByKey.get(settings.prayerKey);
+  if (cur && prayerSources(cur).length) return;
   const first = catalog.prayers.find(p => prayerSources(p).length);
   if (first && !settings.prayerKey) { settings.prayerKey = first.key; saveSettings(); }
   else if (first) _shownPrayerFallback = first.key;
@@ -7267,7 +7274,7 @@ async function init() {
   try {
     const dl = new URLSearchParams(location.search);
     const key = dl.get('prayer');
-    if (key && prayerByKey.has(key)) {
+    if (key && prayerByKey.has(key) && prayerSources(prayerByKey.get(key)).length) {
       settings.prayerKey = key;
       const n = dl.get('nusach');
       if (n && NUSACH_IDS.includes(n) && prayerSources(prayerByKey.get(key)).includes(n)) settings.nusach = n;
