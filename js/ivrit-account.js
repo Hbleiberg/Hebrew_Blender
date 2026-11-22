@@ -833,6 +833,9 @@
     injectStyle();
     var root = el('div', 'ivacct');
     root.setAttribute('data-ivacct', '');
+    // Never quoted in a search result: the chip's label ("Sign in") and its menu are interface, and a page
+    // whose header holds the chip outside a data-nosnippet container (the generator) would offer them.
+    root.setAttribute('data-nosnippet', '');
     var btn = el('button', 'ivacct-btn');
     btn.type = 'button';
     btn.setAttribute('aria-haspopup', 'dialog');

@@ -394,9 +394,14 @@ push, is what updates the live site.
   the query. If it doesn't, Google builds the snippet from page text that contains the query. A search for
   the site's name ("ivritsuite") is the usual way people reach the hub, so `index.html`'s description opens
   with the name **IvritSuite**. Remove the name and the snippet goes back to header labels
-  ("EN, עברית. Sign in. Dark."). The hub's header controls (`.hright`, which also holds the account chip
-  mounted beside the switcher), the What's-new card and the AllTools modal carry `data-nosnippet` (Google
-  honours it on `div`/`span`/`section` only, never on a `button` or `a`). Their labels and hidden dialog
+  ("EN, עברית. Sign in. Dark."). Every page's header controls carry `data-nosnippet` on their container.
+  Google honours that attribute on `div`, `span` and `section` only, never on a `button` or `a`. The
+  containers are `.hright` on most pages and in the three page builders (parsha, holidays, the coloring
+  hub), `.h-right` on Flash Cards and `.hdr-actions` on the Font Maker. The generator has no container,
+  so its switcher slot and its buttons' label `span`s carry the attribute instead. The account chip marks
+  its own root in `js/ivrit-account.js`, so it is covered wherever it mounts. The hub also tags its
+  What's-new card and AllTools modal, and `account.html` its framed-load notice (`#framedOut`, which names
+  ivritsuite.com). A new page's header controls get the same attribute. Their labels and hidden dialog
   text are interface, not a description of the site.
 
 ## CSP allowlist by page (reference)

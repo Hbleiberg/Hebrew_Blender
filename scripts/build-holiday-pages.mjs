@@ -330,7 +330,7 @@ ${CSS}
     <div class="brand-title" data-i18n="holidaypage.header.title">Holiday Coloring Pages</div>
     <p data-i18n="holidaypage.header.tagline">Free coloring pages for the Jewish holidays</p>
   </div>
-  <div class="hright">
+  <div class="hright" data-nosnippet>
     <a class="hbtn" href="/">${SVG_ARROW}<span class="hi-lbl" data-i18n="holidaypage.header.home">Home</span></a>
     <div data-i18n-switcher></div>
     <button type="button" class="dark-btn" id="darkBtn" aria-pressed="false" aria-label="Toggle dark mode" data-i18n-aria-label="shared.darkmode.toggle_title" data-i18n-title="shared.darkmode.toggle_title">${SVG_MOON}${SVG_SUN}<span class="hi-lbl" data-i18n="shared.darkmode.label_dark">Dark</span></button>
