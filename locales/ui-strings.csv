@@ -7899,3 +7899,440 @@ shared.classes.near_merge,Merge them,למזג אותן,Shared roster editor: but
 shared.classes.near_keep,Keep both,להשאיר את שתיהן,Shared roster editor: button in the notice,shared; js/ivrit-classes.js
 shared.cloud.tool_classes,Class lists,רשימות כיתה,Account screen / status line: the shared class roster's name,shared; cloud panel
 shared.cloud.kind_class_removed,Deleted class lists (record),רשימות כיתה שנמחקו (רישום),"Cloud-saves list group header for the one small row naming the classes a teacher deleted (ids only, no names)",shared; cloud panel
+tefillah.about.faq_a1,"A free page for practicing reading the siddur. Pick a prayer and a nusach — Ashkenaz, Sefard or Edot HaMizrach — and read it with optional transliteration, translation, per-vowel color coding, larger type and three layouts. When you are done, copy the lines out as formatted text or print them as a classroom sheet.","דף חינמי לתרגול קריאה בסידור. בחרו תפילה ונוסח — אשכנז, ספרד או עדות המזרח — וקראו אותה עם תעתיק, תרגום, צביעת תנועות, אותיות גדולות ושלוש פריסות, לפי בחירתכם. בסיום אפשר להעתיק את השורות כטקסט מעוצב או להדפיס אותן כדף לכיתה.",FAQ answer,REVIEW: HE draft of the added sentence
+tefillah.about.faq_a2,"A starting list of prayers, from the morning blessings to the bedtime Shema, each in the nusachim whose text Sefaria holds under an open license. A nusach that lacks a prayer is simply not offered for it; nothing is filled in from another nusach.","רשימה ראשונה של תפילות, מברכות השחר ועד קריאת שמע שעל המיטה, כל אחת בנוסחים שהטקסט שלהם נמצא ב-Sefaria ברישיון פתוח. נוסח שאין בו תפילה מסוימת פשוט אינו מוצע עבורה; דבר אינו מושלם מנוסח אחר.",FAQ answer,html; contains an <a> link — preserve the tag
+tefillah.about.faq_a3,"<a href=""https://www.sefaria.org"" target=""_blank"" rel=""noopener"" style=""color:var(--gold-text);"">Sefaria</a>'s public API, word for word. Every text on screen is listed under the prayer with its edition and its license, and only openly licensed editions are offered (Public Domain, CC0, CC BY, CC BY-SA, CC BY-NC, CC BY-NC-SA). The Shema can also be read from the Torah text itself.","ה-API הציבורי של <a href=""https://www.sefaria.org"" target=""_blank"" rel=""noopener"" style=""color:var(--gold-text);"">Sefaria</a>, מילה במילה. כל טקסט שעל המסך מופיע מתחת לתפילה עם שם המהדורה והרישיון שלה, ומוצעות רק מהדורות ברישיון פתוח (נחלת הכלל, CC0, CC BY, CC BY-SA, CC BY-NC, CC BY-NC-SA). את קריאת שמע אפשר לקרוא גם מתוך נוסח התורה עצמו.",FAQ answer,html; contains an <a> link — preserve the tag
+tefillah.about.faq_a4,"Yes. The Text tab of the settings drawer has a switch for nikkud (vowel points), and one for cantillation marks that works wherever the text carries them, as the Shema's Torah text does. The siddur's small-print instructions and the line numbers have switches there too.","כן. בלשונית הטקסט שבמגירת ההגדרות יש מתג לניקוד, ומתג לטעמי המקרא שפועל בכל מקום שבו הטקסט נושא אותם, כמו נוסח התורה של קריאת שמע. גם להוראות הסידור שבאותיות קטנות ולמספרי השורות יש שם מתגים.",FAQ answer,
+tefillah.about.faq_a5,Not yet. This first version is for reading. The page keeps an address for every line and word so that recordings can be added later.,"עדיין לא. הגרסה הראשונה מיועדת לקריאה. הדף שומר כתובת לכל שורה ולכל מילה, כדי שאפשר יהיה להוסיף הקלטות בהמשך.",FAQ answer,
+tefillah.about.faq_a6,A translation is shown line against line only when it is divided into the same lines as the Hebrew on screen. One that is divided differently appears as one block after the prayer — or is left out when the prayer is only part of a longer text — so that no line is ever paired with the wrong translation.,תרגום מוצג שורה מול שורה רק כשהוא מחולק לאותן שורות כמו העברית שעל המסך. תרגום שמחולק אחרת מופיע כגוש אחד אחרי התפילה — או מושמט כשהתפילה היא רק חלק מטקסט ארוך יותר — כדי ששורה לא תוצמד לעולם לתרגום שאינו שלה.,FAQ answer,
+tefillah.about.faq_a7,"Yes. The page is free. Each prayer text and translation keeps its own license, shown under the prayer; IvritSuite's own content is CC BY-NC-SA 4.0.","כן. הדף חינמי. כל טקסט תפילה וכל תרגום שומרים על הרישיון שלהם, המוצג מתחת לתפילה; התוכן של IvritSuite עצמו מורשה תחת CC BY-NC-SA 4.0.",FAQ answer,
+tefillah.about.faq_a8,"Yes. The Share tab of the settings drawer copies the prayer as rich text, keeping the vowel colors, so it pastes into Google Docs, Word, or Pages. Copy one line, select several, or type line numbers, and choose what travels with it — nikkud, transliteration, translation, line numbers, or blank lines for handwriting.","כן. לשונית השיתוף שבמגירת ההגדרות מעתיקה את התפילה כטקסט מעוצב, עם צבעי הניקוד, כך שההדבקה ל-Google Docs, ל-Word או ל-Pages שומרת עליהם. אפשר להעתיק שורה אחת, לבחור כמה, או להקליד מספרי שורות, ולבחור מה נכלל — ניקוד, תעתיק, תרגום, מספרי שורות או שורות ריקות לכתיבה.",FAQ answer,REVIEW: HE draft
+tefillah.about.faq_a9,"Yes. The Favorites tab of the settings drawer (the first tab) saves the prayer on screen, in its nusach, under a name and a color, with your display settings too if you tick the box. Favorites can be filed into folders, ride your AllTools backup file and your account, and open again with one click.","כן. לשונית המועדפים במגירת ההגדרות (הלשונית הראשונה) שומרת את התפילה שעל המסך, בנוסח שלה, תחת שם וצבע, ואם תסמנו את התיבה גם עם הגדרות התצוגה שלכם. אפשר לסדר מועדפים בתיקיות, הם נוסעים בקובץ הגיבוי של כל הכלים ובחשבון שלכם, ונפתחים שוב בלחיצה אחת.",FAQ answer,
+tefillah.about.faq_q1,What is the Tefillah Trainer?,מהו מאמן התפילה?,FAQ question,
+tefillah.about.faq_q2,Which prayers and nusachim does it have?,אילו תפילות ונוסחים יש בו?,FAQ question,
+tefillah.about.faq_q3,Where do the Hebrew texts and translations come from?,מהיכן מגיעים הטקסטים העבריים והתרגומים?,FAQ question,
+tefillah.about.faq_q4,Can I hide nikkud or cantillation marks?,אפשר להסתיר ניקוד או טעמי המקרא?,FAQ question,
+tefillah.about.faq_q5,Is there audio?,האם יש שמע?,FAQ question,
+tefillah.about.faq_q6,Why does a translation sometimes appear as one block?,למה תרגום מופיע לפעמים כגוש אחד?,FAQ question,
+tefillah.about.faq_q7,Is it free?,האם זה חינמי?,FAQ question,
+tefillah.about.faq_q8,Can I copy the Hebrew text out?,אפשר להעתיק את הטקסט העברי החוצה?,FAQ question,REVIEW: HE draft
+tefillah.about.faq_q9,Can I save prayers I use often?,אפשר לשמור תפילות שאני משתמש/ת בהן לעיתים קרובות?,FAQ question,
+tefillah.about.faq_summary,Frequently Asked Questions,שאלות נפוצות,accordion summary,
+tefillah.about.howto_1,"Pick a prayer from the top dropdown, and its nusach beside it. The search box and the Service and Day lists narrow the dropdown.","בחרו תפילה מהתפריט העליון, ואת הנוסח שלה לצידו. תיבת החיפוש ורשימות החלק בסידור והיום מצמצמות את התפריט.",howto step,
+tefillah.about.howto_2,"Switch transliteration and translation on from the toolbar or the settings drawer's Text tab, where you also choose a layout: side by side, interlinear or page view.","הפעילו תעתיק ותרגום מסרגל הכלים או מלשונית הטקסט של מגירת ההגדרות, שבה בוחרים גם פריסה: זה לצד זה, בין־שורתי או תצוגת עמוד.",howto step,
+tefillah.about.howto_3,"Customize the Hebrew font, vowel coloring, and translit scheme on this drawer's Text and Colors tabs.","התאימו את הגופן העברי, צביעת התנועות וסגנון התעתיק בלשוניות הטקסט והצבעים של המגירה הזו.",howto step,
+tefillah.about.howto_4,"On the Text tab, show or hide the line numbers and the siddur's instructions, and pick another translation or Hebrew edition where the prayer has more than one.","בלשונית הטקסט אפשר להציג או להסתיר את מספרי השורות ואת הוראות הסידור, ולבחור תרגום אחר או מהדורה עברית אחרת כשלתפילה יש יותר מאחת.",howto step,
+tefillah.about.howto_5,"Save a prayer you use often on the Favorites tab, and print it or copy its lines from the Share tab.","שמרו תפילה שאתם משתמשים בה לעיתים קרובות בלשונית המועדפים, והדפיסו אותה או העתיקו את שורותיה מלשונית השיתוף.",howto step,
+tefillah.about.howto_6,Click the fullscreen button to project to a SmartBoard.,לחצו על כפתור המסך המלא כדי להקרין ללוח חכם.,howto step,
+tefillah.about.howto_7,New here? Press <strong>Tour</strong> in the header for a quick walkthrough.,חדשים כאן? לחצו על <strong>סיור</strong> בכותרת לסיור מהיר.,howto step,html; keep the <strong> around Tour
+tefillah.about.howto_summary,How To Use,איך להשתמש,accordion summary,
+tefillah.color.code_nikkud,Color-code nikkud,צביעת ניקוד,settings label,
+tefillah.color.code_trope,Color-code trope,צביעת טעמים,settings label,
+tefillah.color.code_trope_tip,"Colors each word by its trope. Trope phrases colors the word by its clause family — Sof Pasuk, Etnachta, Zakef Katon, Segol, Revia, Geresh, and rare marks — so the verse's phrase structure stays visible even with the marks hidden. Individual trope gives every trope mark its own color, which you choose, and colors only the marks you check. Highlight tints the word; Underline draws a colored line under it. When vowel coloring is in Letter or Highlight mode, trope shows as an underline instead.","צובע כל מילה לפי הטעם שלה. משפחות טעמים צובע את המילה לפי משפחת הטעם שלה — סוף פסוק, אתנחתא, זקף קטון, סגול, רביע, גרש וטעמים נדירים — כך שמבנה הביטויים של הפסוק נשאר גלוי גם כשהטעמים מוסתרים. כל טעם בנפרד נותן לכל טעם צבע משלו, שאתם בוחרים, וצובע רק את הטעמים שסימנתם. הדגשה צובעת את רקע המילה; קו תחתון מוסיף קו צבעוני מתחתיה. כשצביעת התנועות במצב אות או הדגשה, הטעמים מוצגים כקו תחתון במקום.",tooltip,
+tefillah.color.mode_highlight,Highlight,הדגשה,radio label,
+tefillah.color.mode_letter,Letter,אות,radio label,
+tefillah.color.mode_none,No highlight,ללא הדגשה,radio label: first choice of the vowel and trope color lists; turns that coloring off,
+tefillah.color.mode_underline,Underline,קו תחתון,radio label,
+tefillah.color.scheme_default,Default,ברירת מחדל,vowel scheme button,
+tefillah.color.scheme_reset,Reset,איפוס,vowel scheme button,
+tefillah.color.scheme_talam,TaL AM,תל-עם,vowel scheme button,
+tefillah.color.trope_reset,Reset,איפוס,trope scheme button,
+tefillah.color.trope_by,Color by,צביעה לפי,settings label: the trope color list's second choice — by clause family or by each mark,
+tefillah.color.trope_by_phrase,Trope phrases,משפחות טעמים,radio label: color each word by its trope clause family (the original behavior),
+tefillah.color.trope_by_mark,Individual trope,כל טעם בנפרד,radio label: give each trope mark its own color,
+tefillah.color.trope_marks_note,Pick a color for each trope. Uncheck a trope to leave it uncolored.,בחרו צבע לכל טעם. בטלו את הסימון של טעם כדי להשאיר אותו ללא צבע.,note over the per-mark color list (Individual trope),
+tefillah.color.trope_marks_all,Color all,צביעת הכול,button: check every trope mark in the Individual trope list,
+tefillah.color.trope_marks_none,Color none,ביטול כל הצביעה,button: uncheck every trope mark in the Individual trope list (the teacher then checks the ones to color),
+tefillah.confirm.reset_all,Reset all Tefillah Trainer settings to defaults?,לאפס את כל הגדרות מאמן התפילה לברירת המחדל?,confirm dialog,
+tefillah.confirm.reset_all_cloud,"Reset all Tefillah Trainer settings to defaults? You are signed in, so the reset is saved to your account and applies on every device.","לאפס את כל הגדרות מאמן התפילה לברירת המחדל? אתם מחוברים, ולכן האיפוס נשמר בחשבון וחל בכל מכשיר.",confirm() before Reset all settings while signed in,
+tefillah.confirm.reset_trope_mark_colors,Are you sure? This resets your trope colors to the defaults and colors every trope again.,האם אתם בטוחים? פעולה זו מאפסת את צבעי הטעמים לברירת המחדל וצובעת שוב את כל הטעמים.,confirm dialog: Reset while coloring by individual trope,
+tefillah.confirm.reset_trope_mark_colors_cloud,"Are you sure? This resets your trope colors to the defaults and colors every trope again. You are signed in, so your colors are reset on every device.","האם אתם בטוחים? פעולה זו מאפסת את צבעי הטעמים לברירת המחדל וצובעת שוב את כל הטעמים. אתם מחוברים, ולכן הצבעים יתאפסו בכל מכשיר.",confirm dialog: Reset while coloring by individual trope while signed in (the change reaches the account and every device),REVIEW: HE draft
+tefillah.confirm.reset_trope_colors,Are you sure? This resets your custom trope-family colors to the defaults.,האם אתם בטוחים? פעולה זו מאפסת את צבעי משפחות הטעמים המותאמים אישית שלכם לברירת המחדל.,confirm dialog,
+tefillah.confirm.reset_trope_colors_cloud,"Are you sure? This resets your custom trope-family colors to the defaults. You are signed in, so your colors are reset on every device.","האם אתם בטוחים? פעולה זו מאפסת את צבעי משפחות הטעמים המותאמים אישית שלכם לברירת המחדל. אתם מחוברים, ולכן הצבעים יתאפסו בכל מכשיר.",confirm dialog while signed in (the change reaches the account and every device),REVIEW: HE draft
+tefillah.confirm.reset_vowel_colors,Are you sure? This resets your custom vowel colors for both the Default and TaL AM schemes.,האם אתם בטוחים? פעולה זו מאפסת את צבעי התנועות המותאמים אישית שלכם עבור ערכות ברירת המחדל ותל-עם כאחד.,confirm dialog,
+tefillah.confirm.reset_vowel_colors_cloud,"Are you sure? This resets your custom vowel colors for both the Default and TaL AM schemes. You are signed in, so your colors are reset on every device.","האם אתם בטוחים? פעולה זו מאפסת את צבעי התנועות המותאמים אישית שלכם עבור ערכות ברירת המחדל ותל-עם כאחד. אתם מחוברים, ולכן הצבעים יתאפסו בכל מכשיר.",confirm dialog while signed in (the reset reaches the account and every device),REVIEW: HE draft
+tefillah.controls.print_title,Print this prayer for students,הדפיסו את התפילה עבור התלמידים,title of the Share tab's Print this reading button,
+tefillah.controls.print_need_reading,Load a prayer first to print.,טענו תפילה קודם כדי להדפיס.,toast,
+tefillah.handout.title,Student handout,דף לתלמיד,section heading (Share tab); was the handout bar title,
+tefillah.handout.hide_nikkud,Hide nikkud (vowels),הסתרת ניקוד (תנועות),handout option toggle,
+tefillah.handout.hide_teamim,Hide cantillation (trope),הסתרת טעמי המקרא,handout option toggle; with Hide nikkud too = a scroll-style (tikkun) column,
+tefillah.handout.hide_nums,Hide line numbers,הסתרת מספרי שורות,handout option toggle,
+tefillah.handout.font_size,Font size,גודל גופן,handout option label,
+tefillah.handout.size_normal,Normal,רגיל,font-size radio (= current screen size),
+tefillah.handout.size_large,Large,גדול,font-size radio (2.2rem; the default),
+tefillah.handout.size_xl,Extra large,גדול במיוחד,font-size radio (2.8rem),
+tefillah.handout.print_button,Print handout,הדפסת הדף,handout section primary button,svg-icon-in-markup
+tefillah.handout.shem_note,"This prayer contains שם ה׳ — printed pages traditionally go to geniza, not the trash.",התפילה כוללת שם ה׳ — דפים מודפסים נהוג להביא לגניזה ולא להשליכם לאשפה.,notice in handout section when a divine name is detected,שם ה׳ pinned Hebrew in both languages
+tefillah.handout.geniza_check,Add a לגניזה marker to the printed page,הוספת סימון לגניזה בתחתית הדף המודפס,handout option toggle (shown only when a divine name is detected),לגניזה pinned Hebrew in both languages
+tefillah.handout.selected_only,Print only the selected lines,הדפסת השורות שנבחרו בלבד,handout option toggle (row shown only while the Copy bar holds a selection; the count beside it reuses torah.copy.bulk_count),
+tefillah.share.none_note,Nothing to share yet — pick a prayer and a link to it appears here.,"אין עדיין מה לשתף — בחרו תפילה, וקישור אליה יופיע כאן.",note in the Share tab while no practice link can be made,
+tefillah.share.button,Copy link,העתקת קישור,Share tab button that copies the practice link,svg-icon-in-markup
+tefillah.share.include_settings,Include my settings,כולל ההגדרות שלי,toggle under Copy link in the Share tab,
+tefillah.share.include_settings_tip,"Adds your font, text sizes, vowel and trope color coding, and what the prayer shows (nikkud, cantillation marks, transliteration and where it sits, translation, layout, line numbers and the siddur's instructions) to the link. Whoever opens it sees the prayer your way, and can keep those settings or go back to their own.","מוסיף לקישור את הגופן, גודלי הטקסט, צביעת התנועות והטעמים ומה שהתפילה מציגה (ניקוד, טעמים, תעתיק ומיקומו, תרגום, פריסה, מספרי שורות והוראות הסידור). מי שפותח אותו רואה את התפילה כמו אצלכם, ויכול לשמור את ההגדרות האלה או לחזור להגדרות שלו.",tooltip,
+tefillah.share.view_note,You're seeing this prayer with the sender's display settings. Your own settings haven't changed.,אתם רואים את התפילה עם הגדרות התצוגה של מי ששלח את הקישור. ההגדרות שלכם לא השתנו.,note above the reading when a practice link carried the sender's display settings,
+tefillah.share.view_keep,Keep these settings,שמירת ההגדרות האלה,button on the link note — the sender's display settings become the reader's own,
+tefillah.share.view_revert,Use my settings,חזרה להגדרות שלי,button on the link note — back to the reader's own settings,
+tefillah.share.view_kept,These settings are yours now.,ההגדרות האלה שמורות עכשיו אצלכם.,toast after Keep these settings,
+tefillah.share.view_reverted,Back to your own settings.,חזרתם להגדרות שלכם.,toast after Use my settings,
+tefillah.copy.select_verses_button,Select lines to copy…,בחירת שורות להעתקה…,Share tab button that closes the drawer and opens the inline Copy bar,svg-icon-in-markup
+tefillah.copy.title,Copy lines,העתקת שורות,copy options bar title,
+tefillah.copy.close,Close,סגירה,Copy bar close button,
+tefillah.copy.fullscreen_note,Exit fullscreen to select lines — the Copy bar sits under the toolbar.,צאו ממסך מלא כדי לבחור שורות — סרגל ההעתקה נמצא מתחת לסרגל הכלים.,toast when the Share tab's Select verses launcher is pressed in fullscreen (the bar is hidden there),
+tefillah.copy.inc_ref,Include line numbers,כולל מספרי שורות,copy option toggle,
+tefillah.copy.inc_trans,Include translation,כולל תרגום,copy option toggle,
+tefillah.copy.inc_translit,Include transliteration,כולל תעתיק,copy option toggle,
+tefillah.copy.bulk_mode,Select lines,בחירת שורות,bulk select toggle,
+tefillah.copy.bulk_hint,"While Select lines is on, clicking a line selects it.","כשבחירת שורות פעילה, לחיצה על שורה בוחרת אותה.",bulk hint,
+tefillah.copy.bulk_count,{count} selected,{count} נבחרו,bulk selection count,
+tefillah.copy.clear,Clear,ניקוי,bulk clear button,
+tefillah.copy.select_all,Select all,בחירת הכול,bulk select-all button,
+tefillah.copy.copy_all,Copy All,העתקת הכול,bulk copy-all button,
+tefillah.copy.textarea_aria,Selected lines (copy preview),שורות שנבחרו (תצוגה מקדימה להעתקה),bulk textarea accessible name,aria-label only
+tefillah.copy.range_label,Type line numbers,הקלדת מספרי שורות,type-a-range verse picker label in the copy bar,
+tefillah.copy.range_placeholder,"1-3, 5","1-3, 5",example refs in the range field — Latin-numeric in both languages by design,
+tefillah.copy.range_add,Add,הוספה,type-a-range picker button — adds to the current selection,
+tefillah.copy.range_added.one,Added 1 line.,שורה אחת נוספה.,range picker result note,plural
+tefillah.copy.range_added.other,Added {count} lines.,{count} שורות נוספו.,range picker result note,plural
+tefillah.copy.range_added_some.one,Added 1 line. Skipped {refs} — not in this prayer.,שורה אחת נוספה. דילוג על {refs} — לא בתפילה זו.,range picker result note when some refs fall outside the loaded reading,plural
+tefillah.copy.range_added_some.other,Added {count} lines. Skipped {refs} — not in this prayer.,{count} שורות נוספו. דילוג על {refs} — לא בתפילה זו.,range picker result note when some refs fall outside the loaded reading,plural
+tefillah.copy.range_already,Those lines are already selected.,השורות האלה כבר נבחרו.,range picker result note when nothing new was added,
+tefillah.copy.range_no_match,Not in this prayer: {refs},לא בתפילה זו: {refs},range picker result note when nothing matched,
+tefillah.copy.range_no_reading,Load a prayer first.,יש לטעון תפילה קודם.,range picker note when no reading is loaded,
+tefillah.copy.options_link,Copy options…,אפשרויות העתקה…,copy bar button that opens the drawer's Share tab at Copy verses,
+tefillah.copy.options_link_title,"Choose what a copy contains — marks, transliteration, translation, colors","בחירת מה כוללת העתקה — סימנים, תעתיק, תרגום וצבעים",button title,
+tefillah.copy.none_selected,Select at least one line first.,יש לבחור לפחות שורה אחת.,inline reason shown when Copy All is pressed with an empty selection,
+tefillah.copy.rich_preview_note,Colors are added when you paste — this preview shows the plain text.,הצבעים נוספים בהדבקה — התצוגה המקדימה מציגה את הטקסט הרגיל.,note under the copy preview textarea while Copy color coding is on,
+tefillah.copy.prereq_translit,"Transliteration is on, but its library could not be loaded — it will be left out of the copy.","התעתיק מופעל, אך לא ניתן היה לטעון את הספרייה — הוא יושמט מההעתקה.",note in the copy bar when Include transliteration is on but its library is unavailable,REVIEW: machine-drafted HE — confirm
+tefillah.copy.prereq_trans,"Translation is on, but this prayer has no translation that follows its lines — it will be left out of the copy.","התרגום מופעל, אך לתפילה זו אין תרגום התואם את שורותיה — הוא יושמט מההעתקה.",note in the copy bar when Include translation is on but no English text loaded,REVIEW: machine-drafted HE — confirm
+tefillah.copy.inc_heading,Include a heading line,כולל שורת כותרת,copy option toggle,
+tefillah.copy.inc_heading_tip,"Puts the prayer's name and nusach on the first line of the copied text, so a pasted passage says where it came from.","מוסיף את שם התפילה והנוסח בשורה הראשונה של הטקסט המועתק, כך שקטע מודבק מציין מהיכן הגיע.",tooltip,
+tefillah.copy.nikkud_label,Nikkud,ניקוד,copy option — whether vowels are copied,
+tefillah.copy.teamim_label,Cantillation (te'amim),טעמי המקרא,copy option — whether cantillation marks are copied,
+tefillah.copy.marks_tip,"Independent of the display toggles: read with the marks on screen and still copy a clean text for a quiz, or the reverse.","בלתי תלוי במתגי התצוגה: אפשר לקרוא עם הסימנים על המסך ועדיין להעתיק טקסט נקי למבחן, או להפך.",tooltip,
+tefillah.copy.mark_screen,As on screen,כמו במסך,copy marks option — follow the display toggle,
+tefillah.copy.mark_on,Include,כלול,copy marks option — always include,
+tefillah.copy.mark_off,Remove,הסר,copy marks option — always strip,
+tefillah.copy.layout_label,Layout,פריסה,copy option — how multiple verses are arranged,
+tefillah.copy.layout_stacked,Line by line,שורה אחר שורה,copy layout option,
+tefillah.copy.layout_grouped,Grouped blocks,בלוקים מקובצים,copy layout option,
+tefillah.copy.layout_tip,"Line by line keeps each line's Hebrew, transliteration and translation together. Grouped blocks puts all the Hebrew first, then all the transliteration, then all the translation.","שורה אחר שורה שומר יחד את העברית, התעתיק והתרגום של כל שורה. בלוקים מקובצים מציב תחילה את כל העברית, אחריה את כל התעתיק ואז את כל התרגום.",tooltip,
+tefillah.copy.blank_lines,Blank lines under each line,שורות ריקות מתחת לכל שורה,copy option — handwriting room on a printed handout,
+tefillah.copy.blank_lines_tip,Adds empty lines under each line of the prayer — room for students to write their own translation or notes on a printed handout.,מוסיף שורות ריקות מתחת לכל שורה בתפילה — מקום לתלמידים לכתוב תרגום או הערות משלהם בדף מודפס.,tooltip,
+tefillah.copy.color_coding,Copy color coding,העתקת צביעה,copy option — write a rich-text clipboard flavor carrying the colors,
+tefillah.copy.color_coding_tip,"Copies the vowel and trope colors as formatted text, so they survive a paste into Google Docs, Word or Pages. Plain-text editors still receive clean unstyled text. Colors are copied in their light-mode shades so they stay readable on a white page.","מעתיק את צבעי התנועות והטעמים כטקסט מעוצב, כך שהם נשמרים בהדבקה ל־Google Docs, ל־Word או ל־Pages. עורכי טקסט רגיל עדיין מקבלים טקסט נקי ללא עיצוב. הצבעים מועתקים בגוונים הבהירים כדי שיישארו קריאים על דף לבן.",tooltip,
+tefillah.copy.bulk_remember,Remember Select lines mode,זכירת מצב בחירת שורות,copy option — persist bulk-select mode across Copy bar opens,
+tefillah.copy.bulk_remember_tip,"The Copy bar opens with Select lines already on, and closing it keeps your selection instead of clearing it.","סרגל ההעתקה נפתח כשבחירת שורות כבר פעילה, וסגירתו שומרת על הבחירה במקום לנקות אותה.",tooltip,
+tefillah.controls.layout_interlinear,Interlinear,בין־שורתי,layout radio,
+tefillah.controls.layout_label,Layout,פריסה,Layout row label in the Text tab's Display section (was the toolbar's),
+tefillah.controls.layout_page,Page view,תצוגת עמוד,layout radio,
+tefillah.controls.layout_side,Side by side,זה לצד זה,layout radio,
+tefillah.controls.translation_toggle,Show translation,הצגת תרגום,switch at the top of the Text tab's Translation section (was the toolbar's Translation toggle); also the title of the projector bar's Translation toggle,
+tefillah.controls.translit_toggle,Show transliteration,הצגת תעתיק,switch at the top of the Text tab's Transliteration section (was the toolbar's Translit toggle); also the title of the projector bar's Translit toggle,
+tefillah.controls.translit_short,Translit,תעתיק,toolbar mirror of the Text tab's Show transliteration switch (short: it sits in the Parsha row); also the projector bar's toggle button,
+tefillah.controls.translation_short,Translation,תרגום,toolbar mirror of the Text tab's Show translation switch (short: it sits in the Parsha row); also the projector bar's toggle button,
+tefillah.controls.version_label,Version,גרסה,Translation section label for the version list (shown while the translation is on),
+tefillah.controls.version_loading,Loading…,טוען…,select placeholder option,
+tefillah.display.font_sizes_header,Font sizes,גודלי גופן,sub-heading in the Text tab's Display section (.tt-set-sub),
+tefillah.display.show_cantillation,Show cantillation marks (te'amim),הצגת טעמי המקרא,settings label,
+tefillah.display.show_cantillation_tip,Cantillation marks (above and below letters) indicate chanting melody. Toggle off to see only nikkud (vowels).,טעמי המקרא (מעל ומתחת לאותיות) מציינים את מנגינת הטעמים. כבו כדי לראות ניקוד בלבד.,tooltip,
+tefillah.display.show_nikkud,Show nikkud (vowels),הצגת ניקוד,settings label,
+tefillah.display.size_english,English,אנגלית,slider label,
+tefillah.display.size_hebrew,Hebrew,עברית,slider label,
+tefillah.display.size_translit,Translit,תעתיק,slider label,
+tefillah.display.restore_default,Restore default,שחזור ברירת מחדל,Slider reset (↺) button title,title
+tefillah.footer.license_note,"Only texts whose license permits redistribution are offered (Public Domain, CC0, CC BY, CC BY-SA, CC BY-NC, CC BY-NC-SA).","מוצעים רק טקסטים שרישיונם מתיר הפצה מחדש (נחלת הכלל, CC0, CC BY, CC BY-SA, CC BY-NC, CC BY-NC-SA).",footer note,
+tefillah.fspresent.bar_aria,Presentation controls,בקרות הקרנה,fullscreen presentation toolbar group label,aria-label only; REVIEW: HE draft
+tefillah.fspresent.size_down,Smaller Hebrew text,הקטנת הטקסט העברי,fullscreen toolbar A− button,button title + aria-label; REVIEW: HE draft
+tefillah.fspresent.size_up,Larger Hebrew text,הגדלת הטקסט העברי,fullscreen toolbar A+ button,button title + aria-label; REVIEW: HE draft
+tefillah.glyphname.trope_etnachta,Etnachta clause,אתנחתא,trope-family legend + picker label,glyph-name; scope-ambiguous
+tefillah.glyphname.trope_geresh,Geresh group,גרש,trope-family legend + picker label,glyph-name; scope-ambiguous
+tefillah.glyphname.trope_katon,Zakef Katon clause,זקף קטון,trope-family legend + picker label,glyph-name; scope-ambiguous
+tefillah.glyphname.trope_rare,Rare marks,טעמים נדירים,trope-family legend + picker label,glyph-name; scope-ambiguous
+tefillah.glyphname.trope_revia,Revia group,רביע,trope-family legend + picker label,glyph-name; scope-ambiguous | REVIEW: 'Revia group' rendered רביע — confirm
+tefillah.glyphname.trope_segol,Segol clause,סגול,trope-family legend + picker label,glyph-name; scope-ambiguous | REVIEW: 'Segol clause' rendered סגול — confirm
+tefillah.glyphname.trope_sofpasuk,Sof Pasuk clause,סוף פסוק,trope-family legend + picker label,glyph-name; scope-ambiguous
+tefillah.glyphname.vowel_chirik,Chirik,חִירִיק,vowel color-picker label,glyph-name
+tefillah.glyphname.vowel_hkamatz,H. Kamatz,חֲטַף קָמָץ,vowel color-picker label,glyph-name
+tefillah.glyphname.vowel_holam,Holam,חוֹלָם,vowel color-picker label,glyph-name
+tefillah.glyphname.vowel_hpatach,H. Patach,חֲטַף פַּתַח,vowel color-picker label,glyph-name
+tefillah.glyphname.vowel_hsegol,H. Segol,חֲטַף סֶגּוֹל,vowel color-picker label,glyph-name
+tefillah.glyphname.vowel_kamatz,Kamatz,קָמָץ,vowel color-picker label,glyph-name
+tefillah.glyphname.vowel_kubutz,Kubutz,קֻבּוּץ,vowel color-picker label,glyph-name
+tefillah.glyphname.vowel_patach,Patach,פַּתַח,vowel color-picker label,glyph-name
+tefillah.glyphname.vowel_segol,Segol,סֶגּוֹל,vowel color-picker label,glyph-name
+tefillah.glyphname.vowel_shuruk,Shuruk,שׁוּרוּק,vowel color-picker label,glyph-name
+tefillah.glyphname.vowel_shva,Shva,שְׁוָא,vowel color-picker label,glyph-name
+tefillah.glyphname.vowel_tzere,Tzere,צֵירֵי,vowel color-picker label,glyph-name
+tefillah.glyphname.vowel_vav_holam,Vav Holam,חוֹלָם מָלֵא,vowel color-picker label,glyph-name
+tefillah.header.home,Home,בית,header nav button,
+tefillah.header.settings_title,Settings,הגדרות,the toolbar's Settings button (label + title); the drawer's one entry,svg-icon-in-markup
+tefillah.header.subtitle,"Practice reading the siddur with vowel coloring, transliteration and translation, in the nusach you pray.","תרגלו קריאה בסידור עם צביעת תנועות, תעתיק ותרגום, בנוסח שבו אתם מתפללים.",header subtitle,
+tefillah.header.title,Tefillah Trainer,מאמן התפילה,h1 header,
+tefillah.header.tour_button,Tour,סיור,header button,svg-icon-in-markup
+tefillah.header.tour_title,Take a quick tour,צאו לסיור מהיר,header button title,
+tefillah.settings.close_aria,Close settings,סגירת ההגדרות,close button aria,aria-label only
+tefillah.settings.close_title,Close,סגירה,close button title,
+tefillah.settings.color_for_aria,Color for {name},צבע עבור {name},vowel/trope color-picker input aria,aria-label only; {name} is the vowel/trope name (content) — do not translate {name}
+tefillah.settings.panel_about,About & FAQ,אודות ושאלות נפוצות,section heading (More tab),
+tefillah.settings.panel_cloud,Your account,החשבון שלכם,section heading (More tab; hosts the shared account status line #cloudSavesPanel),
+tefillah.settings.panel_copy,Copy lines,העתקת שורות,section heading (Share tab): the Select-verses launcher + the copy format options,
+tefillah.settings.panel_display,Display,תצוגה,section heading (Text tab),
+tefillah.settings.panel_font,Hebrew font,גופן עברי,section heading (Text tab),
+tefillah.settings.panel_print,Print,הדפסה,section heading (Share tab),
+tefillah.settings.panel_reset,Reset,איפוס,section heading (More tab),
+tefillah.settings.panel_share,Practice link,קישור לתרגול,section heading (Share tab),
+tefillah.settings.panel_translit,Transliteration,תעתיק,section heading (Text tab),
+tefillah.settings.panel_translation,Translation,תרגום,section heading (Text tab): the Show translation switch and the version list,
+tefillah.settings.panel_trope_color,Trope color coding,צביעת טעמים,section heading (Colors tab),
+tefillah.settings.panel_vowel_color,Vowel color coding,צביעת תנועות,section heading (Colors tab),
+tefillah.settings.print_reading,Print this prayer,הדפסת התפילה,button in the Share tab's Print section,svg-icon-in-markup
+tefillah.settings.reset_all,Reset all Tefillah Trainer settings,איפוס כל הגדרות מאמן התפילה,button,leading-emoji
+tefillah.settings.title,Tefillah Trainer Settings,הגדרות מאמן התפילה,settings drawer header,leading-emoji
+tefillah.tabs.aria,Settings sections,חלקי ההגדרות,settings drawer tablist aria,aria-label only
+tefillah.tabs.favorites,Favorites,מועדפים,"settings drawer tab label (star icon in the markup); the first tab, the one the drawer opens on",svg-icon-in-markup; keep short — seven tabs share a 380px drawer
+tefillah.tabs.text,Text,טקסט,settings drawer tab label (book icon in the markup),svg-icon-in-markup; keep short — seven tabs share a 380px drawer
+tefillah.tabs.colors,Colors,צבעים,settings drawer tab label (palette icon in the markup),svg-icon-in-markup; keep short
+tefillah.tabs.share,Share,שיתוף,"settings drawer tab label (link icon in the markup): practice link, copy verses, student handout, print",svg-icon-in-markup; keep short
+tefillah.tabs.more,More,עוד,"settings drawer tab label (gear icon in the markup): your account, about & FAQ, reset",svg-icon-in-markup; keep short
+tefillah.fav.title,Favorite prayers,תפילות מועדפות,section heading (Favorites tab),
+tefillah.fav.add,Save this prayer as a favorite,שמירת התפילה הנוכחית כמועדפת,Favorites tab button (plus icon in the markup): opens the save popup,svg-icon-in-markup
+tefillah.fav.add_title,Save the prayer on screen to your favorites,שמירת התפילה שעל המסך למועדפים,button title,
+tefillah.fav.empty,"No favorites yet. Open a prayer, then save it with the button above.",אין עדיין מועדפים. פתחו תפילה ושמרו אותה בעזרת הכפתור למעלה.,Favorites tab note while the list is empty,
+tefillah.fav.none_loaded,Open a prayer first — there is nothing on screen to save.,פתחו תפילה תחילה — אין על המסך מה לשמור.,toast when the plus button is pressed with no reading loaded,
+tefillah.fav.dlg_title,Save as favorite,שמירה כמועדפת,save popup heading,
+tefillah.fav.dlg_reading,Prayer:,תפילה:,save popup: label before the reading being saved (its name is content),
+tefillah.fav.dlg_name,Name,שם,save popup field label,
+tefillah.fav.dlg_folder,Folder,תיקייה,save popup field label (options are the folder-tree block's own labels),
+tefillah.fav.dlg_color,Color,צבע,save popup: label of the eight color swatches,
+tefillah.fav.color_aria,Color {n} of 8,צבע {n} מתוך 8,save popup: aria-label of one color swatch,do not translate {…}
+tefillah.fav.dlg_with_settings,"Also save my display settings (layout, font, colors, what the prayer shows)","לשמור גם את הגדרות התצוגה שלי (פריסה, גופן, צבעים, מה התפילה מציגה)",save popup checkbox; off by default,
+tefillah.fav.settings_summary,"Would save: {layout} · transliteration {translit} · translation {translation} · {font}, plus your sizes and color coding.","יישמרו: {layout} · תעתיק {translit} · תרגום {translation} · {font}, וגם הגדלים וקידוד הצבעים שלכם.","save popup: summary line under the checkbox while it is on; {layout} is the Layout choice's label, {font} the Hebrew font name",do not translate {…}
+tefillah.fav.on,on,פועל,save popup summary word,
+tefillah.fav.off,off,כבוי,save popup summary word,
+tefillah.fav.font_standard,the standard font,הגופן הרגיל,save popup summary: the {font} slot when the default face is in use,
+tefillah.fav.font_left_out,"Your own font ""{font}"" can't be saved with it: the favorite opens in the standard font.","הגופן שלכם ""{font}"" לא יישמר איתה: המועדף ייפתח בגופן הרגיל.",save popup summary: appended when the current Hebrew font is one uploaded to My Fonts,do not translate {…}
+tefillah.fav.dlg_save,Save,שמירה,save popup primary button (Enter also saves),
+tefillah.fav.dlg_cancel,Cancel,ביטול,save popup button (Escape also cancels),
+tefillah.fav.name_empty,Enter a name to save.,הזינו שם כדי לשמור.,save popup inline validation,
+tefillah.fav.name_exists,"A favorite named ""{name}"" already exists.","כבר קיים מועדף בשם ""{name}"".",save popup inline validation; also the rename toast,mixed UI+content; do not translate {…}
+tefillah.fav.saved,Saved to favorites: {name},נשמר במועדפים: {name},toast after saving,mixed UI+content; do not translate {…}
+tefillah.fav.open,Open,פתיחה,favorite row button,
+tefillah.fav.open_title,Open {ref},פתיחת {ref},favorite row button title; {ref} is the saved reading's name,mixed UI+content; do not translate {…}
+tefillah.fav.rename_title,Rename,שינוי שם,favorite row button title (pencil icon),aria-label only
+tefillah.fav.rename_prompt,Rename favorite:,שינוי שם המועדף:,prompt() text,
+tefillah.fav.recolor_title,Change color,שינוי צבע,favorite row: the color dot's title (each press moves to the next palette color),aria-label only
+tefillah.fav.duplicate_title,Duplicate,שכפול,favorite row button title (⧉),aria-label only
+tefillah.fav.delete_title,Delete,מחיקה,favorite row button title (× icon),aria-label only
+tefillah.fav.delete_confirm,"Delete the favorite ""{name}""?","למחוק את המועדף ""{name}""?",confirm() before deleting a favorite,mixed UI+content; do not translate {…}
+tefillah.fav.delete_confirm_cloud,"Delete the favorite ""{name}""? You are signed in, so it is removed from your account and from every device.","למחוק את המועדף ""{name}""? אתם מחוברים, ולכן הוא יוסר מהחשבון ומכל מכשיר.",confirm() before deleting a favorite while signed in,has {name}
+tefillah.trans.lib_failed,Transliteration library failed to load (offline?).,טעינת ספריית התעתיק נכשלה (לא מקוון?).,translit status,
+tefillah.trans.lib_loaded,Library loaded.,הספרייה נטענה.,translit status,
+tefillah.trans.place_label,Show it,הצגה,settings label for the transliteration placement radios,
+tefillah.trans.place_row,Own line,בשורה נפרדת,radio label,
+tefillah.trans.place_word,Under each word,מתחת לכל מילה,radio label,
+tefillah.trans.style_ashkenazi,Ashkenazi,אשכנזי,select option,
+tefillah.trans.style_brill,Brill Academic,Brill אקדמי,select option,
+tefillah.trans.style_label,Style,סגנון,settings label,
+tefillah.trans.style_modern,Modern Israeli [DEFAULT],עברית מודרנית [ברירת מחדל],select option,
+tefillah.trans.style_sbl,SBL Academic,SBL אקדמי,select option,
+tefillah.trans.style_simple,Simple stressed,פשוט עם הטעמה,select option,
+tefillah.trope_legend.tip_sofpasuk,"The end of the verse. Sof pasuk closes it, with the mercha, tipcha and munach of the verse's second half leading in.","סוף הפסוק. סוף פסוק חותם אותו, ולפניו מרכא, טפחא ומונח שבחציו השני של הפסוק.",tooltip on a trope-family legend chip (what marks are in this family),REVIEW: Hebrew draft — trope names use the taught Ashkenazi forms
+tefillah.trope_legend.tip_etnachta,"The pause in the middle of the verse. Etnachta splits the verse in two, with the mercha, tipcha and munach before it leading in.","ההפסקה שבאמצע הפסוק. אתנחתא חוצה את הפסוק לשניים, ולפניה מרכא, טפחא ומונח.",tooltip on a trope-family legend chip (what marks are in this family),REVIEW: Hebrew draft — trope names use the taught Ashkenazi forms
+tefillah.trope_legend.tip_katon,"The most common mid-verse pause, built on zakef katon or zakef gadol, with mahpach, pashta and yetiv leading in.","ההפסקה הנפוצה ביותר בתוך הפסוק, על זקף קטון או זקף גדול, ולפניהם מהפך, פשטא ויתיב.",tooltip on a trope-family legend chip (what marks are in this family),REVIEW: Hebrew draft — trope names use the taught Ashkenazi forms
+tefillah.trope_legend.tip_segol,"An early pause in a long verse, marked by segol, with zarka leading in and the rare shalshelet standing in its place.","הפסקה מוקדמת בפסוק ארוך, מסומנת בסגול, לפניה זרקא, ובמקומה לעתים שלשלת הנדירה.",tooltip on a trope-family legend chip (what marks are in this family),REVIEW: Hebrew draft — trope names use the taught Ashkenazi forms
+tefillah.trope_legend.tip_revia,"A shorter pause inside a clause: revia, together with darga and tevir.","הפסקה קצרה בתוך המשפט: רביע, יחד עם דרגא ותביר.",tooltip on a trope-family legend chip (what marks are in this family),REVIEW: Hebrew draft — trope names use the taught Ashkenazi forms
+tefillah.trope_legend.tip_geresh,"Ornament marks that break up a long clause: geresh, gershayim, kadma, telisha ketana, telisha gedola and pazer.","טעמי קישוט המפצלים משפט ארוך: גרש, גרשיים, קדמא, תלישא קטנה, תלישא גדולה ופזר.",tooltip on a trope-family legend chip (what marks are in this family),REVIEW: Hebrew draft — trope names use the taught Ashkenazi forms
+tefillah.trope_legend.tip_rare,"Marks that appear only a handful of times in the whole Torah: mercha kefula, karnei parah and yerach ben yomo.","טעמים המופיעים רק פעמים בודדות בכל התורה: מרכא כפולה, קרני פרה וירח בן יומו.",tooltip on a trope-family legend chip (what marks are in this family),REVIEW: Hebrew draft — trope names use the taught Ashkenazi forms
+tefillah.trope_legend.tutor_link,Learn the trope names →,למדו את שמות הטעמים ←,trope legend link,
+tefillah.trope_legend.enable_chip,Color-code the trope,צביעת טעמים,one-way chip above the reading that turns trope color coding on,REVIEW: HE draft
+tefillah.a11y.skip_to_reading,Skip to the prayer,דילוג לתפילה,Skip-link to the reading (a11y),aria/skip-link
+tefillah.copy.bulk_cb_aria,Select line {line},בחירת שורה {line},per-verse bulk-select checkbox aria-label,aria-label only
+tefillah.fav.opened,Opened favorite: {name},המועדף נפתח: {name},toast after opening a favorite,mixed UI+content; do not translate {…}
+tefillah.fav.stale,"""{name}"" no longer points at a prayer this page can open.","""{name}"" כבר אינו מצביע על תפילה שהדף יכול לפתוח.",toast when a stored favorite fails re-validation,mixed UI+content; do not translate {…}
+tefillah.reading.card_pick_aria,Choose a prayer,בחרו תפילה,in-card parsha picker on the empty/failed reading card,aria-label only
+tefillah.reading.col_english,English,אנגלית,Side-by-side translation column header,
+tefillah.reading.col_translit,Transliteration,תעתיק,Side-by-side transliteration column header,
+tefillah.reading.empty_body,"Choose a prayer — its text appears here with optional transliteration, translation and vowel coloring.","בחרו תפילה — הטקסט שלה יופיע כאן, עם תעתיק, תרגום וצביעת תנועות לפי בחירתכם.",empty state (in-card picker sits right below since S237),
+tefillah.reading.empty_title,Pick a prayer to start,בחרו תפילה כדי להתחיל,empty state h2,print-adjacent empty state
+tefillah.reading.failed_body,"Check your internet connection, then try again — Sefaria, the text source, may be briefly unavailable.","בדקו את חיבור האינטרנט ונסו שוב — ייתכן ש-Sefaria, מקור הטקסט, אינו זמין כרגע.",failed-load empty state body,
+tefillah.reading.failed_title,This prayer didn't load,התפילה לא נטענה,failed-load empty state h2,
+tefillah.reading.retry_button,Try again,נסו שוב,failed-load empty state retry button,leading-emoji
+tefillah.reading.row_english,English,אנגלית,Interlinear/side-by-side row label (translation line),
+tefillah.reading.row_hebrew,Hebrew,עברית,Interlinear/side-by-side row label (Hebrew line),
+tefillah.reading.row_translit,Translit,תעתיק,Interlinear/side-by-side row label (translit line),
+tefillah.share.with_settings,Your display settings are included.,הגדרות התצוגה שלכם כלולות בקישור.,second line of the Copy link toast when Include my settings is on,
+tefillah.share.with_settings_no_font,"Your display settings are included, but not your own font ""{font}"" — a link can't carry it, so the reading opens in the standard font.","הגדרות התצוגה שלכם כלולות בקישור, אבל לא הגופן האישי ""{font}"" — קישור לא יכול להעביר אותו, ולכן הקריאה תיפתח בגופן הרגיל.",second toast line when the chosen font is a My Font (stored on this device only),do-not-translate {font}
+tefillah.shem.chip_label,שם ה׳,שם ה׳,chip in the reading header when a divine name is detected,pinned Hebrew in both languages by design
+tefillah.shem.chip_tip,This prayer contains God's name. A printed page traditionally requires geniza (respectful disposal) rather than the trash.,התפילה כוללת את שם ה׳. דף מודפס נהוג להביא לגניזה ולא להשליך לאשפה.,accessible tooltip on the שם ה׳ chip,
+tefillah.status.data_load_failed,"Couldn't load the list of prayers. Check your internet connection, then try again.",לא ניתן היה לטעון את רשימת התפילות. בדקו את החיבור לאינטרנט ונסו שוב.,status,REVIEW: HE recombines the reviewed dictionary.loading.failed sentence — confirm
+tefillah.status.loading_label,Loading {label}…,טוען {label}…,status,do-not-translate {label}
+tefillah.status.net_hint,Sefaria API may be unreachable.,ייתכן שה-API של Sefaria אינו נגיש.,status fragment (appended),
+tefillah.status.reading_load_failed,Failed to load {label}: {error}.,טעינת {label} נכשלה: {error}.,status (reading fetch error),do-not-translate {label}/{error}
+tefillah.tour.s1_body,"Every prayer in the list, grouped the way a siddur is laid out.","כל התפילות ברשימה, מקובצות כפי שהן מסודרות בסידור.",tour step body,
+tefillah.tour.s1_title,Pick a prayer,בחרו תפילה,tour step title,
+tefillah.tour.s2_body,"Type part of a name, or narrow the list by service and by weekday or Shabbat.","הקלידו חלק מהשם, או צמצמו את הרשימה לפי חלק בסידור ולפי יום חול או שבת.",tour step body,
+tefillah.tour.s2_title,Find it faster,מוצאים מהר יותר,tour step title,
+tefillah.tour.s3_body,"Ashkenaz, Sefard or Edot HaMizrach — only the ones that have this prayer are listed.","אשכנז, ספרד או עדות המזרח — מופיעים רק הנוסחים שיש בהם התפילה הזו.",tour step body,
+tefillah.tour.s3_title,Choose the nusach,בחרו נוסח,tour step title,
+tefillah.tour.s4_body,Two switches reveal the transliteration and the translation — handy in front of a class.,שני מתגים חושפים את התעתיק ואת התרגום — שימושי מול כיתה.,tour step body,
+tefillah.tour.s4_title,Translit and translation,תעתיק ותרגום,tour step title,
+tefillah.tour.s5_body,The text comes word for word from its source. The edition and its license are listed underneath.,הטקסט מגיע מילה במילה מהמקור שלו. המהדורה והרישיון שלה מופיעים מתחתיו.,tour step body,
+tefillah.tour.s5_title,The prayer itself,התפילה עצמה,tour step title,
+tefillah.tour.s6_body,"Five tabs: Favorites (prayers you save), Text (layout, transliteration, translation), Colors, Share (print, link, copy) and More.","חמש לשוניות: מועדפים (תפילות ששמרתם), טקסט (פריסה, תעתיק, תרגום), צבעים, שיתוף (הדפסה, קישור, העתקה) ועוד.",tour step body: names every settings-drawer tab in its order (keep the count and the list in step with the tabs),
+tefillah.tour.s6_title,Settings,הגדרות,tour step title,
+tefillah.trans.license_cc0,CC0,CC0,license label,
+tefillah.trans.license_ccby,CC BY,CC BY,license label,
+tefillah.trans.license_ccbync,CC BY-NC,CC BY-NC,license label,
+tefillah.trans.license_ccbyncsa,CC BY-NC-SA,CC BY-NC-SA,license label,
+tefillah.trans.license_ccbysa,CC BY-SA,CC BY-SA,license label,
+tefillah.trans.license_public_domain,Public Domain,נחלת הכלל,license label,
+tefillah.trans.license_unknown,unknown license,רישיון לא ידוע,license fallback,
+tefillah.trans.no_versions,(no openly licensed translation for this prayer),(אין תרגום ברישיון פתוח לתפילה זו),version select option,
+tefillah.trans.unavailable_chip,No transliteration,אין תעתיק,chip in the reading header when the transliteration library cannot load,
+tefillah.trans.unavailable_tip,"Transliteration is switched on, but its library could not be loaded — often no connection, or a school network blocking it. The column is left out rather than printed empty.","התעתיק מופעל, אך לא ניתן היה לטעון את הספרייה — לרוב אין חיבור, או שרשת בית הספר חוסמת אותה. העמודה מושמטת במקום להידפס ריקה.",accessible tooltip on the no-transliteration chip,
+tefillah.trans.version_opt,{title} — {license},{title} — {license},version select option,do-not-translate {title}
+tefillah.controls.prayer_label,Prayer:,תפילה:,toolbar: label of the prayer picker,
+tefillah.controls.nusach_label,Nusach:,נוסח:,toolbar: label of the nusach list,
+tefillah.nusach.ashkenaz,Ashkenaz,אשכנז,nusach name,
+tefillah.nusach.sefard,Sefard,ספרד,nusach name,
+tefillah.nusach.edot,Edot HaMizrach,עדות המזרח,nusach name,
+tefillah.nusach.torah,Torah text,נוסח התורה,nusach list: the Shema read from the Torah text,
+tefillah.nusach.opensiddur,Open Siddur,Open Siddur,"nusach list: a text from the Open Siddur Project (brand name, not translated)",
+tefillah.picker.group_aria,Find a prayer,חיפוש תפילה,aria-label of the search and filter group,
+tefillah.picker.search_ph,Search prayers…,חיפוש תפילות…,search box placeholder,
+tefillah.picker.search_aria,Search prayers,חיפוש תפילות,search box aria-label,
+tefillah.picker.service_label,Service:,חלק בסידור:,filter label,
+tefillah.picker.day_label,Day:,יום:,filter label,
+tefillah.picker.all,All,הכול,filter option: no filter,
+tefillah.picker.none_match,No prayer matches. Clear the search or the filters.,אין תפילה מתאימה. נקו את החיפוש או את הסינון.,live note under the filters,
+tefillah.picker.match.one,1 prayer,תפילה אחת,live note under the filters,
+tefillah.picker.match.other,{count} prayers,{count} תפילות,live note under the filters,
+tefillah.service.shacharit,Shacharit,שחרית,service filter option,
+tefillah.service.mincha,Mincha,מנחה,service filter option,
+tefillah.service.maariv,Maariv,ערבית,service filter option,
+tefillah.service.shabbat,Shabbat,שבת,service filter option,
+tefillah.service.holidays,Holidays,חגים,service filter option,
+tefillah.service.blessings,Blessings,ברכות,service filter option,
+tefillah.day.weekday,Weekday,יום חול,day filter option,
+tefillah.day.shabbat,Shabbat,שבת,day filter option,
+tefillah.reading.label,{prayer} · {nusach},{prayer} · {nusach},the heading over the prayer: its name and its nusach,
+tefillah.reading.line_copy,Copy,העתקה,per-line copy button,
+tefillah.reading.line_copy_aria,Copy line {line},העתקת שורה {line},per-line copy button aria-label,
+tefillah.reading.added_chip,added in the siddur,תוספת הסידור,chip on a line the siddur adds between Torah verses (the Shema),
+tefillah.status.pick_prayer,Pick a prayer to start.,בחרו תפילה כדי להתחיל.,status line,
+tefillah.status.unavailable_no_open_hebrew,"{label}: Sefaria has no openly licensed Hebrew text for this prayer right now, so it is not shown.","{label}: כרגע אין ב-Sefaria טקסט עברי ברישיון פתוח לתפילה זו, ולכן היא אינה מוצגת.",status line: fail closed,
+tefillah.status.unavailable_edition_gone,"{label}: the Hebrew edition this prayer is read from is no longer offered by Sefaria under an open license, so it is not shown.","{label}: המהדורה העברית שממנה נקראת התפילה כבר אינה מוצעת ב-Sefaria ברישיון פתוח, ולכן היא אינה מוצגת.",status line: fail closed,
+tefillah.status.unavailable_range_moved,"{label}: Sefaria's text has changed since this prayer's lines were marked, so it is not shown until the list is checked again.","{label}: הטקסט ב-Sefaria השתנה מאז שסומנו שורות התפילה, ולכן היא אינה מוצגת עד שהרשימה תיבדק מחדש.",status line: fail closed,
+tefillah.status.unavailable_opensiddur_missing,{label}: this Open Siddur text is not part of the site yet.,{label}: טקסט זה של Open Siddur עדיין אינו חלק מהאתר.,status line: fail closed,
+tefillah.trans.none_note,"Sefaria has no openly licensed translation of this prayer, so none is shown.","ב-Sefaria אין תרגום ברישיון פתוח לתפילה זו, ולכן לא מוצג תרגום.",note under the translation list,
+tefillah.trans.hidden_note,"This translation is divided into different lines from the Hebrew, and this prayer is only part of a longer text, so it cannot be shown beside its lines. Pick another translation if one is listed.","התרגום הזה מחולק לשורות אחרות מהעברית, והתפילה היא רק חלק מטקסט ארוך יותר, ולכן אי אפשר להציג אותו לצד שורותיה. בחרו תרגום אחר אם יש כזה ברשימה.",note under the translation list,
+tefillah.trans.block_note,"This translation is divided into different lines from the Hebrew, so it is shown as one block after the prayer.","התרגום הזה מחולק לשורות אחרות מהעברית, ולכן הוא מוצג כגוש אחד אחרי התפילה.",note under the translation list,
+tefillah.trans.block_title,Translation,תרגום,heading of a translation shown as one block,
+tefillah.settings.panel_edition,Hebrew text,הטקסט העברי,Text tab section title,
+tefillah.edition.note,"Every text is shown as its source has it, with the source, the edition and its license under the prayer.","כל טקסט מוצג כפי שהוא במקור שלו, והמקור, המהדורה והרישיון שלה מופיעים מתחת לתפילה.",Text tab note,
+tefillah.edition.label,Edition,מהדורה,label of the Hebrew edition list,
+tefillah.display.show_line_numbers,Show line numbers,הצגת מספרי שורות,Text tab switch,
+tefillah.display.show_instructions,Show the siddur's instructions,הצגת הוראות הסידור,Text tab switch,
+tefillah.display.show_instructions_tip,"The small unpointed notes a siddur prints between the prayers: when to stand, what is added on which day. They are never colored or transliterated.","ההערות הקטנות והלא־מנוקדות שהסידור מדפיס בין התפילות: מתי עומדים, מה מוסיפים באיזה יום. הן לעולם אינן נצבעות ואינן מתועתקות.",tooltip,
+tefillah.display.show_reading_marks,Show the Metsudah reading marks,הצגת סימני הקריאה של מצודה,Text tab switch (shown only for the Metsudah edition),
+tefillah.display.show_reading_marks_tip,"The Metsudah siddur adds two signs of its own: a small mark over a letter whose sheva is sounded, and a small circle. They are that edition's reading aids, not cantillation marks.","סידור מצודה מוסיף שני סימנים משלו: סימן קטן מעל אות ששוואה נע, ועיגול קטן. אלה עזרי קריאה של המהדורה, לא טעמי המקרא.",tooltip,
+tefillah.display.no_teamim_note,"This text has no cantillation marks, so there are none to show or hide.","בטקסט הזה אין טעמי המקרא, ולכן אין מה להציג או להסתיר.",Text tab note,
+tefillah.display.gendered_label,Gendered forms,לשון זכר ונקבה,Text tab row (Open Siddur texts that give both forms),
+tefillah.display.gendered_both,Both,שתי הצורות,gendered forms option,
+tefillah.display.gendered_m,Masculine,זכר,gendered forms option,
+tefillah.display.gendered_f,Feminine,נקבה,gendered forms option,
+tefillah.color.trope_none_note,This text has no cantillation marks to color. Trope coloring works on the Shema's Torah text.,בטקסט הזה אין טעמי המקרא לצביעה. צביעת הטעמים פועלת על נוסח התורה של קריאת שמע.,Colors tab note,
+tefillah.credits.title,Text sources,מקורות הטקסט,heading of the credits under the prayer,
+tefillah.credits.hebrew,Hebrew:,עברית:,credits row label,
+tefillah.credits.translation,Translation:,תרגום:,credits row label,
+tefillah.credits.via_sefaria,via Sefaria,דרך Sefaria,credits: link to the source,
+tefillah.credits.via_opensiddur,via the Open Siddur Project,דרך פרויקט Open Siddur,credits: link to the source,
+tefillah.credits.display_note,"The words are each source's own. The display options here (hidden marks, instructions or line numbers) may differ from the source.","המילים הן של כל מקור כלשונו. אפשרויות התצוגה כאן (הסתרת סימנים, הוראות או מספרי שורות) עשויות להיות שונות מהמקור.",credits footnote,
+tefillah.footer.credits_note,Each text's edition and license are listed under the prayer.,המהדורה והרישיון של כל טקסט מופיעים מתחת לתפילה.,footer note,
+tefillah.print.label_line,{label} · line {from},{label} · שורה {from},printed sheet label for one line,
+tefillah.print.label_lines,{label} · lines {from}–{to},{label} · שורות {from}–{to},printed sheet label for a run of lines,
+tefillah.torah.open_lead,Open in Torah Trainer:,פתיחה במאמן התורה:,lead-in to the links that open the Shema passages in the Torah Trainer,
+tefillah.group.morning_waking,Waking and morning blessings,הַשְׁכָּמַת הַבֹּקֶר וּבִרְכוֹת הַשַּׁחַר,prayer picker: group heading (from data/tefillah/catalog.json),
+tefillah.group.pesukei_dzimra,Pesukei D'Zimra,פְּסוּקֵי דְזִמְרָה,prayer picker: group heading (from data/tefillah/catalog.json),
+tefillah.group.shema,Shema and its blessings,קְרִיאַת שְׁמַע וּבִרְכוֹתֶיהָ,prayer picker: group heading (from data/tefillah/catalog.json),
+tefillah.group.amidah,Amidah,עֲמִידָה,prayer picker: group heading (from data/tefillah/catalog.json),
+tefillah.group.concluding,Concluding prayers,סִיּוּם הַתְּפִלָּה,prayer picker: group heading (from data/tefillah/catalog.json),
+tefillah.group.torah_service,Torah service,סֵדֶר קְרִיאַת הַתּוֹרָה,prayer picker: group heading (from data/tefillah/catalog.json),
+tefillah.group.shabbat_holidays,Shabbat and holidays,שַׁבָּת וּמוֹעֲדִים,prayer picker: group heading (from data/tefillah/catalog.json),
+tefillah.group.blessings,Blessings,בְּרָכוֹת,prayer picker: group heading (from data/tefillah/catalog.json),
+tefillah.group.bedtime,Bedtime,לִפְנֵי הַשֵּׁנָה,prayer picker: group heading (from data/tefillah/catalog.json),
+tefillah.prayer.modeh_ani,Modeh Ani,מוֹדֶה אֲנִי,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.netilat_yadayim,Netilat Yadayim,נְטִילַת יָדַיִם,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.asher_yatzar,Asher Yatzar,אֲשֶׁר יָצַר,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.elohai_neshama,Elohai Neshama,אֱלֹהַי נְשָׁמָה,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.birchot_hatorah,Birchot HaTorah,בִּרְכוֹת הַתּוֹרָה,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.birchot_hashachar,Birchot HaShachar,בִּרְכוֹת הַשַּׁחַר,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.ma_tovu,Ma Tovu,מַה טֹּבוּ,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.adon_olam,Adon Olam,אֲדוֹן עוֹלָם,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.yigdal,Yigdal,יִגְדַּל,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.baruch_sheamar,Baruch She'amar,בָּרוּךְ שֶׁאָמַר,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.ashrei,Ashrei,אַשְׁרֵי,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.psalm_150,Psalm 150,מִזְמוֹר ק״נ,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.yishtabach,Yishtabach,יִשְׁתַּבַּח,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.barchu,Barchu,בָּרְכוּ,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.yotzer_or,Yotzer Or,יוֹצֵר אוֹר,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.ahavah_rabbah,Ahavah Rabbah,אַהֲבָה רַבָּה,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.shema,Shema,שְׁמַע,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.vahavta,V'ahavta,וְאָהַבְתָּ,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.emet_vyatziv,Emet V'yatziv,אֱמֶת וְיַצִּיב,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.mi_chamocha,Mi Chamocha,מִי כָמֹכָה,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.amidah_avot,Amidah — Avot,אָבוֹת,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.amidah_gevurot,Amidah — Gevurot,גְּבוּרוֹת,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.amidah_kedushat_hashem,Amidah — Kedushat HaShem,קְדֻשַּׁת הַשֵּׁם,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.amidah_kedusha,Amidah — Kedusha,קְדֻשָּׁה,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.amidah_binah,Amidah — Binah,בִּינָה,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.amidah_teshuvah,Amidah — Teshuvah,תְּשׁוּבָה,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.amidah_selichah,Amidah — Selichah,סְלִיחָה,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.amidah_geulah,Amidah — Geulah,גְּאֻלָּה,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.amidah_refuah,Amidah — Refuah,רְפוּאָה,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.amidah_birkat_hashanim,Amidah — Birkat HaShanim,בִּרְכַּת הַשָּׁנִים,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.amidah_kibbutz_galuyot,Amidah — Kibbutz Galuyot,קִבּוּץ גָּלֻיּוֹת,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.amidah_din,Amidah — Din,דִּין,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.amidah_birkat_haminim,Amidah — Birkat HaMinim,בִּרְכַּת הַמִּינִים,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.amidah_tzadikim,Amidah — Tzadikim,צַדִּיקִים,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.amidah_binyan_yerushalayim,Amidah — Binyan Yerushalayim,בִּנְיַן יְרוּשָׁלַיִם,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.amidah_malchut_beit_david,Amidah — Malchut Beit David,מַלְכוּת בֵּית דָּוִד,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.amidah_shomea_tefillah,Amidah — Shomea Tefillah,שׁוֹמֵעַ תְּפִלָּה,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.amidah_avodah,Amidah — Avodah,עֲבוֹדָה,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.amidah_hodaah,Amidah — Hodaah,הוֹדָאָה,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.amidah_shalom,Amidah — Shalom,שָׁלוֹם,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.amidah_full,Amidah — full (weekday),עֲמִידָה,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.elohai_netzor,Elohai Netzor,אֱלֹהַי נְצוֹר,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.oseh_shalom,Oseh Shalom,עוֹשֶׂה שָׁלוֹם,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.aleinu,Aleinu,עָלֵינוּ,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.mourners_kaddish,Mourner's Kaddish,קַדִּישׁ יָתוֹם,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.chatzi_kaddish,Chatzi Kaddish,חֲצִי קַדִּישׁ,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.ein_keloheinu,Ein Keloheinu,אֵין כֵּאלֹהֵינוּ,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.vayehi_binsoa,Vayehi Binsoa,וַיְהִי בִּנְסֹעַ,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.shema_echad,Shema / Echad (Torah service),שְׁמַע · אֶחָד,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.birchot_hatorah_aliyah,Birchot HaTorah for an aliyah,בִּרְכוֹת הַתּוֹרָה לָעוֹלֶה,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.etz_chayim_hi,Etz Chayim Hi,עֵץ חַיִּים הִיא,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.candle_lighting,Candle lighting,הַדְלָקַת נֵרוֹת,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.shalom_aleichem,Shalom Aleichem,שָׁלוֹם עֲלֵיכֶם,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.lecha_dodi,Lecha Dodi,לְכָה דוֹדִי,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.kiddush_friday_night,Kiddush (Friday night),קִדּוּשׁ לְלֵיל שַׁבָּת,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.havdalah,Havdalah,הַבְדָּלָה,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.hallel_blessing_before,Hallel — blessing before,הַלֵּל · בְּרָכָה שֶׁלְּפָנָיו,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.hallel_psalm_113,Hallel — Psalm 113,הַלֵּל · מִזְמוֹר קי״ג,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.hallel_psalm_114,Hallel — Psalm 114,הַלֵּל · מִזְמוֹר קי״ד,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.hallel_psalm_115,Hallel — Psalm 115,הַלֵּל · מִזְמוֹר קט״ו,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.hallel_psalm_116,Hallel — Psalm 116,הַלֵּל · מִזְמוֹר קט״ז,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.hallel_psalm_117,Hallel — Psalm 117,הַלֵּל · מִזְמוֹר קי״ז,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.hallel_psalm_118,Hallel — Psalm 118,הַלֵּל · מִזְמוֹר קי״ח,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.hallel_blessing_after,Hallel — blessing after,הַלֵּל · בְּרָכָה שֶׁלְּאַחֲרָיו,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.hallel_full,Hallel — full,הַלֵּל,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.hamotzi,Hamotzi,הַמּוֹצִיא,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.mezonot,Mezonot,מְזוֹנוֹת,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.hagafen,Hagafen,הַגָּפֶן,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.haetz,Ha'etz,הָעֵץ,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.haadamah,Ha'adamah,הָאֲדָמָה,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.shehakol,Shehakol,שֶׁהַכֹּל,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.shehecheyanu,Shehecheyanu,שֶׁהֶחֱיָנוּ,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.birkat_hamazon,Birkat HaMazon,בִּרְכַּת הַמָּזוֹן,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.birkat_hamazon_short,Birkat HaMazon (short),בִּרְכַּת הַמָּזוֹן (קְצָרָה),prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.prayer.shema_al_hamitah,Shema al HaMitah,קְרִיאַת שְׁמַע עַל הַמִּטָּה,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
