@@ -2039,6 +2039,26 @@ body.fullscreen.tt-karaoke-active #ttRecFs { bottom: calc(var(--tt-audio-h, 96px
      already re-asserts the bare var for paper; that stays as-is.) */
   .tt-cell.heb, .tt-heb { font-size:calc(var(--tt-heb-size, 1.5rem) * 0.9); }
 }
+/* On a phone "Side by side" is one column, and in source order that was the whole translation, then the
+   transliteration, then the Hebrew far below (Genesis 1:1-5 on an iPhone 13: the translation at 554px, the Hebrew at
+   965px; a whole aliyah puts it screens away). The Hebrew is what a student came to read, so it goes first, then its
+   transliteration, then the translation (the Interlinear layout's order). This is the stacked order only: above
+   720px the grid's pinned left-to-right column order (Hebrew on the right in both UIs) is untouched. Only the Hebrew
+   column holds controls, so the focus order is unchanged. Screen only: a printed page can be narrower than 720px, and
+   paper keeps the print block's own order. */
+@media screen and (max-width: 720px) {
+  .tt-grid-col.tt-col-heb { order:-2; }
+  .tt-grid-col.tt-col-translit { order:-1; }
+}
+/* Interlinear on a phone: the row label ("Hebrew", "English") sat in a 50px gutter beside every line, which left the
+   Hebrew about four words a line at 390px. It goes above its line, and the text takes the full width. The head row
+   (the verse number and its buttons, .tt-verse-head in both row builders) stays a row; the Trope staff layout's
+   rows carry no label and are one child wide, so they lay out as before. */
+@media screen and (max-width: 600px) {
+  .tt-verse-row:not(.tt-verse-head) { flex-direction:column; align-items:stretch; gap:0; }
+  .tt-verse-row .tt-rowlabel { padding-top:0; min-width:0; }
+  .tt-verse-row > .tt-heb, .tt-verse-row > .tt-translit, .tt-verse-row > .tt-translation { flex:none; }
+}
 
 /* Phone widths: let the header button row wrap onto a second line instead of pushing the
    page sideways (WCAG 1.4.10 reflow). max-width is the operative half — the row is
@@ -5911,7 +5931,7 @@ function renderInterlinear(verses, withTranslit, withTrans, wordIdxRef, canChant
     if (aNum > 1) html += aliyahDividerHTML(aNum, numLabel);
     html += `<div class="tt-verse" data-vk="${esc(numLabel)}"${aNum === 1 ? ' id="tt-aliyah-1"' : ''}>`;
     html += `    <input type="checkbox" class="tt-bulk-cb" aria-label="${esc(I18n.t('torah.copy.bulk_cb_aria',{verseRef:numLabel}))}"${ttBulkSelected.has(numLabel) ? ' checked' : ''}>`;
-    html += `  <div class="tt-verse-row" style="align-items:center;">`;
+    html += `  <div class="tt-verse-row tt-verse-head" style="align-items:center;">`;
     html += `    <span class="tt-verse-num">${esc(numLabel)}</span>`;
     html += `    <span class="tt-verse-buttons">`;
     html += `      <button class="tt-speak hi-btn" onclick="speakVerse('${vkEsc}')" type="button" aria-label="${esc(I18n.t('torah.reading.verse_read_aria',{verseRef:numLabel}))}">${ICON_SOUND}${esc(I18n.t('torah.reading.verse_read'))}</button>`;
@@ -6503,7 +6523,7 @@ function renderStaffView(verses, wordIdxRef, canChant, canLoop, aStartByLabel, u
     const isDouble = !!(dbl && dbl.has(numLabel));
     html += `<div class="tt-verse tt-staff-verse" data-vk="${esc(numLabel)}"${aNum === 1 ? ' id="tt-aliyah-1"' : ''}>`;
     html += `    <input type="checkbox" class="tt-bulk-cb" aria-label="${esc(I18n.t('torah.copy.bulk_cb_aria',{verseRef:numLabel}))}"${ttBulkSelected.has(numLabel) ? ' checked' : ''}>`;
-    html += `  <div class="tt-verse-row" style="align-items:center;">`;
+    html += `  <div class="tt-verse-row tt-verse-head" style="align-items:center;">`;
     html += `    <span class="tt-verse-num">${esc(numLabel)}</span>`;
     if (isDouble) html += staffNoticeChip('torah.staff.double_chip', 'torah.staff.double_tip');
     html += `    <span class="tt-verse-buttons">`;

@@ -1784,7 +1784,14 @@ cell an explicit `grid-row` (the verse's row; an aliyah divider owns a row of it
 `data-print-cols`, and the column wrappers become `display:contents` — on screen above the 720px collapse and on
 paper alike — so a verse's cells share one row and can never drift apart; the column count comes from
 `data-print-cols`, which the explicit column numbers assume. At 720px and below the columns stack; with the
-Hebrew alone the wrappers stay plain blocks.
+Hebrew alone the wrappers stay plain blocks. Stacked, the Hebrew column comes first, then the transliteration,
+then the translation (CSS `order` on the wrappers, `@media screen and (max-width: 720px)`): in source order the
+whole translation stood above the Hebrew on a phone. Screen only, since a printed page can be narrower than 720px.
+
+Interlinear on a phone (600px and under, screen only): each `.tt-verse-row` stacks, so its row label sits above its
+line and the text takes the full width. The head row (the verse number and its buttons) carries `.tt-verse-head`
+in both row builders, Interlinear and Trope staff, and stays a row; the staff layout's rows have no label and one
+child, so they lay out as before.
 
 The column ORDER does not mirror: `.tt-grid` is pinned `direction:ltr`, so column 1 (the translation) is on the
 left and the Hebrew, the last column, on the right in the English and the Hebrew UI alike, as in a bilingual
