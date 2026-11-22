@@ -271,6 +271,61 @@ Yes. Materials that incorporate PocketTorah audio are CC BY-SA 4.0; other IvritS
 
 ---
 
+## Tefillah Trainer
+
+https://ivritsuite.com/tefillah_trainer.html
+
+Practice reading the siddur in Hebrew: pick a prayer and a nusach (Ashkenaz, Sefard or Edot HaMizrach) and read it with toggleable transliteration, translation, vowel color-coding, line numbers and three layouts. Every text comes word for word from Sefaria. Copy the color-coded lines out as formatted text, or print a classroom sheet.
+
+### How to practice a prayer with the Tefillah Trainer (about 3 minutes)
+
+1. **Pick a prayer** — Pick a prayer from the top dropdown, and its nusach beside it. The search box and the Service and Day lists narrow the dropdown.
+2. **Choose a layout** — Switch transliteration and translation on from the toolbar or the settings drawer's Text tab, where you also choose a layout: side by side, interlinear or page view.
+3. **Customize appearance** — Customize the Hebrew font, vowel coloring, and translit scheme on this drawer's Text and Colors tabs.
+4. **Choose what the text shows** — On the Text tab, show or hide the line numbers and the siddur's instructions, and pick another translation or Hebrew edition where the prayer has more than one.
+5. **Save, print or copy** — Save a prayer you use often on the Favorites tab, and print it or copy its lines from the Share tab.
+6. **Project fullscreen** — Click the fullscreen button to project to a SmartBoard.
+
+### Questions
+
+**What is the Tefillah Trainer?**
+
+A free page for practicing reading the siddur. Pick a prayer and a nusach — Ashkenaz, Sefard or Edot HaMizrach — and read it with optional transliteration, translation, per-vowel color coding, larger type and three layouts. When you are done, copy the lines out as formatted text or print them as a classroom sheet.
+
+**Which prayers and nusachim does it have?**
+
+A starting list of prayers, from the morning blessings to the bedtime Shema, each in the nusachim whose text Sefaria holds under an open license. A nusach that lacks a prayer is simply not offered for it; nothing is filled in from another nusach.
+
+**Where do the Hebrew texts and translations come from?**
+
+Sefaria's public API, word for word. Every text on screen is listed under the prayer with its edition and its license, and only openly licensed editions are offered (Public Domain, CC0, CC BY, CC BY-SA, CC BY-NC, CC BY-NC-SA). The Shema can also be read from the Torah text itself.
+
+**Can I hide nikkud or cantillation marks?**
+
+Yes. The Text tab of the settings drawer has a switch for nikkud (vowel points), and one for cantillation marks that works wherever the text carries them, as the Shema's Torah text does. The siddur's small-print instructions and the line numbers have switches there too.
+
+**Is there audio?**
+
+Not yet. This first version is for reading. The page keeps an address for every line and word so that recordings can be added later.
+
+**Why does a translation sometimes appear as one block?**
+
+A translation is shown line against line only when it is divided into the same lines as the Hebrew on screen. One that is divided differently appears as one block after the prayer — or is left out when the prayer is only part of a longer text — so that no line is ever paired with the wrong translation.
+
+**Can I copy the Hebrew text out?**
+
+Yes. The Share tab of the settings drawer copies the prayer as rich text, keeping the vowel colors, so it pastes into Google Docs, Word, or Pages. Copy one line, select several, or type line numbers, and choose what travels with it — nikkud, transliteration, translation, line numbers, or blank lines for handwriting.
+
+**Can I save prayers I use often?**
+
+Yes. The Favorites tab of the settings drawer (the first tab) saves the prayer on screen, in its nusach, under a name and a color, with your display settings too if you tick the box. Favorites can be filed into folders, ride your AllTools backup file and your account, and open again with one click.
+
+**Is it free?**
+
+Yes. The page is free. Each prayer text and translation keeps its own license, shown under the prayer; IvritSuite's own content is CC BY-NC-SA 4.0.
+
+---
+
 ## Trope Tutor
 
 https://ivritsuite.com/trope_tutor.html

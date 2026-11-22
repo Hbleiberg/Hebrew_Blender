@@ -72,7 +72,7 @@
   "@type": "WebApplication",
   "name": "Tefillah Trainer",
   "url": "https://ivritsuite.com/tefillah_trainer.html",
-  "description": "Practice reading the siddur in Hebrew: pick a prayer and a nusach (Ashkenaz, Sefard or Edot HaMizrach) and read it with toggleable transliteration, translation, vowel color-coding, line numbers and three layouts. Every text comes word for word from Sefaria and is shown with its edition and license. Copy the color-coded lines out as formatted text, or print a classroom sheet.",
+  "description": "Practice reading the siddur in Hebrew: pick a prayer and a nusach (Ashkenaz, Sefard or Edot HaMizrach) and read it with toggleable transliteration, translation, vowel color-coding, line numbers and three layouts. Every text comes word for word from Sefaria. Copy the color-coded lines out as formatted text, or print a classroom sheet.",
   "applicationCategory": "EducationalApplication",
   "operatingSystem": "Any (web browser)",
   "isAccessibleForFree": true,
@@ -2015,6 +2015,13 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
   .font-opt.active .font-opt-preview, body.dark .font-opt.active .font-opt-preview, .font-opt.active .font-opt-name,
   .font-opt.active .font-opt-attr, body.dark .font-opt.active .font-opt-attr, .font-opt.active .font-opt-default { color: HighlightText; }
   .tt-fav-swatch[aria-pressed="true"] { outline: 3px solid Highlight; outline-offset: 2px; }
+  /* A switch is two background fills, and forced colours paint every fill Canvas: without these it has no track and no knob. */
+  .slider { forced-color-adjust:none; background:Canvas; border:1px solid ButtonText; }
+  .slider::before { background:ButtonText; }
+  input:checked + .slider { background:Highlight; border-color:Highlight; }
+  input:checked + .slider::before { background:HighlightText; }
+  input:disabled + .slider { border-color:GrayText; }
+  input:disabled + .slider::before { background:GrayText; }
 }
 </style>
 </head>

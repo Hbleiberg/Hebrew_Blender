@@ -3624,7 +3624,7 @@ home.card.torah.desc,"Read the weekly parsha with vowel coloring, transliteratio
 home.card.torah.name,Torah Trainer,מאמן התורה,tool card title,
 home.card.torah.sefaria_title,Texts from Sefaria,טקסטים מ-Sefaria,Sefaria attribution link tooltip,aria/title
 home.card.tefillah.cta,Practice the siddur →,תרגלו את הסידור ←,tool card button,
-home.card.tefillah.desc,"Practice reading the siddur: pick a prayer and a nusach, then read it with vowel coloring, transliteration and translation. Texts from Sefaria, each shown with its license.","תרגלו קריאה בסידור: בחרו תפילה ונוסח, וקראו עם צביעת תנועות, תעתיק ותרגום. הטקסטים מ-Sefaria, כל אחד מוצג עם הרישיון שלו.",tool card description,
+home.card.tefillah.desc,"Practice reading the siddur: pick a prayer and a nusach, then read it with vowel coloring, transliteration and translation. Texts from Sefaria.","תרגלו קריאה בסידור: בחרו תפילה ונוסח, וקראו עם צביעת תנועות, תעתיק ותרגום. הטקסטים מ-Sefaria.",tool card description,
 home.card.tefillah.name,Tefillah Trainer,מאמן התפילה,tool card title; also the tool's name on the account status line,
 home.card.trope.cta,Practice trope →,תרגלו טעמים ←,tool card button,
 home.card.trope.cta_atlas,Trope Atlas →,אטלס הטעמים ←,Trope card's second button (the Trope Atlas: every sign in every melody side by side),
@@ -8182,7 +8182,7 @@ tefillah.tour.s3_body,"Ashkenaz, Sefard or Edot HaMizrach — only the ones that
 tefillah.tour.s3_title,Choose the nusach,בחרו נוסח,tour step title,
 tefillah.tour.s4_body,Two switches reveal the transliteration and the translation — handy in front of a class.,שני מתגים חושפים את התעתיק ואת התרגום — שימושי מול כיתה.,tour step body,
 tefillah.tour.s4_title,Translit and translation,תעתיק ותרגום,tour step title,
-tefillah.tour.s5_body,The text comes word for word from its source. The edition and its license are listed underneath.,הטקסט מגיע מילה במילה מהמקור שלו. המהדורה והרישיון שלה מופיעים מתחתיו.,tour step body,
+tefillah.tour.s5_body,The text comes word for word from Sefaria. Its source is listed underneath.,הטקסט מגיע מילה במילה מ-Sefaria. המקור שלו מופיע מתחתיו.,tour step body,
 tefillah.tour.s5_title,The prayer itself,התפילה עצמה,tour step title,
 tefillah.tour.s6_body,"Five tabs: Favorites (prayers you save), Text (layout, transliteration, translation), Colors, Share (print, link, copy) and More.","חמש לשוניות: מועדפים (תפילות ששמרתם), טקסט (פריסה, תעתיק, תרגום), צבעים, שיתוף (הדפסה, קישור, העתקה) ועוד.",tour step body: names every settings-drawer tab in its order (keep the count and the list in step with the tabs),
 tefillah.tour.s6_title,Settings,הגדרות,tour step title,
