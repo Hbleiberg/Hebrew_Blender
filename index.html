@@ -62,7 +62,7 @@
   })() });
 </script>
 <title>IvritSuite — Free Hebrew Literacy Tools</title>
-<meta name="description" content="Free Hebrew worksheets, flash cards, alef bet and Jewish coloring pages, a dictionary, a weekly parsha reader and classroom tools — for teachers and students.">
+<meta name="description" content="IvritSuite: free Hebrew worksheets, flash cards, alef bet and Jewish coloring pages, a dictionary, a parsha reader and classroom tools for teachers and students.">
 <link rel="canonical" href="https://ivritsuite.com/">
 <meta name="robots" content="index, follow">
 <meta name="author" content="Harrison Bleiberg">
@@ -498,14 +498,16 @@ html.wn-open body{padding-block-end:calc(var(--wn-h, 0px) + 28px);}
   <div>
     <h1 class="brand-lockup"><img class="bl-img bl-screen" src="/brand/ivritsuite-lockup-english-dark.svg" alt="IvritSuite" width="166" height="50"><img class="bl-img bl-print" src="/brand/ivritsuite-lockup-english.svg" alt="" width="166" height="50"></h1>
   </div>
-  <div class="hright">
+  <!-- data-nosnippet: Google builds a result's snippet from page text when the query (a search for the
+       name) is missing from the meta description; the header controls' labels are never a description. -->
+  <div class="hright" data-nosnippet>
     <div data-i18n-switcher></div>
     <button class="dark-btn" id="darkBtn" onclick="toggleDark()" aria-pressed="false" aria-label="Toggle dark mode" data-i18n-aria-label="shared.darkmode.toggle_title" data-i18n-title="shared.darkmode.toggle_title"><svg class="hi hi-moon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15.5A7 7 0 0 1 8.5 6a7 7 0 1 0 9.5 9.5z"/><path d="M17.5 2.5l.9 2.4 2.4.9-2.4.9-.9 2.4-.9-2.4-2.4-.9 2.4-.9z" fill="currentColor" stroke="none"/></svg><svg class="hi hi-sun" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></svg><span class="hi-lbl" data-i18n="shared.darkmode.label_dark">Dark</span></button>
   </div>
 </header>
 
 <!-- What's new: a one-time, non-modal card for a returning visitor (whatsNewInit). It takes no focus and blocks nothing. -->
-<div class="wn-pop" id="wnPop" role="dialog" aria-modal="false" aria-labelledby="wnTitle" hidden>
+<div class="wn-pop" id="wnPop" role="dialog" aria-modal="false" aria-labelledby="wnTitle" data-nosnippet hidden>
   <button type="button" class="wn-x" id="wnClose" aria-label="Close" data-i18n-aria-label="home.whatsnew.close_aria"><svg class="hi hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></button>
   <h2 class="wn-title" id="wnTitle" data-i18n="home.whatsnew.title">New on IvritSuite</h2>
   <p class="wn-lede" data-i18n="home.whatsnew.lede">A new tool in the Hebrew Classroom Dashboard card, and one in the Discover card:</p>
@@ -780,7 +782,7 @@ html.wn-open body{padding-block-end:calc(var(--wn-h, 0px) + 28px);}
 </div>
 
 <!-- Import/Export modal -->
-<div class="ie-backdrop" id="ieBackdrop" onclick="closeIEModal(event)">
+<div class="ie-backdrop" id="ieBackdrop" data-nosnippet onclick="closeIEModal(event)">
   <div class="ie-modal" role="dialog" aria-modal="true" aria-labelledby="ieModalTitle" onclick="event.stopPropagation()">
     <div class="ie-modal-hdr">
       <h3 id="ieModalTitle" class="hi-btn" style="justify-content:flex-start;"><svg class="hi hi-gear" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12.0 1.8 L14.0 2.0 L15.1 4.6 L16.4 5.3 L19.2 4.8 L20.5 6.3 L19.4 8.9 L19.8 10.4 L22.2 12.0 L22.0 14.0 L19.4 15.1 L18.7 16.4 L19.2 19.2 L17.7 20.5 L15.1 19.4 L13.6 19.8 L12.0 22.2 L10.0 22.0 L8.9 19.4 L7.6 18.7 L4.8 19.2 L3.5 17.7 L4.6 15.1 L4.2 13.6 L1.8 12.0 L2.0 10.0 L4.6 8.9 L5.3 7.6 L4.8 4.8 L6.3 3.5 L8.9 4.6 L10.4 4.2 Z"/><circle cx="12" cy="12" r="3.2"/></svg><span data-i18n="home.alltools.modal_title">Import / Export All Settings</span></h3>

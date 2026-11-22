@@ -390,6 +390,14 @@ push, is what updates the live site.
   It is a cheap forward hedge plus a readable inventory for an agent pointed at the site — **not** an
   SEO mechanism, and not a reason to deprioritize the `sitemap.xml` + per-page JSON-LD that search
   engines actually read (and that this script reads *from*).
+- **The home page's search snippet.** Google shows a page's `<meta name="description">` only when it fits
+  the query. If it doesn't, Google builds the snippet from page text that contains the query. A search for
+  the site's name ("ivritsuite") is the usual way people reach the hub, so `index.html`'s description opens
+  with the name **IvritSuite**. Remove the name and the snippet goes back to header labels
+  ("EN, עברית. Sign in. Dark."). The hub's header controls (`.hright`, which also holds the account chip
+  mounted beside the switcher), the What's-new card and the AllTools modal carry `data-nosnippet` (Google
+  honours it on `div`/`span`/`section` only, never on a `button` or `a`). Their labels and hidden dialog
+  text are interface, not a description of the site.
 
 ## CSP allowlist by page (reference)
 
