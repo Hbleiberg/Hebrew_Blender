@@ -12,6 +12,9 @@
  *     and returns something else, and a pinned edition that is gone is refused;
  *   - a translation divided like the Hebrew shows line against line, one divided differently as a block, and for a
  *     line range not at all; a prayer with no open translation says so;
+ *   - a translation the catalog pins to the Hebrew by position shows line against line although it is shorter, a line
+ *     of it with no word ("[]") shows nothing, and a pin whose stamped words no longer match, or that was read against
+ *     another Hebrew edition than the one on screen, pairs nothing;
  *   - a Torah source: verses numbered chapter:verse, trope classes on the verses only, the siddur's added line marked;
  *   - every text on screen is credited with its edition and licence;
  *   - ?prayer= and ?nusach= open only what the catalog lists, and no request ever names anything else;
@@ -26,7 +29,7 @@ import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { rangeEnds } from './tefillah-sefaria.mjs';
+import { rangeEnds, englishEnds } from './tefillah-sefaria.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const args = process.argv.slice(2);
@@ -47,8 +50,8 @@ const WORDS = Object.values(JSON.parse(readFileSync(path.join(ROOT, 'data/hebrew
   .map((w) => String((w && w.word) || ''))
   .filter((w) => [...w].every((c) => isPoint(c) || isLetter(c) || c === ch(0x05C1) || c === ch(0x05C2)) && [...w].filter(isLetter).length >= 3 && [...w].some(isPoint))
   .filter((w, i, a) => a.indexOf(w) === i)
-  .slice(0, 80);
-if (WORDS.length < 60) { console.error('smoke-tefillah: too few pointed words in data/hebrew_words.json'); process.exit(1); }
+  .slice(0, 100);
+if (WORDS.length < 96) { console.error('smoke-tefillah: too few pointed words in data/hebrew_words.json'); process.exit(1); }
 const words = (from, n) => WORDS.slice(from, from + n);
 const bare = (w) => [...w].filter(isLetter).join('');                 // the same word without its points: an instruction's look
 const SHEVA_NA = ch(0x0592), PAUSE = ch(0x05AF);                         // the Metsudah edition's two reading marks
@@ -61,7 +64,7 @@ function verse(ws) {
 }
 
 const MET = 'The Metsudah siddur, 1981', OPEN = 'An Open Edition', GONE = 'An Edition That Left';
-const EN_A = 'An Aligned Translation', EN_B = 'A Differently Divided Translation';
+const EN_A = 'An Aligned Translation', EN_B = 'A Differently Divided Translation', EN_P = 'A Shorter Translation', OTHER = 'Another Open Edition';
 const N = (s) => 'Siddur Ashkenaz, Smoke, ' + s;
 
 // Each node: Hebrew editions (title → { license, lines }) and translations. `returns` overrides what an
@@ -92,6 +95,12 @@ NODES[N('NoEnglish')] = {
   he: { [OPEN]: { license: 'Public Domain', lines: [words(56, 4).join(' ')] } },
   en: { 'A Closed Translation': { license: 'Copyright: Somebody', lines: ['Not to be shown.'] }, 'Eine Übersetzung': { license: 'CC0', actualLanguage: 'de', lines: ['Nicht zeigen.'] } },
 };
+// A translation that stops early and skips a line: four lines for six of Hebrew, the third a placeholder.
+NODES[N('Pinned')] = {
+  he: { [OPEN]: { license: 'CC0', lines: [bare(WORDS[80]), words(81, 3).join(' '), words(84, 3).join(' '), words(87, 3).join(' '), words(90, 3).join(' '), words(93, 3).join(' ')] },
+        [OTHER]: { license: 'Public Domain', lines: [words(81, 3).join(' '), words(84, 3).join(' ')] } },
+  en: { [EN_P]: { license: 'CC0', lines: ['A heading in English', 'Pin two, the <i>second</i> line.', '[]', 'Pin four &mdash; the fourth line.'] } },
+};
 const TANAKH = {
   'Deuteronomy.6.4': { sections: [6, 4], he: [verse(words(60, 6))], en: ['A fixture verse.'] },
   'Deuteronomy.6.5-6': { sections: [6, 5], he: [verse(words(66, 5)), verse(words(71, 6))], en: ['Another one.', 'And a third.'] },
@@ -100,6 +109,7 @@ const TANAKH_HE = { title: 'A Tanakh Edition', license: 'CC-BY-SA' }, TANAKH_EN 
 
 const ends = (node, a, b) => rangeEnds(NODES[node].he[Object.keys(NODES[node].he)[0]].lines.slice(a - 1, b));
 const ranged = (node, a, b, he, extra) => Object.assign({ ref: `${node}:${a === b ? a : a + '-' + b}`, he }, ends(node, a, b), extra || {});
+const enPin = (node, title, a, b, extra) => ({ en: Object.assign({ v: title }, extra || {}, englishEnds(NODES[node].en[title].lines.slice(a - 1, b))) });
 const P = (key, sources) => ({ key, nameKey: '', en: 'Fixture ' + key, he: '', group: 'smoke', service: ['shacharit'], days: ['weekday'], sources });
 const CATALOG = { v: 1, hebrewPreference: ['Metsudah', 'Open'], groups: [{ key: 'smoke', nameKey: '', en: 'Smoke fixtures', he: '' }], prayers: [
   P('plain', { ashkenaz: N('Plain') }),
@@ -113,6 +123,11 @@ const CATALOG = { v: 1, hebrewPreference: ['Metsudah', 'Open'], groups: [{ key: 
   P('block', { ashkenaz: N('Block') }),
   P('hidden-translation', { ashkenaz: ranged(N('Block'), 1, 2, OPEN) }),
   P('no-english', { ashkenaz: N('NoEnglish') }),
+  P('pinned', { ashkenaz: ranged(N('Pinned'), 2, 5, OPEN, enPin(N('Pinned'), EN_P, 2, 5)) }),
+  P('pinned-moved', { ashkenaz: ranged(N('Pinned'), 2, 5, OPEN, { en: { v: EN_P, from: 'pin two the', to: 'some other words' } }) }),
+  P('pinned-whole', { ashkenaz: Object.assign({ ref: N('Pinned') }, enPin(N('Pinned'), EN_P, 1, 6, { he: OPEN })) }),
+  P('pinned-other-edition', { ashkenaz: Object.assign({ ref: N('Pinned') }, enPin(N('Pinned'), EN_P, 1, 6, { he: OTHER })) }),
+  P('pinned-odd', { ashkenaz: ranged(N('Pinned'), 2, 5, OPEN, { en: 'A Shorter Translation' }) }),                    // a pin this page cannot read: dropped, the part kept
   P('torah', { ashkenaz: N('Plain'), torah: ['Deuteronomy 6:4', ranged(N('Plain'), 1, 1, MET, { added: true }), 'Deuteronomy 6:5-6'] }),
   P('os', { ashkenaz: N('Plain'), opensiddur: 'os-fixture' }),
   P('os-missing', { opensiddur: 'os-missing' }),
@@ -207,6 +222,7 @@ const snapshot = (page) => page.evaluate((H) => {
   return {
     empty: !!r.querySelector('.tt-empty'), retry: !!q('#ttRetryBtn'),
     rows: qa('#ttReading [data-vk]').map((e) => e.dataset.vk),
+    trans: qa('#ttReading [data-vk]').map((e) => ((e.querySelector('.tt-translation') || {}).textContent || '').trim()),
     nums: qa('#ttReading .tt-num').map((e) => e.textContent.trim()).filter(Boolean),
     words: qa('#ttReading .tt-word').map((e) => e.textContent),
     bold: qa('#ttReading .tt-word.tt-b').length, small: qa('#ttReading .tt-word.tt-sm').length,
@@ -288,6 +304,19 @@ try {
     await t.page.evaluate(() => choosePrayer('no-english')); await t.page.waitForTimeout(500); await settled(t.page);
     s = await snapshot(t.page);
     check('no open translation: none offered, none shown, and the page says so', s.rows.length === 1 && s.versions.length === 0 && !/Not to be shown|Nicht zeigen/.test(s.text) && s.versionNote.length > 10, JSON.stringify({ versions: s.versions, note: s.versionNote }));
+    // a pinned translation: shorter than the Hebrew, paired by position
+    const go = async (key) => { await t.page.evaluate((k) => choosePrayer(k), key); await t.page.waitForTimeout(500); await settled(t.page); return snapshot(t.page); };
+    s = await go('pinned');
+    check('a pinned translation stands beside the Hebrew lines of the same number', s.rows.length === 4 && s.trans.join('|') === 'Pin two, the second line.||Pin four \u2014 the fourth line.|' && !s.block && !s.versionNote && s.credits.includes(EN_P), JSON.stringify({ trans: s.trans, note: s.versionNote, credits: s.credits }));
+    check('…a line of it with no word shows nothing, and its markup stays text', !s.text.includes('[]') && !/<i>/.test(s.trans.join('')) && s.forbidden === 0, JSON.stringify(s.trans));
+    s = await go('pinned-moved');
+    check('a pin whose stamped words no longer match pairs nothing: the translation is left out, with a note', s.rows.length === 4 && s.trans.every((x) => !x) && !/Pin two/.test(s.text) && !s.block && s.versionNote.length > 10 && !s.credits.includes(EN_P), JSON.stringify({ trans: s.trans, note: s.versionNote }));
+    s = await go('pinned-odd');
+    check('a pin this page cannot read is dropped and the prayer still opens', s.rows.length === 4 && s.trans.every((x) => !x) && !s.empty, JSON.stringify({ rows: s.rows, trans: s.trans }));
+    s = await go('pinned-whole');
+    check('a whole node pinned against the edition on screen pairs by position, past the translation\u2019s end too', s.rows.length === 5 && /A heading in English/.test(s.text) && s.trans.join('|') === 'Pin two, the second line.||Pin four \u2014 the fourth line.||' && !s.block && !s.versionNote, JSON.stringify({ rows: s.rows, trans: s.trans, block: s.block }));
+    s = await go('pinned-other-edition');
+    check('…and one pinned against another Hebrew edition stays a block', s.block && /Pin two/.test(s.blockText) && !s.blockText.includes('[]') && s.trans.every((x) => !x) && s.versionNote.length > 10, JSON.stringify({ block: s.block, trans: s.trans }));
     check('no page error', t.errors.length === 0, t.errors.join(' | '));
     await t.close();
   }

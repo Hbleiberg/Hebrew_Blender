@@ -22,7 +22,7 @@ maintainer, never fixed. The fixture smoke builds its texts from ordinary vocabu
 
 ## The catalog — `data/tefillah/catalog.json`
 
-A curated list, not the Sefaria tree. Fetched as `data/tefillah/catalog.json?v=2` (`CATALOG_URL`); `sw.js` precaches
+A curated list, not the Sefaria tree. Fetched as `data/tefillah/catalog.json?v=3` (`CATALOG_URL`); `sw.js` precaches
 that exact URL (`DATA_PRECACHE`), so **an edit bumps the `?v=` in both places**.
 
 ```jsonc
@@ -41,6 +41,8 @@ or an ordered list of parts. A part is:
 |---|---|
 | `"Siddur Ashkenaz, Weekday, Shacharit, …, Modeh Ani"` | a whole **leaf node** of one of the three siddur indexes |
 | `{ "ref": "<leaf>:<a-b>", "he": "<edition>", "from": "…", "to": "…" }` | **lines** `a`–`b` of a leaf node, read from that exact Hebrew edition; `from` / `to` are the consonants of the range's first two and last two pointed words |
+| `{ …, "en": { "v": "<translation>", "from": "…", "to": "…" } }` | a **pinned translation**: line *n* of that translation stands beside line *n* of the part's Hebrew (below) |
+| `{ "ref": "<leaf>", "en": { "v": "…", "he": "<edition>", "from": "…", "to": "…" } }` | a whole node with a pinned translation; `he` names the Hebrew edition the pairing was read against |
 | `"Deuteronomy 6:4-9"` | a Tanakh ref — only inside a `torah` source |
 | `{ …, "added": true }` | inside a `torah` source: a line the siddur adds between the verses |
 | `"modeh-ani"` (the `opensiddur` source) | the key of a snapshot file, `data/tefillah/opensiddur/<key>.json` |
@@ -51,13 +53,22 @@ or an ordered list of parts. A part is:
 - **`from` / `to` are stamped, never typed**: `node scripts/check-tefillah-refs.mjs --stamp` copies them from Sefaria's
   answer and rewrites the catalog through `formatCatalog`. The page compares them on every load (`rangeEnds`) and shows
   nothing when they differ (`range_moved`): an edit at Sefaria cannot slide a prayer onto its neighbour's lines.
+- **A pinned translation (`en`)** exists because Sefaria keeps a translation's lines at the Hebrew's positions, but
+  many translations stop early or leave lines empty, so their line count differs and the page cannot tell they pair.
+  A pin is added only after a person has read the two side by side (`--lines` of the walker, or the report's last
+  section): never by a rule, since some translations follow another Hebrew edition's division. Its `from` / `to` are
+  the first three words of the first translated line and the last three of the last (lower case, `a-z0-9` only),
+  stamped by `--stamp` like the Hebrew's. The checker fails on a pin whose translation is gone or not open, has no
+  translated line there, has a line where the Hebrew has none, or no longer matches its stamp.
 - **`node scripts/check-tefillah-refs.mjs --out docs/tefillah-refs-report.md`** checks every source (the ref resolves
-  and is a leaf, the pinned edition is still open, the range's ends match, an Open Siddur key's file exists and is
-  open) and writes the table the catalog is reviewed from: edition and licence, other open editions, each open
-  translation and whether it is divided like the Hebrew, the first and last words. After a catalog edit, run it and
-  commit both. Behind a proxy: `NODE_USE_ENV_PROXY=1`; `TEFILLAH_CACHE_DIR=<dir>` keeps Sefaria's answers on disk.
+  and is a leaf, the pinned edition is still open, the range's ends match, a pinned translation still pairs, an Open
+  Siddur key's file exists and is open) and writes the table the catalog is reviewed from: edition and licence, other
+  open editions, each open translation and whether it is divided like the Hebrew (✓), pinned (⇄) or neither (✗), the
+  first and last words, and at the end **every pinned pairing line by line** (Hebrew beside English, first words). After
+  a catalog edit, run it and commit both. Behind a proxy: `NODE_USE_ENV_PROXY=1`; `TEFILLAH_CACHE_DIR=<dir>` keeps
+  Sefaria's answers on disk.
 - The page reads the catalog through `normalizeCatalog`: a part that is not one of the forms above drops its whole
-  source, a key that is not `PRAYER_KEY_RE` drops its prayer, and `prayerByKey` is a `Map` (so `?prayer=constructor`
+  source (a pin it cannot read drops only the pin: `catalogPin`), a key that is not `PRAYER_KEY_RE` drops its prayer, and `prayerByKey` is a `Map` (so `?prayer=constructor`
   finds nothing). Nothing typed in an address reaches a request except by naming a catalog key.
 - Names: `catalogName` shows the CSV row a `nameKey` names (`tefillah.prayer.*`, `tefillah.group.*` — written from the
   catalog's own `en` / `he`), else the catalog's value.
@@ -82,11 +93,15 @@ reason on the status line and the Try again card): a prayer with a silent gap wo
   offers it openly). A whole node reads the stored choice (`settings.hebEdition`) where the node has it, else the
   first open edition matching `hebrewPreference`; the Text tab's *Hebrew text* section lists the others only where a
   one-part prayer has more than one.
-- **Translation** (`pickEnglish`): the stored choice where the node has it; else the first open translation with as
-  many lines as the Hebrew node (Public Domain or CC0 before CC BY, then the rest); else the first open one. An equal
-  line count is the only test the page can make. One divided differently is shown as one block after the prayer
-  (`.tt-trans-block`), or not at all for a line range (there is no telling which of its lines are these), with a note
-  under the version list either way. A prayer with no open translation says so and shows none.
+- **Translation** (`pickEnglish`): the stored choice where the node has it; else the translation the catalog pins to
+  the part; else the first open translation with as many lines as the Hebrew node (Public Domain or CC0 before CC BY,
+  then the rest); else the first open one. A translation stands **line against line** when it has as many lines as the
+  Hebrew, or when it is the pinned one and its lines still begin and end as stamped (`englishEnds`; a range's pin
+  holds for the range's own Hebrew edition, a whole node's only while the edition it names is the one on screen).
+  Any other is shown as one block after the prayer (`.tt-trans-block`), or not at all for a line range (there is no
+  telling which of its lines are these), with a note under the version list either way. A translation line with no
+  word in it (Sefaria's `[]` placeholder) is an untranslated line and shows nothing. A prayer with no open
+  translation says so and shows none.
 - **Torah parts** (`loadTanakhPart`): the Trainer's `fetchSefariaText` / `parseSefariaResponse`, which also record the
   returned versions' titles and licences. Translation: the stored choice, else JPS 1917, else by licence rank.
 - **Open Siddur parts** (`loadOpenSiddurPart`): below.
@@ -174,7 +189,7 @@ Hebrew UI. It prints with the reading and the handout (the handout credits only 
 
 - `node scripts/smoke-tefillah.mjs` — the reading model against fixtures it serves itself (no Sefaria): markup never
   reaches the page, the reading marks, line ranges whose words moved, the licence refusals, aligned / block / hidden
-  translations, the Torah source, an Open Siddur snapshot and its gendered forms, the address bar, the Try again card.
+  translations, a pinned translation (paired by position, refused when its stamp no longer matches), the Torah source, an Open Siddur snapshot and its gendered forms, the address bar, the Try again card.
 - `node scripts/check-tefillah-refs.mjs` — the catalog against Sefaria (above).
 - `scripts/smoke-tools.mjs` and `scripts/smoke-migration.mjs` carry the page (the account layer).
 - A new vowel key or colour control follows the Torah Trainer's rule (both schemes, and the `.nik-<key>` line here).

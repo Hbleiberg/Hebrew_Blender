@@ -172,11 +172,33 @@ export function rangeEnds(lines) {
   return { from: skeleton(first.slice(0, 2).join(' ')), to: skeleton(last.slice(-2).join(' ')) };
 }
 
+// ── A pinned translation ─────────────────────────────────────────────────────────────────────
+// Sefaria keeps a translation's lines at the same positions as the Hebrew's, but many translations stop
+// early or leave lines empty, so their line count differs and the page cannot know they pair. Where a
+// person has read the two side by side, the part says so:
+//   "en": { "v": "<the translation's exact title>", "from": "<first words>", "to": "<last words>" }
+// and, on a whole node (no line range, so no "he" of its own),
+//   "en": { "v": …, "he": "<the Hebrew edition the pairing was read against>", "from": …, "to": … }
+// Line n of the translation then stands beside line n of that Hebrew edition. `from` / `to` are stamped
+// by check-tefillah-refs.mjs --stamp from the translation's own lines (never typed): the first three
+// words of the first translated line and the last three of the last, lower case, a-z and 0-9 only.
+// The page compares them and falls back to its unpaired display when they differ.
+export function englishWords(plain) {
+  return String(plain || '').toLowerCase().replace(/&[a-z0-9#]+;/g, ' ').replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter(Boolean);
+}
+// A line with no word (an empty string, Sefaria's "[]" placeholder) is an untranslated line.
+export function englishEnds(lines) {
+  const words = lines.map((raw) => englishWords(plainText(raw)));
+  const first = words.find((w) => w.length), last = [...words].reverse().find((w) => w.length);
+  if (!first || !last) return { from: '', to: '' };
+  return { from: first.slice(0, 3).join(' '), to: last.slice(-3).join(' ') };
+}
+
 // The file is written by this function only (by --stamp), so a hand edit and a stamped copy read alike.
 export function formatCatalog(cat) {
   const j = (v) => JSON.stringify(v);
-  const part = (p) => (typeof p === 'string' || p === null ? j(p)
-    : '{ ' + Object.keys(p).map((k) => `${j(k)}: ${j(p[k])}`).join(', ') + ' }');
+  const obj = (o) => '{ ' + Object.keys(o).map((k) => `${j(k)}: ${o[k] && typeof o[k] === 'object' && !Array.isArray(o[k]) ? obj(o[k]) : j(o[k])}`).join(', ') + ' }';
+  const part = (p) => (typeof p === 'string' || p === null ? j(p) : obj(p));
   const source = (s) => (Array.isArray(s) ? '[\n' + s.map((p) => '          ' + part(p)).join(',\n') + '\n        ]' : part(s));
   const out = ['{', `  "v": ${j(cat.v)},`, `  "hebrewPreference": ${j(cat.hebrewPreference)},`, '  "groups": ['];
   out.push(cat.groups.map((g) => '    { ' + Object.keys(g).map((k) => `${j(k)}: ${j(g[k])}`).join(', ') + ' }').join(',\n'));

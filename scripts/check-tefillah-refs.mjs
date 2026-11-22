@@ -12,23 +12,27 @@
  * For every source of every prayer it reports: the ref resolves and is a leaf node of its siddur;
  * the Hebrew edition shown and its licence; other openly licensed Hebrew editions and whether they
  * divide the node the same way; each openly licensed English translation and whether its line
- * count matches the Hebrew (what the page shows line against line); whether real te'amim are
- * present; and the first and last pointed words of the lines shown.
+ * count matches the Hebrew (what the page shows line against line); a translation the catalog pins
+ * to the Hebrew by position ("en", see tefillah-sefaria.mjs), with every paired line printed at the
+ * end for a person to read; whether real te'amim are present; and the first and last pointed words
+ * of the lines shown.
  *
  * It fails (exit 1) on: a ref that does not resolve, a node that is not a leaf, a pinned edition
- * Sefaria no longer serves under an open licence, a source with no openly licensed Hebrew, or a
- * range whose first / last words differ from the ones stamped in the catalog.
+ * Sefaria no longer serves under an open licence, a source with no openly licensed Hebrew, a
+ * range whose first / last words differ from the ones stamped in the catalog, or a pinned
+ * translation that is gone, not open, empty over those lines, translated where the Hebrew has no
+ * line, or whose first / last words differ from its stamp.
  *
  * docs/tefillah-refs-report.md is this script's output: after a catalog edit, re-run with --out and commit both.
  *
- * Nothing here writes or corrects a text: `from` / `to` are copied from Sefaria's response.
+ * Nothing here writes or corrects a text: every `from` / `to` is copied from Sefaria's response.
  * Behind a proxy: NODE_USE_ENV_PROXY=1 node scripts/check-tefillah-refs.mjs …
  */
 import fs from 'node:fs';
 import path from 'node:path';
 import {
   SEFARIA_API, SIDDUR_INDEXES, NUSACHIM, sefariaJSON, leafPaths, fetchVersion, splitRef, isTanakhRef, sourceParts,
-  licenseName, isOpenLicense, flatText, plainText, lineKind, hasTeamim, rangeEnds, formatCatalog,
+  licenseName, isOpenLicense, flatText, plainText, lineKind, hasTeamim, rangeEnds, englishWords, englishEnds, formatCatalog,
 } from './tefillah-sefaria.mjs';
 
 const ROOT = path.resolve(new URL('..', import.meta.url).pathname);
@@ -40,7 +44,8 @@ const OUT = arg('--out');
 
 const cat = JSON.parse(fs.readFileSync(CATALOG, 'utf8'));
 const problems = [];        // blocking
-const notes = { noEnglish: [], unmatched: [], editionsDiffer: [], nulls: [], licences: new Map(), sharedSegment: [] };
+const notes = { noEnglish: [], unmatched: [], editionsDiffer: [], nulls: [], licences: new Map(), sharedSegment: [], pinned: [], pinOffDefault: [] };
+const pairings = new Map();  // "<node> — <Hebrew edition> ⇄ <translation>" → Map(line number → [Hebrew, English]) for the review section
 const short = (t) => String(t).trim();
 const lic = (l) => licenseName(l) || `NOT OPEN (${l || 'none'})`;
 const isEnglish = (v) => v.language === 'en' && (v.actualLanguage || 'en') === 'en';
@@ -98,7 +103,50 @@ async function checkSiddurPart(part, where, leaves) {
     const e = (await fetchVersion(node, 'english', v.versionTitle)).version;
     const ok = !!e && e.versionTitle === v.versionTitle && isOpenLicense(e.license);
     const n = ok ? e.lines.length : 0;
-    english.push({ title: short(v.versionTitle), licence: lic(v.license), match: ok && n === total, n });
+    english.push({ title: short(v.versionTitle), licence: lic(v.license), match: ok && n === total, n, raw: v.versionTitle });
+  }
+  // A pinned translation: line n of it beside line n of the Hebrew edition it was read against.
+  if (part.en != null) {
+    const pin = part.en;
+    const bad = (msg) => { problems.push(`${where}: ${part.ref}: the pinned translation ${msg}`); };
+    if (!pin || typeof pin !== 'object' || typeof pin.v !== 'string' || !pin.v) bad('must be { "v": "<title>", … }');
+    else if (!ranged && (typeof pin.he !== 'string' || !pin.he)) bad('of a whole node must name the Hebrew edition it was read against ("he")');
+    else if (ranged && pin.he !== undefined) bad('of a line range takes its Hebrew edition from the part, not from "en"');
+    else {
+      const entry = english.find((e) => e.raw === pin.v);
+      let against = he;
+      if (!ranged && pin.he !== he.versionTitle) {
+        const o = openHe.find((v) => v.versionTitle === pin.he) ? (await fetchVersion(node, 'hebrew', pin.he)).version : null;
+        against = o && o.versionTitle === pin.he && isOpenLicense(o.license) ? o : null;
+        if (against) notes.pinOffDefault.push(`${node}: pinned against ${short(pin.he)}, the page shows ${short(he.versionTitle)} first`);
+      }
+      const e = entry ? (await fetchVersion(node, 'english', pin.v)).version : null;
+      if (!entry || !e || e.versionTitle !== pin.v || !isOpenLicense(e.license)) bad(`${JSON.stringify(pin.v)} is not an open English translation of ${node}`);
+      else if (!against) bad(`names ${JSON.stringify(pin.he)}, which is not an open Hebrew edition of ${node}`);
+      else {
+        const a = ranged ? from : 1, b = ranged ? to : against.lines.length;
+        const enLines = e.lines.slice(a - 1, b);
+        const ends = englishEnds(enLines);
+        if (!ends.from) bad(`${JSON.stringify(pin.v)} has no translated line among lines ${a}-${b}`);
+        else {
+          if (STAMP) { pin.from = ends.from; pin.to = ends.to; }
+          else if (pin.from !== ends.from || pin.to !== ends.to) bad(`now reads "${ends.from} … ${ends.to}", the catalog says "${pin.from} … ${pin.to}"`);
+          const key = `${node} — ${short(against.versionTitle)} ⇄ ${short(pin.v)} [${lic(e.license)}]`;
+          if (!pairings.has(key)) pairings.set(key, new Map());
+          let translated = 0;
+          for (let i = a; i <= b; i++) {
+            const h = plainText(against.lines[i - 1] || ''), t = plainText(e.lines[i - 1] || '');
+            const has = englishWords(t).length > 0;
+            if (has) translated++;
+            if (has && !h) bad(`has a line ${i} where the Hebrew has none`);
+            pairings.get(key).set(i, [h, has ? t : '']);
+          }
+          entry.pinned = true;
+          entry.pinnedLines = `${translated} of ${b - a + 1}`;
+          if (!ranged) entry.pinnedHe = short(against.versionTitle);
+        }
+      }
+    }
   }
   return {
     ref: part.ref, added: !!part.added, node, lines: shown.length, pointed: kinds.filter((k) => k === 'text').length,
@@ -127,17 +175,22 @@ function row(prayer, nusach, parts) {
   const uniq = (a) => [...new Set(a)];
   const editions = uniq(parts.map((p) => p.edition)).join('<br>');
   const others = uniq(parts.flatMap((p) => p.others)).join('<br>') || '—';
-  // A translation counts for the source only if every siddur part offers it; ✓ when it matches in all of them.
+  // A translation counts for the source only if every siddur part offers it; ✓ when it matches in all of them,
+  // ⇄ when the catalog pins it to the Hebrew by position in at least one part and it pairs in every part.
   const titles = uniq(parts.flatMap((p) => p.english.map((e) => e.title)));
   const eng = titles.map((t) => {
     const per = parts.map((p) => p.english.find((e) => e.title === t));
     const everywhere = per.every(Boolean);
-    const match = everywhere && per.every((e) => e.match);
-    return `${match ? '✓' : '✗'} ${t} [${per.find(Boolean).licence}]${everywhere ? '' : ' (not in every part)'}`;
+    const match = everywhere && per.every((e) => e.match || e.pinned);
+    const pins = per.filter((e) => e && e.pinned);
+    const mark = match ? (pins.length ? '⇄' : '✓') : '✗';
+    const how = pins.length ? ` (pinned: ${pins.length === 1 ? pins[0].pinnedLines + ' lines translated' : pins.length + ' parts'}${pins[0].pinnedHe ? ', with ' + pins[0].pinnedHe : ''})` : '';
+    return `${mark} ${t} [${per.find(Boolean).licence}]${how}${everywhere ? '' : ' (not in every part)'}`;
   });
   const lines = parts.reduce((n, p) => n + p.lines, 0), pointed = parts.reduce((n, p) => n + p.pointed, 0);
   const ends = `${parts[0].ends.from} … ${parts[parts.length - 1].ends.to}`;
   if (!titles.length) notes.noEnglish.push(`${prayer.key} (${nusach})`);
+  else if (eng.some((e) => e.startsWith('⇄'))) notes.pinned.push(`${prayer.key} (${nusach})`);
   else if (!eng.some((e) => e.startsWith('✓'))) notes.unmatched.push(`${prayer.key} (${nusach})`);
   return `| ${prayer.en} | ${nusach} | ${ref} | ${lines} (${pointed}) | ${editions} | ${others} | ${eng.join('<br>') || 'none'} | ${parts.some((p) => p.teamim) ? 'yes' : 'no'} | ${ends} |`;
 }
@@ -189,17 +242,30 @@ async function main() {
 
   const out = [];
   out.push(`## Tefillah Trainer — catalog refs checked against Sefaria`, '');
-  out.push(`${cat.prayers.length} prayers, ${rows.length} sources checked. Lines = Sefaria segments shown (pointed = lines that hold prayer text; the rest are instructions or headings). ✓ = the translation has as many lines as the Hebrew node, so the page shows it line against line; ✗ = it does not, so the page shows it as one block. An equal count is the test the page can make, not proof of a correct pairing. First … last = the first two and last two pointed words of the lines shown (consonants only).`, '');
+  out.push(`${cat.prayers.length} prayers, ${rows.length} sources checked. Lines = Sefaria segments shown (pointed = lines that hold prayer text; the rest are instructions or headings). ✓ = the translation has as many lines as the Hebrew node, so the page shows it line against line; ⇄ = it has fewer or more lines, but the catalog pins it to the Hebrew by position (line n beside line n), read by a person and listed line by line at the end of this report; ✗ = neither, so a whole node shows it as one block and a line range shows none. An equal count is the test the page can make, not proof of a correct pairing. First … last = the first two and last two pointed words of the lines shown (consonants only).`, '');
   out.push('| Prayer | Nusach | Ref | Lines (pointed) | Hebrew edition | Other open Hebrew editions | Open English translations | Te\'amim | First … last words |');
   out.push('|---|---|---|---|---|---|---|---|---|');
   out.push(...rows, '');
   const list = (title, a) => { out.push(`**${title}** (${a.length}): ${a.length ? a.join(', ') : 'none'}`, ''); };
   list('No source in this nusach (null)', notes.nulls);
   list('No openly licensed English translation', notes.noEnglish);
-  list('Translations exist but none matches the Hebrew line for line (shown as a block)', notes.unmatched);
+  list('Shown line against line through a pinned translation (⇄)', notes.pinned);
+  list('Translations exist but none matches the Hebrew line for line (a whole node shows one as a block; a line range shows none)', notes.unmatched);
+  list('Pinned against a Hebrew edition the page does not show first (the pairing applies only once a visitor picks that edition)', [...new Set(notes.pinOffDefault)]);
   list('Hebrew editions that divide a node differently', [...new Set(notes.editionsDiffer)]);
   out.push(`**Licence strings Sefaria uses on these nodes:** ${[...notes.licences].sort((a, b) => b[1] - a[1]).map(([k, n]) => `\`${k}\` ×${n} → ${licenseName(k) || 'refused'}`).join('; ')}`, '');
   out.push(problems.length ? `**Problems (${problems.length}):**\n${problems.map((p) => '- ' + p).join('\n')}` : '**Problems:** none.', '');
+  // Every pinned pairing, for a person to read: the page shows each English line beside the Hebrew line of the same number.
+  if (pairings.size) {
+    const cut = (t, n) => { const w = t.replace(/[\u0591-\u05AF\u05BD]/g, '').split(' '); return (w.length > n ? w.slice(0, n).join(' ') + ' …' : w.join(' ')).replace(/\|/g, '\\|'); };
+    out.push('## Pinned translations, line by line', '');
+    out.push('Each table is one siddur node: the lines the catalog pins, the Hebrew edition they were read against and the translation, both as Sefaria serves them (first words only). The page shows the two cells of a row side by side. An empty English cell is a line the translation leaves out; an empty Hebrew cell is an empty line at Sefaria.', '');
+    for (const [key, lines] of pairings) {
+      out.push(`### ${key}`, '', '| Line | Hebrew | English |', '|---|---|---|');
+      for (const i of [...lines.keys()].sort((x, y) => x - y)) { const [h, t] = lines.get(i); out.push(`| ${i} | ${cut(h, 7)} | ${cut(t, 11)} |`); }
+      out.push('');
+    }
+  }
   const text = out.join('\n');
   if (OUT) fs.writeFileSync(OUT, text); else console.log(text);
   console.error(`check-tefillah-refs: ${rows.length} sources, ${problems.length} problem(s)${STAMP && !ONLY ? ', catalog stamped' : ''}`);

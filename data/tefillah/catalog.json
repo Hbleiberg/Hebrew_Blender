@@ -99,7 +99,7 @@
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Pesukei Dezimra, Barukh She'amar",
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Hodu:12-13", "he": "The Metsudah siddur, 1981", "from": "ברוך שאמר", "to": "מהלל בתשבחות" },
-        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Pesukei D'Zimra:2", "he": " Shaliehsaboo Edition", "from": "ברוך שאמר", "to": "מהלל בתשבחות" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Pesukei D'Zimra:2", "he": " Shaliehsaboo Edition", "from": "ברוך שאמר", "to": "מהלל בתשבחות", "en": { "v": "Sefaria Community Translation", "from": "blessed is he", "to": "lauded with praises" } },
         "torah": null,
         "opensiddur": null
       } },
@@ -108,7 +108,7 @@
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Pesukei Dezimra, Ashrei",
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Hodu:18-19", "he": "The Metsudah siddur, 1981", "from": "אשרי יושבי", "to": "עולם הללויה" },
-        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Pesukei D'Zimra:6-7", "he": " Shaliehsaboo Edition", "from": "אשרי יושבי", "to": "עולם הללויה" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Pesukei D'Zimra:6-7", "he": " Shaliehsaboo Edition", "from": "אשרי יושבי", "to": "עולם הללויה", "en": { "v": "Sefaria Community Translation", "from": "happy are those", "to": "praise g d" } },
         "torah": null,
         "opensiddur": null
       } },
@@ -126,7 +126,7 @@
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Pesukei Dezimra, Yishtabach",
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Yishtabach:1-2", "he": "The Metsudah siddur, 1981", "from": "ישתבח שמך", "to": "חי העולמים" },
-        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Pesukei D'Zimra:19", "he": " Shaliehsaboo Edition", "from": "ישתבח שמך", "to": "העולמים אמן" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Pesukei D'Zimra:19", "he": " Shaliehsaboo Edition", "from": "ישתבח שמך", "to": "העולמים אמן", "en": { "v": "Sefaria Community Translation", "from": "may your name", "to": "the worlds amen" } },
         "torah": null,
         "opensiddur": null
       } },
@@ -207,7 +207,7 @@
       "sources": {
         "ashkenaz": { "ref": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Patriarchs:2-6", "he": "The Metsudah siddur, 1981", "from": "אדני שפתי", "to": "מגן אברהם" },
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:1-7", "he": "The Metsudah siddur, 1981", "from": "אדני שפתי", "to": "מגן אברהם" },
-        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:2-3", "he": " Shaliehsaboo Edition", "from": "אדני שפתי", "to": "מגן אברהם" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:2-3", "he": " Shaliehsaboo Edition", "from": "אדני שפתי", "to": "מגן אברהם", "en": { "v": "Sefaria Community Translation", "from": "my l rd", "to": "shield of avraham" } },
         "torah": null,
         "opensiddur": null
       } },
@@ -216,7 +216,7 @@
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Divine Might",
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:8-19", "he": "The Metsudah siddur, 1981", "from": "אתה גבור", "to": "מחיה המתים" },
-        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:4-6", "he": " Shaliehsaboo Edition", "from": "אתה גבור", "to": "מחיה המתים" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:4-6", "he": " Shaliehsaboo Edition", "from": "אתה גבור", "to": "מחיה המתים", "en": { "v": "Sefaria Community Translation", "from": "you are mighty", "to": "revives the dead" } },
         "torah": null,
         "opensiddur": null
       } },
@@ -225,7 +225,7 @@
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Holiness of God",
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:34-39", "he": "The Metsudah siddur, 1981", "from": "אתה קדוש", "to": "המלך הקדוש" },
-        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:10", "he": " Shaliehsaboo Edition", "from": "אתה קדוש", "to": "המלך הקדוש" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:10", "he": " Shaliehsaboo Edition", "from": "אתה קדוש", "to": "המלך הקדוש", "en": { "v": "Sefaria Community Translation", "from": "you are holy", "to": "the holy king" } },
         "torah": null,
         "opensiddur": null
       } },
@@ -234,7 +234,7 @@
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Kedushah",
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:20-33", "he": "The Metsudah siddur, 1981", "from": "נקדישך ונעריצך", "to": "ודר הללויה" },
-        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:7-9", "he": " Shaliehsaboo Edition", "from": "נקדישך ונעריצך", "to": "ודר הללויה" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:7-9", "he": " Shaliehsaboo Edition", "from": "נקדישך ונעריצך", "to": "ודר הללויה", "en": { "v": "Sefaria Community Translation", "from": "kedousha said in", "to": "praise g d" } },
         "torah": null,
         "opensiddur": null
       } },
@@ -243,7 +243,7 @@
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Knowledge",
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:40-41", "he": "The Metsudah siddur, 1981", "from": "אתה חונן", "to": "חונן הדעת" },
-        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:11", "he": " Shaliehsaboo Edition", "from": "אתה חונן", "to": "חונן הדעת" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:11", "he": " Shaliehsaboo Edition", "from": "אתה חונן", "to": "חונן הדעת", "en": { "v": "Sefaria Community Translation", "from": "you graciously bestow", "to": "graciously bestows knowledge" } },
         "torah": null,
         "opensiddur": null
       } },
@@ -252,7 +252,7 @@
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Repentance",
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:42-43", "he": "The Metsudah siddur, 1981", "from": "השיבנו אבינו", "to": "הרוצה בתשובה" },
-        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:12", "he": " Shaliehsaboo Edition", "from": "השיבנו אבינו", "to": "הרוצה בתשובה" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:12", "he": " Shaliehsaboo Edition", "from": "השיבנו אבינו", "to": "הרוצה בתשובה", "en": { "v": "Sefaria Community Translation", "from": "return us our", "to": "who desires repentance" } },
         "torah": null,
         "opensiddur": null
       } },
@@ -261,7 +261,7 @@
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Forgiveness",
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:44-45", "he": "The Metsudah siddur, 1981", "from": "סלח לנו", "to": "המרבה לסלוח" },
-        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:13", "he": " Shaliehsaboo Edition", "from": "סלח לנו", "to": "המרבה לסלח" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:13", "he": " Shaliehsaboo Edition", "from": "סלח לנו", "to": "המרבה לסלח", "en": { "v": "Sefaria Community Translation", "from": "pardon us our", "to": "who abundantly pardons" } },
         "torah": null,
         "opensiddur": null
       } },
@@ -270,7 +270,7 @@
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Redemption",
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:46-48", "he": "The Metsudah siddur, 1981", "from": "ראה נא", "to": "עננו" },
-        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:14", "he": " Shaliehsaboo Edition", "from": "ראה נא", "to": "גואל ישראל" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:14", "he": " Shaliehsaboo Edition", "from": "ראה נא", "to": "גואל ישראל", "en": { "v": "Sefaria Community Translation", "from": "behold please our", "to": "redeemer of yisrael" } },
         "torah": null,
         "opensiddur": null
       } },
@@ -279,7 +279,7 @@
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Healing",
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:49-53", "he": "The Metsudah siddur, 1981", "from": "רפאנו יהוה", "to": "עמו ישראל" },
-        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:18", "he": " Shaliehsaboo Edition", "from": "רפאנו יהוה", "to": "עמו ישראל" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:18", "he": " Shaliehsaboo Edition", "from": "רפאנו יהוה", "to": "עמו ישראל", "en": { "v": "Sefaria Community Translation", "from": "heal us l", "to": "his people yisrael" } },
         "torah": null,
         "opensiddur": null
       } },
@@ -288,7 +288,7 @@
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Prosperity",
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:54-61", "he": "The Metsudah siddur, 1981", "from": "ברך עלינו", "to": "ברך עלינו" },
-        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:19-22", "he": " Shaliehsaboo Edition", "from": "ברכנו יהוה", "to": "מברך השנים" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:19-22", "he": " Shaliehsaboo Edition", "from": "ברכנו יהוה", "to": "מברך השנים", "en": { "v": "Sefaria Community Translation", "from": "in summer", "to": "blesses the years" } },
         "torah": null,
         "opensiddur": null
       } },
@@ -297,7 +297,7 @@
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Gathering the Exiles",
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:62-63", "he": "The Metsudah siddur, 1981", "from": "תקע בשופר", "to": "עמו ישראל" },
-        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:23", "he": " Shaliehsaboo Edition", "from": "תקע בשופר", "to": "עמו ישראל" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:23", "he": " Shaliehsaboo Edition", "from": "תקע בשופר", "to": "עמו ישראל", "en": { "v": "Sefaria Community Translation", "from": "sound a great", "to": "his people israel" } },
         "torah": null,
         "opensiddur": null
       } },
@@ -306,7 +306,7 @@
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Justice",
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:64-69", "he": "The Metsudah siddur, 1981", "from": "השיבה שופטינו", "to": "המלך המשפט" },
-        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:24", "he": " Shaliehsaboo Edition", "from": "השיבה שופטינו", "to": "המלך המשפט" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:24", "he": " Shaliehsaboo Edition", "from": "השיבה שופטינו", "to": "המלך המשפט", "en": { "v": "Sefaria Community Translation", "from": "restore our judges", "to": "king the judge" } },
         "torah": null,
         "opensiddur": null
       } },
@@ -315,7 +315,7 @@
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Against Enemies",
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:70-71", "he": "The Metsudah siddur, 1981", "from": "ולמלשינים אל", "to": "ומכניע זדים" },
-        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:25", "he": " Shaliehsaboo Edition", "from": "למינים ולמלשינים", "to": "ומכניע מינים" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:25", "he": " Shaliehsaboo Edition", "from": "למינים ולמלשינים", "to": "ומכניע מינים", "en": { "v": "Sefaria Community Translation", "from": "for the informers", "to": "wicked the heretics" } },
         "torah": null,
         "opensiddur": null
       } },
@@ -324,7 +324,7 @@
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, The Righteous",
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:72-73", "he": "The Metsudah siddur, 1981", "from": "על הצדיקים", "to": "ומבטח לצדיקים" },
-        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:26", "he": " Shaliehsaboo Edition", "from": "על הצדיקים", "to": "ומבטח לצדיקים" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:26", "he": " Shaliehsaboo Edition", "from": "על הצדיקים", "to": "ומבטח לצדיקים", "en": { "v": "Sefaria Community Translation", "from": "upon the righteous", "to": "for the righteous" } },
         "torah": null,
         "opensiddur": null
       } },
@@ -333,7 +333,7 @@
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Rebuilding Jerusalem",
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:74-75", "he": "The Metsudah siddur, 1981", "from": "ולירושלים עירך", "to": "בונה ירושלים" },
-        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:27", "he": " Shaliehsaboo Edition", "from": "תשכון בתוך", "to": "בונה ירושלים" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:27", "he": " Shaliehsaboo Edition", "from": "תשכון בתוך", "to": "בונה ירושלים", "en": { "v": "Sefaria Community Translation", "from": "dwell within jerusalem", "to": "who builds jerusalem" } },
         "torah": null,
         "opensiddur": null
       } },
@@ -342,7 +342,7 @@
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Kingdom of David",
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:76-77", "he": "The Metsudah siddur, 1981", "from": "את צמח", "to": "קרן ישועה" },
-        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:28", "he": " Shaliehsaboo Edition", "from": "את צמח", "to": "קרן ישועה" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:28", "he": " Shaliehsaboo Edition", "from": "את צמח", "to": "קרן ישועה", "en": { "v": "Sefaria Community Translation", "from": "the offspring of", "to": "salvation to sprout" } },
         "torah": null,
         "opensiddur": null
       } },
@@ -351,7 +351,7 @@
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Response to Prayer",
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:78-79", "he": "The Metsudah siddur, 1981", "from": "אב הרחמן", "to": "שומע תפלה" },
-        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:29-32", "he": " Shaliehsaboo Edition", "from": "שמע קולנו", "to": "שומע תפלה" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:29-32", "he": " Shaliehsaboo Edition", "from": "שמע קולנו", "to": "שומע תפלה", "en": { "v": "Sefaria Community Translation", "from": "hear our voice", "to": "who hears prayer" } },
         "torah": null,
         "opensiddur": null
       } },
@@ -360,7 +360,7 @@
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Temple Service",
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:82-91", "he": "The Metsudah siddur, 1981", "from": "רצה יהוה", "to": "שכינתו לציון" },
-        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:33-40", "he": " Shaliehsaboo Edition", "from": "רצה יהוה", "to": "שכינתו לציון" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:33-40", "he": " Shaliehsaboo Edition", "from": "רצה יהוה", "to": "שכינתו לציון", "en": { "v": "Sefaria Community Translation", "from": "find favor l", "to": "presence to zion" } },
         "torah": null,
         "opensiddur": null
       } },
@@ -369,7 +369,7 @@
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Thanksgiving",
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:92-107", "he": "The Metsudah siddur, 1981", "from": "מודים אנחנו", "to": "נאה להודות" },
-        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:41-50", "he": " Shaliehsaboo Edition", "from": "מודים אנחנו", "to": "נאה להודות" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:41-50", "he": " Shaliehsaboo Edition", "from": "מודים אנחנו", "to": "נאה להודות", "en": { "v": "Sefaria Community Translation", "from": "upon saying modim", "to": "to give thanks" } },
         "torah": null,
         "opensiddur": null
       } },
@@ -378,7 +378,7 @@
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Peace",
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:116-121", "he": "The Metsudah siddur, 1981", "from": "שים שלום", "to": "ישראל בשלום" },
-        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:66", "he": " Shaliehsaboo Edition", "from": "שים שלום", "to": "בשלום אמן" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:66", "he": " Shaliehsaboo Edition", "from": "שים שלום", "to": "בשלום אמן", "en": { "v": "Sefaria Community Translation", "from": "establish peace good", "to": "with peace amen" } },
         "torah": null,
         "opensiddur": null
       } },
@@ -410,7 +410,7 @@
           "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Concluding Passage"
         ],
         "sefard": "Siddur Sefard, Weekday Shacharit, Amidah",
-        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:1-72", "he": " Shaliehsaboo Edition", "from": "אדני שפתי", "to": "בלבב שלם" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:1-72", "he": " Shaliehsaboo Edition", "from": "אדני שפתי", "to": "בלבב שלם", "en": { "v": "Sefaria Community Translation", "from": "amida of shah", "to": "a perfect heart" } },
         "torah": null,
         "opensiddur": null
       } },
@@ -419,7 +419,7 @@
       "sources": {
         "ashkenaz": { "ref": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Concluding Passage:2", "he": "The Metsudah siddur, 1981", "from": "אלהי נצור", "to": "צורי וגואלי" },
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:123", "he": "The Metsudah siddur, 1981", "from": "אלהי נצור", "to": "צורי וגואלי" },
-        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:68", "he": " Shaliehsaboo Edition", "from": "אלהי נצר", "to": "למען קדשתך" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:68-69", "he": " Shaliehsaboo Edition", "from": "אלהי נצר", "to": "ימינך וענני", "en": { "v": "Sefaria Community Translation", "from": "my g d", "to": "us answer us" } },
         "torah": null,
         "opensiddur": null
       } },
@@ -428,7 +428,7 @@
       "sources": {
         "ashkenaz": { "ref": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Concluding Passage:3", "he": "The Metsudah siddur, 1981", "from": "עשה השלום", "to": "ואמרו אמן" },
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:124", "he": "The Metsudah siddur, 1981", "from": "עשה השלום", "to": "ואמרו אמן" },
-        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:71", "he": " Shaliehsaboo Edition", "from": "עשה שלום", "to": "ואמרו אמן" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:71", "he": " Shaliehsaboo Edition", "from": "עשה שלום", "to": "ואמרו אמן", "en": { "v": "Sefaria Community Translation", "from": "he who makes", "to": "us say amen" } },
         "torah": null,
         "opensiddur": null
       } },
@@ -437,7 +437,7 @@
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Concluding Prayers, Alenu",
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Aleinu:1-3", "he": "The Metsudah siddur, 1981", "from": "עלינו לשבח", "to": "ושמו אחד" },
-        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Alenu:1-4", "he": " Shaliehsaboo Edition", "from": "עלינו לשבח", "to": "יהוה אחד" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Alenu:1-4", "he": " Shaliehsaboo Edition", "from": "עלינו לשבח", "to": "יהוה אחד", "en": { "v": "Sefaria Community Translation", "from": "aleinu leshabeah", "to": "rd is one" } },
         "torah": null,
         "opensiddur": null
       } },
@@ -508,8 +508,8 @@
       "group": "shabbat-holidays", "service": "shabbat", "days": ["shabbat"],
       "sources": {
         "ashkenaz": null,
-        "sefard": { "ref": "Siddur Sefard, Shabbat Candle Lighting:1-3", "he": "Torat Emet 357", "from": "ברוך אתה", "to": "של שבת" },
-        "edot": { "ref": "Siddur Edot HaMizrach, Shabbat Candle Lighting:4-5", "he": " Shaliehsaboo Edition", "from": "ברוך אתה", "to": "ויום טוב" },
+        "sefard": { "ref": "Siddur Sefard, Shabbat Candle Lighting:1-3", "he": "Torat Emet 357", "from": "ברוך אתה", "to": "של שבת", "en": { "v": "Translation based on the Metsudah linear siddur, by Avrohom Davis, 1981", "from": "the berachah for", "to": "the shabbos light" } },
+        "edot": { "ref": "Siddur Edot HaMizrach, Shabbat Candle Lighting:2-3", "he": "Torat Emet 357", "from": "ברוך אתה", "to": "של שבת", "en": { "v": "Sefaria Community Translation", "from": "blessed are you", "to": "the shabbat candle" } },
         "torah": null,
         "opensiddur": null
       } },
@@ -535,8 +535,8 @@
       "group": "shabbat-holidays", "service": "shabbat", "days": ["shabbat"],
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Shabbat, Shabbat Evening, Kiddush",
-        "sefard": { "ref": "Siddur Sefard, Shabbat Evening Meal, Shabbat Eve Kiddush:1-8", "he": "Torat Emet 357", "from": "לשם יחוד", "to": "מקדש השבת" },
-        "edot": "Siddur Edot HaMizrach, Shabbat Evening, Kiddush",
+        "sefard": { "ref": "Siddur Sefard, Shabbat Evening Meal, Shabbat Eve Kiddush:1-8", "he": "Torat Emet 357", "from": "לשם יחוד", "to": "מקדש השבת", "en": { "v": "Translation based on the Metsudah linear siddur, by Avrohom Davis, 1981", "from": "the fourth of", "to": "of the sabbath" } },
+        "edot": { "ref": "Siddur Edot HaMizrach, Shabbat Evening, Kiddush", "en": { "v": "Sefaria Community Translation", "he": " Shaliehsaboo Edition", "from": "kiddush of friday", "to": "sanctifies the shabbat" } },
         "torah": null,
         "opensiddur": null
       } },
@@ -545,7 +545,7 @@
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Shabbat, Havdalah",
         "sefard": "Siddur Sefard, Motzaei Shabbat , Havdala",
-        "edot": "Siddur Edot HaMizrach, Havdalah, Havdala",
+        "edot": { "ref": "Siddur Edot HaMizrach, Havdalah, Havdala", "en": { "v": "Sefaria Community Translation", "he": " Shaliehsaboo Edition", "from": "havdala separation from", "to": "wine or juice" } },
         "torah": null,
         "opensiddur": null
       } },
@@ -642,7 +642,7 @@
     { "key": "hamotzi", "nameKey": "tefillah.prayer.hamotzi", "en": "Hamotzi", "he": "הַמּוֹצִיא",
       "group": "blessings", "service": "blessings", "days": ["weekday","shabbat"],
       "sources": {
-        "ashkenaz": { "ref": "Siddur Ashkenaz, Berachot, Birkat Hanehenin, Eating, Barachot Rishonot:2", "he": "Daat Siddur Ashkenaz", "from": "ברוך אתה", "to": "מן הארץ" },
+        "ashkenaz": { "ref": "Siddur Ashkenaz, Berachot, Birkat Hanehenin, Eating, Barachot Rishonot:2", "he": "Daat Siddur Ashkenaz", "from": "ברוך אתה", "to": "מן הארץ", "en": { "v": "Sefaria Community Translation", "from": "praised are you", "to": "from the earth" } },
         "sefard": { "ref": "Siddur Sefard, Mealtime Blessings:5-6", "he": "Torat Emet 357", "from": "ברוך אתה", "to": "מן הארץ" },
         "edot": null,
         "torah": null,
@@ -653,7 +653,7 @@
       "sources": {
         "ashkenaz": { "ref": "Siddur Ashkenaz, Berachot, Birkat Hanehenin, Eating, Barachot Rishonot:3", "he": "Daat Siddur Ashkenaz", "from": "ברוך אתה", "to": "מיני מזונות" },
         "sefard": { "ref": "Siddur Sefard, Birchat HaMazon, Blessing on Foods:4-5", "he": "Torat Emet 357", "from": "ברוך אתה", "to": "מיני מזונות" },
-        "edot": { "ref": "Siddur Edot HaMizrach, Blessings on Enjoyments:2-3", "he": " Shaliehsaboo Edition", "from": "ברוך אתה", "to": "מיני מזונות" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Blessings on Enjoyments:2-3", "he": " Shaliehsaboo Edition", "from": "ברוך אתה", "to": "מיני מזונות", "en": { "v": "Sefaria Community Translation", "from": "blessed are you", "to": "varieties of foods" } },
         "torah": null,
         "opensiddur": null
       } },
@@ -662,7 +662,7 @@
       "sources": {
         "ashkenaz": { "ref": "Siddur Ashkenaz, Berachot, Birkat Hanehenin, Eating, Barachot Rishonot:4", "he": "Daat Siddur Ashkenaz", "from": "ברוך אתה", "to": "פרי הגפן" },
         "sefard": { "ref": "Siddur Sefard, Birchat HaMazon, Blessing on Foods:2-3", "he": "Torat Emet 357", "from": "ברוך אתה", "to": "פרי הגפן" },
-        "edot": { "ref": "Siddur Edot HaMizrach, Blessings on Enjoyments:4-5", "he": " Shaliehsaboo Edition", "from": "ברוך אתה", "to": "פרי הגפן" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Blessings on Enjoyments:4-5", "he": " Shaliehsaboo Edition", "from": "ברוך אתה", "to": "פרי הגפן", "en": { "v": "Sefaria Community Translation", "from": "blessed are you", "to": "of the vine" } },
         "torah": null,
         "opensiddur": null
       } },
@@ -671,7 +671,7 @@
       "sources": {
         "ashkenaz": { "ref": "Siddur Ashkenaz, Berachot, Birkat Hanehenin, Eating, Barachot Rishonot:5", "he": "Daat Siddur Ashkenaz", "from": "ברוך אתה", "to": "פרי העץ" },
         "sefard": "Siddur Sefard, Blessings, Ha'etz",
-        "edot": { "ref": "Siddur Edot HaMizrach, Blessings on Enjoyments:6-7", "he": " Shaliehsaboo Edition", "from": "ברוך אתה", "to": "פרי העץ" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Blessings on Enjoyments:6-7", "he": " Shaliehsaboo Edition", "from": "ברוך אתה", "to": "פרי העץ", "en": { "v": "Sefaria Community Translation", "from": "blessed are you", "to": "of the tree" } },
         "torah": null,
         "opensiddur": null
       } },
@@ -680,7 +680,7 @@
       "sources": {
         "ashkenaz": { "ref": "Siddur Ashkenaz, Berachot, Birkat Hanehenin, Eating, Barachot Rishonot:6", "he": "Daat Siddur Ashkenaz", "from": "ברוך אתה", "to": "פרי האדמה" },
         "sefard": "Siddur Sefard, Blessings, Ha'adamah",
-        "edot": { "ref": "Siddur Edot HaMizrach, Blessings on Enjoyments:8-9", "he": " Shaliehsaboo Edition", "from": "ברוך אתה", "to": "פרי האדמה" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Blessings on Enjoyments:8-9", "he": " Shaliehsaboo Edition", "from": "ברוך אתה", "to": "פרי האדמה", "en": { "v": "Sefaria Community Translation", "from": "blessed are you", "to": "of the ground" } },
         "torah": null,
         "opensiddur": null
       } },
@@ -689,7 +689,7 @@
       "sources": {
         "ashkenaz": { "ref": "Siddur Ashkenaz, Berachot, Birkat Hanehenin, Eating, Barachot Rishonot:7", "he": "Daat Siddur Ashkenaz", "from": "ברוך אתה", "to": "נהיה בדברו" },
         "sefard": "Siddur Sefard, Blessings, Shehakol",
-        "edot": { "ref": "Siddur Edot HaMizrach, Blessings on Enjoyments:10-11", "he": " Shaliehsaboo Edition", "from": "ברוך אתה", "to": "נהיה בדברו" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Blessings on Enjoyments:10-11", "he": " Shaliehsaboo Edition", "from": "ברוך אתה", "to": "נהיה בדברו", "en": { "v": "Sefaria Community Translation", "from": "blessed are you", "to": "by his word" } },
         "torah": null,
         "opensiddur": null
       } },

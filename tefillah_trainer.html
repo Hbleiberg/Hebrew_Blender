@@ -4038,7 +4038,7 @@ function tokenizeTranslit(translitText, firstTwi, hebWordCount) {
    Nothing a URL, a saved favorite or a cloud row carries ever reaches Sefaria: a reading is always
    looked up here by its key, and a ref this page does not recognise is not offered at all.
    ══════════════════════════════════════════════════════ */
-const CATALOG_URL = 'data/tefillah/catalog.json?v=2';
+const CATALOG_URL = 'data/tefillah/catalog.json?v=3';
 const NUSACH_IDS = ['ashkenaz', 'sefard', 'edot', 'opensiddur', 'torah'];
 const SIDDUR_NODE_RE = /^Siddur (?:Ashkenaz|Sefard|Edot HaMizrach), [A-Za-z0-9 ,'&()\-]{1,200}$/;
 const TANAKH_REF_RE = /^(?:Genesis|Exodus|Leviticus|Numbers|Deuteronomy) \d{1,3}:\d{1,3}(?:-\d{1,3})?$/;
@@ -4047,6 +4047,15 @@ let catalog = null;                 // { groups, prayers, hebrewPreference } onc
 let prayerByKey = new Map();        // a Map, so ?prayer=constructor finds nothing
 let _catalogFailed = false;
 
+// A translation the catalog pairs with a part's Hebrew by position (line n beside line n): its exact title and the
+// first and last words of its lines, stamped by check-tefillah-refs.mjs. On a whole node it also names the Hebrew
+// edition the pairing was read against. A pin this page cannot read is dropped; the part is still offered.
+function catalogPin(en, ranged) {
+  if (!en || typeof en !== 'object' || Array.isArray(en)) return null;
+  const str = x => typeof x === 'string' && x.length > 0 && x.length <= 200;
+  if (!str(en.v) || !str(en.from) || !str(en.to) || (!ranged && !str(en.he))) return null;
+  return { v: en.v, he: ranged ? null : en.he, ends: { from: en.from, to: en.to } };
+}
 // One part of a source → what this page may ask for, or null. A whole leaf node is a string; lines of a node are
 // an object that pins the Hebrew edition they were read from and carries the range's first and last words.
 function catalogPart(p, inTorah) {
@@ -4056,10 +4065,10 @@ function catalogPart(p, inTorah) {
   const m = /^(.*[^\s:]):(\d{1,4})(?:-(\d{1,4}))?$/.exec(o.ref);
   const node = m ? m[1] : o.ref;
   if (!SIDDUR_NODE_RE.test(node)) return null;
-  if (!m) return { kind: 'siddur', ref: o.ref, node, from: null, to: null, added: o.added === true };
+  if (!m) return { kind: 'siddur', ref: o.ref, node, from: null, to: null, added: o.added === true, pin: catalogPin(o.en, false) };
   const from = +m[2], to = m[3] === undefined ? from : +m[3];
   if (from < 1 || to < from || typeof o.he !== 'string' || !o.he || typeof o.from !== 'string' || typeof o.to !== 'string') return null;
-  return { kind: 'siddur', ref: o.ref, node, from, to, he: o.he, ends: { from: o.from, to: o.to }, added: o.added === true };
+  return { kind: 'siddur', ref: o.ref, node, from, to, he: o.he, ends: { from: o.from, to: o.to }, added: o.added === true, pin: catalogPin(o.en, true) };
 }
 function catalogSource(src, nusach) {
   if (src == null) return null;
@@ -4229,6 +4238,16 @@ function rangeEnds(texts) {
   if (!first || !last) return { from: '', to: '' };
   return { from: skeleton(first.slice(0, 2).join(' ')), to: skeleton(last.slice(-2).join(' ')) };
 }
+// A translation's line as words (lower case, a-z and 0-9 only); a line with none — an empty string, Sefaria's "[]"
+// placeholder — is an untranslated line. The first three words of the first translated line and the last three of
+// the last are what the catalog stamps on a pinned translation.
+const englishWords = t => String(t || '').toLowerCase().replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter(Boolean);
+function englishEnds(texts) {
+  const words = texts.map(englishWords);
+  const first = words.find(w => w.length), last = [...words].reverse().find(w => w.length);
+  if (!first || !last) return { from: '', to: '' };
+  return { from: first.slice(0, 3).join(' '), to: last.slice(-3).join(' ') };
+}
 
 class TextUnavailable extends Error { constructor(code) { super(code); this.code = code; } }
 const _nodeCache = new Map();    // "<node>|<lang>|<title>" → Promise of { available, version }
@@ -4260,18 +4279,32 @@ function pickHebrewEdition(open, stored) {
   for (const pref of (catalog ? catalog.hebrewPreference : [])) { const hit = open.find(v => v.versionTitle.includes(pref)); if (hit) return hit; }
   return open[0];
 }
-// The English for one siddur node: the stored choice where the node has it, else the first open translation with
-// as many lines as the Hebrew (Public Domain or CC0 before CC BY, then the rest), else the first open one, unaligned.
-async function pickEnglish(node, enVersions, heCount, stored) {
+// The English for one siddur node: the stored choice where the node has it, else the translation the catalog pins
+// to these lines, else the first open translation with as many lines as the Hebrew (Public Domain or CC0 before
+// CC BY, then the rest), else the first open one, unaligned.
+// A translation stands line against line when it has as many lines as the Hebrew, or when it is the pinned one
+// and its lines `pin.a`…`pin.b` still begin and end as the catalog stamped them (Sefaria keeps a translation's
+// lines at the Hebrew's positions, but many stop early or skip lines, so the count alone cannot tell).
+async function pickEnglish(node, enVersions, heCount, stored, pin) {
   const ask = async (title) => {
     let got = null;
     try { got = await fetchSiddurNode(node, 'english', title); } catch (e) { return null; }
     const v = got && got.version;
     return (v && v.title === title && isOpenLicense(v.license)) ? v : null;      // what came back, not what was asked for
   };
-  if (stored && enVersions.some(v => v.versionTitle === stored)) {
+  const has = title => enVersions.some(v => v.versionTitle === title);
+  const paired = v => {
+    if (!pin || v.title !== pin.v) return false;
+    const ends = englishEnds(v.lines.slice(pin.a - 1, pin.b).map(x => parseSegment(x).text));
+    return ends.from === pin.ends.from && ends.to === pin.ends.to;            // the lines moved: no pairing rather than a wrong one
+  };
+  if (stored && has(stored)) {
     const v = await ask(stored);
-    if (v) return { version: v, aligned: v.lines.length === heCount };
+    if (v) return { version: v, aligned: v.lines.length === heCount || paired(v) };
+  }
+  if (pin && has(pin.v)) {
+    const v = await ask(pin.v);
+    if (v && paired(v)) return { version: v, aligned: true };
   }
   let first = null;
   for (const cand of byLicenseRank(enVersions).slice(0, 4)) {
@@ -4305,9 +4338,12 @@ async function loadSiddurPart(part, wantEnglish) {
   const enVersions = first.available.filter(v => isEnglishVersion(v) && isOpenLicense(v.license));
   let en = null;
   if (wantEnglish && enVersions.length) {
-    const got = await pickEnglish(part.node, enVersions, total, settings.translationVersion);
+    // The catalog's pairing holds for the Hebrew edition it was read against: a range's own, a whole node's named one.
+    const pin = part.pin && (ranged || part.pin.he === he.title) ? { v: part.pin.v, ends: part.pin.ends, a: from, b: to } : null;
+    const got = await pickEnglish(part.node, enVersions, total, settings.translationVersion, pin);
+    const shownText = x => { const t = parseSegment(x).text; return englishWords(t).length ? t : ''; };
     if (got) en = { title: got.version.title, license: got.version.license, source: got.version.source, aligned: got.aligned,
-                    lines: (got.aligned ? got.version.lines.slice(from - 1, to) : (ranged ? [] : got.version.lines)).map(x => parseSegment(x).text),
+                    lines: (got.aligned ? got.version.lines.slice(from - 1, to) : (ranged ? [] : got.version.lines)).map(shownText),
                     hidden: !got.aligned && ranged };   // lines of a node whose translation is divided differently: no way to tell which are these
   }
   return {
