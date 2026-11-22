@@ -364,6 +364,8 @@ _(none)_
 
 ## Done
 
+- [x] 2026-11-22 | `f1457030`, `c4199f43`, `3c1b8b39` | tefillah_trainer.html, data/tefillah/catalog.json, scripts/tefillah-*.mjs, sw.js | (PR #419, the maintainer's two extras, no loop session) **Tefillah Trainer: a phone-size pass, and "Ashkenaz (Koren)" as its own source** — search box 16px under a finger, Hebrew first in Side by side, search and filters behind a Find button, row labels above the line (the prayer 415 → 318px on an iPhone 13); 74 Koren sources read line by line | phone survey 16 setups × 19 views; `check-tefillah-refs` 287 / 0; `smoke-tefillah` 89; 74 Koren prayers live
+
 - [x] 2026-11-21 | (S671 close-out) | branch/deploy note | **S671 = H on `trope_atlas.html` (its 2nd, S583 → S671; 27 commits to the page since): 3 lessons + the student cell by real input, FOUND 2 frictions + 1 P4 + 2 seeds, FIXED 2 (one closes the S665 P4) + the S653 ring from the queue; the S670 toggle P4 refuted.** Draft PR #417 (continued), `sw.js` v1467 → v1470; nothing live changed.
 
 - [x] 2026-11-21 | `40ac2bb1` | torah_trainer.html, sw.js | (S671, the S653 M P4, its rows) **A selected or looping verse's ring clears its verse number** (the plate 8px out, padding cancelling margin: 0 → 8px) | probe S671 54 / 54 by real clicks, 3 cells × 3 layouts (before: 9 gap cells fail); nothing in or after the row moves
