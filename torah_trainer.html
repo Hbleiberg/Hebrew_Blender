@@ -2859,7 +2859,7 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
           <button class="sreset" onclick="resetFontSize('translit')" type="button" title="Restore default" aria-label="Restore default" data-i18n-title="torah.display.restore_default" data-i18n-aria-label="torah.display.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
         </div>
         <div class="slider-row">
-          <label for="optEnglishSize" data-i18n="torah.display.size_english">English</label>
+          <label for="optEnglishSize" data-i18n="torah.controls.translation_short">Translation</label>
           <input type="range" id="optEnglishSize" min="0.5" max="2" step="0.05" value="0.95">
           <span class="sval" id="optEnglishSizeVal">0.95rem</span>
           <button class="sreset" onclick="resetFontSize('english')" type="button" title="Restore default" aria-label="Restore default" data-i18n-title="torah.display.restore_default" data-i18n-aria-label="torah.display.restore_default"><svg class="hi hi-sm hi-reset" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 18.58 A7.6 7.6 0 1 0 8.2 18.58 M8.2 18.58 L4.85 19.17 M8.2 18.58 L7.04 15.39"/></svg></button>
@@ -3980,7 +3980,11 @@ async function fetchSefariaText(ref, includeTranslation, version) {
   if (parts.length > 1) {   // each part on its own (cached on its own), then one list of verses in reading order
     const out = [];
     let eng = 0, found = false;
-    for (const p of parts) { const v = await fetchSefariaText(p, includeTranslation, version); out.push(...v); eng += v._engCount || 0; found = found || !!v._engFound; }
+    for (const p of parts) {
+      const v = await fetchSefariaText(p, includeTranslation, version);
+      out.push(...v); eng += v._engCount || 0; found = found || !!v._engFound;
+      out._he = out._he || v._he || null; out._en = out._en || v._en || null;
+    }
     out._engCount = eng; out._engFound = found;
     return out;
   }
@@ -3992,14 +3996,23 @@ async function fetchSefariaText(ref, includeTranslation, version) {
   // a version param Sefaria picks "the default English", which can land on a
   // copyrighted edition (JPS 1985, Robert Alter, etc.) we don't want to
   // republish.
+  // Asked for as `translation|<title>`: `english|<title>` is matched against the version's language family, so a
+  // French or German title came back empty and those versions, though listed, never displayed.
   if (includeTranslation && version) {
-    url.searchParams.append('version', `english|${version}`);
+    url.searchParams.append('version', `translation|${version}`);
   }
   url.searchParams.set('return_format', 'text_only');
   const r = await fetch(url.toString());
   if (!r.ok) throw new Error(`Sefaria ${r.status}`);
   const data = await r.json();
   const verses = parseSefariaResponse(data);
+  // A translation is kept only when it is the one asked for and comes back under an open licence. Anything else is
+  // dropped HERE, before the cache: render, copy and print never see it, and the reading falls to the substitute
+  // path (fetchAndRender) exactly as when Sefaria returns no translation at all.
+  if (includeTranslation && version && (!verses._en || verses._en.title !== String(version).trim() || !isOpenLicense(verses._en.license))) {
+    verses.forEach(v => { v.translation = ''; });
+    verses._engCount = 0; verses._engFound = false; verses._en = null;
+  }
   textCache.set(cacheKey, verses);
   return verses;
 }
@@ -4051,6 +4064,10 @@ function parseSefariaResponse(data) {
   // user if they asked for one but Sefaria returned nothing.
   out._engCount = [...engMap.values()].filter(s => typeof s === 'string' && s.trim()).length;
   out._engFound = !!eng;
+  // Which versions these are — the licence check and the footer read the version Sefaria RETURNED, not the one asked for.
+  const meta = v => (v ? { title: typeof v.versionTitle === 'string' ? v.versionTitle.trim() : '', license: v.license,
+                           source: typeof v.versionSource === 'string' ? v.versionSource : '', lang: typeof v.actualLanguage === 'string' ? v.actualLanguage : '' } : null);
+  out._he = meta(heb); out._en = meta(eng);
   return out;
 }
 
@@ -5916,7 +5933,7 @@ function renderInterlinear(verses, withTranslit, withTrans, wordIdxRef, canChant
       html += `  <div class="tt-verse-row"><span class="tt-rowlabel">${esc(I18n.t('torah.reading.row_translit'))}</span><span class="tt-translit">${tokenizeTranslit(tr, firstTwi, hebCount)}</span></div>`;
     }
     if (withTrans) {
-      html += `  <div class="tt-verse-row"><span class="tt-rowlabel">${esc(I18n.t('torah.reading.row_english'))}</span><span class="tt-translation">${stripHTML(v.translation)}</span></div>`;
+      html += `  <div class="tt-verse-row"><span class="tt-rowlabel">${esc(transHeading('row'))}</span><span class="tt-translation"${transLangAttr()}>${stripHTML(v.translation)}</span></div>`;
     }
     html += `</div>`;
   }
@@ -5956,7 +5973,7 @@ function renderSideBySide(verses, withTranslit, withTrans, wordIdxRef, canChant,
   let html = `<div class="${cls}" data-print-cols="${colHeb}">`;
   // Translation column (left)
   if (withTrans) {
-    html += `<div class="tt-grid-col tt-col-translation"><h3 style="grid-row:1;grid-column:1">${esc(I18n.t('torah.reading.col_english'))}</h3>`;
+    html += `<div class="tt-grid-col tt-col-translation"${transLangAttr()}><h3 style="grid-row:1;grid-column:1">${esc(transHeading('col'))}</h3>`;
     perVerse.forEach(({ v }, i) => {
       html += `<div class="tt-grid-row" style="grid-row:${rowOf[i]};grid-column:1"><span class="tt-vnum">${v.chapter}:${v.verse}</span><span class="tt-cell">${stripHTML(v.translation)}</span></div>`;
     });
@@ -6084,6 +6101,9 @@ let _readingLoading = false;   // true while a Sefaria reading fetch is in fligh
 // the Version box (a new choice).
 let _versionFallback = null;
 function effectiveVersion() { return _versionFallback || settings.translationVersion; }
+// The versions of the reading on screen as Sefaria returned them ({ title, license, source, lang }): what the
+// footer credits. Module state, not a property of currentVerses — the handout swaps that array.
+let _shownTrans = null, _shownHeb = null;
 /* ══════════════════════════════════════════════════════
    TROPE STAFF LAYOUT (beta) — the reading drawn on a music staff, a verse at a
    time, figure by figure, the words under their notes. The notation comes from
@@ -6957,9 +6977,17 @@ async function fetchAndRender() {
     // translation" is a second asker: without this, a teacher with that ticked and the DISPLAY
     // toggle off got verses carrying translation:'' and a Hebrew-only clipboard, silently.
     const wantEnglish = settings.showTranslation || settings.copyIncludeTrans;
+    const book = bookOfRef(r.ref) || (r.parshahEntry ? r.parshahEntry.book : '');   // the ref's own book: a haftarah's prophet, not the parsha's book
+    // Which version to ask for. Every reading starts from the stored choice; where this book's list is already
+    // known and does not offer it, the substitute is asked for instead (shown, never saved). Where the list is
+    // not known yet, the stored choice is tried and fetchSefariaText checks what comes back.
+    _versionFallback = null;
+    if (book && settings.translationVersion && _versionsCache.has(book)) {
+      const safe = offeredVersions(_versionsCache.get(book));
+      if (safe.length && !safe.some(v => versionTitleOf(v) === settings.translationVersion)) _versionFallback = defaultVersionOf(safe) || null;
+    }
     let verses = await fetchSefariaText(r.ref, wantEnglish, effectiveVersion());
     if (seq !== _fetchSeq) return;   // a newer selection superseded this fetch
-    const book = bookOfRef(r.ref) || (r.parshahEntry ? r.parshahEntry.book : '');   // the ref's own book: a haftarah's prophet, not the parsha's book
     // Requested a translation but Sefaria returned no English for this version +
     // passage (the version doesn't cover it, or its title didn't match — e.g.
     // "Sefaria Community Translation" has gaps and a globally-remembered choice
@@ -6997,6 +7025,9 @@ async function fetchAndRender() {
         }
       }
     }
+    _shownHeb = verses._he || null;
+    _shownTrans = (verses._engCount > 0 && verses._en) ? verses._en : null;
+    updateTransFooter();
     currentVerses = verses;
     syncShareBtn();   // the practice link names the first rendered verse, so re-sync per render
     _readingHasShem = detectShem(verses);   // before renderText so the chip renders in the same pass
@@ -10622,6 +10653,7 @@ function wireSettingsForm() {
   document.getElementById('ttVersionSelect').addEventListener('change', e => {
     settings.translationVersion = e.target.value;
     _versionFallback = null;   // a new choice: nothing to substitute
+    _shownTrans = null;        // …and the footer names the choice until its text is on screen
     textCache.clear();
     saveSettings();
     updateTransFooter();
@@ -11079,72 +11111,105 @@ function refWithin(inner, outer) {
 
 /* ══════════════════════════════════════════════════════
    TRANSLATION VERSION DROPDOWN
-   Sefaria hosts many English translations whose copyright varies. The Sefaria
-   API exposes a per-version `license` field (e.g. "Public Domain", "CC-BY-SA",
-   "Copyright: Jewish Publication Society"). To avoid republishing copyrighted
-   text from third-party publishers, we filter the dropdown to versions whose
-   license clearly permits redistribution.
+   Sefaria hosts many translations whose copyright varies, and exposes a per-version
+   `license` field (e.g. "Public Domain", "CC-BY-SA", "Copyright: Jewish Publication
+   Society"). To avoid republishing a text its licence does not let us show, only
+   these are offered: Public Domain, CC0, CC BY, CC BY-SA, CC BY-NC, CC BY-NC-SA.
+   "unknown", an empty value, a "Copyright: …" string and every NoDerivatives licence
+   are refused (a prefix test once let CC-BY-NC-ND through and labelled it CC BY-NC).
+   The rule is the Tefillah Trainer's, word for word (tefillah_trainer.html →
+   licenseName): keep the two alike. It is applied to the list AND to the version
+   Sefaria returns (fetchSefariaText): Sefaria has listed one thing and answered another.
    ══════════════════════════════════════════════════════ */
-function isPermissiveLicense(lic) {
-  if (!lic) return false;                  // unknown / missing → exclude (safer)
-  const s = String(lic).toLowerCase();
-  if (s.includes('public domain')) return true;
-  if (s.startsWith('cc0') || s === 'cc0') return true;
-  if (s.startsWith('cc-by') || s.startsWith('cc by')) return true;
-  return false;                            // "Copyright: …" and friends → exclude
+function licenseName(lic) {
+  const s = String(lic || '').trim().toLowerCase().replace(/[\s_]+/g, ' ');
+  if (!s) return '';
+  if (s === 'public domain') return 'Public Domain';
+  if (/^cc ?0( 1\.0)?$/.test(s)) return 'CC0';
+  const m = s.match(/^cc[- ]by((?:[- ](?:nc|sa|nd))*)(?:[- ]?\d(?:\.\d)?)?$/);
+  if (!m) return '';
+  const parts = m[1].split(/[- ]/).filter(Boolean);
+  if (parts.includes('nd')) return '';
+  return 'CC BY' + (parts.includes('nc') ? '-NC' : '') + (parts.includes('sa') ? '-SA' : '');
 }
-function shortenLicense(lic) {
-  if (!lic) return '';
-  const s = String(lic).trim();
-  if (/public domain/i.test(s)) return 'Public Domain';
-  if (/^cc0/i.test(s))          return 'CC0';
-  if (/cc[-\s]?by[-\s]?sa[-\s]?nc|cc[-\s]?by[-\s]?nc[-\s]?sa/i.test(s)) return 'CC BY-NC-SA';
-  if (/cc[-\s]?by[-\s]?sa/i.test(s))    return 'CC BY-SA';
-  if (/cc[-\s]?by[-\s]?nc/i.test(s))    return 'CC BY-NC';
-  if (/cc[-\s]?by/i.test(s))            return 'CC BY';
-  return s.slice(0, 24);
+function isOpenLicense(lic) { return !!licenseName(lic); }
+const LICENSE_RANK = { 'Public Domain': 0, 'CC0': 0, 'CC BY': 1 };   // then every other open licence
+function byLicenseRank(list) {
+  return list.map((v, i) => [v, i]).sort((a, b) => ((LICENSE_RANK[licenseName(a[0].license)] ?? 2) - (LICENSE_RANK[licenseName(b[0].license)] ?? 2)) || (a[1] - b[1])).map(x => x[0]);
 }
-// The licence as the UI shows it: a known short code through its torah.trans.license_* key (only
-// "Public Domain" and the unknown fallback differ in Hebrew), anything else as Sefaria wrote it.
-// Version titles are Sefaria's and stay as they are.
+// The licence as the UI shows it, through its torah.trans.license_* key (only "Public Domain" and the
+// unknown fallback differ in Hebrew). Version titles are Sefaria's and stay as they are.
 const LICENSE_LABEL_KEYS = { 'Public Domain': 'public_domain', 'CC0': 'cc0', 'CC BY-NC-SA': 'ccbyncsa', 'CC BY-SA': 'ccbysa', 'CC BY-NC': 'ccbync', 'CC BY': 'ccby' };
 function licenseLabel(lic) {
-  const s = shortenLicense(lic);
-  if (!s) return I18n.t('torah.trans.license_unknown');
-  return LICENSE_LABEL_KEYS[s] ? I18n.t('torah.trans.license_' + LICENSE_LABEL_KEYS[s]) : s;
+  const s = licenseName(lic);
+  return s ? I18n.t('torah.trans.license_' + LICENSE_LABEL_KEYS[s]) : I18n.t('torah.trans.license_unknown');
 }
+// A book's versions that may be shown as its translation: titled, and openly licensed. The default is JPS 1917
+// where the book has it, else the first by licence rank (Public Domain or CC0 before CC BY, then the rest).
+const JPS_1917_RE = /JPS\s*1917|1917.*JPS|Holy Scriptures.*1917|Holy Scriptures.*New Translation/i;
+const versionTitleOf = v => (v && (v.versionTitle || v.title) || '').trim();
+function offeredVersions(list) {
+  return (list || []).filter(v => v && (v.language === 'en' || /english/i.test(v.languageFamilyName || v.language || '')) && versionTitleOf(v) && isOpenLicense(v.license));
+}
+// Which language a version is in. Sefaria files every translation under language "en"; `actualLanguage` tells them
+// apart but is wrong for a few (a Romanian and two Turkish versions say "en"), so the title's own trailing tag
+// ("… [fr]") is read first.
+function versionLangOf(title, actualLanguage) {
+  const m = /\[([a-z]{2,3})\]\s*$/.exec(String(title || ''));
+  const code = m ? m[1] : (typeof actualLanguage === 'string' && /^[a-z]{2,3}$/.test(actualLanguage) ? actualLanguage : 'en');
+  return code;
+}
+const isEnglishVersion = v => versionLangOf(versionTitleOf(v), v.actualLanguage) === 'en';
+// The default, and every automatic substitute, is an English version: another language is only ever a person's choice.
+function defaultVersionOf(safe) {
+  const eng = safe.filter(isEnglishVersion);
+  return versionTitleOf(eng.find(v => JPS_1917_RE.test(v.versionTitle || '')) || byLicenseRank(eng)[0]);
+}
+// The heading over the translation: "English", or "Translation" when the one on screen is in another language.
+function shownTransLang() { return _shownTrans ? versionLangOf(_shownTrans.title, _shownTrans.lang) : 'en'; }
+function transHeading(kind) { return I18n.t('torah.reading.' + kind + (shownTransLang() === 'en' ? '_english' : '_translation')); }
+function transLangAttr() { const l = shownTransLang(); return l === 'en' ? '' : ` lang="${l}"`; }   // l is [a-z]{2,3}
 function versionOptionText(title, lic) { return I18n.t('torah.trans.version_opt', { title: title.slice(0, 56), license: licenseLabel(lic) }); }
 
 async function populateVersionDropdown(book) {
   const sel = document.getElementById('ttVersionSelect');
   sel.innerHTML = `<option value="">${esc(I18n.t('torah.controls.version_loading'))}</option>`;
   const versions = await fetchVersionsList(book);
-  const eng = versions.filter(v => v.language === 'en' || /english/i.test(v.languageFamilyName||v.language||''));
   // Keep only versions whose license clearly permits redistribution.
-  const safe = eng.filter(v => isPermissiveLicense(v.license));
+  const safe = offeredVersions(versions);
   sel.innerHTML = '';
   if (!safe.length) {
     sel.innerHTML = `<option value="">${esc(I18n.t('torah.trans.no_versions'))}</option>`;
     return;
   }
-  safe.forEach(v => {
+  // English versions first; the openly licensed translations into other languages after them, in their own group.
+  const addOpt = (parent, v) => {
     const opt = document.createElement('option');
-    const title = (v.versionTitle || v.title || 'Untitled').trim();
+    const title = versionTitleOf(v);
     opt.value = title;
     opt.textContent = versionOptionText(title, v.license);
     opt.dataset.license = v.license || '';
-    sel.appendChild(opt);
-  });
-  // JPS 1917 (Public Domain) if present, otherwise the first safe version: the saved choice when there
-  // is none yet (a first-ever pick), only the shown substitute when the teacher's choice is not in this
+    parent.appendChild(opt);
+  };
+  safe.filter(isEnglishVersion).forEach(v => addOpt(sel, v));
+  const others = safe.filter(v => !isEnglishVersion(v));
+  if (others.length) {
+    const group = document.createElement('optgroup');
+    group.label = I18n.t('torah.trans.group_other');
+    others.forEach(v => addOpt(group, v));
+    sel.appendChild(group);
+  }
+  // JPS 1917 (Public Domain) if present, otherwise the first safe version by licence rank: the saved choice when
+  // there is none yet (a first-ever pick), only the shown substitute when the teacher's choice is not in this
   // book's list — the choice stays stored and travels through a sync untouched.
-  _versionFallback = null;
-  const jps1917 = safe.find(v => /JPS\s*1917|1917.*JPS|Holy Scriptures.*1917|Holy Scriptures.*New Translation/i.test(v.versionTitle || ''));
-  const pick = jps1917 || safe[0];
+  // A substitute the text path set for the reading on screen (the stored choice is listed but returned nothing
+  // for this passage) is kept: clearing it here left the box and the footer naming a version that is not shown.
+  const pick = defaultVersionOf(safe);
+  const offered = t => safe.some(v => versionTitleOf(v) === t);
   if (!settings.translationVersion) {
-    if (pick) { settings.translationVersion = (pick.versionTitle || pick.title || '').trim(); saveSettings(); }
-  } else if (!safe.find(v => (v.versionTitle || '').trim() === settings.translationVersion)) {
-    if (pick) _versionFallback = (pick.versionTitle || pick.title || '').trim();
+    if (pick) { settings.translationVersion = pick; saveSettings(); }
+  } else if (_versionFallback ? !offered(_versionFallback) : !offered(settings.translationVersion)) {
+    _versionFallback = pick || null;
   }
   sel.value = effectiveVersion();
   updateTransFooter();
@@ -11156,18 +11221,19 @@ async function populateVersionDropdown(book) {
 // that isn't the one that just failed. Returns a versionTitle string, or null.
 async function pickFallbackVersion(book, failedTitle) {
   const versions = await fetchVersionsList(book);
-  const eng = versions.filter(v => v.language === 'en' || /english/i.test(v.languageFamilyName || v.language || ''));
-  const safe = eng
-    .filter(v => isPermissiveLicense(v.license))
-    .filter(v => (v.versionTitle || v.title || '').trim() !== (failedTitle || '').trim());
+  const safe = offeredVersions(versions).filter(v => versionTitleOf(v) !== (failedTitle || '').trim());
   if (!safe.length) return null;
-  const jps1917 = safe.find(v => /JPS\s*1917|1917.*JPS|Holy Scriptures.*1917|Holy Scriptures.*New Translation/i.test(v.versionTitle || ''));
-  const pick = jps1917 || safe[0];
-  return pick ? (pick.versionTitle || pick.title || '').trim() : null;
+  return defaultVersionOf(safe) || null;
 }
 function updateTransFooter() {
   const el = document.getElementById('ttFooterTrans');
   if (!el) return;
+  // The translation on screen, where a reading with one is loaded (its own title and the licence Sefaria returned
+  // it under); else what the Version box holds.
+  if (_shownTrans && _shownTrans.title) {
+    el.innerHTML = I18n.t('torah.trans.footer_line', { version: esc(_shownTrans.title), license: esc(licenseLabel(_shownTrans.license)) });
+    return;
+  }
   const sel = document.getElementById('ttVersionSelect');
   const opt = sel && sel.options[sel.selectedIndex];
   if (!sel || !sel.value || !opt) {
@@ -12385,6 +12451,7 @@ function applyI18n() {
   try { updateTransFooter(); } catch (e) {}         // translation credit line
   try {                                             // version options: built once per book, so relabel their licence here
     document.querySelectorAll('#ttVersionSelect option').forEach(o => { if (o.value && o.dataset.license !== undefined) o.textContent = versionOptionText(o.value, o.dataset.license); });
+    document.querySelectorAll('#ttVersionSelect optgroup').forEach(g => { g.label = I18n.t('torah.trans.group_other'); });
   } catch (e) {}
   try { syncTTSVoiceStatus(); } catch (e) {}        // TTS voice readout — written pre-ready, never re-rendered
   try { updateCopyTextarea(); } catch (e) {}        // re-localize the "{count} selected" line

@@ -258,6 +258,60 @@ const PAGES = [
       check(tag + ' E: a translation this book does not offer stays the stored choice; the substitute is only shown', r.stored === 'Made Up Version' && r.inMemory === 'Made Up Version' && /JPS 1917/.test(r.shown) && /JPS 1917/.test(r.effective), JSON.stringify(r));
       check(tag + ' E: 0 pageerrors', errors.length === 0, errors.join(' | '));
       await ctx.close();
+      // F. what may be shown as a translation: the licence rule on the list AND on what Sefaria returns, other
+      //    languages in their own group, and the stored choice never rewritten by any of it. Sefaria is stubbed.
+      const f = await openPage(browser, 'torah_trainer.html', { query: '?parsha=Bereshit', seed: { hebrewTorahTrainer_tourSeen: '1', hebrewTorahTrainer_settings: JSON.stringify({ scope: 'parsha-aliyah-1', layout: 'sidebyside', translationVersion: 'Relicensed', showTranslation: true }) } });
+      const rf = await f.page.evaluate(async () => {
+        const JPS = 'The Holy Scriptures: A New Translation (JPS 1917)', FR = 'Bible Example [fr]', RO = 'Tora Example [ro]';
+        const LIST = [
+          { versionTitle: JPS, language: 'en', actualLanguage: 'en', license: 'Public Domain' },
+          { versionTitle: 'No Derivs', language: 'en', actualLanguage: 'en', license: 'CC-BY-NC-ND' },
+          { versionTitle: 'Relicensed', language: 'en', actualLanguage: 'en', license: 'CC-BY' },          // listed open, returned closed
+          { versionTitle: FR, language: 'en', actualLanguage: 'fr', license: 'Public Domain' },
+          { versionTitle: RO, language: 'en', actualLanguage: 'en', license: 'CC-BY-NC' },                  // Sefaria's field says English; the title says otherwise
+        ];
+        const EN = { [JPS]: ['Public Domain', 'en', 'JPS one.'], Relicensed: ['Copyright: X', 'en', 'CLOSED one.'], [FR]: ['Public Domain', 'fr', 'Au commencement.'], [RO]: ['CC-BY-NC', 'en', 'La inceput.'], 'No Derivs': ['CC-BY-NC-ND', 'en', 'ND one.'] };
+        const HEB = String.fromCharCode(0x5D1, 0x5B0, 0x5BC, 0x5E8, 0x5B5, 0x5D0);     // one pointed word, built here: no text is typed
+        const asked = [];
+        const real = window.fetch;
+        window.fetch = async (u, o) => {
+          const url = String((u && u.url) || u);
+          if (!/\/api\/v3\/texts\//.test(url)) return real(u, o);
+          const vs = new URL(url).searchParams.getAll('version');
+          asked.push(vs.join(' + '));
+          const want = vs.find(v => v.indexOf('|') > -1), title = want ? want.slice(want.indexOf('|') + 1) : '';
+          const versions = [{ language: 'he', versionTitle: 'A Hebrew Edition', license: 'CC-BY-SA', text: [HEB, HEB] }];
+          if (title && EN[title] && /^translation\|/.test(want)) versions.push({ language: 'en', versionTitle: title, license: EN[title][0], actualLanguage: EN[title][1], text: [EN[title][2], EN[title][2]] });
+          return new Response(JSON.stringify({ sections: ['1', '1'], versions }), { status: 200, headers: { 'content-type': 'application/json' } });
+        };
+        fetchVersionsList = async () => LIST;
+        const settle = async () => { for (let i = 0; i < 100 && _readingLoading; i++) await new Promise(r => setTimeout(r, 50)); await new Promise(r => setTimeout(r, 150)); };
+        for (let i = 0; i < 100 && !(parshiyotData && parshiyotData.length && resolveRef()); i++) await new Promise(r => setTimeout(r, 50));   // the parsha list is the page's own data file
+        textCache.clear();
+        await fetchAndRender(); await settle(); await populateVersionDropdown('Genesis');
+        const sel = document.getElementById('ttVersionSelect');
+        const snap = () => ({
+          options: [...sel.options].map(o => o.value), grouped: [...sel.querySelectorAll('optgroup option')].map(o => o.value), groups: sel.querySelectorAll('optgroup').length,
+          text: document.getElementById('ttReading').textContent, effective: effectiveVersion(), box: sel.value,
+          footer: document.getElementById('ttFooterTrans').textContent,
+          heading: (document.querySelector('.tt-col-translation h3') || {}).textContent || '', colLang: document.querySelector('.tt-col-translation') ? document.querySelector('.tt-col-translation').getAttribute('lang') : null,
+          inMemory: settings.translationVersion,
+        });
+        const first = snap();
+        saveSettingsFlush();
+        const stored = JSON.parse(localStorage.getItem('hebrewTorahTrainer_settings')).translationVersion;
+        sel.value = FR; sel.dispatchEvent(new Event('change', { bubbles: true }));
+        await new Promise(r => setTimeout(r, 100)); await settle(); await populateVersionDropdown('Genesis');
+        const french = snap();
+        return { first, stored, french, asked, english: I18n.t('torah.reading.col_english'), translation: I18n.t('torah.reading.col_translation'), JPS, FR, RO };
+      });
+      check(tag + ' F: a NoDerivatives version is not offered', !rf.first.options.includes('No Derivs') && rf.first.options.includes(rf.JPS), JSON.stringify(rf.first.options));
+      check(tag + ' F: a version Sefaria returns under a closed licence is not shown; JPS 1917 is, and the box and footer say so', !/CLOSED/.test(rf.first.text) && /JPS one\./.test(rf.first.text) && rf.first.effective === rf.JPS && rf.first.box === rf.JPS && rf.first.footer.includes(rf.JPS), JSON.stringify({ effective: rf.first.effective, box: rf.first.box, footer: rf.first.footer, text: rf.first.text.slice(0, 120) }));
+      check(tag + ' F: the refused choice stays the stored choice', rf.stored === 'Relicensed' && rf.first.inMemory === 'Relicensed', JSON.stringify({ stored: rf.stored, inMemory: rf.first.inMemory }));
+      check(tag + ' F: other languages sit in their own group, by the title’s tag before Sefaria’s field', rf.first.groups === 1 && rf.first.grouped.join('|') === [rf.FR, rf.RO].join('|') && rf.first.heading === rf.english && !rf.first.colLang, JSON.stringify({ grouped: rf.first.grouped, heading: rf.first.heading }));
+      check(tag + ' F: a French version is asked for as a translation, shows, and the heading reads Translation', /Au commencement\./.test(rf.french.text) && rf.french.heading === rf.translation && rf.french.colLang === 'fr' && rf.french.footer.includes(rf.FR) && rf.asked.some(a => a.indexOf('translation|' + rf.FR) > -1) && !rf.asked.some(a => /english\|/.test(a)), JSON.stringify({ heading: rf.french.heading, lang: rf.french.colLang, footer: rf.french.footer, asked: rf.asked.slice(-2) }));
+      check(tag + ' F: 0 pageerrors', f.errors.length === 0, f.errors.join(' | '));
+      await f.ctx.close();
     }
   },
   {

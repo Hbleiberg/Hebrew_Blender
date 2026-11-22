@@ -4251,7 +4251,7 @@ torah.copy.options_link_title,"Choose what a copy contains — marks, transliter
 torah.copy.none_selected,Select at least one verse first.,יש לבחור לפחות פסוק אחד.,inline reason shown when Copy All is pressed with an empty selection,
 torah.copy.rich_preview_note,Colors are added when you paste — this preview shows the plain text.,הצבעים נוספים בהדבקה — התצוגה המקדימה מציגה את הטקסט הרגיל.,note under the copy preview textarea while Copy color coding is on,
 torah.copy.prereq_translit,"Transliteration is on, but its library could not be loaded — it will be left out of the copy.","התעתיק מופעל, אך לא ניתן היה לטעון את הספרייה — הוא יושמט מההעתקה.",note in the copy bar when Include transliteration is on but its library is unavailable,REVIEW: machine-drafted HE — confirm
-torah.copy.prereq_trans,"Translation is on, but this reading has no English text — it will be left out of the copy.","התרגום מופעל, אך לקריאה זו אין טקסט באנגלית — הוא יושמט מההעתקה.",note in the copy bar when Include translation is on but no English text loaded,REVIEW: machine-drafted HE — confirm
+torah.copy.prereq_trans,"Translation is on, but this reading has no translation text — it will be left out of the copy.","התרגום מופעל, אך לקריאה זו אין טקסט תרגום — הוא יושמט מההעתקה.",note in the copy bar when Include translation is on but no English text loaded,REVIEW: machine-drafted HE — confirm
 torah.copy.inc_heading,Include a heading line,כולל שורת כותרת,copy option toggle,
 torah.copy.inc_heading_tip,"Puts the reading's name and verse range on the first line of the copied text, so a pasted passage says where it came from.","מוסיף את שם הקריאה וטווח הפסוקים בשורה הראשונה של הטקסט המועתק, כך שקטע מודבק מציין מהיכן הגיע.",tooltip,
 torah.copy.nikkud_label,Nikkud,ניקוד,copy option — whether vowels are copied,
@@ -4470,9 +4470,11 @@ torah.reading.verse_read,Read,הקראה,per-verse button,leading-emoji
 torah.reading.verse_read_aria,Read verse {verseRef} aloud (TTS),הקראת פסוק {verseRef} בקול (הקראה קולית),per-verse button aria,aria-label only; mixed UI+content — do not translate {verseRef}
 torah.reading.row_hebrew,Hebrew,עברית,Interlinear/side-by-side row label (Hebrew line),
 torah.reading.col_english,English,אנגלית,Side-by-side translation column header,
+torah.reading.col_translation,Translation,תרגום,Side-by-side translation column header when the translation on screen is not English,
 torah.reading.col_translit,Transliteration,תעתיק,Side-by-side transliteration column header,
 torah.reading.row_translit,Translit,תעתיק,Interlinear/side-by-side row label (translit line),
 torah.reading.row_english,English,אנגלית,Interlinear/side-by-side row label (translation line),
+torah.reading.row_translation,Translation,תרגום,Interlinear row label (translation line) when the translation on screen is not English,
 torah.reading.aliyah_inline,✦ Aliyah {n},✦ עלייה {n},Inline aliyah marker in the flowing reading,leading-glyph; {n} numeric
 torah.reading.aliyah_divider,Aliyah {n} · {label},עלייה {n} · {label},Aliyah divider heading (page/interlinear view),{n} numeric; {label} is the aliyah name/range content
 torah.schedule.diaspora,Diaspora,תפוצות,radio label,
@@ -4678,7 +4680,8 @@ torah.trans.license_ccbyncsa,CC BY-NC-SA,CC BY-NC-SA,license label,
 torah.trans.license_ccbysa,CC BY-SA,CC BY-SA,license label,
 torah.trans.license_public_domain,Public Domain,נחלת הכלל,license label,
 torah.trans.license_unknown,unknown license,רישיון לא ידוע,license fallback,
-torah.trans.no_versions,(no openly licensed English versions available for this book),(אין גרסאות אנגלית ברישיון פתוח זמינות לספר זה),version select option,
+torah.trans.group_other,Other languages,שפות אחרות,group label in the translation version list,
+torah.trans.no_versions,(no openly licensed translations available for this book),(אין תרגומים ברישיון פתוח זמינים לספר זה),version select option,
 torah.trans.style_ashkenazi,Ashkenazi,אשכנזי,select option,
 torah.trans.style_brill,Brill Academic,Brill אקדמי,select option,
 torah.trans.style_label,Style,סגנון,settings label,
