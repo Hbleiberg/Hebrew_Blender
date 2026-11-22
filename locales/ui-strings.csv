@@ -8336,3 +8336,7 @@ tefillah.prayer.shehecheyanu,Shehecheyanu,שֶׁהֶחֱיָנוּ,prayer name (
 tefillah.prayer.birkat_hamazon,Birkat HaMazon,בִּרְכַּת הַמָּזוֹן,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
 tefillah.prayer.birkat_hamazon_short,Birkat HaMazon (short),בִּרְכַּת הַמָּזוֹן (קְצָרָה),prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
 tefillah.prayer.shema_al_hamitah,Shema al HaMitah,קְרִיאַת שְׁמַע עַל הַמִּטָּה,prayer name (from data/tefillah/catalog.json; the Hebrew is the source's own pointing),
+tefillah.settings.panel_backup,Backup,גיבוי,More tab section title: .ivrit save files,
+tefillah.backup.intro,Save your settings and favorite prayers to a <b>.ivrit</b> file on your device. Restore by dropping the file below or browsing for it.,"שמרו את ההגדרות ואת התפילות המועדפות בקובץ <b>.ivrit</b> במכשיר שלכם. לשחזור, גררו את הקובץ למטה או חפשו אותו.",Backup section intro (data-i18n-html),html
+tefillah.backup.manual_placeholder,The backup text appears here…,טקסט הגיבוי יופיע כאן…,Placeholder + aria-label of the manual backup textarea,
+tefillah.backup.manual_source,the pasted backup,הגיבוי שהודבק,The {source} of a restore from the manual textarea,
