@@ -561,7 +561,7 @@
     { "key": "hallel-psalm-113", "nameKey": "tefillah.prayer.hallel_psalm_113", "en": "Hallel — Psalm 113", "he": "הַלֵּל · מִזְמוֹר קי״ג",
       "group": "shabbat-holidays", "service": "holidays", "days": ["weekday","shabbat"],
       "sources": {
-        "ashkenaz": { "ref": "Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 113", "verses": { "he": "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981", "lines": ["Psalms 113:1-9"] } },
+        "ashkenaz": { "ref": "Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 113", "verses": [{ "he": "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981", "lines": ["Psalms 113:1-9"] }, { "he": "Daat Siddur Ashkenaz", "lines": ["Psalms 113:1-9"] }] },
         "sefard": { "ref": "Siddur Sefard, Rosh Chodesh, Hallel:4", "he": "Torat Emet 357", "from": "הללויה הללו", "to": "שמחה הללויה", "verses": { "lines": ["Psalms 113:1-9"] } },
         "edot": { "ref": "Siddur Edot HaMizrach, Rosh Hodesh, Hallel:6", "he": " Shaliehsaboo Edition", "from": "הללויה הללו", "to": "שמחה הללויה", "verses": { "lines": ["Psalms 113:1-9"] } },
         "torah": null,
@@ -570,7 +570,7 @@
     { "key": "hallel-psalm-114", "nameKey": "tefillah.prayer.hallel_psalm_114", "en": "Hallel — Psalm 114", "he": "הַלֵּל · מִזְמוֹר קי״ד",
       "group": "shabbat-holidays", "service": "holidays", "days": ["weekday","shabbat"],
       "sources": {
-        "ashkenaz": { "ref": "Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 114", "verses": { "he": "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981", "lines": ["Psalms 114:1-8"] } },
+        "ashkenaz": { "ref": "Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 114", "verses": [{ "he": "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981", "lines": ["Psalms 114:1-8"] }, { "he": "Daat Siddur Ashkenaz", "lines": ["Psalms 114:1-8"] }] },
         "sefard": { "ref": "Siddur Sefard, Rosh Chodesh, Hallel:5", "he": "Torat Emet 357", "from": "בצאת ישראל", "to": "למעינו מים", "verses": { "lines": ["Psalms 114:1-8"] } },
         "edot": { "ref": "Siddur Edot HaMizrach, Rosh Hodesh, Hallel:7", "he": " Shaliehsaboo Edition", "from": "בצאת ישראל", "to": "למעינו מים", "verses": { "lines": ["Psalms 114:1-8"] } },
         "torah": null,
@@ -579,7 +579,7 @@
     { "key": "hallel-psalm-115", "nameKey": "tefillah.prayer.hallel_psalm_115", "en": "Hallel — Psalm 115", "he": "הַלֵּל · מִזְמוֹר קט״ו",
       "group": "shabbat-holidays", "service": "holidays", "days": ["weekday","shabbat"],
       "sources": {
-        "ashkenaz": { "ref": "Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 115", "verses": { "he": "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981", "lines": ["Psalms 115:1-11","Psalms 115:12-18"] } },
+        "ashkenaz": { "ref": "Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 115", "verses": [{ "he": "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981", "lines": ["Psalms 115:1-11","Psalms 115:12-18"] }, { "he": "Daat Siddur Ashkenaz", "lines": ["Psalms 115:1-18"] }] },
         "sefard": { "ref": "Siddur Sefard, Rosh Chodesh, Hallel:6-8", "he": "Torat Emet 357", "from": "לא לנו", "to": "עולם הללויה", "verses": { "lines": [null,"Psalms 115:1-11","Psalms 115:12-18"] } },
         "edot": { "ref": "Siddur Edot HaMizrach, Rosh Hodesh, Hallel:8-10", "he": " Shaliehsaboo Edition", "from": "לא לנו", "to": "הללו יה", "verses": { "lines": [null,"Psalms 115:1-11","Psalms 115:12-18"] } },
         "torah": null,
@@ -588,7 +588,7 @@
     { "key": "hallel-psalm-116", "nameKey": "tefillah.prayer.hallel_psalm_116", "en": "Hallel — Psalm 116", "he": "הַלֵּל · מִזְמוֹר קט״ז",
       "group": "shabbat-holidays", "service": "holidays", "days": ["weekday","shabbat"],
       "sources": {
-        "ashkenaz": { "ref": "Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 116", "verses": { "he": "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981", "lines": ["Psalms 116:1-11","Psalms 116:12-19"] } },
+        "ashkenaz": { "ref": "Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 116", "verses": [{ "he": "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981", "lines": ["Psalms 116:1-11","Psalms 116:12-19"] }, { "he": "Daat Siddur Ashkenaz", "lines": ["Psalms 116:1-19"] }] },
         "sefard": { "ref": "Siddur Sefard, Rosh Chodesh, Hallel:9-11", "he": "Torat Emet 357", "from": "אהבתי כי", "to": "ירושלים הללויה", "verses": { "lines": [null,"Psalms 116:1-11","Psalms 116:12-19"] } },
         "edot": { "ref": "Siddur Edot HaMizrach, Rosh Hodesh, Hallel:11-13", "he": " Shaliehsaboo Edition", "from": "אהבתי כי", "to": "ירושלם הללויה", "verses": { "lines": [null,"Psalms 116:1-11","Psalms 116:12-19"] } },
         "torah": null,
@@ -597,7 +597,7 @@
     { "key": "hallel-psalm-117", "nameKey": "tefillah.prayer.hallel_psalm_117", "en": "Hallel — Psalm 117", "he": "הַלֵּל · מִזְמוֹר קי״ז",
       "group": "shabbat-holidays", "service": "holidays", "days": ["weekday","shabbat"],
       "sources": {
-        "ashkenaz": { "ref": "Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 117", "verses": { "he": "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981", "lines": ["Psalms 117:1-2"] } },
+        "ashkenaz": { "ref": "Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 117", "verses": [{ "he": "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981", "lines": ["Psalms 117:1-2"] }, { "he": "Daat Siddur Ashkenaz", "lines": ["Psalms 117:1-2"] }] },
         "sefard": { "ref": "Siddur Sefard, Rosh Chodesh, Hallel:12", "he": "Torat Emet 357", "from": "הללו את", "to": "לעולם הללויה", "verses": { "lines": ["Psalms 117:1-2"] } },
         "edot": { "ref": "Siddur Edot HaMizrach, Rosh Hodesh, Hallel:14", "he": " Shaliehsaboo Edition", "from": "הללו את", "to": "לעולם הללויה", "verses": { "lines": ["Psalms 117:1-2"] } },
         "torah": null,
@@ -606,7 +606,7 @@
     { "key": "hallel-psalm-118", "nameKey": "tefillah.prayer.hallel_psalm_118", "en": "Hallel — Psalm 118", "he": "הַלֵּל · מִזְמוֹר קי״ח",
       "group": "shabbat-holidays", "service": "holidays", "days": ["weekday","shabbat"],
       "sources": {
-        "ashkenaz": { "ref": "Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 118", "verses": { "he": "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981", "lines": ["Psalms 118:1","Psalms 118:2","Psalms 118:1","Psalms 118:3","Psalms 118:1","Psalms 118:4","Psalms 118:1","Psalms 118:5-24","Psalms 118:25",null,null,null,"Psalms 118:26-29"] } },
+        "ashkenaz": { "ref": "Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 118", "verses": [{ "he": "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981", "lines": ["Psalms 118:1","Psalms 118:2","Psalms 118:1","Psalms 118:3","Psalms 118:1","Psalms 118:4","Psalms 118:1","Psalms 118:5-24","Psalms 118:25",null,null,null,"Psalms 118:26-29"] }, { "he": "Daat Siddur Ashkenaz", "lines": ["Psalms 118:1-29"] }] },
         "sefard": { "ref": "Siddur Sefard, Rosh Chodesh, Hallel:13-24", "he": "Torat Emet 357", "from": "הודו ליהוה", "to": "לעולם חסדו", "verses": { "lines": ["Psalms 118:1","Psalms 118:1,2","Psalms 118:2","Psalms 118:1,3","Psalms 118:3","Psalms 118:1,4","Psalms 118:4","Psalms 118:1","Psalms 118:5-24","Psalms 118:25",null,"Psalms 118:26-29"] } },
         "edot": { "ref": "Siddur Edot HaMizrach, Rosh Hodesh, Hallel:15-23", "he": " Shaliehsaboo Edition", "from": "הודו ליהוה", "to": "לעולם חסדו", "verses": { "lines": ["Psalms 118:1","Psalms 118:2","Psalms 118:3","Psalms 118:4","Psalms 118:5-20","Psalms 118:21-24","Psalms 118:25",null,"Psalms 118:26-29"] } },
         "torah": null,
@@ -626,12 +626,12 @@
       "sources": {
         "ashkenaz": [
           "Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Berakhah before the Hallel",
-          { "ref": "Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 113", "verses": { "he": "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981", "lines": ["Psalms 113:1-9"] } },
-          { "ref": "Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 114", "verses": { "he": "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981", "lines": ["Psalms 114:1-8"] } },
-          { "ref": "Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 115", "verses": { "he": "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981", "lines": ["Psalms 115:1-11","Psalms 115:12-18"] } },
-          { "ref": "Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 116", "verses": { "he": "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981", "lines": ["Psalms 116:1-11","Psalms 116:12-19"] } },
-          { "ref": "Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 117", "verses": { "he": "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981", "lines": ["Psalms 117:1-2"] } },
-          { "ref": "Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 118", "verses": { "he": "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981", "lines": ["Psalms 118:1","Psalms 118:2","Psalms 118:1","Psalms 118:3","Psalms 118:1","Psalms 118:4","Psalms 118:1","Psalms 118:5-24","Psalms 118:25",null,null,null,"Psalms 118:26-29"] } },
+          { "ref": "Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 113", "verses": [{ "he": "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981", "lines": ["Psalms 113:1-9"] }, { "he": "Daat Siddur Ashkenaz", "lines": ["Psalms 113:1-9"] }] },
+          { "ref": "Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 114", "verses": [{ "he": "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981", "lines": ["Psalms 114:1-8"] }, { "he": "Daat Siddur Ashkenaz", "lines": ["Psalms 114:1-8"] }] },
+          { "ref": "Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 115", "verses": [{ "he": "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981", "lines": ["Psalms 115:1-11","Psalms 115:12-18"] }, { "he": "Daat Siddur Ashkenaz", "lines": ["Psalms 115:1-18"] }] },
+          { "ref": "Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 116", "verses": [{ "he": "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981", "lines": ["Psalms 116:1-11","Psalms 116:12-19"] }, { "he": "Daat Siddur Ashkenaz", "lines": ["Psalms 116:1-19"] }] },
+          { "ref": "Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 117", "verses": [{ "he": "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981", "lines": ["Psalms 117:1-2"] }, { "he": "Daat Siddur Ashkenaz", "lines": ["Psalms 117:1-2"] }] },
+          { "ref": "Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 118", "verses": [{ "he": "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981", "lines": ["Psalms 118:1","Psalms 118:2","Psalms 118:1","Psalms 118:3","Psalms 118:1","Psalms 118:4","Psalms 118:1","Psalms 118:5-24","Psalms 118:25",null,null,null,"Psalms 118:26-29"] }, { "he": "Daat Siddur Ashkenaz", "lines": ["Psalms 118:1-29"] }] },
           "Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Berakhah after the Hallel"
         ],
         "sefard": { "ref": "Siddur Sefard, Rosh Chodesh, Hallel:1-25", "he": "Torat Emet 357", "from": "ברוך אתה", "to": "מהלל בתשבחות", "verses": { "lines": [null,null,null,"Psalms 113:1-9","Psalms 114:1-8",null,"Psalms 115:1-11","Psalms 115:12-18",null,"Psalms 116:1-11","Psalms 116:12-19","Psalms 117:1-2","Psalms 118:1","Psalms 118:1,2","Psalms 118:2","Psalms 118:1,3","Psalms 118:3","Psalms 118:1,4","Psalms 118:4","Psalms 118:1","Psalms 118:5-24","Psalms 118:25",null,"Psalms 118:26-29",null] } },

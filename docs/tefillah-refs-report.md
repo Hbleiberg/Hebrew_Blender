@@ -447,6 +447,12 @@ Each table is one siddur node in the Hebrew edition whose lines were counted. *V
 |---|---|---|---|---|---|---|
 | 1 | הַלְלוּיָהּ הַלְלוּ עַבְדֵי יְהֹוָה הַלְלוּ … | … אֵם־הַבָּנִים שְׂמֵחָה הַלְלוּיָהּ: | 113:1-9 | 9 of 9 | Hallelujah. Praise, O ye servants of the LORD, … | … joyful mother of children. Hallelujah. |
 
+### Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 113 — Daat Siddur Ashkenaz
+
+| Line | Hebrew opens | Hebrew closes | Verses | Found | English opens | English closes |
+|---|---|---|---|---|---|---|
+| 1 | א הַלְלוּ יָהּ הַלְלוּ עַבְדֵי … | … שְׂמֵחָה הַלְלוּ יָהּ. | 113:1-9 | 9 of 9 | Hallelujah. Praise, O ye servants of the LORD, … | … joyful mother of children. Hallelujah. |
+
 ### Siddur Sefard, Rosh Chodesh, Hallel — Torat Emet 357
 
 | Line | Hebrew opens | Hebrew closes | Verses | Found | English opens | English closes |
@@ -503,12 +509,24 @@ Each table is one siddur node in the Hebrew edition whose lines were counted. *V
 |---|---|---|---|---|---|---|
 | 1 | בְּצֵאת יִשְׂרָאֵל מִמִּצְרָיִם בֵּית יַעֲקֹב … | … אֲגַם־מָיִם חַלָּמִישׁ לְמַעְיְנוֹ־מָיִם: | 114:1-8 | 8 of 8 | When Israel came forth out of Egypt, The … | … into a fountain of waters. |
 
+### Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 114 — Daat Siddur Ashkenaz
+
+| Line | Hebrew opens | Hebrew closes | Verses | Found | English opens | English closes |
+|---|---|---|---|---|---|---|
+| 1 | א בְּצֵאת יִשְׂרָאֵל מִמִּצְרָיִם בֵּית … | … חַלָּמִישׁ לְמַעְיְנוֹ מָיִם. | 114:1-8 | 8 of 8 | When Israel came forth out of Egypt, The … | … into a fountain of waters. |
+
 ### Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 115 — The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981
 
 | Line | Hebrew opens | Hebrew closes | Verses | Found | English opens | English closes |
 |---|---|---|---|---|---|---|
 | 1 | בראש חודש ובחוה"מ פסח מדלגין: … | … עֶזְרָם וּמָגִנָּם הוּא: | 115:1-11 | 11 of 11 | Not unto us, O LORD, not unto us, … | … their help and their shield. |
 | 2 | יְהֹוָה זְכָרָנוּ יְבָרֵךְ יְבָרֵךְ אֶת־בֵּית … | … מֵעַתָּה וְעַד־עוֹלָם הַלְלוּיָהּ: | 115:12-18 | 7 of 7 | The LORD hath been mindful of us, He … | … forth and for ever. Hallelujah. |
+
+### Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 115 — Daat Siddur Ashkenaz
+
+| Line | Hebrew opens | Hebrew closes | Verses | Found | English opens | English closes |
+|---|---|---|---|---|---|---|
+| 1 | א לֹא לָנוּ יְהוָה לֹא … | … עוֹלָם הַלְלוּ יָהּ. | 115:1-18 | 18 of 18 | Not unto us, O LORD, not unto us, … | … forth and for ever. Hallelujah. |
 
 ### Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 116 — The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981
 
@@ -517,11 +535,23 @@ Each table is one siddur node in the Hebrew edition whose lines were counted. *V
 | 1 | בראש חודש ובחוה"מ פסח מדלגין: … | … בְחָפְזִי כָּל־הָאָדָם כֹּזֵב: | 116:1-11 | 11 of 11 | I love that the LORD should hear my … | … haste: 'All men are liars.' |
 | 2 | מָה־אָשִׁיב לַיהֹוָה כָּל־תַּגְמוּלוֹהִי עָלָי: כּוֹס־יְשׁוּעוֹת … | … בְּתוֹכֵכִי יְרוּשָׁלָםִ הַלְלוּיָהּ: | 116:12-19 | 8 of 8 | How can I repay unto the LORD All … | … of thee, O Jerusalem. Hallelujah. |
 
+### Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 116 — Daat Siddur Ashkenaz
+
+| Line | Hebrew opens | Hebrew closes | Verses | Found | English opens | English closes |
+|---|---|---|---|---|---|---|
+| 1 | א אָהַבְתִּי כִּי יִשְׁמַע יְהוָה … | … יְרוּשָׁלָ‍ִם הַלְלוּ יָהּ. | 116:1-19 | 19 of 19 | I love that the LORD should hear my … | … of thee, O Jerusalem. Hallelujah. |
+
 ### Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 117 — The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981
 
 | Line | Hebrew opens | Hebrew closes | Verses | Found | English opens | English closes |
 |---|---|---|---|---|---|---|
 | 1 | הַלְלוּ אֶת־יְהֹוָה כָּל־גּוֹיִם שַׁבְּחוּהוּ כָּל־הָאֻמִּים: … | … וֶאֱמֶת־יְהֹוָה לְעוֹלָם הַלְלוּיָהּ: | 117:1-2 | 2 of 2 | O praise the LORD, all ye nations; Laud … | … LORD endureth for ever. Hallelujah. |
+
+### Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 117 — Daat Siddur Ashkenaz
+
+| Line | Hebrew opens | Hebrew closes | Verses | Found | English opens | English closes |
+|---|---|---|---|---|---|---|
+| 1 | א הַלְלוּ אֶת יְהוָה כָּל … | … לְעוֹלָם הַלְלוּ יָהּ. | 117:1-2 | 2 of 2 | O praise the LORD, all ye nations; Laud … | … LORD endureth for ever. Hallelujah. |
 
 ### Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 118 — The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981
 
@@ -540,3 +570,9 @@ Each table is one siddur node in the Hebrew edition whose lines were counted. *V
 | 11 | אָנָּא יְהֹוָה הַצְלִיחָה נָא: | … יְהֹוָה הַצְלִיחָה נָא: | — |  |  |  |
 | 12 | אָנָּא יְהֹוָה הַצְלִיחָה נָא: | … יְהֹוָה הַצְלִיחָה נָא: | — |  |  |  |
 | 13 | בָּרוּךְ הַבָּא בְּשֵׁם יְהֹוָה בֵּרַכְנוּכֶם … | … כִּי לְעוֹלָם חַסְדּוֹ: | 118:26-29 | 4 of 4 | Blessed be he that cometh in the name … | … His mercy endureth for ever. |
+
+### Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 118 — Daat Siddur Ashkenaz
+
+| Line | Hebrew opens | Hebrew closes | Verses | Found | English opens | English closes |
+|---|---|---|---|---|---|---|
+| 1 | א הוֹדוּ לַיהוָה כִּי טוֹב … | … כִּי לְעוֹלָם חַסְדּוֹ. | 118:1-29 | 29 of 29 | 'O give thanks unto the LORD, for He … | … His mercy endureth for ever. |

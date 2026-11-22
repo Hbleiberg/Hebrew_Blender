@@ -200,8 +200,10 @@ export function englishEnds(lines) {
 // lines holds:
 //   "verses": { "lines": [null, "Psalms 115:1-11", "Psalms 115:12-18"] }
 // one entry per line of the part, in order (null: an instruction, or a line with no verse of its own),
-// and on a whole node also "he": the Hebrew edition whose lines were counted. An entry is one chapter
-// and its verses, in the order the line says them: "Psalms 118:5-24", "Psalms 118:1,3".
+// and on a whole node also "he": the Hebrew edition whose lines were counted — or a list of such maps,
+// one per edition, since a visitor may switch a whole node's edition and each divides its lines its own
+// way. An entry is one chapter and its verses, in the order the line says them: "Psalms 118:5-24",
+// "Psalms 118:1,3".
 // The page then offers the open translations of those verses and sets each line's beside it. Nothing is
 // taken on trust: the checker and the page both compare the line's own letters with the verses' Hebrew
 // (versesFit) and pair nothing when they differ.
@@ -232,7 +234,9 @@ export function versesFit(linePlain, ranges, verseText) {
 // The file is written by this function only (by --stamp), so a hand edit and a stamped copy read alike.
 export function formatCatalog(cat) {
   const j = (v) => JSON.stringify(v);
-  const obj = (o) => '{ ' + Object.keys(o).map((k) => `${j(k)}: ${o[k] && typeof o[k] === 'object' && !Array.isArray(o[k]) ? obj(o[k]) : j(o[k])}`).join(', ') + ' }';
+  const val = (v) => (Array.isArray(v) && v.some((x) => x && typeof x === 'object') ? '[' + v.map(val).join(', ') + ']'
+    : v && typeof v === 'object' && !Array.isArray(v) ? obj(v) : j(v));
+  const obj = (o) => '{ ' + Object.keys(o).map((k) => `${j(k)}: ${val(o[k])}`).join(', ') + ' }';
   const part = (p) => (typeof p === 'string' || p === null ? j(p) : obj(p));
   const source = (s) => (Array.isArray(s) ? '[\n' + s.map((p) => '          ' + part(p)).join(',\n') + '\n        ]' : part(s));
   const out = ['{', `  "v": ${j(cat.v)},`, `  "hebrewPreference": ${j(cat.hebrewPreference)},`, '  "groups": ['];

@@ -185,8 +185,12 @@ async function checkSiddurPart(part, where, leaves) {
   }
   // Lines that are Tanakh verses: every named line must open with its verses, and the translations offered are the
   // open ones of every chapter the part names.
-  if (part.verses != null) {
-    const vv = part.verses;
+  const verseMaps = part.verses == null ? [] : (Array.isArray(part.verses) ? part.verses : [part.verses]);
+  if (Array.isArray(part.verses) && ranged) problems.push(`${where}: ${part.ref}: a line range has one Hebrew edition, so one map of verses`);
+  if (Array.isArray(part.verses) && new Set(part.verses.map((m) => m && m.he)).size !== part.verses.length) problems.push(`${where}: ${part.ref}: two maps of verses name the same Hebrew edition`);
+  const shownMapped = !verseMaps.length || ranged || verseMaps.some((m) => m && m.he === he.versionTitle);
+  let offeredOnce = false;
+  for (const vv of verseMaps) {
     const bad = (msg) => { problems.push(`${where}: ${part.ref}: the verses ${msg}`); };
     if (!vv || typeof vv !== 'object' || !Array.isArray(vv.lines)) bad('must be { "lines": [ … ] }');
     else if (!ranged && (typeof vv.he !== 'string' || !vv.he)) bad('of a whole node must name the Hebrew edition whose lines were counted ("he")');
@@ -196,7 +200,7 @@ async function checkSiddurPart(part, where, leaves) {
       if (!ranged && vv.he !== he.versionTitle) {
         const o = openHe.find((v) => v.versionTitle === vv.he) ? (await fetchVersion(node, 'hebrew', vv.he)).version : null;
         against = o && o.versionTitle === vv.he && isOpenLicense(o.license) ? o : null;
-        if (against) notes.versesOffDefault.push(`${node}: counted in ${short(vv.he)}, the page shows ${short(he.versionTitle)} first`);
+        if (against && !shownMapped) notes.versesOffDefault.push(`${node}: counted in ${short(vv.he)}, the page shows ${short(he.versionTitle)} first`);
       }
       const a = ranged ? from : 1, b = ranged ? to : (against ? against.lines.length : 0);
       if (!against) bad(`name ${JSON.stringify(vv.he)}, which is not an open Hebrew edition of ${node}`);
@@ -231,7 +235,8 @@ async function checkSiddurPart(part, where, leaves) {
         }
         if (ok && mapped && offered) {
           if (!offered.length) bad('name chapters that share no openly licensed English translation');
-          for (const v of offered) english.push({ title: short(v.versionTitle), licence: lic(v.license), match: true, n: total, raw: v.versionTitle, tanakh: true });
+          if (!offeredOnce) for (const v of offered) english.push({ title: short(v.versionTitle), licence: lic(v.license), match: true, n: total, raw: v.versionTitle, tanakh: true });
+          offeredOnce = true;
         }
       }
     }

@@ -22,7 +22,7 @@ maintainer, never fixed. The fixture smoke builds its texts from ordinary vocabu
 
 ## The catalog — `data/tefillah/catalog.json`
 
-A curated list, not the Sefaria tree. Fetched as `data/tefillah/catalog.json?v=5` (`CATALOG_URL`); `sw.js` precaches
+A curated list, not the Sefaria tree. Fetched as `data/tefillah/catalog.json?v=6` (`CATALOG_URL`); `sw.js` precaches
 that exact URL (`DATA_PRECACHE`), so **an edit bumps the `?v=` in both places**.
 
 ```jsonc
@@ -43,7 +43,7 @@ or an ordered list of parts. A part is:
 | `{ "ref": "<leaf>:<a-b>", "he": "<edition>", "from": "…", "to": "…" }` | **lines** `a`–`b` of a leaf node, read from that exact Hebrew edition; `from` / `to` are the consonants of the range's first two and last two pointed words |
 | `{ …, "en": { "v": "<translation>", "from": "…", "to": "…" } }` | a **pinned translation**: line *n* of that translation stands beside line *n* of the part's Hebrew (below) |
 | `{ "ref": "<leaf>", "en": { "v": "…", "he": "<edition>", "from": "…", "to": "…" } }` | a whole node with a pinned translation; `he` names the Hebrew edition the pairing was read against |
-| `{ …, "verses": { "lines": [null, "Psalms 115:1-11", "Psalms 115:12-18"] } }` | **lines that are Tanakh verses**: one entry per line of the part (null: an instruction, or a line with no verse of its own); on a whole node also `"he"`, the Hebrew edition whose lines were counted (below) |
+| `{ …, "verses": { "lines": [null, "Psalms 115:1-11", "Psalms 115:12-18"] } }` | **lines that are Tanakh verses**: one entry per line of the part (null: an instruction, or a line with no verse of its own); on a whole node also `"he"`, the Hebrew edition whose lines were counted, or a list of such maps, one per edition (below) |
 | `"Deuteronomy 6:4-9"` | a Tanakh ref — only inside a `torah` source |
 | `{ …, "added": true }` | inside a `torah` source: a line the siddur adds between the verses |
 | `"modeh-ani"` (the `opensiddur` source) | the key of a snapshot file, `data/tefillah/opensiddur/<key>.json` |
@@ -69,7 +69,10 @@ or an ordered list of parts. A part is:
   taken on trust: `versesFit` compares the line's own pointed letters with the verses' Hebrew (the first verse of
   each range must be there, in order, the first opening the line; eight letters decide), in the checker — which also
   requires each range's last verse and counts the rest — and again on the page at every load. Psalm 118:25 is two
-  halves the siddur says on separate lines: the verse stands beside the first and the second has none.
+  halves the siddur says on separate lines: the verse stands beside the first and the second has none. A whole node
+  lets a visitor switch its Hebrew edition, and each edition divides its lines its own way, so a whole node carries
+  **one map per edition** (the Ashkenaz Hallel psalms: Metsudah's paragraphs, and Daat's one line per psalm); an
+  edition with no map shows no translation.
 - **`node scripts/check-tefillah-refs.mjs --out docs/tefillah-refs-report.md`** checks every source (the ref resolves
   and is a leaf, the pinned edition is still open, the range's ends match, a pinned translation still pairs, every
   line named as verses opens with them, an Open Siddur key's file exists and is open) and writes the table the catalog

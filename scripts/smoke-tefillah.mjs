@@ -147,6 +147,7 @@ const CATALOG = { v: 1, hebrewPreference: ['Metsudah', 'Open'], groups: [{ key: 
   P('verses-swapped', { ashkenaz: ranged(N('Psalm'), 1, 3, OPEN, { verses: { lines: [null, 'Psalms 113:3-4', 'Psalms 113:1-2'] } }) }),
   P('verses-short', { ashkenaz: ranged(N('Psalm'), 1, 3, OPEN, { verses: { lines: ['Psalms 113:1-2', 'Psalms 113:3-4'] } }) }),
   P('verses-whole', { ashkenaz: { ref: N('Psalm'), verses: { he: OPEN, lines: [null, 'Psalms 113:1-2', 'Psalms 113:3,4'] } } }),
+  P('verses-two-editions', { ashkenaz: { ref: N('Psalm'), verses: [{ he: OPEN, lines: [null, 'Psalms 113:1-2', 'Psalms 113:3-4'] }, { he: OTHER, lines: ['Psalms 113:1-4'] }] } }),
   P('verses-other-edition', { ashkenaz: { ref: N('Psalm'), verses: { he: OTHER, lines: ['Psalms 113:1-4'] } } }),
   P('verses-odd', { ashkenaz: ranged(N('Psalm'), 1, 3, OPEN, { verses: { lines: [null, 'Deuteronomy 6:4', 'Psalms 113:3-4'] } }) }),   // only Psalms may be named: the map is dropped
   P('pinned-odd', { ashkenaz: ranged(N('Pinned'), 2, 5, OPEN, { en: 'A Shorter Translation' }) }),                    // a pin this page cannot read: dropped, the part kept
@@ -361,6 +362,13 @@ try {
       s = await go(key);
       check(why + ': no translation, and the prayer still opens', s.rows.length >= 1 && !s.empty && s.trans.every((x) => !x) && !/Verse one|Second one/.test(s.text) && !s.credits.includes(PS_B), JSON.stringify({ rows: s.rows.length, trans: s.trans, credits: s.credits }));
     }
+    // one map per Hebrew edition: switching the edition keeps the translation, on that edition's own lines
+    s = await go('verses-two-editions');
+    const twoBefore = s.trans.join('|');
+    await t.page.evaluate((title) => { const sel = document.getElementById('ttEditionSelect'); sel.value = title; sel.dispatchEvent(new Event('change', { bubbles: true })); }, OTHER);
+    await t.page.waitForTimeout(600); await settled(t.page);
+    s = await snapshot(t.page);
+    check('a map per Hebrew edition: switching the edition keeps the translation, on that edition\u2019s lines', twoBefore === 'Second one. Second two.|Second three. Second four.' && s.rows.length === 1 && s.trans.join('|') === 'Second one. Second two. Second three. Second four.' && s.credits.includes(OTHER), JSON.stringify({ before: twoBefore, after: s.trans, credits: s.credits }));
     check('no page error', t.errors.length === 0, t.errors.join(' | '));
     await t.close();
   }
