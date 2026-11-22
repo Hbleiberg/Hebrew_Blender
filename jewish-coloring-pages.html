@@ -209,7 +209,7 @@ html.dark-early body,body.dark {
   --warm-gray:#1e2535;--text:#dde4f0;--muted:#8a94a8;--border:#2a3349;--white:#1e2535;--gold-text:var(--gold);--gold-text-hover:var(--gold-light);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-[hidden]{display:none !important;}
+[hidden]:not([hidden="until-found"]){display:none !important;}   /* until-found: a book the browser's find-in-page can still open */
 body{font-family:'Source Sans 3',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;display:flex;flex-direction:column;line-height:1.5;}
 .skip-link{position:absolute;inset-inline-start:8px;top:-48px;z-index:200;background:var(--navy);color:#fff;padding:8px 14px;border-radius:0 0 6px 6px;font-size:0.8rem;font-weight:600;text-decoration:none;}
 .skip-link:focus{top:0;outline:2px solid var(--focus-ring);outline-offset:2px;}
@@ -241,6 +241,15 @@ body.dark .ch-sec h2{color:var(--gold-light);}
 body.dark .ch-sec h3{color:var(--gold-light);}
 .ch-intro{max-width:72ch;}
 .ch-cta{margin-block-start:18px;}
+/* The parsha section shows one book at a time: five tabs, each over its book's pictures. The book's own heading is
+   for paper and for a browser without scripts (both show all five books), so on screen the tab is the name. */
+.ch-books{display:flex;flex-wrap:wrap;gap:8px;margin-block-start:16px;}
+.ch-book-tab{min-height:42px;padding:8px 18px;border-radius:999px;border:1px solid var(--border);background:var(--white);color:var(--text);font-family:'Source Sans 3',sans-serif;font-weight:700;font-size:0.95rem;line-height:1.2;cursor:pointer;}
+.ch-book-tab:hover{border-color:var(--gold);}
+.ch-book-tab[aria-selected="true"]{background:var(--navy);border-color:var(--navy);color:#fff;}
+html.dark-early .ch-book-tab[aria-selected="true"],body.dark .ch-book-tab[aria-selected="true"]{background:var(--gold);border-color:var(--gold);color:var(--navy-deep);}
+html[lang="he"] .ch-book-tab{font-size:1.02rem;}
+.ch-book h3{display:none;}
 /* The pictures: every sheet at its own shape (the parsha and holiday sheets are portrait), names under it, the
    Hebrew first in the Hebrew UI. */
 .ch-grid{list-style:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px 14px;margin-block-start:14px;}
@@ -292,14 +301,17 @@ html[lang="he"] footer [style*="letter-spacing:0.08em"]{letter-spacing:normal !i
   main{padding:16px 14px 44px;}
   .ch-title{font-size:1.5rem;}
   .ch-grid{grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:12px 10px;}
+  .ch-book-tab{flex:1 1 auto;padding-inline:12px;}
   .ch-letters{grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:8px;}
   .ch-glyph{font-size:2.4rem;}
 }
 /* Paper: the list itself, without the chrome (each page's own Print button prints its sheet). */
 @media print{
-  header,footer,.skip-link,.ch-crumbs,.ch-jump,.ch-now,.ch-cta,#pwaInstallBanner{display:none !important;}
+  header,footer,.skip-link,.ch-crumbs,.ch-jump,.ch-now,.ch-cta,.ch-books,#pwaInstallBanner{display:none !important;}
   body,body.dark,html.dark-early body{background:#fff !important;}
   main{max-width:none;padding:0;}
+  .ch-book,.ch-book[hidden]{display:block !important;content-visibility:visible !important;}   /* all five books */
+  .ch-book h3{display:block;}
   .ch-card,.ch-letter{break-inside:avoid;}
 }
 /* ═══ header-icons CSS ═══ shared block, byte-identical on: index, hebrew_blend_generator, hebrew_dictionary, classroom_dashboard, flash_cards, torah_trainer, trope_tutor, Hebrew_Font_Maker, resources, contact, privacy, terms, account, 404, letter_learner, parsha_emojis, name_tags, trope_atlas, letter_discrimination, reading_assignments, holiday_guide, tefillah_trainer, the generated parsha/ pages (copied from parsha_emojis by scripts/build-parsha-pages.mjs), the generated holidays/ pages (copied from holiday_guide by scripts/build-holiday-pages.mjs) and the generated jewish-coloring-pages (copied from parsha_emojis by scripts/build-coloring-hub.mjs) (docs/reference/shared-components.md → Header icons).
@@ -334,6 +346,7 @@ header{--bl-row:160px;}   /* the lockup, its divider and the header's gap: what 
 .footer-social.is-inline{display:inline-flex;margin-block-start:0;gap:0 12px;}
 /* ═══ end header-icons CSS ═══ */
 </style>
+<noscript><style>.ch-books{display:none;}.ch-book[hidden]{display:block !important;}.ch-book h3{display:block;}</style></noscript>
 </head>
 <body>
 <a class="skip-link" href="#chMain" data-i18n="coloringhub.a11y.skip">Skip to the coloring pages</a>
@@ -419,9 +432,17 @@ header{--bl-row:160px;}   /* the lockup, its divider and the header's gap: what 
 
   <section class="ch-sec" id="parsha" aria-labelledby="chParshaTitle">
     <h2 id="chParshaTitle" data-i18n="coloringhub.parsha.title">Parsha coloring pages</h2>
-    <p class="ch-intro" data-i18n="coloringhub.parsha.intro">A coloring page for each of the 54 weekly Torah portions (the parasha, also spelled parsha or parshah). Each one is a single picture that carries the parasha's story, with its Hebrew and English names, its verses and a one-sentence summary.</p>
-    <h3 data-i18n="torah.custom.book_genesis">Genesis</h3>
-    <ul class="ch-grid">
+    <p class="ch-intro" data-i18n="coloringhub.parsha.intro">A coloring page for each of the 54 weekly Torah portions (the parasha, also spelled parsha or parshah). Each one is a single picture that carries the parasha's story, with its Hebrew and English names, its verses and a one-sentence summary. Choose a book of the Torah to see its parshiyot.</p>
+    <div class="ch-books" role="tablist" aria-label="Books of the Torah" data-i18n-aria-label="coloringhub.parsha.books_aria">
+      <button type="button" class="ch-book-tab" role="tab" id="chTab-genesis" data-book="genesis" aria-controls="chBook-genesis" aria-selected="true" data-i18n="torah.custom.book_genesis">Genesis</button>
+      <button type="button" class="ch-book-tab" role="tab" id="chTab-exodus" data-book="exodus" aria-controls="chBook-exodus" aria-selected="false" tabindex="-1" data-i18n="torah.custom.book_exodus">Exodus</button>
+      <button type="button" class="ch-book-tab" role="tab" id="chTab-leviticus" data-book="leviticus" aria-controls="chBook-leviticus" aria-selected="false" tabindex="-1" data-i18n="torah.custom.book_leviticus">Leviticus</button>
+      <button type="button" class="ch-book-tab" role="tab" id="chTab-numbers" data-book="numbers" aria-controls="chBook-numbers" aria-selected="false" tabindex="-1" data-i18n="torah.custom.book_numbers">Numbers</button>
+      <button type="button" class="ch-book-tab" role="tab" id="chTab-deuteronomy" data-book="deuteronomy" aria-controls="chBook-deuteronomy" aria-selected="false" tabindex="-1" data-i18n="torah.custom.book_deuteronomy">Deuteronomy</button>
+    </div>
+    <div class="ch-book" role="tabpanel" id="chBook-genesis" data-book="genesis" aria-labelledby="chTab-genesis">
+      <h3 data-i18n="torah.custom.book_genesis">Genesis</h3>
+      <ul class="ch-grid">
           <li><a class="ch-card" href="/parsha/bereshit.html" data-n="1" data-en="Bereshit" data-he="בראשית"><img src="/parsha/img/bereshit-coloring-page.png?v=423b85e2" width="992" height="1312" loading="lazy" decoding="async" alt="Parshat Bereshit coloring page: the earth with the sun, the moon and stars" data-alt-en="the earth with the sun, the moon and stars"><span class="ch-name"><span lang="en" dir="ltr">Bereshit</span><span lang="he" dir="rtl">בְּרֵאשִׁית</span></span></a></li>
           <li><a class="ch-card" href="/parsha/noach.html" data-n="2" data-en="Noach" data-he="נח"><img src="/parsha/img/noach-coloring-page.png?v=7f27a256" width="992" height="1312" loading="lazy" decoding="async" alt="Parshat Noach coloring page: a rainbow between two clouds" data-alt-en="a rainbow between two clouds"><span class="ch-name"><span lang="en" dir="ltr">Noach</span><span lang="he" dir="rtl">נֹחַ</span></span></a></li>
           <li><a class="ch-card" href="/parsha/lech-lecha.html" data-n="3" data-en="Lech-Lecha" data-he="לך-לך"><img src="/parsha/img/lech-lecha-coloring-page.png?v=b331dda2" width="992" height="1312" loading="lazy" decoding="async" alt="Parshat Lech-Lecha coloring page: two footprints walking forward" data-alt-en="two footprints walking forward"><span class="ch-name"><span lang="en" dir="ltr">Lech-Lecha</span><span lang="he" dir="rtl">לֶךְ-לְךָ</span></span></a></li>
@@ -434,9 +455,11 @@ header{--bl-row:160px;}   /* the lockup, its divider and the header's gap: what 
           <li><a class="ch-card" href="/parsha/miketz.html" data-n="10" data-en="Miketz" data-he="מקץ"><img src="/parsha/img/miketz-coloring-page.png?v=46a3a3a4" width="992" height="1312" loading="lazy" decoding="async" alt="Parshat Miketz coloring page: a silver goblet in a sack of grain" data-alt-en="a silver goblet in a sack of grain"><span class="ch-name"><span lang="en" dir="ltr">Miketz</span><span lang="he" dir="rtl">מִקֵּץ</span></span></a></li>
           <li><a class="ch-card" href="/parsha/vayigash.html" data-n="11" data-en="Vayigash" data-he="ויגש"><img src="/parsha/img/vayigash-coloring-page.png?v=0443c977" width="992" height="1312" loading="lazy" decoding="async" alt="Parshat Vayigash coloring page: two pyramids, a palm tree and the Nile" data-alt-en="two pyramids, a palm tree and the Nile"><span class="ch-name"><span lang="en" dir="ltr">Vayigash</span><span lang="he" dir="rtl">וַיִּגַּשׁ</span></span></a></li>
           <li><a class="ch-card" href="/parsha/vayechi.html" data-n="12" data-en="Vayechi" data-he="ויחי"><img src="/parsha/img/vayechi-coloring-page.png?v=0f510d19" width="992" height="1312" loading="lazy" decoding="async" alt="Parshat Vayechi coloring page: two crossed arms with open hands" data-alt-en="two crossed arms with open hands"><span class="ch-name"><span lang="en" dir="ltr">Vayechi</span><span lang="he" dir="rtl">וַיְחִי</span></span></a></li>
-    </ul>
-    <h3 data-i18n="torah.custom.book_exodus">Exodus</h3>
-    <ul class="ch-grid">
+      </ul>
+    </div>
+    <div class="ch-book" role="tabpanel" id="chBook-exodus" data-book="exodus" aria-labelledby="chTab-exodus" hidden>
+      <h3 data-i18n="torah.custom.book_exodus">Exodus</h3>
+      <ul class="ch-grid">
           <li><a class="ch-card" href="/parsha/shemot.html" data-n="13" data-en="Shemot" data-he="שמות"><img src="/parsha/img/shemot-coloring-page.png?v=f4966ef4" width="992" height="1312" loading="lazy" decoding="async" alt="Parshat Shemot coloring page: a woven basket floating among reeds" data-alt-en="a woven basket floating among reeds"><span class="ch-name"><span lang="en" dir="ltr">Shemot</span><span lang="he" dir="rtl">שְׁמוֹת</span></span></a></li>
           <li><a class="ch-card" href="/parsha/vaeira.html" data-n="14" data-en="Va&#39;eira" data-he="וארא"><img src="/parsha/img/vaeira-coloring-page.png?v=6f3343f1" width="992" height="1312" loading="lazy" decoding="async" alt="Parshat Va&#39;eira coloring page: red river waves with reeds and a water jar" data-alt-en="red river waves with reeds and a water jar"><span class="ch-name"><span lang="en" dir="ltr">Va&#39;eira</span><span lang="he" dir="rtl">וָאֵרָא</span></span></a></li>
           <li><a class="ch-card" href="/parsha/bo.html" data-n="15" data-en="Bo" data-he="בא"><img src="/parsha/img/bo-coloring-page.png?v=5f61e5fd" width="992" height="1312" loading="lazy" decoding="async" alt="Parshat Bo coloring page: a doorway with red marks on its posts" data-alt-en="a doorway with red marks on its posts"><span class="ch-name"><span lang="en" dir="ltr">Bo</span><span lang="he" dir="rtl">בֹּא</span></span></a></li>
@@ -448,9 +471,11 @@ header{--bl-row:160px;}   /* the lockup, its divider and the header's gap: what 
           <li><a class="ch-card" href="/parsha/ki-tisa.html" data-n="21" data-en="Ki Tisa" data-he="כי תשא"><img src="/parsha/img/ki-tisa-coloring-page.png?v=1d518ce5" width="992" height="1312" loading="lazy" decoding="async" alt="Parshat Ki Tisa coloring page: a golden calf on a pedestal" data-alt-en="a golden calf on a pedestal"><span class="ch-name"><span lang="en" dir="ltr">Ki Tisa</span><span lang="he" dir="rtl">כִּי תִשָּׂא</span></span></a></li>
           <li><a class="ch-card" href="/parsha/vayakhel.html" data-n="22" data-en="Vayakhel" data-he="ויקהל"><img src="/parsha/img/vayakhel-coloring-page.png?v=22774e93" width="992" height="1312" loading="lazy" decoding="async" alt="Parshat Vayakhel coloring page: two Shabbat candles" data-alt-en="two Shabbat candles"><span class="ch-name"><span lang="en" dir="ltr">Vayakhel</span><span lang="he" dir="rtl">וַיַּקְהֵל</span></span></a></li>
           <li><a class="ch-card" href="/parsha/pekudei.html" data-n="23" data-en="Pekudei" data-he="פקודי"><img src="/parsha/img/pekudei-coloring-page.png?v=61938949" width="992" height="1312" loading="lazy" decoding="async" alt="Parshat Pekudei coloring page: a cloud and a pillar of fire" data-alt-en="a cloud and a pillar of fire"><span class="ch-name"><span lang="en" dir="ltr">Pekudei</span><span lang="he" dir="rtl">פְקוּדֵי</span></span></a></li>
-    </ul>
-    <h3 data-i18n="torah.custom.book_leviticus">Leviticus</h3>
-    <ul class="ch-grid">
+      </ul>
+    </div>
+    <div class="ch-book" role="tabpanel" id="chBook-leviticus" data-book="leviticus" aria-labelledby="chTab-leviticus" hidden>
+      <h3 data-i18n="torah.custom.book_leviticus">Leviticus</h3>
+      <ul class="ch-grid">
           <li><a class="ch-card" href="/parsha/vayikra.html" data-n="24" data-en="Vayikra" data-he="ויקרא"><img src="/parsha/img/vayikra-coloring-page.png?v=6e516ed1" width="992" height="1312" loading="lazy" decoding="async" alt="Parshat Vayikra coloring page: a bowl of flour with oil pouring from a jug" data-alt-en="a bowl of flour with oil pouring from a jug"><span class="ch-name"><span lang="en" dir="ltr">Vayikra</span><span lang="he" dir="rtl">וַיִּקְרָא</span></span></a></li>
           <li><a class="ch-card" href="/parsha/tzav.html" data-n="25" data-en="Tzav" data-he="צו"><img src="/parsha/img/tzav-coloring-page.png?v=d1304c52" width="992" height="1312" loading="lazy" decoding="async" alt="Parshat Tzav coloring page: a steady flame on two crossed logs" data-alt-en="a steady flame on two crossed logs"><span class="ch-name"><span lang="en" dir="ltr">Tzav</span><span lang="he" dir="rtl">צַו</span></span></a></li>
           <li><a class="ch-card" href="/parsha/shemini.html" data-n="26" data-en="Shemini" data-he="שמיני"><img src="/parsha/img/shemini-coloring-page.png?v=7e9b6389" width="992" height="1312" loading="lazy" decoding="async" alt="Parshat Shemini coloring page: fire coming down from a cloud onto an altar" data-alt-en="fire coming down from a cloud onto an altar"><span class="ch-name"><span lang="en" dir="ltr">Shemini</span><span lang="he" dir="rtl">שְׁמִינִי</span></span></a></li>
@@ -461,9 +486,11 @@ header{--bl-row:160px;}   /* the lockup, its divider and the header's gap: what 
           <li><a class="ch-card" href="/parsha/emor.html" data-n="31" data-en="Emor" data-he="אמר"><img src="/parsha/img/emor-coloring-page.png?v=e1c50332" width="992" height="1312" loading="lazy" decoding="async" alt="Parshat Emor coloring page: a lulav and an etrog" data-alt-en="a lulav and an etrog"><span class="ch-name"><span lang="en" dir="ltr">Emor</span><span lang="he" dir="rtl">אֱמֹר</span></span></a></li>
           <li><a class="ch-card" href="/parsha/behar.html" data-n="32" data-en="Behar" data-he="בהר"><img src="/parsha/img/behar-coloring-page.png?v=253c8fea" width="992" height="1312" loading="lazy" decoding="async" alt="Parshat Behar coloring page: a sign with the number 7, a resting plow and wildflowers" data-alt-en="a sign with the number 7, a resting plow and wildflowers"><span class="ch-name"><span lang="en" dir="ltr">Behar</span><span lang="he" dir="rtl">בְּהַר</span></span></a></li>
           <li><a class="ch-card" href="/parsha/bechukotai.html" data-n="33" data-en="Bechukotai" data-he="בחקתי"><img src="/parsha/img/bechukotai-coloring-page.png?v=b9d2b9c4" width="992" height="1312" loading="lazy" decoding="async" alt="Parshat Bechukotai coloring page: a bunch of grapes with ears of wheat" data-alt-en="a bunch of grapes with ears of wheat"><span class="ch-name"><span lang="en" dir="ltr">Bechukotai</span><span lang="he" dir="rtl">בְּחֻקֹּתַי</span></span></a></li>
-    </ul>
-    <h3 data-i18n="torah.custom.book_numbers">Numbers</h3>
-    <ul class="ch-grid">
+      </ul>
+    </div>
+    <div class="ch-book" role="tabpanel" id="chBook-numbers" data-book="numbers" aria-labelledby="chTab-numbers" hidden>
+      <h3 data-i18n="torah.custom.book_numbers">Numbers</h3>
+      <ul class="ch-grid">
           <li><a class="ch-card" href="/parsha/bamidbar.html" data-n="34" data-en="Bamidbar" data-he="במדבר"><img src="/parsha/img/bamidbar-coloring-page.png?v=22c6afa0" width="992" height="1312" loading="lazy" decoding="async" alt="Parshat Bamidbar coloring page: a tent among desert dunes under the stars" data-alt-en="a tent among desert dunes under the stars"><span class="ch-name"><span lang="en" dir="ltr">Bamidbar</span><span lang="he" dir="rtl">בְּמִדְבַּר</span></span></a></li>
           <li><a class="ch-card" href="/parsha/nasso.html" data-n="35" data-en="Nasso" data-he="נשא"><img src="/parsha/img/nasso-coloring-page.png?v=1ac85abc" width="992" height="1312" loading="lazy" decoding="async" alt="Parshat Nasso coloring page: two hands raised in the Priestly Blessing" data-alt-en="two hands raised in the Priestly Blessing"><span class="ch-name"><span lang="en" dir="ltr">Nasso</span><span lang="he" dir="rtl">נָשֹׂא</span></span></a></li>
           <li><a class="ch-card" href="/parsha/behaalotcha.html" data-n="36" data-en="Beha&#39;alotcha" data-he="בהעלתך"><img src="/parsha/img/behaalotcha-coloring-page.png?v=e4a32097" width="992" height="1312" loading="lazy" decoding="async" alt="Parshat Beha&#39;alotcha coloring page: a round quail" data-alt-en="a round quail"><span class="ch-name"><span lang="en" dir="ltr">Beha&#39;alotcha</span><span lang="he" dir="rtl">בְּהַעֲלֹתְךָ</span></span></a></li>
@@ -474,9 +501,11 @@ header{--bl-row:160px;}   /* the lockup, its divider and the header's gap: what 
           <li><a class="ch-card" href="/parsha/pinchas.html" data-n="41" data-en="Pinchas" data-he="פינחס"><img src="/parsha/img/pinchas-coloring-page.png?v=721b7c67" width="992" height="1312" loading="lazy" decoding="async" alt="Parshat Pinchas coloring page: two hands passing a shepherd’s staff" data-alt-en="two hands passing a shepherd’s staff"><span class="ch-name"><span lang="en" dir="ltr">Pinchas</span><span lang="he" dir="rtl">פִּינְחָס</span></span></a></li>
           <li><a class="ch-card" href="/parsha/matot.html" data-n="42" data-en="Matot" data-he="מטות"><img src="/parsha/img/matot-coloring-page.png?v=c51bdbd7" width="992" height="1312" loading="lazy" decoding="async" alt="Parshat Matot coloring page: a silver pot of water over a small fire, with sparkles" data-alt-en="a silver pot of water over a small fire, with sparkles"><span class="ch-name"><span lang="en" dir="ltr">Matot</span><span lang="he" dir="rtl">מַטּוֹת</span></span></a></li>
           <li><a class="ch-card" href="/parsha/masei.html" data-n="43" data-en="Masei" data-he="מסעי"><img src="/parsha/img/masei-coloring-page.png?v=b425b73b" width="992" height="1312" loading="lazy" decoding="async" alt="Parshat Masei coloring page: a map with a dotted route to a tent" data-alt-en="a map with a dotted route to a tent"><span class="ch-name"><span lang="en" dir="ltr">Masei</span><span lang="he" dir="rtl">מַסְעֵי</span></span></a></li>
-    </ul>
-    <h3 data-i18n="torah.custom.book_deuteronomy">Deuteronomy</h3>
-    <ul class="ch-grid">
+      </ul>
+    </div>
+    <div class="ch-book" role="tabpanel" id="chBook-deuteronomy" data-book="deuteronomy" aria-labelledby="chTab-deuteronomy" hidden>
+      <h3 data-i18n="torah.custom.book_deuteronomy">Deuteronomy</h3>
+      <ul class="ch-grid">
           <li><a class="ch-card" href="/parsha/devarim.html" data-n="44" data-en="Devarim" data-he="דברים"><img src="/parsha/img/devarim-coloring-page.png?v=2a9fabb3" width="992" height="1312" loading="lazy" decoding="async" alt="Parshat Devarim coloring page: the Jordan River with green hills and a palm tree beyond" data-alt-en="the Jordan River with green hills and a palm tree beyond"><span class="ch-name"><span lang="en" dir="ltr">Devarim</span><span lang="he" dir="rtl">דְּבָרִים</span></span></a></li>
           <li><a class="ch-card" href="/parsha/vaetchanan.html" data-n="45" data-en="Va&#39;etchanan" data-he="ואתחנן"><img src="/parsha/img/vaetchanan-coloring-page.png?v=3adc9589" width="992" height="1312" loading="lazy" decoding="async" alt="Parshat Va&#39;etchanan coloring page: a mezuzah on a doorpost" data-alt-en="a mezuzah on a doorpost"><span class="ch-name"><span lang="en" dir="ltr">Va&#39;etchanan</span><span lang="he" dir="rtl">וָאֶתְחַנַּן</span></span></a></li>
           <li><a class="ch-card" href="/parsha/eikev.html" data-n="46" data-en="Eikev" data-he="עקב"><img src="/parsha/img/eikev-coloring-page.png?v=31838089" width="992" height="1312" loading="lazy" decoding="async" alt="Parshat Eikev coloring page: a basket of the seven species" data-alt-en="a basket of the seven species"><span class="ch-name"><span lang="en" dir="ltr">Eikev</span><span lang="he" dir="rtl">עֵקֶב</span></span></a></li>
@@ -488,7 +517,8 @@ header{--bl-row:160px;}   /* the lockup, its divider and the header's gap: what 
           <li><a class="ch-card" href="/parsha/vayeilech.html" data-n="52" data-en="Vayeilech" data-he="וילך"><img src="/parsha/img/vayeilech-coloring-page.png?v=2504e827" width="992" height="1312" loading="lazy" decoding="async" alt="Parshat Vayeilech coloring page: a quill, an inkwell and a parchment" data-alt-en="a quill, an inkwell and a parchment"><span class="ch-name"><span lang="en" dir="ltr">Vayeilech</span><span lang="he" dir="rtl">וַיֵּלֶךְ</span></span></a></li>
           <li><a class="ch-card" href="/parsha/haazinu.html" data-n="53" data-en="Ha&#39;azinu" data-he="האזינו"><img src="/parsha/img/haazinu-coloring-page.png?v=78ea9aed" width="992" height="1312" loading="lazy" decoding="async" alt="Parshat Ha&#39;azinu coloring page: two music notes with sound waves" data-alt-en="two music notes with sound waves"><span class="ch-name"><span lang="en" dir="ltr">Ha&#39;azinu</span><span lang="he" dir="rtl">הַאֲזִינוּ</span></span></a></li>
           <li><a class="ch-card" href="/parsha/vzot-haberachah.html" data-n="54" data-en="V&#39;Zot HaBerachah" data-he="וזאת הברכה"><img src="/parsha/img/vzot-haberachah-coloring-page.png?v=95f7b5bc" width="992" height="1312" loading="lazy" decoding="async" alt="Parshat V&#39;Zot HaBerachah coloring page: a Simchat Torah flag with a little Torah scroll" data-alt-en="a Simchat Torah flag with a little Torah scroll"><span class="ch-name"><span lang="en" dir="ltr">V&#39;Zot HaBerachah</span><span lang="he" dir="rtl">וְזֹאת הַבְּרָכָה</span></span></a></li>
-    </ul>
+      </ul>
+    </div>
     <p class="ch-cta"><a class="ch-btn" href="/parsha_emojis.html#etSheets"><svg class="hi hi-sm hi-print" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9.2V3.6h10v5.6"/><path d="M7 9.2H5.6A2.1 2.1 0 0 0 3.5 11.3v3.6a2.1 2.1 0 0 0 2.1 2.1H7"/><path d="M17 9.2h1.4a2.1 2.1 0 0 1 2.1 2.1v3.6a2.1 2.1 0 0 1-2.1 2.1H17"/><rect x="7" y="14.2" width="10" height="6.2" rx="1.2"/><circle cx="17.6" cy="12" r="1" fill="currentColor" stroke="none"/></svg><span data-i18n="coloringhub.parsha.cta">Print several parshiyot at once in Parsha Emojis</span></a></p>
   </section>
 
@@ -585,28 +615,35 @@ header{--bl-row:160px;}   /* the lockup, its divider and the header's gap: what 
     } catch (e) { return false; }
   }
 
-  // This week's parasha (both when two are read together; the next one when a festival's portion takes this
-  // Shabbat's place) and the holiday under way or coming next: copies of their cards, each under its label.
-  function renderNow() {
-    var box = document.getElementById('chNow'), list = document.getElementById('chNowList');
-    if (!box || !list) return;
-    list.textContent = '';
-    if (!window.HebCal) { box.hidden = true; return; }
-    var isr = israel(), items = [];
+  // The parasha read this Shabbat, as its zero-based numbers (two when two are read together); stepped: a festival's
+  // portion takes this Shabbat's place, so these are the next one's.
+  function weekParsha() {
+    if (!window.HebCal) return null;
     try {
-      var r = HebCal.parshaForDate(new Date(), { israel: isr }), stepped = false;
+      var isr = israel(), r = HebCal.parshaForDate(new Date(), { israel: isr }), stepped = false;
       for (var k = 0; r && r.kind !== 'parsha' && k < 4; k++) {
         stepped = true;
         var d = new Date(r.date.getTime()); d.setDate(d.getDate() + 1);
         r = HebCal.parshaForDate(d, { israel: isr });
       }
-      if (r && r.kind === 'parsha' && Array.isArray(r.idx)) r.idx.forEach(function (i) {
-        items.push({ sel: '#parsha .ch-card[data-n="' + (i + 1) + '"]',
-          label: stepped ? t('coloringhub.now.parsha_next', 'The next parsha') : t('coloringhub.now.parsha', 'This week\'s parsha') });
-      });
+      if (r && r.kind === 'parsha' && Array.isArray(r.idx) && r.idx.length) return { idx: r.idx, stepped: stepped };
     } catch (e) {}
+    return null;
+  }
+
+  // This week's parasha and the holiday under way or coming next: copies of their cards, each under its label.
+  function renderNow() {
+    var box = document.getElementById('chNow'), list = document.getElementById('chNowList');
+    if (!box || !list) return;
+    list.textContent = '';
+    if (!window.HebCal) { box.hidden = true; return; }
+    var items = [], w = weekParsha();
+    if (w) w.idx.forEach(function (i) {
+      items.push({ sel: '#parsha .ch-card[data-n="' + (i + 1) + '"]',
+        label: w.stepped ? t('coloringhub.now.parsha_next', 'The next parsha') : t('coloringhub.now.parsha', 'This week\'s parsha') });
+    });
     try {
-      var h = HebCal.nextHoliday(new Date(), { israel: isr });
+      var h = HebCal.nextHoliday(new Date(), { israel: israel() });
       if (h && h.key) items.push({ sel: '#holidays .ch-card[data-key="' + h.key + '"]',
         label: h.state === 'before' ? t('coloringhub.now.holiday_next', 'The next holiday') : t('coloringhub.now.holiday_now', 'The holiday now') });
     } catch (e) {}
@@ -622,6 +659,58 @@ header{--bl-row:160px;}   /* the lockup, its divider and the header's gap: what 
       list.appendChild(li);
     });
     box.hidden = !list.children.length;
+  }
+
+  // The parsha section shows one book at a time (the page ships with the first book open and the rest hidden). A
+  // first visit opens the book being read now; a chosen book rides history.state, so Back from a parsha page returns
+  // to the book it was opened from. Where the browser can, a hidden book stays open to find-in-page (until-found):
+  // a search for a parasha's name opens its book.
+  var CAN_FIND = 'onbeforematch' in document.documentElement;
+  function bookTabs() { return [].slice.call(document.querySelectorAll('.ch-book-tab')); }
+  function bookPanels() { return [].slice.call(document.querySelectorAll('.ch-book')); }
+  function selectBook(key, remember) {
+    var panels = bookPanels();
+    if (!panels.some(function (p) { return p.dataset.book === key; })) return false;
+    bookTabs().forEach(function (b) {
+      var on = b.dataset.book === key;
+      b.setAttribute('aria-selected', on ? 'true' : 'false');
+      b.tabIndex = on ? 0 : -1;
+    });
+    panels.forEach(function (p) {
+      if (p.dataset.book === key) p.removeAttribute('hidden');
+      else p.setAttribute('hidden', CAN_FIND ? 'until-found' : '');
+    });
+    if (remember) { try { history.replaceState({ chBook: key }, ''); } catch (e) {} }
+    return true;
+  }
+  function initBooks() {
+    var tabs = bookTabs();
+    if (!tabs.length) return;
+    var list = tabs[0].parentNode;
+    tabs.forEach(function (b) { b.addEventListener('click', function () { selectBook(b.dataset.book, true); }); });
+    // Arrow keys walk the tabs the way they lie on the screen (right to left in the Hebrew UI); Home and End jump.
+    list.addEventListener('keydown', function (e) {
+      var i = tabs.indexOf(document.activeElement), n = tabs.length, j;
+      if (i < 0 || e.altKey || e.ctrlKey || e.metaKey) return;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+        var forward = (e.key === 'ArrowRight') !== (getComputedStyle(list).direction === 'rtl');
+        j = (i + (forward ? 1 : n - 1)) % n;
+      } else if (e.key === 'Home') j = 0;
+      else if (e.key === 'End') j = n - 1;
+      else return;
+      e.preventDefault();
+      tabs[j].focus();
+      selectBook(tabs[j].dataset.book, true);
+    });
+    bookPanels().forEach(function (p) {
+      p.addEventListener('beforematch', function () { selectBook(p.dataset.book, true); });
+    });
+    var st = null;
+    try { st = history.state; } catch (e) {}
+    if (st && typeof st === 'object' && typeof st.chBook === 'string' && selectBook(st.chBook, false)) return;
+    var w = weekParsha(), card = w && document.querySelector('#parsha .ch-card[data-n="' + (w.idx[0] + 1) + '"]');
+    var panel = card && card.closest('.ch-book');
+    selectBook(panel ? panel.dataset.book : tabs[0].dataset.book, false);
   }
 
   // A picture's alt in the UI's language: the page's kind and name, and in English what the picture shows.
@@ -670,6 +759,7 @@ header{--bl-row:160px;}   /* the lockup, its divider and the header's gap: what 
     var b = document.getElementById('darkBtn');
     if (b) b.addEventListener('click', toggleDark);
     syncDarkLabel();
+    initBooks();
     renderNow();   // English before the locale arrives; applyI18n re-says it in the UI's language
     if (window.I18n) { I18n.ready.then(applyI18n); I18n.onChange(applyI18n); }
   });

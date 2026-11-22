@@ -14,9 +14,10 @@
  * from parsha_emojis.html at build time, as the parsha pages copy it.
  *
  * The page is a root page (every path on it is absolute all the same), has no account wiring and stores nothing. Its
- * inline script owns the dark toggle, applyI18n (the static chrome and the pictures' alt text) and the "This week"
- * row: this week's parasha and the next holiday, from js/hebrew-calendar.js, on the Torah Trainer's Diaspora/Israel
- * choice when this device has one (read, never written).
+ * inline script owns the dark toggle, applyI18n (the static chrome and the pictures' alt text), the "This week" row
+ * (this week's parasha and the next holiday, from js/hebrew-calendar.js, on the Torah Trainer's Diaspora/Israel
+ * choice when this device has one, read and never written) and the parsha section's book tabs: one book of the Torah
+ * shown at a time, opening on the book being read now.
  *
  * The script fails while a page or picture it would link is missing, or while sitemap.xml does not list the page.
  *
@@ -109,7 +110,7 @@ const CSS = `@font-face{font-family:'Frank Ruhl Libre';src:url('/fonts/FrankRuhl
 @font-face{font-family:'IvritSuite Taamim';src:url('/fonts/NotoSerifHebrew-Taamim.ttf') format('truetype');font-weight:400;font-display:swap;}
 ${ROOT_VARS}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-[hidden]{display:none !important;}
+[hidden]:not([hidden="until-found"]){display:none !important;}   /* until-found: a book the browser's find-in-page can still open */
 body{font-family:'Source Sans 3',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;display:flex;flex-direction:column;line-height:1.5;}
 .skip-link{position:absolute;inset-inline-start:8px;top:-48px;z-index:200;background:var(--navy);color:#fff;padding:8px 14px;border-radius:0 0 6px 6px;font-size:0.8rem;font-weight:600;text-decoration:none;}
 .skip-link:focus{top:0;outline:2px solid var(--focus-ring);outline-offset:2px;}
@@ -141,6 +142,15 @@ body.dark .ch-sec h2{color:var(--gold-light);}
 body.dark .ch-sec h3{color:var(--gold-light);}
 .ch-intro{max-width:72ch;}
 .ch-cta{margin-block-start:18px;}
+/* The parsha section shows one book at a time: five tabs, each over its book's pictures. The book's own heading is
+   for paper and for a browser without scripts (both show all five books), so on screen the tab is the name. */
+.ch-books{display:flex;flex-wrap:wrap;gap:8px;margin-block-start:16px;}
+.ch-book-tab{min-height:42px;padding:8px 18px;border-radius:999px;border:1px solid var(--border);background:var(--white);color:var(--text);font-family:'Source Sans 3',sans-serif;font-weight:700;font-size:0.95rem;line-height:1.2;cursor:pointer;}
+.ch-book-tab:hover{border-color:var(--gold);}
+.ch-book-tab[aria-selected="true"]{background:var(--navy);border-color:var(--navy);color:#fff;}
+html.dark-early .ch-book-tab[aria-selected="true"],body.dark .ch-book-tab[aria-selected="true"]{background:var(--gold);border-color:var(--gold);color:var(--navy-deep);}
+html[lang="he"] .ch-book-tab{font-size:1.02rem;}
+.ch-book h3{display:none;}
 /* The pictures: every sheet at its own shape (the parsha and holiday sheets are portrait), names under it, the
    Hebrew first in the Hebrew UI. */
 .ch-grid{list-style:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px 14px;margin-block-start:14px;}
@@ -192,14 +202,17 @@ html[lang="he"] footer [style*="letter-spacing:0.08em"]{letter-spacing:normal !i
   main{padding:16px 14px 44px;}
   .ch-title{font-size:1.5rem;}
   .ch-grid{grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:12px 10px;}
+  .ch-book-tab{flex:1 1 auto;padding-inline:12px;}
   .ch-letters{grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:8px;}
   .ch-glyph{font-size:2.4rem;}
 }
 /* Paper: the list itself, without the chrome (each page's own Print button prints its sheet). */
 @media print{
-  header,footer,.skip-link,.ch-crumbs,.ch-jump,.ch-now,.ch-cta,#pwaInstallBanner{display:none !important;}
+  header,footer,.skip-link,.ch-crumbs,.ch-jump,.ch-now,.ch-cta,.ch-books,#pwaInstallBanner{display:none !important;}
   body,body.dark,html.dark-early body{background:#fff !important;}
   main{max-width:none;padding:0;}
+  .ch-book,.ch-book[hidden]{display:block !important;content-visibility:visible !important;}   /* all five books */
+  .ch-book h3{display:block;}
   .ch-card,.ch-letter{break-inside:avoid;}
 }
 ${ICONS_CSS}`;
@@ -222,28 +235,35 @@ const SCRIPT = `'use strict';
     } catch (e) { return false; }
   }
 
-  // This week's parasha (both when two are read together; the next one when a festival's portion takes this
-  // Shabbat's place) and the holiday under way or coming next: copies of their cards, each under its label.
-  function renderNow() {
-    var box = document.getElementById('chNow'), list = document.getElementById('chNowList');
-    if (!box || !list) return;
-    list.textContent = '';
-    if (!window.HebCal) { box.hidden = true; return; }
-    var isr = israel(), items = [];
+  // The parasha read this Shabbat, as its zero-based numbers (two when two are read together); stepped: a festival's
+  // portion takes this Shabbat's place, so these are the next one's.
+  function weekParsha() {
+    if (!window.HebCal) return null;
     try {
-      var r = HebCal.parshaForDate(new Date(), { israel: isr }), stepped = false;
+      var isr = israel(), r = HebCal.parshaForDate(new Date(), { israel: isr }), stepped = false;
       for (var k = 0; r && r.kind !== 'parsha' && k < 4; k++) {
         stepped = true;
         var d = new Date(r.date.getTime()); d.setDate(d.getDate() + 1);
         r = HebCal.parshaForDate(d, { israel: isr });
       }
-      if (r && r.kind === 'parsha' && Array.isArray(r.idx)) r.idx.forEach(function (i) {
-        items.push({ sel: '#parsha .ch-card[data-n="' + (i + 1) + '"]',
-          label: stepped ? t('coloringhub.now.parsha_next', 'The next parsha') : t('coloringhub.now.parsha', 'This week\\'s parsha') });
-      });
+      if (r && r.kind === 'parsha' && Array.isArray(r.idx) && r.idx.length) return { idx: r.idx, stepped: stepped };
     } catch (e) {}
+    return null;
+  }
+
+  // This week's parasha and the holiday under way or coming next: copies of their cards, each under its label.
+  function renderNow() {
+    var box = document.getElementById('chNow'), list = document.getElementById('chNowList');
+    if (!box || !list) return;
+    list.textContent = '';
+    if (!window.HebCal) { box.hidden = true; return; }
+    var items = [], w = weekParsha();
+    if (w) w.idx.forEach(function (i) {
+      items.push({ sel: '#parsha .ch-card[data-n="' + (i + 1) + '"]',
+        label: w.stepped ? t('coloringhub.now.parsha_next', 'The next parsha') : t('coloringhub.now.parsha', 'This week\\'s parsha') });
+    });
     try {
-      var h = HebCal.nextHoliday(new Date(), { israel: isr });
+      var h = HebCal.nextHoliday(new Date(), { israel: israel() });
       if (h && h.key) items.push({ sel: '#holidays .ch-card[data-key="' + h.key + '"]',
         label: h.state === 'before' ? t('coloringhub.now.holiday_next', 'The next holiday') : t('coloringhub.now.holiday_now', 'The holiday now') });
     } catch (e) {}
@@ -259,6 +279,58 @@ const SCRIPT = `'use strict';
       list.appendChild(li);
     });
     box.hidden = !list.children.length;
+  }
+
+  // The parsha section shows one book at a time (the page ships with the first book open and the rest hidden). A
+  // first visit opens the book being read now; a chosen book rides history.state, so Back from a parsha page returns
+  // to the book it was opened from. Where the browser can, a hidden book stays open to find-in-page (until-found):
+  // a search for a parasha's name opens its book.
+  var CAN_FIND = 'onbeforematch' in document.documentElement;
+  function bookTabs() { return [].slice.call(document.querySelectorAll('.ch-book-tab')); }
+  function bookPanels() { return [].slice.call(document.querySelectorAll('.ch-book')); }
+  function selectBook(key, remember) {
+    var panels = bookPanels();
+    if (!panels.some(function (p) { return p.dataset.book === key; })) return false;
+    bookTabs().forEach(function (b) {
+      var on = b.dataset.book === key;
+      b.setAttribute('aria-selected', on ? 'true' : 'false');
+      b.tabIndex = on ? 0 : -1;
+    });
+    panels.forEach(function (p) {
+      if (p.dataset.book === key) p.removeAttribute('hidden');
+      else p.setAttribute('hidden', CAN_FIND ? 'until-found' : '');
+    });
+    if (remember) { try { history.replaceState({ chBook: key }, ''); } catch (e) {} }
+    return true;
+  }
+  function initBooks() {
+    var tabs = bookTabs();
+    if (!tabs.length) return;
+    var list = tabs[0].parentNode;
+    tabs.forEach(function (b) { b.addEventListener('click', function () { selectBook(b.dataset.book, true); }); });
+    // Arrow keys walk the tabs the way they lie on the screen (right to left in the Hebrew UI); Home and End jump.
+    list.addEventListener('keydown', function (e) {
+      var i = tabs.indexOf(document.activeElement), n = tabs.length, j;
+      if (i < 0 || e.altKey || e.ctrlKey || e.metaKey) return;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+        var forward = (e.key === 'ArrowRight') !== (getComputedStyle(list).direction === 'rtl');
+        j = (i + (forward ? 1 : n - 1)) % n;
+      } else if (e.key === 'Home') j = 0;
+      else if (e.key === 'End') j = n - 1;
+      else return;
+      e.preventDefault();
+      tabs[j].focus();
+      selectBook(tabs[j].dataset.book, true);
+    });
+    bookPanels().forEach(function (p) {
+      p.addEventListener('beforematch', function () { selectBook(p.dataset.book, true); });
+    });
+    var st = null;
+    try { st = history.state; } catch (e) {}
+    if (st && typeof st === 'object' && typeof st.chBook === 'string' && selectBook(st.chBook, false)) return;
+    var w = weekParsha(), card = w && document.querySelector('#parsha .ch-card[data-n="' + (w.idx[0] + 1) + '"]');
+    var panel = card && card.closest('.ch-book');
+    selectBook(panel ? panel.dataset.book : tabs[0].dataset.book, false);
   }
 
   // A picture's alt in the UI's language: the page's kind and name, and in English what the picture shows.
@@ -307,6 +379,7 @@ const SCRIPT = `'use strict';
     var b = document.getElementById('darkBtn');
     if (b) b.addEventListener('click', toggleDark);
     syncDarkLabel();
+    initBooks();
     renderNow();   // English before the locale arrives; applyI18n re-says it in the UI's language
     if (window.I18n) { I18n.ready.then(applyI18n); I18n.onChange(applyI18n); }
   });
@@ -420,6 +493,7 @@ ${LANG_IIFE}
 <style>
 ${CSS}
 </style>
+<noscript><style>.ch-books{display:none;}.ch-book[hidden]{display:block !important;}.ch-book h3{display:block;}</style></noscript>
 </head>
 <body>
 <a class="skip-link" href="#chMain" data-i18n="coloringhub.a11y.skip">Skip to the coloring pages</a>
@@ -475,11 +549,16 @@ ${letters.map(letterLi).join('\n')}
 
   <section class="ch-sec" id="parsha" aria-labelledby="chParshaTitle">
     <h2 id="chParshaTitle" data-i18n="coloringhub.parsha.title">Parsha coloring pages</h2>
-    <p class="ch-intro" data-i18n="coloringhub.parsha.intro">A coloring page for each of the ${icons.length} weekly Torah portions (the parasha, also spelled parsha or parshah). Each one is a single picture that carries the parasha's story, with its Hebrew and English names, its verses and a one-sentence summary.</p>
-${BOOKS.map(([book, key]) => `    <h3 data-i18n="torah.custom.book_${key}">${book}</h3>
-    <ul class="ch-grid">
+    <p class="ch-intro" data-i18n="coloringhub.parsha.intro">A coloring page for each of the ${icons.length} weekly Torah portions (the parasha, also spelled parsha or parshah). Each one is a single picture that carries the parasha's story, with its Hebrew and English names, its verses and a one-sentence summary. Choose a book of the Torah to see its parshiyot.</p>
+    <div class="ch-books" role="tablist" aria-label="Books of the Torah" data-i18n-aria-label="coloringhub.parsha.books_aria">
+${BOOKS.map(([book, key], i) => `      <button type="button" class="ch-book-tab" role="tab" id="chTab-${key}" data-book="${key}" aria-controls="chBook-${key}" aria-selected="${i ? 'false' : 'true'}"${i ? ' tabindex="-1"' : ''} data-i18n="torah.custom.book_${key}">${book}</button>`).join('\n')}
+    </div>
+${BOOKS.map(([book, key], i) => `    <div class="ch-book" role="tabpanel" id="chBook-${key}" data-book="${key}" aria-labelledby="chTab-${key}"${i ? ' hidden' : ''}>
+      <h3 data-i18n="torah.custom.book_${key}">${book}</h3>
+      <ul class="ch-grid">
 ${icons.filter((ic) => ic.book === book).map(parshaLi).join('\n')}
-    </ul>`).join('\n')}
+      </ul>
+    </div>`).join('\n')}
     <p class="ch-cta"><a class="ch-btn" href="/parsha_emojis.html#etSheets">${SVG_PRINT}<span data-i18n="coloringhub.parsha.cta">Print several parshiyot at once in Parsha Emojis</span></a></p>
   </section>
 

@@ -840,8 +840,8 @@ lowercased, apostrophes dropped and spaces turned into hyphens (`chayei-sara`, `
 ### The coloring pages hub (`jewish-coloring-pages.html`, generated)
 The one page that lists every coloring page on the site, for searches like "Jewish coloring pages" and "Hebrew
 coloring pages": the alef bet (each letter a link to its sheet in the Letter Learner,
-`/letter_learner.html?letter=<id>&tab=coloring`), the 54 parsha pages by book and the holiday pages, each as its
-sheet's picture with its English and Hebrew names. **Generated** by `node scripts/build-coloring-hub.mjs`; never edit
+`/letter_learner.html?letter=<id>&tab=coloring`), the 54 parsha pages one book of the Torah at a time and the holiday
+pages, each as its sheet's picture with its English and Hebrew names. **Generated** by `node scripts/build-coloring-hub.mjs`; never edit
 the page. Run it after `build-parsha-pages.mjs` or `build-holiday-pages.mjs` writes anything (the page carries each
 picture's `?v=`, and its footer nav is copied) and after the Letter Learner's list of sheets changes; `--check` exits
 1 when the page is stale.
@@ -858,6 +858,16 @@ picture's `?v=`, and its footer nav is copied) and after the Letter Learner's li
   of the parasha read this Shabbat (both when two are read together; the next one when a festival's portion takes the
   Shabbat) and of the holiday under way or coming next (`HebCal.parshaForDate` / `nextHoliday`, on the Trainer's
   Diaspora/Israel choice, read and never written). Without the calendar module the row stays hidden.
+- **The parsha section shows one book at a time** (all 54 at once was nine screens of scrolling on a phone): five
+  tabs (`.ch-book-tab` in a `tablist`, named by `torah.custom.book_*`) over five panels (`.ch-book`), shipped with
+  the first book open and the rest `hidden`. The script opens the book being read now (the book of the card *This
+  week* shows), and a chosen book rides `history.state` (`chBook`), so Back from a parsha page returns to the book
+  it was opened from. Where the browser has `beforematch`, a closed book is `hidden="until-found"`, so a
+  find-in-page for a parasha's name opens its book — which is why the page's `[hidden]` rule excepts that value.
+  Arrow keys walk the tabs as they lie on the screen (mirrored in the Hebrew UI), Home and End jump. All 54 cards
+  stay in the markup: paper and a browser without scripts (the `<noscript>` style) show all five books under their
+  `h3` headings, which the screen hides because the tab is the name. A card in a closed book reports a size to
+  `getBoundingClientRect()` all the same — test with `checkVisibility()`.
 - **Search:** the title, description, `h1` and the three section headings carry the phrases people type ("alef bet
   coloring pages" with its other spellings in the paragraph, "parsha coloring pages", "Jewish holiday coloring
   pages"); JSON-LD is a `BreadcrumbList`, a `CollectionPage` whose `ItemList` names the three sets, and a `FAQPage`
