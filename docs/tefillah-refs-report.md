@@ -433,50 +433,50 @@ Each table is one siddur node: the lines the catalog pins, the Hebrew edition th
 
 ## Lines that are Tanakh verses
 
-Each table is one siddur node in the Hebrew edition whose lines were counted. *Verses* is what the catalog says the line holds; *Found* is how many of those verses' openings the checker found in the line's own letters (a spelling that differs from the Tanakh's misses one; the first verse must open the line and the last must be in it, or the check fails). The English is those verses in The Holy Scriptures: A New Translation (JPS 1917), first and last words; the page sets the whole of it beside the line, in whichever open translation the visitor picks. A row marked — is a line of prayer text with no verse of its own, shown without a translation.
+Each table is one siddur node in the Hebrew edition whose lines were counted. *Verses* is what the catalog says the line holds; *Found* is how many of those verses' openings the checker found in the line's own letters (a spelling that differs from the Tanakh's misses one; the first verse must open the line and the last must be in it, or the check fails). The English is those verses in Tanakh: The Holy Scriptures, published by JPS, first and last words; the page sets the whole of it beside the line, in whichever open translation the visitor picks. A row marked — is a line of prayer text with no verse of its own, shown without a translation.
 
 ### Siddur Edot HaMizrach, Weekday Shacharit, Pesukei D'Zimra — Shaliehsaboo Edition
 
 | Line | Hebrew opens | Hebrew closes | Verses | Found | English opens | English closes |
 |---|---|---|---|---|---|---|
-| 12 | הַלְלוּיָהּ ׀ (תהילים ק״נ:א׳-ב׳) הַלְלוּ־אֵל … | … תְּהַלֵּל יָהּ הַלְלוּיָהּ׃ | 150:1-6 | 6 of 6 | Hallelujah. Praise God in His sanctuary; Praise Him … | … breath praise the LORD. Hallelujah. |
+| 12 | הַלְלוּיָהּ ׀ (תהילים ק״נ:א׳-ב׳) הַלְלוּ־אֵל … | … תְּהַלֵּל יָהּ הַלְלוּיָהּ׃ | 150:1-6 | 6 of 6 | Hallelujah. Praise God in His sanctuary; praise Him … | … breathes praise the LORD. Hallelujah. |
 
 ### Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 113 — The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981
 
 | Line | Hebrew opens | Hebrew closes | Verses | Found | English opens | English closes |
 |---|---|---|---|---|---|---|
-| 1 | הַלְלוּיָהּ הַלְלוּ עַבְדֵי יְהֹוָה הַלְלוּ … | … אֵם־הַבָּנִים שְׂמֵחָה הַלְלוּיָהּ: | 113:1-9 | 9 of 9 | Hallelujah. Praise, O ye servants of the LORD, … | … joyful mother of children. Hallelujah. |
+| 1 | הַלְלוּיָהּ הַלְלוּ עַבְדֵי יְהֹוָה הַלְלוּ … | … אֵם־הַבָּנִים שְׂמֵחָה הַלְלוּיָהּ: | 113:1-9 | 9 of 9 | Hallelujah. O servants of the LORD, give praise; … | … happy mother of children. Hallelujah. |
 
 ### Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 113 — Daat Siddur Ashkenaz
 
 | Line | Hebrew opens | Hebrew closes | Verses | Found | English opens | English closes |
 |---|---|---|---|---|---|---|
-| 1 | א הַלְלוּ יָהּ הַלְלוּ עַבְדֵי … | … שְׂמֵחָה הַלְלוּ יָהּ. | 113:1-9 | 9 of 9 | Hallelujah. Praise, O ye servants of the LORD, … | … joyful mother of children. Hallelujah. |
+| 1 | א הַלְלוּ יָהּ הַלְלוּ עַבְדֵי … | … שְׂמֵחָה הַלְלוּ יָהּ. | 113:1-9 | 9 of 9 | Hallelujah. O servants of the LORD, give praise; … | … happy mother of children. Hallelujah. |
 
 ### Siddur Sefard, Rosh Chodesh, Hallel — Torat Emet 357
 
 | Line | Hebrew opens | Hebrew closes | Verses | Found | English opens | English closes |
 |---|---|---|---|---|---|---|
 | 3 | בָּרוּךְ אַתָּה יְהֹוָה, אֱלֹהֵינוּ מֶלֶךְ … | … לִקְרֹא אֶת הַהַלֵּל: | — |  |  |  |
-| 4 | הַלְלוּיָהּ הַלְלוּ עַבְדֵי יְהֹוָה. הַלְלוּ … | … הַבָּנִים שְׂמֵחָה. הַלְלוּיָהּ: | 113:1-9 | 9 of 9 | Hallelujah. Praise, O ye servants of the LORD, … | … joyful mother of children. Hallelujah. |
-| 5 | בְּצֵאת יִשְׂרָאֵל מִמִּצְרָיִם, בֵּית יַעֲקֹב … | … חַלָּמִישׁ לְמַעְינוֹ מָיִם: | 114:1-8 | 8 of 8 | When Israel came forth out of Egypt, The … | … into a fountain of waters. |
-| 7 | לֹא לָנוּ יְהֹוָה לֹא לָנוּ. … | … עֶזְרָם וּמָגִנָּם הוּא: | 115:1-11 | 11 of 11 | Not unto us, O LORD, not unto us, … | … their help and their shield. |
-| 8 | יְהֹוָה זְכָרָנוּ יְבָרֵךְ, יְבָרֵךְ אֶת … | … וְעַד עוֹלָם, הַלְלוּיָהּ: | 115:12-18 | 7 of 7 | The LORD hath been mindful of us, He … | … forth and for ever. Hallelujah. |
-| 10 | אָהַבְתִּי כִּי יִשְׁמַע יְהֹוָה אֶת … | … כָּל הָאָדָם כֹּזֵב: | 116:1-11 | 11 of 11 | I love that the LORD should hear my … | … haste: 'All men are liars.' |
-| 11 | מָה אָשִׁיב לַיהֹוָה, כָּל תַּגְמוּלוֹהִי … | … בְּתוֹכֵכִי יְרוּשָׁלָיִם, הַלְלוּיָהּ: | 116:12-19 | 8 of 8 | How can I repay unto the LORD All … | … of thee, O Jerusalem. Hallelujah. |
-| 12 | הַלְלוּ אֶת יְהֹוָה כָּל גּוֹיִם, … | … יְהֹוָה לְעוֹלָם, הַלְלוּיָהּ: | 117:1-2 | 2 of 2 | O praise the LORD, all ye nations; Laud … | … LORD endureth for ever. Hallelujah. |
-| 13 | הוֹדוּ לַיהֹוָה כִּי טוֹב - … | … כִּי לְעוֹלָם חַסְדּוֹ: | 118:1 | 1 of 1 | 'O give thanks unto the LORD, for He … | … His mercy endureth for ever. |
-| 14 | והקהל אומרים: הוֹדוּ לַיהֹוָה כִּי … | … כִּי לְעוֹלָם חַסְדּוֹ: | 118:1,2 | 2 of 2 | 'O give thanks unto the LORD, for He … | … His mercy endureth for ever, |
-| 15 | יֹאמַר נָא יִשְׂרָאֵל - כִּי … | … כִּי לְעוֹלָם חַסְדּוֹ: | 118:2 | 1 of 1 | So let Israel now say, For His mercy … | … His mercy endureth for ever, |
-| 16 | והקהל אומרים: הוֹדוּ לַיהֹוָה כִּי … | … כִּי לְעוֹלָם חַסְדּוֹ: | 118:1,3 | 2 of 2 | 'O give thanks unto the LORD, for He … | … His mercy endureth for ever. |
-| 17 | יֹאמְרוּ נָא בֵית אַהֲרֹן - … | … כִּי לְעוֹלָם חַסְדּוֹ: | 118:3 | 1 of 1 | So let the house of Aaron now say, … | … His mercy endureth for ever. |
-| 18 | והקהל אומרים: הוֹדוּ לַיהֹוָה כִּי … | … כִּי לְעוֹלָם חַסְדּוֹ: | 118:1,4 | 2 of 2 | 'O give thanks unto the LORD, for He … | … His mercy endureth for ever. |
-| 19 | יֹאמְרוּ נָא יִרְאֵי יְהֹוָה - … | … כִּי לְעוֹלָם חַסְדּוֹ: | 118:4 | 1 of 1 | So let them now that fear the LORD … | … His mercy endureth for ever. |
-| 20 | והקהל אומרים: הוֹדוּ לַיהֹוָה כִּי … | … כִּי לְעוֹלָם חַסְדּוֹ: | 118:1 | 1 of 1 | 'O give thanks unto the LORD, for He … | … His mercy endureth for ever. |
-| 21 | מִן הַמֵּצַר קָרָאתִי יָהּ. עָנָנִי … | … נָגִילָה וְנִשְׂמְחָה בוֹ: | 118:5-24 | 19 of 20 | Out of my straits I called upon the … | … and be glad in it. |
-| 22 | אָנָּא יְהֹוָה הוֹשִׁיעָה נָּא: אָנָּא … | … יְהֹוָה הוֹשִׁיעָה נָּא: | 118:25 | 1 of 1 | We beseech Thee, O LORD, save now! We … | … make us now to prosper! |
+| 4 | הַלְלוּיָהּ הַלְלוּ עַבְדֵי יְהֹוָה. הַלְלוּ … | … הַבָּנִים שְׂמֵחָה. הַלְלוּיָהּ: | 113:1-9 | 9 of 9 | Hallelujah. O servants of the LORD, give praise; … | … happy mother of children. Hallelujah. |
+| 5 | בְּצֵאת יִשְׂרָאֵל מִמִּצְרָיִם, בֵּית יַעֲקֹב … | … חַלָּמִישׁ לְמַעְינוֹ מָיִם: | 114:1-8 | 8 of 8 | When Israel went forth from Egypt, the house … | … flinty rock into a fountain. |
+| 7 | לֹא לָנוּ יְהֹוָה לֹא לָנוּ. … | … עֶזְרָם וּמָגִנָּם הוּא: | 115:1-11 | 11 of 11 | Not to us, O LORD, not to us … | … is their help and shield. |
+| 8 | יְהֹוָה זְכָרָנוּ יְבָרֵךְ, יְבָרֵךְ אֶת … | … וְעַד עוֹלָם, הַלְלוּיָהּ: | 115:12-18 | 7 of 7 | The LORD is mindful of us. He will … | … LORD now and forever. Hallelujah. |
+| 10 | אָהַבְתִּי כִּי יִשְׁמַע יְהֹוָה אֶת … | … כָּל הָאָדָם כֹּזֵב: | 116:1-11 | 11 of 11 | I love the LORD for He hears my … | … rashly, “All men are false.” |
+| 11 | מָה אָשִׁיב לַיהֹוָה, כָּל תַּגְמוּלוֹהִי … | … בְּתוֹכֵכִי יְרוּשָׁלָיִם, הַלְלוּיָהּ: | 116:12-19 | 8 of 8 | How can I repay the LORD for all … | … the midst of Jerusalem. Hallelujah. |
+| 12 | הַלְלוּ אֶת יְהֹוָה כָּל גּוֹיִם, … | … יְהֹוָה לְעוֹלָם, הַלְלוּיָהּ: | 117:1-2 | 2 of 2 | Praise the LORD, all you nations; extol Him, … | … the LORD endures forever. Hallelujah. |
+| 13 | הוֹדוּ לַיהֹוָה כִּי טוֹב - … | … כִּי לְעוֹלָם חַסְדּוֹ: | 118:1 | 1 of 1 | Praise the LORD, for He is good, His … | … His steadfast love is eternal. |
+| 14 | והקהל אומרים: הוֹדוּ לַיהֹוָה כִּי … | … כִּי לְעוֹלָם חַסְדּוֹ: | 118:1,2 | 2 of 2 | Praise the LORD, for He is good, His … | … “His steadfast love is eternal.” |
+| 15 | יֹאמַר נָא יִשְׂרָאֵל - כִּי … | … כִּי לְעוֹלָם חַסְדּוֹ: | 118:2 | 1 of 1 | Let Israel declare, “His steadfast love is eternal.” | … “His steadfast love is eternal.” |
+| 16 | והקהל אומרים: הוֹדוּ לַיהֹוָה כִּי … | … כִּי לְעוֹלָם חַסְדּוֹ: | 118:1,3 | 2 of 2 | Praise the LORD, for He is good, His … | … “His steadfast love is eternal.” |
+| 17 | יֹאמְרוּ נָא בֵית אַהֲרֹן - … | … כִּי לְעוֹלָם חַסְדּוֹ: | 118:3 | 1 of 1 | Let the house of Aaron declare, “His steadfast … | … “His steadfast love is eternal.” |
+| 18 | והקהל אומרים: הוֹדוּ לַיהֹוָה כִּי … | … כִּי לְעוֹלָם חַסְדּוֹ: | 118:1,4 | 2 of 2 | Praise the LORD, for He is good, His … | … “His steadfast love is eternal.” |
+| 19 | יֹאמְרוּ נָא יִרְאֵי יְהֹוָה - … | … כִּי לְעוֹלָם חַסְדּוֹ: | 118:4 | 1 of 1 | Let those who fear the LORD declare, “His … | … “His steadfast love is eternal.” |
+| 20 | והקהל אומרים: הוֹדוּ לַיהֹוָה כִּי … | … כִּי לְעוֹלָם חַסְדּוֹ: | 118:1 | 1 of 1 | Praise the LORD, for He is good, His … | … His steadfast love is eternal. |
+| 21 | מִן הַמֵּצַר קָרָאתִי יָהּ. עָנָנִי … | … נָגִילָה וְנִשְׂמְחָה בוֹ: | 118:5-24 | 19 of 20 | In distress I called on the LORD; the … | … exult and rejoice on it. |
+| 22 | אָנָּא יְהֹוָה הוֹשִׁיעָה נָּא: אָנָּא … | … יְהֹוָה הוֹשִׁיעָה נָּא: | 118:25 | 1 of 1 | O LORD, deliver us! O LORD, let us … | … O LORD, let us prosper! |
 | 23 | אָנָּא יְהֹוָה הַצְלִיחָה נָּא: אָנָּא … | … יְהֹוָה הַצְלִיחָה נָּא: | — |  |  |  |
-| 24 | בָּרוּךְ הַבָּא בְּשֵׁם יְהֹוָה. בֵּרַכְנוּכֶם … | … כִּי לְעוֹלָם חַסְדּוֹ: | 118:26-29 | 4 of 4 | Blessed be he that cometh in the name … | … His mercy endureth for ever. |
+| 24 | בָּרוּךְ הַבָּא בְּשֵׁם יְהֹוָה. בֵּרַכְנוּכֶם … | … כִּי לְעוֹלָם חַסְדּוֹ: | 118:26-29 | 4 of 4 | May he who enters be blessed in the … | … His steadfast love is eternal. |
 | 25 | יְהַלְלוּךָ יְהֹוָה אֱלֹהֵינוּ עַל כָּל … | … מֶלֶךְ מְהֻלָּל בַּתִּשְׁבָּחוֹת: | — |  |  |  |
 
 ### Siddur Edot HaMizrach, Rosh Hodesh, Hallel — Shaliehsaboo Edition
@@ -485,94 +485,94 @@ Each table is one siddur node in the Hebrew edition whose lines were counted. *V
 |---|---|---|---|---|---|---|
 | 3 | בִּרְשׁוּת מוֹרַי וְרַבּוֹתַי. והציבור עונים: … | … והציבור עונים: שָׁמַיִם. | — |  |  |  |
 | 5 | בָּרוּךְ אַתָּה יְהֹוָה, אֱלֹהֵינוּ מֶלֶךְ … | … לִגְמוֹר אֶת הַהַלֵּל: | — |  |  |  |
-| 6 | הַלְלוּיָהּ ׀ (תהילים קי״ג:א׳-ב׳) הַלְלוּ … | … אֵם־הַבָּנִים שְׂמֵחָה הַלְלוּיָהּ׃ | 113:1-9 | 9 of 9 | Hallelujah. Praise, O ye servants of the LORD, … | … joyful mother of children. Hallelujah. |
-| 7 | בְּצֵאת (תהילים קי״ד:א׳-ב׳) יִשְׂרָאֵל מִמִּצְרָיִם … | … אֲגַם־מָיִם חַלָּמִישׁ לְמַעְיְנוֹ־מָיִם׃ | 114:1-8 | 8 of 8 | When Israel came forth out of Egypt, The … | … into a fountain of waters. |
-| 9 | לֹא (תהילים קט״ו:א׳-ב׳) לָנוּ יְהֹוָה … | … עֶזְרָם וּמָגִנָּם הוּא׃ | 115:1-11 | 11 of 11 | Not unto us, O LORD, not unto us, … | … their help and their shield. |
-| 10 | יְהֹוָה זְכָרָנוּ יְבָרֵךְ יְבָרֵךְ אֶת־בֵּית … | … וְעַד־עוֹלָם הַלְלוּ יָהּ׃ | 115:12-18 | 7 of 7 | The LORD hath been mindful of us, He … | … forth and for ever. Hallelujah. |
-| 12 | אָהַבְתִּי (תהילים קט״ז:א׳-ב׳) כִּי־יִשְׁמַע ׀ … | … בְחׇפְזִי כׇּל־הָאָדָם כֹּזֵב׃ | 116:1-11 | 11 of 11 | I love that the LORD should hear my … | … haste: 'All men are liars.' |
-| 13 | מָה־אָשִׁיב לַיהֹוָה כׇּל־תַּגְמוּלוֹהִי עָלָי׃ כּוֹס־יְשׁוּעוֹת … | … בְּתוֹכֵכִי יְרוּשָׁלָ‍ִם הַלְלוּיָהּ׃ | 116:12-19 | 8 of 8 | How can I repay unto the LORD All … | … of thee, O Jerusalem. Hallelujah. |
-| 14 | הַלְלוּ (תהילים קי״ז:א׳-ב׳) אֶת־יְהֹוָה כׇּל־גּוֹיִם … | … וֶאֱמֶת־יְהֹוָה לְעוֹלָם הַלְלוּיָהּ׃ | 117:1-2 | 2 of 2 | O praise the LORD, all ye nations; Laud … | … LORD endureth for ever. Hallelujah. |
-| 15 | הוֹדוּ (תהילים קי״ח:א׳) לַיהֹוָה כִּי־טוֹב … | … כִּי לְעוֹלָם חַסְדּוֹ׃ | 118:1 | 1 of 1 | 'O give thanks unto the LORD, for He … | … His mercy endureth for ever. |
-| 16 | יֹאמַר־נָא יִשְׂרָאֵל כִּי לְעוֹלָם חַסְדּוֹ׃ | … כִּי לְעוֹלָם חַסְדּוֹ׃ | 118:2 | 1 of 1 | So let Israel now say, For His mercy … | … His mercy endureth for ever, |
-| 17 | יֹאמְרוּ־נָא בֵית־אַהֲרֹן כִּי לְעוֹלָם חַסְדּוֹ׃ | … כִּי לְעוֹלָם חַסְדּוֹ׃ | 118:3 | 1 of 1 | So let the house of Aaron now say, … | … His mercy endureth for ever. |
-| 18 | יֹאמְרוּ־נָא יִרְאֵי יְהֹוָה כִּי לְעוֹלָם … | … כִּי לְעוֹלָם חַסְדּוֹ׃ | 118:4 | 1 of 1 | So let them now that fear the LORD … | … His mercy endureth for ever. |
-| 19 | מִן־הַמֵּצַר קָרָאתִי יָּהּ עָנָנִי בַמֶּרְחָב … | … צַדִּיקִים יָבֹאוּ בוֹ׃ | 118:5-20 | 16 of 16 | Out of my straits I called upon the … | … righteous shall enter into it. |
-| 20 | אוֹדְךָ כִּי עֲנִיתָנִי וַתְּהִי־לִי לִישׁוּעָה׃ … | … נָגִילָה וְנִשְׂמְחָה בוֹ׃ | 118:21-24 | 4 of 4 | I will give thanks unto Thee, for Thou … | … and be glad in it. |
-| 21 | אָנָּא יְהֹוָה הוֹשִׁיעָה נָּא, אָנָּא … | … יְהֹוָה הוֹשִׁיעָה נָּא | 118:25 | 1 of 1 | We beseech Thee, O LORD, save now! We … | … make us now to prosper! |
+| 6 | הַלְלוּיָהּ ׀ (תהילים קי״ג:א׳-ב׳) הַלְלוּ … | … אֵם־הַבָּנִים שְׂמֵחָה הַלְלוּיָהּ׃ | 113:1-9 | 9 of 9 | Hallelujah. O servants of the LORD, give praise; … | … happy mother of children. Hallelujah. |
+| 7 | בְּצֵאת (תהילים קי״ד:א׳-ב׳) יִשְׂרָאֵל מִמִּצְרָיִם … | … אֲגַם־מָיִם חַלָּמִישׁ לְמַעְיְנוֹ־מָיִם׃ | 114:1-8 | 8 of 8 | When Israel went forth from Egypt, the house … | … flinty rock into a fountain. |
+| 9 | לֹא (תהילים קט״ו:א׳-ב׳) לָנוּ יְהֹוָה … | … עֶזְרָם וּמָגִנָּם הוּא׃ | 115:1-11 | 11 of 11 | Not to us, O LORD, not to us … | … is their help and shield. |
+| 10 | יְהֹוָה זְכָרָנוּ יְבָרֵךְ יְבָרֵךְ אֶת־בֵּית … | … וְעַד־עוֹלָם הַלְלוּ יָהּ׃ | 115:12-18 | 7 of 7 | The LORD is mindful of us. He will … | … LORD now and forever. Hallelujah. |
+| 12 | אָהַבְתִּי (תהילים קט״ז:א׳-ב׳) כִּי־יִשְׁמַע ׀ … | … בְחׇפְזִי כׇּל־הָאָדָם כֹּזֵב׃ | 116:1-11 | 11 of 11 | I love the LORD for He hears my … | … rashly, “All men are false.” |
+| 13 | מָה־אָשִׁיב לַיהֹוָה כׇּל־תַּגְמוּלוֹהִי עָלָי׃ כּוֹס־יְשׁוּעוֹת … | … בְּתוֹכֵכִי יְרוּשָׁלָ‍ִם הַלְלוּיָהּ׃ | 116:12-19 | 8 of 8 | How can I repay the LORD for all … | … the midst of Jerusalem. Hallelujah. |
+| 14 | הַלְלוּ (תהילים קי״ז:א׳-ב׳) אֶת־יְהֹוָה כׇּל־גּוֹיִם … | … וֶאֱמֶת־יְהֹוָה לְעוֹלָם הַלְלוּיָהּ׃ | 117:1-2 | 2 of 2 | Praise the LORD, all you nations; extol Him, … | … the LORD endures forever. Hallelujah. |
+| 15 | הוֹדוּ (תהילים קי״ח:א׳) לַיהֹוָה כִּי־טוֹב … | … כִּי לְעוֹלָם חַסְדּוֹ׃ | 118:1 | 1 of 1 | Praise the LORD, for He is good, His … | … His steadfast love is eternal. |
+| 16 | יֹאמַר־נָא יִשְׂרָאֵל כִּי לְעוֹלָם חַסְדּוֹ׃ | … כִּי לְעוֹלָם חַסְדּוֹ׃ | 118:2 | 1 of 1 | Let Israel declare, “His steadfast love is eternal.” | … “His steadfast love is eternal.” |
+| 17 | יֹאמְרוּ־נָא בֵית־אַהֲרֹן כִּי לְעוֹלָם חַסְדּוֹ׃ | … כִּי לְעוֹלָם חַסְדּוֹ׃ | 118:3 | 1 of 1 | Let the house of Aaron declare, “His steadfast … | … “His steadfast love is eternal.” |
+| 18 | יֹאמְרוּ־נָא יִרְאֵי יְהֹוָה כִּי לְעוֹלָם … | … כִּי לְעוֹלָם חַסְדּוֹ׃ | 118:4 | 1 of 1 | Let those who fear the LORD declare, “His … | … “His steadfast love is eternal.” |
+| 19 | מִן־הַמֵּצַר קָרָאתִי יָּהּ עָנָנִי בַמֶּרְחָב … | … צַדִּיקִים יָבֹאוּ בוֹ׃ | 118:5-20 | 16 of 16 | In distress I called on the LORD; the … | … victorious shall enter through it. |
+| 20 | אוֹדְךָ כִּי עֲנִיתָנִי וַתְּהִי־לִי לִישׁוּעָה׃ … | … נָגִילָה וְנִשְׂמְחָה בוֹ׃ | 118:21-24 | 4 of 4 | I praise You, for You have answered me, … | … exult and rejoice on it. |
+| 21 | אָנָּא יְהֹוָה הוֹשִׁיעָה נָּא, אָנָּא … | … יְהֹוָה הוֹשִׁיעָה נָּא | 118:25 | 1 of 1 | O LORD, deliver us! O LORD, let us … | … O LORD, let us prosper! |
 | 22 | אָנָּא יְהֹוָה הַצְלִיחָה נָא, אָנָּא … | … יְהֹוָה הַצְלִיחָה נָא׃ | — |  |  |  |
-| 23 | בָּרוּךְ הַבָּא בְּשֵׁם יְהֹוָה בֵּרַכְנוּכֶם … | … כִּי לְעוֹלָם חַסְדּוֹ׃ | 118:26-29 | 4 of 4 | Blessed be he that cometh in the name … | … His mercy endureth for ever. |
+| 23 | בָּרוּךְ הַבָּא בְּשֵׁם יְהֹוָה בֵּרַכְנוּכֶם … | … כִּי לְעוֹלָם חַסְדּוֹ׃ | 118:26-29 | 4 of 4 | May he who enters be blessed in the … | … His steadfast love is eternal. |
 | 25 | יְהַלְלוּךָ יְהֹוָה אֱלֹהֵינוּ כָּל מַעֲשֶׂיךָ, … | … מְהֻלָּל בַּתִּשְׁבָּחוֹת. אָמֵן: | — |  |  |  |
 
 ### Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 114 — The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981
 
 | Line | Hebrew opens | Hebrew closes | Verses | Found | English opens | English closes |
 |---|---|---|---|---|---|---|
-| 1 | בְּצֵאת יִשְׂרָאֵל מִמִּצְרָיִם בֵּית יַעֲקֹב … | … אֲגַם־מָיִם חַלָּמִישׁ לְמַעְיְנוֹ־מָיִם: | 114:1-8 | 8 of 8 | When Israel came forth out of Egypt, The … | … into a fountain of waters. |
+| 1 | בְּצֵאת יִשְׂרָאֵל מִמִּצְרָיִם בֵּית יַעֲקֹב … | … אֲגַם־מָיִם חַלָּמִישׁ לְמַעְיְנוֹ־מָיִם: | 114:1-8 | 8 of 8 | When Israel went forth from Egypt, the house … | … flinty rock into a fountain. |
 
 ### Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 114 — Daat Siddur Ashkenaz
 
 | Line | Hebrew opens | Hebrew closes | Verses | Found | English opens | English closes |
 |---|---|---|---|---|---|---|
-| 1 | א בְּצֵאת יִשְׂרָאֵל מִמִּצְרָיִם בֵּית … | … חַלָּמִישׁ לְמַעְיְנוֹ מָיִם. | 114:1-8 | 8 of 8 | When Israel came forth out of Egypt, The … | … into a fountain of waters. |
+| 1 | א בְּצֵאת יִשְׂרָאֵל מִמִּצְרָיִם בֵּית … | … חַלָּמִישׁ לְמַעְיְנוֹ מָיִם. | 114:1-8 | 8 of 8 | When Israel went forth from Egypt, the house … | … flinty rock into a fountain. |
 
 ### Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 115 — The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981
 
 | Line | Hebrew opens | Hebrew closes | Verses | Found | English opens | English closes |
 |---|---|---|---|---|---|---|
-| 1 | בראש חודש ובחוה"מ פסח מדלגין: … | … עֶזְרָם וּמָגִנָּם הוּא: | 115:1-11 | 11 of 11 | Not unto us, O LORD, not unto us, … | … their help and their shield. |
-| 2 | יְהֹוָה זְכָרָנוּ יְבָרֵךְ יְבָרֵךְ אֶת־בֵּית … | … מֵעַתָּה וְעַד־עוֹלָם הַלְלוּיָהּ: | 115:12-18 | 7 of 7 | The LORD hath been mindful of us, He … | … forth and for ever. Hallelujah. |
+| 1 | בראש חודש ובחוה"מ פסח מדלגין: … | … עֶזְרָם וּמָגִנָּם הוּא: | 115:1-11 | 11 of 11 | Not to us, O LORD, not to us … | … is their help and shield. |
+| 2 | יְהֹוָה זְכָרָנוּ יְבָרֵךְ יְבָרֵךְ אֶת־בֵּית … | … מֵעַתָּה וְעַד־עוֹלָם הַלְלוּיָהּ: | 115:12-18 | 7 of 7 | The LORD is mindful of us. He will … | … LORD now and forever. Hallelujah. |
 
 ### Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 115 — Daat Siddur Ashkenaz
 
 | Line | Hebrew opens | Hebrew closes | Verses | Found | English opens | English closes |
 |---|---|---|---|---|---|---|
-| 1 | א לֹא לָנוּ יְהוָה לֹא … | … עוֹלָם הַלְלוּ יָהּ. | 115:1-18 | 18 of 18 | Not unto us, O LORD, not unto us, … | … forth and for ever. Hallelujah. |
+| 1 | א לֹא לָנוּ יְהוָה לֹא … | … עוֹלָם הַלְלוּ יָהּ. | 115:1-18 | 18 of 18 | Not to us, O LORD, not to us … | … LORD now and forever. Hallelujah. |
 
 ### Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 116 — The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981
 
 | Line | Hebrew opens | Hebrew closes | Verses | Found | English opens | English closes |
 |---|---|---|---|---|---|---|
-| 1 | בראש חודש ובחוה"מ פסח מדלגין: … | … בְחָפְזִי כָּל־הָאָדָם כֹּזֵב: | 116:1-11 | 11 of 11 | I love that the LORD should hear my … | … haste: 'All men are liars.' |
-| 2 | מָה־אָשִׁיב לַיהֹוָה כָּל־תַּגְמוּלוֹהִי עָלָי: כּוֹס־יְשׁוּעוֹת … | … בְּתוֹכֵכִי יְרוּשָׁלָםִ הַלְלוּיָהּ: | 116:12-19 | 8 of 8 | How can I repay unto the LORD All … | … of thee, O Jerusalem. Hallelujah. |
+| 1 | בראש חודש ובחוה"מ פסח מדלגין: … | … בְחָפְזִי כָּל־הָאָדָם כֹּזֵב: | 116:1-11 | 11 of 11 | I love the LORD for He hears my … | … rashly, “All men are false.” |
+| 2 | מָה־אָשִׁיב לַיהֹוָה כָּל־תַּגְמוּלוֹהִי עָלָי: כּוֹס־יְשׁוּעוֹת … | … בְּתוֹכֵכִי יְרוּשָׁלָםִ הַלְלוּיָהּ: | 116:12-19 | 8 of 8 | How can I repay the LORD for all … | … the midst of Jerusalem. Hallelujah. |
 
 ### Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 116 — Daat Siddur Ashkenaz
 
 | Line | Hebrew opens | Hebrew closes | Verses | Found | English opens | English closes |
 |---|---|---|---|---|---|---|
-| 1 | א אָהַבְתִּי כִּי יִשְׁמַע יְהוָה … | … יְרוּשָׁלָ‍ִם הַלְלוּ יָהּ. | 116:1-19 | 19 of 19 | I love that the LORD should hear my … | … of thee, O Jerusalem. Hallelujah. |
+| 1 | א אָהַבְתִּי כִּי יִשְׁמַע יְהוָה … | … יְרוּשָׁלָ‍ִם הַלְלוּ יָהּ. | 116:1-19 | 19 of 19 | I love the LORD for He hears my … | … the midst of Jerusalem. Hallelujah. |
 
 ### Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 117 — The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981
 
 | Line | Hebrew opens | Hebrew closes | Verses | Found | English opens | English closes |
 |---|---|---|---|---|---|---|
-| 1 | הַלְלוּ אֶת־יְהֹוָה כָּל־גּוֹיִם שַׁבְּחוּהוּ כָּל־הָאֻמִּים: … | … וֶאֱמֶת־יְהֹוָה לְעוֹלָם הַלְלוּיָהּ: | 117:1-2 | 2 of 2 | O praise the LORD, all ye nations; Laud … | … LORD endureth for ever. Hallelujah. |
+| 1 | הַלְלוּ אֶת־יְהֹוָה כָּל־גּוֹיִם שַׁבְּחוּהוּ כָּל־הָאֻמִּים: … | … וֶאֱמֶת־יְהֹוָה לְעוֹלָם הַלְלוּיָהּ: | 117:1-2 | 2 of 2 | Praise the LORD, all you nations; extol Him, … | … the LORD endures forever. Hallelujah. |
 
 ### Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 117 — Daat Siddur Ashkenaz
 
 | Line | Hebrew opens | Hebrew closes | Verses | Found | English opens | English closes |
 |---|---|---|---|---|---|---|
-| 1 | א הַלְלוּ אֶת יְהוָה כָּל … | … לְעוֹלָם הַלְלוּ יָהּ. | 117:1-2 | 2 of 2 | O praise the LORD, all ye nations; Laud … | … LORD endureth for ever. Hallelujah. |
+| 1 | א הַלְלוּ אֶת יְהוָה כָּל … | … לְעוֹלָם הַלְלוּ יָהּ. | 117:1-2 | 2 of 2 | Praise the LORD, all you nations; extol Him, … | … the LORD endures forever. Hallelujah. |
 
 ### Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 118 — The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981
 
 | Line | Hebrew opens | Hebrew closes | Verses | Found | English opens | English closes |
 |---|---|---|---|---|---|---|
-| 1 | הוֹדוּ לַיהֹוָה כִּי־טוֹב כִּי לְעוֹלָם … | … כִּי לְעוֹלָם חַסְדּוֹ: | 118:1 | 1 of 1 | 'O give thanks unto the LORD, for He … | … His mercy endureth for ever. |
-| 2 | יֹאמַר־נָא יִשְׂרָאֵל כִּי לְעוֹלָם חַסְדּוֹ: | … כִּי לְעוֹלָם חַסְדּוֹ: | 118:2 | 1 of 1 | So let Israel now say, For His mercy … | … His mercy endureth for ever, |
-| 3 | הוֹדוּ לַיהֹוָה כִּי־טוֹב כִּי לְעוֹלָם … | … כִּי לְעוֹלָם חַסְדּוֹ: | 118:1 | 1 of 1 | 'O give thanks unto the LORD, for He … | … His mercy endureth for ever. |
-| 4 | יֹאמְרוּ־נָא בֵית־אַהֲרֹן כִּי לְעוֹלָם חַסְדּוֹ: | … כִּי לְעוֹלָם חַסְדּוֹ: | 118:3 | 1 of 1 | So let the house of Aaron now say, … | … His mercy endureth for ever. |
-| 5 | הוֹדוּ לַיהֹוָה כִּי־טוֹב כִּי לְעוֹלָם … | … כִּי לְעוֹלָם חַסְדּוֹ: | 118:1 | 1 of 1 | 'O give thanks unto the LORD, for He … | … His mercy endureth for ever. |
-| 6 | יֹאמְרוּ־נָא יִרְאֵי יְהֹוָה כִּי לְעוֹלָם … | … כִּי לְעוֹלָם חַסְדּוֹ: | 118:4 | 1 of 1 | So let them now that fear the LORD … | … His mercy endureth for ever. |
-| 7 | הוֹדוּ לַיהֹוָה כִּי־טוֹב כִּי לְעוֹלָם … | … כִּי לְעוֹלָם חַסְדּוֹ: | 118:1 | 1 of 1 | 'O give thanks unto the LORD, for He … | … His mercy endureth for ever. |
-| 8 | מִן־הַמֵּצַר קָרָאתִי יָהּ עָנָנִי בַמֶּרְחָב … | … נָגִילָה וְנִשְׂמְחָה בוֹ: | 118:5-24 | 20 of 20 | Out of my straits I called upon the … | … and be glad in it. |
-| 9 | אָנָּא יְהֹוָה הוֹשִׁיעָה נָּא: | … יְהֹוָה הוֹשִׁיעָה נָּא: | 118:25 | 1 of 1 | We beseech Thee, O LORD, save now! We … | … make us now to prosper! |
+| 1 | הוֹדוּ לַיהֹוָה כִּי־טוֹב כִּי לְעוֹלָם … | … כִּי לְעוֹלָם חַסְדּוֹ: | 118:1 | 1 of 1 | Praise the LORD, for He is good, His … | … His steadfast love is eternal. |
+| 2 | יֹאמַר־נָא יִשְׂרָאֵל כִּי לְעוֹלָם חַסְדּוֹ: | … כִּי לְעוֹלָם חַסְדּוֹ: | 118:2 | 1 of 1 | Let Israel declare, “His steadfast love is eternal.” | … “His steadfast love is eternal.” |
+| 3 | הוֹדוּ לַיהֹוָה כִּי־טוֹב כִּי לְעוֹלָם … | … כִּי לְעוֹלָם חַסְדּוֹ: | 118:1 | 1 of 1 | Praise the LORD, for He is good, His … | … His steadfast love is eternal. |
+| 4 | יֹאמְרוּ־נָא בֵית־אַהֲרֹן כִּי לְעוֹלָם חַסְדּוֹ: | … כִּי לְעוֹלָם חַסְדּוֹ: | 118:3 | 1 of 1 | Let the house of Aaron declare, “His steadfast … | … “His steadfast love is eternal.” |
+| 5 | הוֹדוּ לַיהֹוָה כִּי־טוֹב כִּי לְעוֹלָם … | … כִּי לְעוֹלָם חַסְדּוֹ: | 118:1 | 1 of 1 | Praise the LORD, for He is good, His … | … His steadfast love is eternal. |
+| 6 | יֹאמְרוּ־נָא יִרְאֵי יְהֹוָה כִּי לְעוֹלָם … | … כִּי לְעוֹלָם חַסְדּוֹ: | 118:4 | 1 of 1 | Let those who fear the LORD declare, “His … | … “His steadfast love is eternal.” |
+| 7 | הוֹדוּ לַיהֹוָה כִּי־טוֹב כִּי לְעוֹלָם … | … כִּי לְעוֹלָם חַסְדּוֹ: | 118:1 | 1 of 1 | Praise the LORD, for He is good, His … | … His steadfast love is eternal. |
+| 8 | מִן־הַמֵּצַר קָרָאתִי יָהּ עָנָנִי בַמֶּרְחָב … | … נָגִילָה וְנִשְׂמְחָה בוֹ: | 118:5-24 | 20 of 20 | In distress I called on the LORD; the … | … exult and rejoice on it. |
+| 9 | אָנָּא יְהֹוָה הוֹשִׁיעָה נָּא: | … יְהֹוָה הוֹשִׁיעָה נָּא: | 118:25 | 1 of 1 | O LORD, deliver us! O LORD, let us … | … O LORD, let us prosper! |
 | 10 | אָנָּא יְהֹוָה הוֹשִׁיעָה נָּא: | … יְהֹוָה הוֹשִׁיעָה נָּא: | — |  |  |  |
 | 11 | אָנָּא יְהֹוָה הַצְלִיחָה נָא: | … יְהֹוָה הַצְלִיחָה נָא: | — |  |  |  |
 | 12 | אָנָּא יְהֹוָה הַצְלִיחָה נָא: | … יְהֹוָה הַצְלִיחָה נָא: | — |  |  |  |
-| 13 | בָּרוּךְ הַבָּא בְּשֵׁם יְהֹוָה בֵּרַכְנוּכֶם … | … כִּי לְעוֹלָם חַסְדּוֹ: | 118:26-29 | 4 of 4 | Blessed be he that cometh in the name … | … His mercy endureth for ever. |
+| 13 | בָּרוּךְ הַבָּא בְּשֵׁם יְהֹוָה בֵּרַכְנוּכֶם … | … כִּי לְעוֹלָם חַסְדּוֹ: | 118:26-29 | 4 of 4 | May he who enters be blessed in the … | … His steadfast love is eternal. |
 
 ### Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 118 — Daat Siddur Ashkenaz
 
 | Line | Hebrew opens | Hebrew closes | Verses | Found | English opens | English closes |
 |---|---|---|---|---|---|---|
-| 1 | א הוֹדוּ לַיהוָה כִּי טוֹב … | … כִּי לְעוֹלָם חַסְדּוֹ. | 118:1-29 | 29 of 29 | 'O give thanks unto the LORD, for He … | … His mercy endureth for ever. |
+| 1 | א הוֹדוּ לַיהוָה כִּי טוֹב … | … כִּי לְעוֹלָם חַסְדּוֹ. | 118:1-29 | 29 of 29 | Praise the LORD, for He is good, His … | … His steadfast love is eternal. |

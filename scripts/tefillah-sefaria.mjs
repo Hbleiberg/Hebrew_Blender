@@ -204,7 +204,9 @@ export function englishEnds(lines) {
 // one per edition, since a visitor may switch a whole node's edition and each divides its lines its own
 // way. An entry is one chapter and its verses, in the order the line says them: "Psalms 118:5-24",
 // "Psalms 118:1,3".
-// The page then offers the open translations of those verses and sets each line's beside it. Nothing is
+// The page then offers the open translations of those verses and sets each line's beside it: the
+// visitor's stored choice, else the first title of the catalog's top-level "versesEnglish" list that
+// is offered (exact titles, in order), else JPS 1917, else by licence rank. Nothing is
 // taken on trust: the checker and the page both compare the line's own letters with the verses' Hebrew
 // (versesFit) and pair nothing when they differ.
 export const VERSES_RE = /^(Psalms) (\d{1,3}):(\d{1,3}(?:-\d{1,3})?(?:,\d{1,3}(?:-\d{1,3})?)*)$/;
@@ -239,7 +241,9 @@ export function formatCatalog(cat) {
   const obj = (o) => '{ ' + Object.keys(o).map((k) => `${j(k)}: ${val(o[k])}`).join(', ') + ' }';
   const part = (p) => (typeof p === 'string' || p === null ? j(p) : obj(p));
   const source = (s) => (Array.isArray(s) ? '[\n' + s.map((p) => '          ' + part(p)).join(',\n') + '\n        ]' : part(s));
-  const out = ['{', `  "v": ${j(cat.v)},`, `  "hebrewPreference": ${j(cat.hebrewPreference)},`, '  "groups": ['];
+  const out = ['{', `  "v": ${j(cat.v)},`, `  "hebrewPreference": ${j(cat.hebrewPreference)},`];
+  if (cat.versesEnglish) out.push(`  "versesEnglish": ${j(cat.versesEnglish)},`);
+  out.push('  "groups": [');
   out.push(cat.groups.map((g) => '    { ' + Object.keys(g).map((k) => `${j(k)}: ${j(g[k])}`).join(', ') + ' }').join(',\n'));
   out.push('  ],', '  "prayers": [');
   out.push(cat.prayers.map((p) => {

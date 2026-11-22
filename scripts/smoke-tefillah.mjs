@@ -127,7 +127,7 @@ const ends = (node, a, b) => rangeEnds(NODES[node].he[Object.keys(NODES[node].he
 const ranged = (node, a, b, he, extra) => Object.assign({ ref: `${node}:${a === b ? a : a + '-' + b}`, he }, ends(node, a, b), extra || {});
 const enPin = (node, title, a, b, extra) => ({ en: Object.assign({ v: title }, extra || {}, englishEnds(NODES[node].en[title].lines.slice(a - 1, b))) });
 const P = (key, sources) => ({ key, nameKey: '', en: 'Fixture ' + key, he: '', group: 'smoke', service: ['shacharit'], days: ['weekday'], sources });
-const CATALOG = { v: 1, hebrewPreference: ['Metsudah', 'Open'], groups: [{ key: 'smoke', nameKey: '', en: 'Smoke fixtures', he: '' }], prayers: [
+const CATALOG = { v: 1, hebrewPreference: ['Metsudah', 'Open'], versesEnglish: ['A Title Nobody Offers', PS_B], groups: [{ key: 'smoke', nameKey: '', en: 'Smoke fixtures', he: '' }], prayers: [
   P('plain', { ashkenaz: N('Plain') }),
   P('ranged', { ashkenaz: ranged(N('Long'), 2, 3, MET) }),
   P('moved', { ashkenaz: Object.assign(ranged(N('Long'), 2, 3, MET), { from: bare(WORDS[0]) + ' ' + bare(WORDS[1]) }) }),
@@ -344,16 +344,16 @@ try {
     check('…and one pinned against another Hebrew edition stays a block', s.block && /Pin two/.test(s.blockText) && !s.blockText.includes('[]') && s.trans.every((x) => !x) && s.versionNote.length > 10, JSON.stringify({ block: s.block, trans: s.trans }));
     // lines that are Tanakh verses: their translation beside them, in a version the visitor picks
     s = await go('verses');
-    check('lines that are Tanakh verses show those verses beside them, JPS 1917 first', s.rows.length === 2 && s.trans.join('|') === 'Verse one. Verse two.|Verse three. Verse four.' && !s.block, JSON.stringify(s.trans));
-    check('…only the open translations of the verses are offered, credited to their book, with a note', s.versions.join('|') === [PS_B, PS_THIN, JPS].join('|') && /Psalms/.test(s.credits) && s.credits.includes(JPS) && /Public Domain/.test(s.credits) && s.versionNote.length > 10 && !/Closed/.test(s.text), JSON.stringify({ versions: s.versions, credits: s.credits, note: s.versionNote }));
-    await t.page.evaluate((title) => { const sel = document.getElementById('ttVersionSelect'); sel.value = title; sel.dispatchEvent(new Event('change', { bubbles: true })); }, PS_B);
+    check('lines that are Tanakh verses show those verses beside them, in the catalog\u2019s first preferred translation that is offered', s.rows.length === 2 && s.trans.join('|') === 'Second one. Second two.|Second three. Second four.' && !s.block, JSON.stringify(s.trans));
+    check('…only the open translations of the verses are offered, credited to their book, with a note', s.versions.join('|') === [PS_B, PS_THIN, JPS].join('|') && /Psalms/.test(s.credits) && s.credits.includes(PS_B) && /CC BY/.test(s.credits) && s.versionNote.length > 10 && !/Closed/.test(s.text), JSON.stringify({ versions: s.versions, credits: s.credits, note: s.versionNote }));
+    await t.page.evaluate((title) => { const sel = document.getElementById('ttVersionSelect'); sel.value = title; sel.dispatchEvent(new Event('change', { bubbles: true })); }, JPS);
     await t.page.waitForTimeout(600); await settled(t.page);
     s = await snapshot(t.page);
-    check('…and another translation can be picked', s.trans.join('|') === 'Second one. Second two.|Second three. Second four.' && s.credits.includes(PS_B) && !s.credits.includes(JPS), JSON.stringify({ trans: s.trans, credits: s.credits }));
+    check('…and another translation can be picked', s.trans.join('|') === 'Verse one. Verse two.|Verse three. Verse four.' && s.credits.includes(JPS) && !s.credits.includes(PS_B), JSON.stringify({ trans: s.trans, credits: s.credits }));
     await t.page.evaluate((title) => { const sel = document.getElementById('ttVersionSelect'); sel.value = title; sel.dispatchEvent(new Event('change', { bubbles: true })); }, PS_THIN);
     await t.page.waitForTimeout(600); await settled(t.page);
     s = await snapshot(t.page);
-    check('…a translation that leaves a verse out is passed over (JPS 1917 shows) and is no longer listed', s.trans.join('|') === 'Verse one. Verse two.|Verse three. Verse four.' && !/Thin/.test(s.text) && s.versions.join('|') === [PS_B, JPS].join('|') && !s.credits.includes(PS_THIN), JSON.stringify({ trans: s.trans, versions: s.versions }));
+    check('…a translation that leaves a verse out is passed over (the preferred one shows) and is no longer listed', s.trans.join('|') === 'Second one. Second two.|Second three. Second four.' && !/Thin/.test(s.text) && s.versions.join('|') === [PS_B, JPS].join('|') && !s.credits.includes(PS_THIN), JSON.stringify({ trans: s.trans, versions: s.versions }));
     await t.page.evaluate((title) => { const sel = document.getElementById('ttVersionSelect'); sel.value = title; sel.dispatchEvent(new Event('change', { bubbles: true })); }, PS_B);
     await t.page.waitForTimeout(600); await settled(t.page);
     s = await go('verses-whole');

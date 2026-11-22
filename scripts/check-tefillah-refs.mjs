@@ -74,7 +74,9 @@ async function tanakhChapter(book, chapter) {
         if (have === he.length) { open.push(v); texts.set(v.versionTitle, lines); }
         else notes.thin.push(`${key}: ${short(v.versionTitle)} has ${have} of ${he.length} verses`);
       }
-      const show = open.find((v) => JPS_1917.test(v.versionTitle)) || open[0] || null;
+      const first = (cat.versesEnglish || [])[0];
+      if (first && !open.some((v) => v.versionTitle === first)) problems.push(`${key}: the catalog's first "versesEnglish" title, ${JSON.stringify(first)}, is not an open translation that has every verse of this chapter`);
+      const show = (cat.versesEnglish || []).map((t) => open.find((v) => v.versionTitle === t)).find(Boolean) || open.find((v) => JPS_1917.test(v.versionTitle)) || open[0] || null;
       out = { he, open, sample: show ? { title: show.versionTitle, lines: texts.get(show.versionTitle) } : null };
     }
   } catch (e) { out = null; }

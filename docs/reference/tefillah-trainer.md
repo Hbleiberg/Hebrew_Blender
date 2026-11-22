@@ -22,12 +22,13 @@ maintainer, never fixed. The fixture smoke builds its texts from ordinary vocabu
 
 ## The catalog — `data/tefillah/catalog.json`
 
-A curated list, not the Sefaria tree. Fetched as `data/tefillah/catalog.json?v=6` (`CATALOG_URL`); `sw.js` precaches
+A curated list, not the Sefaria tree. Fetched as `data/tefillah/catalog.json?v=7` (`CATALOG_URL`); `sw.js` precaches
 that exact URL (`DATA_PRECACHE`), so **an edit bumps the `?v=` in both places**.
 
 ```jsonc
 { "v": 1,
   "hebrewPreference": ["Metsudah", "Shaliehsaboo", "Torat Emet", "Daat"],   // which open Hebrew edition a whole node shows
+  "versesEnglish": ["Tanakh: The Holy Scriptures, published by JPS"],       // which translation of a line's Tanakh verses shows first
   "groups":  [ { "key": "morning-waking", "nameKey": "tefillah.group.morning_waking", "en": "…", "he": "…" } ],
   "prayers": [ { "key": "modeh-ani", "nameKey": "tefillah.prayer.modeh_ani", "en": "Modeh Ani", "he": "…",
                  "group": "morning-waking", "service": ["shacharit"], "days": ["weekday", "shabbat"],
@@ -121,7 +122,9 @@ reason on the status line and the Try again card): a prayer with a silent gap wo
   a part's lines and the catalog names their verses (a whole node: only while the edition they were counted in is on
   screen), the page asks Sefaria for each chapter named (`fetchSefariaText("Psalms 113")`, the Tanakh path), checks
   every line with `versesFit`, and offers the open English translations **every** chapter has — the stored choice,
-  else JPS 1917, else by licence rank, as the Torah source does. Each line gets its verses joined in order; the
+  else the first title of the catalog's `versesEnglish` list that is offered (exact titles; the maintainer chose
+  JPS 1985 for its plainer English, and the checker fails if the first title is missing or short for a chapter),
+  else JPS 1917, else by licence rank. The Shema's Torah source keeps its own order (stored, JPS 1917, rank). Each line gets its verses joined in order; the
   credit names the book (`en.work`: "Psalms — <title> · <licence>"), the version list is the verses' (so a full Hallel
   lists what all six psalms share, and its two blessings, which have none, do not empty it —
   `readingEnglishVersions` skips parts that offer nothing), and the note under the list says where the translation

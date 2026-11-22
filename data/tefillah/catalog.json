@@ -1,6 +1,7 @@
 {
   "v": 1,
   "hebrewPreference": ["Metsudah","Shaliehsaboo","Torat Emet","Daat"],
+  "versesEnglish": ["Tanakh: The Holy Scriptures, published by JPS"],
   "groups": [
     { "key": "morning-waking", "nameKey": "tefillah.group.morning_waking", "en": "Waking and morning blessings", "he": "הַשְׁכָּמַת הַבֹּקֶר וּבִרְכוֹת הַשַּׁחַר" },
     { "key": "pesukei-dzimra", "nameKey": "tefillah.group.pesukei_dzimra", "en": "Pesukei D'Zimra", "he": "פְּסוּקֵי דְזִמְרָה" },

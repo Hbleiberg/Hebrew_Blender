@@ -4038,7 +4038,7 @@ function tokenizeTranslit(translitText, firstTwi, hebWordCount) {
    Nothing a URL, a saved favorite or a cloud row carries ever reaches Sefaria: a reading is always
    looked up here by its key, and a ref this page does not recognise is not offered at all.
    ══════════════════════════════════════════════════════ */
-const CATALOG_URL = 'data/tefillah/catalog.json?v=6';
+const CATALOG_URL = 'data/tefillah/catalog.json?v=7';
 const NUSACH_IDS = ['ashkenaz', 'sefard', 'edot', 'opensiddur', 'torah'];
 const SIDDUR_NODE_RE = /^Siddur (?:Ashkenaz|Sefard|Edot HaMizrach), [A-Za-z0-9 ,'&()\-]{1,200}$/;
 const TANAKH_REF_RE = /^(?:Genesis|Exodus|Leviticus|Numbers|Deuteronomy) \d{1,3}:\d{1,3}(?:-\d{1,3})?$/;
@@ -4101,9 +4101,11 @@ function catalogSource(src, nusach) {
   return (list.length && list.length <= 40 && list.every(Boolean)) ? list : null;   // one part this page cannot read and the source is not offered
 }
 function normalizeCatalog(raw) {
-  const out = { groups: [], prayers: [], hebrewPreference: [] };
+  const out = { groups: [], prayers: [], hebrewPreference: [], versesEnglish: [] };
   if (!raw || typeof raw !== 'object') return out;
   if (Array.isArray(raw.hebrewPreference)) out.hebrewPreference = raw.hebrewPreference.filter(s => typeof s === 'string' && s).slice(0, 12);
+  // Which translation of the Tanakh verses a line holds shows first (exact titles, in order), before JPS 1917.
+  if (Array.isArray(raw.versesEnglish)) out.versesEnglish = raw.versesEnglish.filter(s => typeof s === 'string' && s && s.length <= 200).slice(0, 12);
   const groupKeys = new Set(), seen = new Set();
   for (const g of (Array.isArray(raw.groups) ? raw.groups : [])) {
     if (!g || typeof g.key !== 'string' || !PRAYER_KEY_RE.test(g.key) || groupKeys.has(g.key)) continue;
@@ -4359,7 +4361,8 @@ function versesFit(text, ranges, verseText) {
 }
 // → null (the lines do not say those verses, or Sefaria could not be asked: the part simply has no translation) or
 // { en, enVersions }: the open translations of every chapter named, and, when one is wanted, each line's verses in
-// the stored choice, else JPS 1917, else by licence rank — the Torah source's own order.
+// the stored choice, else the first title of the catalog's `versesEnglish` list that is offered, else JPS 1917,
+// else by licence rank.
 // A translation must have every verse the lines hold: one that leaves a verse out (Sefaria lists a Community
 // translation of Psalm 113 that stops after two verses) would stand as a fragment beside a whole paragraph, so it
 // is passed over, remembered for the visit and no longer listed for that chapter.
@@ -4390,7 +4393,8 @@ async function loadVerseTranslations(map, texts, wantEnglish) {
   for (let tries = 0; tries < 6; tries++) {
     const list = whole();
     if (!list.length) break;
-    const pick = (stored && list.find(v => v.versionTitle === stored)) || list.find(v => JPS_1917_RE.test(v.versionTitle)) || byLicenseRank(list)[0];
+    const preferred = (catalog ? catalog.versesEnglish : []).map(t => list.find(v => v.versionTitle === t)).find(Boolean);
+    const pick = (stored && list.find(v => v.versionTitle === stored)) || preferred || list.find(v => JPS_1917_RE.test(v.versionTitle)) || byLicenseRank(list)[0];
     const eng = new Map();
     let meta = null, thin = false;
     try {
