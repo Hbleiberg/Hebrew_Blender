@@ -60,6 +60,28 @@ Notes:
 - iOS caches the launch image, so an already-installed user sees the new
   version only after removing and re-adding the app to the Home Screen.
 
+### Tab icon
+
+The browser-tab icon is the cube alone, with no plate behind it. Every `rel="icon"` candidate a page offers is that
+same mark, so the tab looks the same whichever one a browser takes:
+
+- **`favicon.svg` is the source.** Under a dark browser theme it takes the colours of the header lockup's cube (the
+  cream outline and side), because a navy outline disappears on a dark tab; in a light theme it is the cube as drawn
+  for a light ground.
+- **`icon-192.png` and `icon-512.png` in the repo root are its PNG copies**, for a browser that takes no SVG icon:
+  the cube on a transparent ground, in the light-ground colours (a PNG cannot follow the theme).
+  `node scripts/render-tab-icons.mjs` makes both from `favicon.svg`; never edit them by hand.
+- **The home-screen icons are separate files and keep their cream plate:** `apple-touch-icon.png`, and
+  `icons/icon-192.png` and `icons/icon-512.png`, which the manifest and `pwa.js` use. A phone fills a transparent
+  home-screen icon with black, so these are never made transparent, and the root PNGs and the `icons/` PNGs differ on
+  purpose.
+- **Order in the `<head>`:** the PNG `rel="icon"` lines first, the SVG line last, then the `apple-touch-icon` line.
+- **A change to any of the three tab-icon files bumps its `?v=`** on every hand-kept page and in the three page
+  builders (`build-parsha-pages.mjs`, `build-holiday-pages.mjs`, `build-coloring-hub.mjs`: their templates and the two
+  forwarders), which are then rebuilt, and bumps `VERSION` in `sw.js` (a browser keeps a tab icon for days otherwise,
+  and may keep the old one until a hard refresh even so). Only those three file names move: the same `?v=` number on
+  the manifest, the `apple-touch-icon` and the manifest's own `/icons/` addresses is theirs.
+
 ---
 
 ## Service Worker & Caching (`sw.js`)

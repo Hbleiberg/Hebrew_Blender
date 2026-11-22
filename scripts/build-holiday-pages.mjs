@@ -286,8 +286,8 @@ function page(h, imgHash) {
 <meta http-equiv="Content-Security-Policy" content="${CSP}">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="icon" type="image/svg+xml" href="/favicon.svg?v=3">
-<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png?v=3">
+<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png?v=4">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg?v=4">
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=3">
 <link rel="manifest" href="/manifest.webmanifest?v=3">
 <meta name="theme-color" content="#1a2744">
@@ -426,7 +426,7 @@ const FORWARDER = `<!DOCTYPE html>
 <title>Holiday Coloring Pages | IvritSuite</title>
 <link rel="canonical" href="${SITE}${SOURCE_PAGE}">
 <meta name="robots" content="noindex, follow">
-<link rel="icon" type="image/svg+xml" href="/favicon.svg?v=3">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg?v=4">
 <script src="/js/i18n.js" defer></script>
 <style>
 body{margin:0;padding:40px 16px;font-family:'Source Sans 3',system-ui,sans-serif;background:#fdf8ef;color:#1a2744;text-align:center;}

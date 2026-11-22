@@ -565,7 +565,7 @@ the standard lockup with a navy wordmark, both precached in `sw.js`.
   longer repeats the brand ("Contact & Support", not "IvritSuite — Contact & Support").
 - **There is one lockup:** the cube with the IvritSuite wordmark, in those two files. No version carries a Hebrew line
   under the wordmark, in any file (an SVG, a raster, a splash screen, a social card); one that turns up is deleted with
-  every reference to it.
+  every reference to it. The cube alone is the tab icon (`ops.md` → *Tab icon*).
 - **Size is a custom property:** `--lockup-h` (38px) and `--lockup-h-sm` (32px under 600px); the home page and the 404
   set 50 / 42 on their heading, the home page 56px from 1280px up, and the home page's footer carries the lockup at
   48 / 38 (`home.md`). The `<img>`'s `width`/`height` attributes keep the aspect ratio before the file loads.
