@@ -1347,9 +1347,10 @@ body.dark .form-row select, body.dark .form-row input[type="text"], body.dark .f
 }
 /* Under a finger these four groups' fields compute 11.2–13.1px, and iOS Safari zooms the page into a focused field
    under 16px and leaves it zoomed. 16px only where the pointer is coarse (the dictionary's and contact's rule); the
-   desktop fields keep their size. The language switcher is i18n.js's. */
+   desktop fields keep their size. The language switcher is i18n.js's. The prayer search box is a type="search" field
+   (13.6px), which the text and number selectors never matched — it is named here. */
 @media (pointer:coarse) {
-  .tt-ctrl select, .tt-ctrl input[type="number"], .tt-ctrl input[type="text"], .tt-empty select,
+  .tt-ctrl select, .tt-ctrl input[type="number"], .tt-ctrl input[type="text"], .tt-ctrl input[type="search"], .tt-empty select,
   .form-row select, .form-row input[type="text"], .form-row input[type="number"], .form-row input[type="date"] { font-size:16px; }
   /* The Copy bar's preview is read-only, but a tap to select its text still focuses it (0.9rem, 14.4px). */
   #ttCopyTextarea { font-size:16px; }
@@ -1716,6 +1717,16 @@ body.fullscreen #ttFsBar.visible .tt-fs-plate { pointer-events: auto; }
      --tt-heb-size dead on every phone/tablet-width screen. (The print block below
      already re-asserts the bare var for paper; that stays as-is.) */
   .tt-cell.heb, .tt-heb { font-size:calc(var(--tt-heb-size, 1.5rem) * 0.9); }
+}
+
+/* On a phone "Side by side" is one column, and in source order that was the whole translation, then the
+   transliteration, then the Hebrew far below. The Hebrew is what a student came to read, so it goes first, then its
+   transliteration, then the translation (the line-by-line layout's order). Only the Hebrew column holds controls, so
+   the focus order is unchanged. Screen only: a printed page can be narrower than 720px, and paper keeps the print
+   block's own order. */
+@media screen and (max-width: 720px) {
+  .tt-grid-col.tt-col-heb { order:-2; }
+  .tt-grid-col.tt-col-translit { order:-1; }
 }
 
 /* Phone widths: let the header button row wrap onto a second line instead of pushing the
