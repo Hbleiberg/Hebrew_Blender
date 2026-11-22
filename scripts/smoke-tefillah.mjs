@@ -106,7 +106,7 @@ NODES[N('Pinned')] = {
 };
 // Lines that are Tanakh verses: an instruction, verses 1-2 in one line, then verse 3 said twice and verse 4. No English of its own.
 const PS = [words(20, 4), words(24, 3), words(27, 4), words(31, 3)];
-const JPS = 'The Holy Scriptures: A New Translation (JPS 1917)', PS_B = 'A Second Psalms Translation', PS_CLOSED = 'A Closed Psalms Translation';
+const JPS = 'The Holy Scriptures: A New Translation (JPS 1917)', PS_B = 'A Second Psalms Translation', PS_CLOSED = 'A Closed Psalms Translation', PS_THIN = 'A Psalms Translation That Stops Early';
 NODES[N('Psalm')] = {
   he: { [OPEN]: { license: 'CC0', lines: [bare(WORDS[80]), [...PS[0], ...PS[1]].join(' '), [...PS[2], ...PS[2], ...PS[3]].join(' ')] },
         [OTHER]: { license: 'Public Domain', lines: [[...PS[0], ...PS[1], ...PS[2], ...PS[3]].join(' ')] } },
@@ -116,6 +116,7 @@ const TANAKH = {
   'Psalms.113': { sections: [113], he: PS.map(verse), ens: {
     [PS_B]: { license: 'CC-BY', text: ['Second one.', 'Second two.', 'Second three.', 'Second four.'] },
     [PS_CLOSED]: { license: 'Copyright: Somebody', text: ['Closed.', 'Closed.', 'Closed.', 'Closed.'] },
+    [PS_THIN]: { license: 'CC0', text: ['Thin one.', 'Thin two.', '', ''] },
     [JPS]: { license: 'Public Domain', text: ['Verse one.', 'Verse two.', 'Verse three.', 'Verse four.'] } } },
   'Deuteronomy.6.4': { sections: [6, 4], he: [verse(words(60, 6))], en: ['A fixture verse.'] },
   'Deuteronomy.6.5-6': { sections: [6, 5], he: [verse(words(66, 5)), verse(words(71, 6))], en: ['Another one.', 'And a third.'] },
@@ -343,11 +344,17 @@ try {
     // lines that are Tanakh verses: their translation beside them, in a version the visitor picks
     s = await go('verses');
     check('lines that are Tanakh verses show those verses beside them, JPS 1917 first', s.rows.length === 2 && s.trans.join('|') === 'Verse one. Verse two.|Verse three. Verse four.' && !s.block, JSON.stringify(s.trans));
-    check('…only the open translations of the verses are offered, credited to their book, with a note', s.versions.join('|') === [PS_B, JPS].join('|') && /Psalms/.test(s.credits) && s.credits.includes(JPS) && /Public Domain/.test(s.credits) && s.versionNote.length > 10 && !/Closed/.test(s.text), JSON.stringify({ versions: s.versions, credits: s.credits, note: s.versionNote }));
+    check('…only the open translations of the verses are offered, credited to their book, with a note', s.versions.join('|') === [PS_B, PS_THIN, JPS].join('|') && /Psalms/.test(s.credits) && s.credits.includes(JPS) && /Public Domain/.test(s.credits) && s.versionNote.length > 10 && !/Closed/.test(s.text), JSON.stringify({ versions: s.versions, credits: s.credits, note: s.versionNote }));
     await t.page.evaluate((title) => { const sel = document.getElementById('ttVersionSelect'); sel.value = title; sel.dispatchEvent(new Event('change', { bubbles: true })); }, PS_B);
     await t.page.waitForTimeout(600); await settled(t.page);
     s = await snapshot(t.page);
     check('…and another translation can be picked', s.trans.join('|') === 'Second one. Second two.|Second three. Second four.' && s.credits.includes(PS_B) && !s.credits.includes(JPS), JSON.stringify({ trans: s.trans, credits: s.credits }));
+    await t.page.evaluate((title) => { const sel = document.getElementById('ttVersionSelect'); sel.value = title; sel.dispatchEvent(new Event('change', { bubbles: true })); }, PS_THIN);
+    await t.page.waitForTimeout(600); await settled(t.page);
+    s = await snapshot(t.page);
+    check('…a translation that leaves a verse out is passed over (JPS 1917 shows) and is no longer listed', s.trans.join('|') === 'Verse one. Verse two.|Verse three. Verse four.' && !/Thin/.test(s.text) && s.versions.join('|') === [PS_B, JPS].join('|') && !s.credits.includes(PS_THIN), JSON.stringify({ trans: s.trans, versions: s.versions }));
+    await t.page.evaluate((title) => { const sel = document.getElementById('ttVersionSelect'); sel.value = title; sel.dispatchEvent(new Event('change', { bubbles: true })); }, PS_B);
+    await t.page.waitForTimeout(600); await settled(t.page);
     s = await go('verses-whole');
     check('a whole node counted in the edition on screen: the same, a verse list ("3,4") read in order', s.rows.length === 2 && s.trans.join('|') === 'Second one. Second two.|Second three. Second four.', JSON.stringify(s.trans));
     for (const [key, why] of [['verses-swapped', 'a line that does not open with its verses'], ['verses-short', 'a map with the wrong number of lines'], ['verses-other-edition', 'a map counted in another Hebrew edition'], ['verses-odd', 'a map naming a book other than Psalms']]) {

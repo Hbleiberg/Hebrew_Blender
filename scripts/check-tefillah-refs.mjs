@@ -50,9 +50,9 @@ const problems = [];        // blocking
 const notes = { noEnglish: [], unmatched: [], editionsDiffer: [], nulls: [], licences: new Map(), sharedSegment: [], pinned: [], pinOffDefault: [] };
 const pairings = new Map();  // "<node> — <Hebrew edition> ⇄ <translation>" → Map(line number → [Hebrew, English]) for the review section
 const versePairs = new Map();  // "<node> — <Hebrew edition>" → Map(line number → [Hebrew, verses, found, English]) for the review section
-notes.tanakh = []; notes.versesOffDefault = []; notes.unmappedText = [];
-// One Tanakh chapter: its Hebrew verses, the open English translations Sefaria lists for it, and one of them
-// (JPS 1917 where there is one) for the review table.
+notes.tanakh = []; notes.versesOffDefault = []; notes.thin = [];
+// One Tanakh chapter: its Hebrew verses, the open English translations Sefaria lists for it that have every verse
+// (the page passes over one that leaves a verse out), and one of them (JPS 1917 where there is one) for the review table.
 const JPS_1917 = /JPS\s*1917|1917.*JPS|Holy Scriptures.*1917|Holy Scriptures.*New Translation/i;
 const _chapters = new Map();
 async function tanakhChapter(book, chapter) {
@@ -64,15 +64,18 @@ async function tanakhChapter(book, chapter) {
     const d = await sefariaJSON(`${base}?version=hebrew&return_format=text_only`);
     const hv = (d.versions || []).find((v) => v.language === 'he');
     if (!d.error && hv) {
-      const open = (d.available_versions || []).filter((v) => isEnglish(v) && isOpenLicense(v.license));
-      const show = open.find((v) => JPS_1917.test(v.versionTitle)) || open[0] || null;
-      let sample = null;
-      if (show) {
-        const e = await sefariaJSON(`${base}?version=${encodeURIComponent('english|' + show.versionTitle)}&return_format=text_only`);
-        const ev = (e.versions || []).find((v) => v.language === 'en');
-        if (ev && ev.versionTitle === show.versionTitle && isOpenLicense(ev.license)) sample = { title: ev.versionTitle, lines: flatText(ev.text) };
+      const he = flatText(hv.text).map((t) => t.replace(/\{[^}]*\}/g, ''));
+      const open = [], texts = new Map();
+      for (const v of (d.available_versions || []).filter((x) => isEnglish(x) && isOpenLicense(x.license))) {
+        const e = await sefariaJSON(`${base}?version=${encodeURIComponent('english|' + v.versionTitle)}&return_format=text_only`);
+        const ev = (e.versions || []).find((x) => x.language === 'en');
+        const lines = ev && ev.versionTitle === v.versionTitle && isOpenLicense(ev.license) ? flatText(ev.text) : [];
+        const have = he.filter((_, i) => plainText(lines[i] || '')).length;
+        if (have === he.length) { open.push(v); texts.set(v.versionTitle, lines); }
+        else notes.thin.push(`${key}: ${short(v.versionTitle)} has ${have} of ${he.length} verses`);
       }
-      out = { he: flatText(hv.text).map((t) => t.replace(/\{[^}]*\}/g, '')), open, sample };
+      const show = open.find((v) => JPS_1917.test(v.versionTitle)) || open[0] || null;
+      out = { he, open, sample: show ? { title: show.versionTitle, lines: texts.get(show.versionTitle) } : null };
     }
   } catch (e) { out = null; }
   _chapters.set(key, out);
@@ -346,6 +349,7 @@ async function main() {
   list('Shown line against line through a pinned translation (⇄)', notes.pinned);
   list('Translated through the Tanakh verses their lines hold (◇)', notes.tanakh);
   list('Verses counted in a Hebrew edition the page does not show first (they apply only once a visitor picks that edition)', [...new Set(notes.versesOffDefault)]);
+  list('Open translations of a named chapter that leave verses out (the page passes over them and stops listing them)', [...new Set(notes.thin)]);
   list('Translations exist but none matches the Hebrew line for line (a whole node shows one as a block; a line range shows none)', notes.unmatched);
   list('Pinned against a Hebrew edition the page does not show first (the pairing applies only once a visitor picks that edition)', [...new Set(notes.pinOffDefault)]);
   list('Hebrew editions that divide a node differently', [...new Set(notes.editionsDiffer)]);

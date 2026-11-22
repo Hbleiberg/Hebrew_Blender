@@ -4038,7 +4038,7 @@ function tokenizeTranslit(translitText, firstTwi, hebWordCount) {
    Nothing a URL, a saved favorite or a cloud row carries ever reaches Sefaria: a reading is always
    looked up here by its key, and a ref this page does not recognise is not offered at all.
    ══════════════════════════════════════════════════════ */
-const CATALOG_URL = 'data/tefillah/catalog.json?v=4';
+const CATALOG_URL = 'data/tefillah/catalog.json?v=5';
 const NUSACH_IDS = ['ashkenaz', 'sefard', 'edot', 'opensiddur', 'torah'];
 const SIDDUR_NODE_RE = /^Siddur (?:Ashkenaz|Sefard|Edot HaMizrach), [A-Za-z0-9 ,'&()\-]{1,200}$/;
 const TANAKH_REF_RE = /^(?:Genesis|Exodus|Leviticus|Numbers|Deuteronomy) \d{1,3}:\d{1,3}(?:-\d{1,3})?$/;
@@ -4355,6 +4355,10 @@ function versesFit(text, ranges, verseText) {
 // → null (the lines do not say those verses, or Sefaria could not be asked: the part simply has no translation) or
 // { en, enVersions }: the open translations of every chapter named, and, when one is wanted, each line's verses in
 // the stored choice, else JPS 1917, else by licence rank — the Torah source's own order.
+// A translation must have every verse the lines hold: one that leaves a verse out (Sefaria lists a Community
+// translation of Psalm 113 that stops after two verses) would stand as a fragment beside a whole paragraph, so it
+// is passed over, remembered for the visit and no longer listed for that chapter.
+const _thinVerseVersions = new Set();     // "<chapter>\u0001<title>"
 async function loadVerseTranslations(map, texts, wantEnglish) {
   if (map.lines.length !== texts.length) return null;                       // Sefaria divided the lines anew
   const chapters = [...new Set(map.lines.filter(Boolean).map(m => m.book + ' ' + m.chapter))];
@@ -4375,26 +4379,36 @@ async function loadVerseTranslations(map, texts, wantEnglish) {
     if (!m.ranges.every(([a, b]) => verses.has(a) && verses.has(b)) || !versesFit(texts[i], m.ranges, n => verses.get(n))) return null;
   }
   if (!versions || !versions.length) return null;
-  if (!wantEnglish) return { en: null, enVersions: versions };
+  const whole = () => versions.filter(v => !chapters.some(ch => _thinVerseVersions.has(ch + '\u0001' + v.versionTitle)));
+  if (!wantEnglish) return { en: null, enVersions: whole() };
   const stored = settings.translationVersion;
-  const pick = (stored && versions.find(v => v.versionTitle === stored)) || versions.find(v => JPS_1917_RE.test(v.versionTitle)) || byLicenseRank(versions)[0];
-  const eng = new Map();
-  let meta = null;
-  try {
-    for (const ch of chapters) {
-      const both = await fetchSefariaText(ch, true, pick.versionTitle);
-      if (!both._en || both._en.title !== pick.versionTitle || !isOpenLicense(both._en.license) || !(both._engCount > 0)) return { en: null, enVersions: versions };
-      meta = meta || both._en;
-      eng.set(ch, new Map(both.map(v => [v.verse, v.translation])));
-    }
-  } catch (e) { return { en: null, enVersions: versions }; }
-  const lines = map.lines.map(m => {
-    if (!m) return '';
-    const verses = eng.get(m.book + ' ' + m.chapter), out = [];
-    for (const [a, b] of m.ranges) for (let n = a; n <= b; n++) { const t = verses.get(n); if (t) out.push(t); }
-    return out.join(' ');
-  });
-  return { en: { title: meta.title, license: meta.license, source: meta.source, aligned: true, hidden: false, lines, tanakh: true, work: map.lines.find(Boolean).book }, enVersions: versions };
+  for (let tries = 0; tries < 6; tries++) {
+    const list = whole();
+    if (!list.length) break;
+    const pick = (stored && list.find(v => v.versionTitle === stored)) || list.find(v => JPS_1917_RE.test(v.versionTitle)) || byLicenseRank(list)[0];
+    const eng = new Map();
+    let meta = null, thin = false;
+    try {
+      for (const ch of chapters) {
+        const both = await fetchSefariaText(ch, true, pick.versionTitle);
+        const got = new Map(both.map(v => [v.verse, v.translation]));
+        const ok = !!both._en && both._en.title === pick.versionTitle && isOpenLicense(both._en.license) &&       // what came back, not what was asked for
+          map.lines.every(m => !m || m.book + ' ' + m.chapter !== ch || m.ranges.every(([a, b]) => { for (let n = a; n <= b; n++) if (!got.get(n)) return false; return true; }));
+        if (!ok) { _thinVerseVersions.add(ch + '\u0001' + pick.versionTitle); thin = true; continue; }
+        meta = meta || both._en;
+        eng.set(ch, got);
+      }
+    } catch (e) { return { en: null, enVersions: list }; }
+    if (thin) continue;                                                    // the next choice
+    const lines = map.lines.map(m => {
+      if (!m) return '';
+      const verses = eng.get(m.book + ' ' + m.chapter), out = [];
+      for (const [a, b] of m.ranges) for (let n = a; n <= b; n++) out.push(verses.get(n));
+      return out.join(' ');
+    });
+    return { en: { title: meta.title, license: meta.license, source: meta.source, aligned: true, hidden: false, lines, tanakh: true, work: map.lines.find(Boolean).book }, enVersions: list };
+  }
+  return { en: null, enVersions: whole() };
 }
 async function loadSiddurPart(part, wantEnglish) {
   const first = await fetchSiddurNode(part.node, 'hebrew');

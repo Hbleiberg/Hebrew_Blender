@@ -117,7 +117,7 @@
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Pesukei Dezimra, Psalm 150",
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Hodu:28-29", "he": "The Metsudah siddur, 1981", "from": "הללויה הללו", "to": "יה הללויה" },
-        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Pesukei D'Zimra:12", "he": " Shaliehsaboo Edition", "from": "הללויה הללו", "to": "יה הללויה" },
+        "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Pesukei D'Zimra:12", "he": " Shaliehsaboo Edition", "from": "הללויה הללו", "to": "יה הללויה", "verses": { "lines": ["Psalms 150:1-6"] } },
         "torah": null,
         "opensiddur": null
       } },

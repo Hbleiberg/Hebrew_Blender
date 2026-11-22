@@ -22,7 +22,7 @@ maintainer, never fixed. The fixture smoke builds its texts from ordinary vocabu
 
 ## The catalog — `data/tefillah/catalog.json`
 
-A curated list, not the Sefaria tree. Fetched as `data/tefillah/catalog.json?v=4` (`CATALOG_URL`); `sw.js` precaches
+A curated list, not the Sefaria tree. Fetched as `data/tefillah/catalog.json?v=5` (`CATALOG_URL`); `sw.js` precaches
 that exact URL (`DATA_PRECACHE`), so **an edit bumps the `?v=` in both places**.
 
 ```jsonc
@@ -61,8 +61,9 @@ or an ordered list of parts. A part is:
   the first three words of the first translated line and the last three of the last (lower case, `a-z0-9` only),
   stamped by `--stamp` like the Hebrew's. The checker fails on a pin whose translation is gone or not open, has no
   translated line there, has a line where the Hebrew has none, or no longer matches its stamp.
-- **Lines that are Tanakh verses (`verses`)** exist for Hallel: Sefaria's siddurim hold no open translation of it, but
-  every line of its psalms is whole verses, and the Book of Psalms has several open translations. An entry is one
+- **Lines that are Tanakh verses (`verses`)** exist for Hallel (and Edot HaMizrach's Psalm 150): Sefaria's siddurim
+  hold no open translation of it, but every line of its psalms is whole verses, and the Book of Psalms has several
+  open translations. An entry is one
   chapter and its verses in the order the line says them (`"Psalms 118:5-24"`, `"Psalms 118:1,3"` for a response
   followed by the next verse); only Psalms may be named (`VERSES_RE`, on the page and in the scripts). Nothing is
   taken on trust: `versesFit` compares the line's own pointed letters with the verses' Hebrew (the first verse of
@@ -123,6 +124,10 @@ reason on the status line and the Try again card): a prayer with a silent gap wo
   `readingEnglishVersions` skips parts that offer nothing), and the note under the list says where the translation
   comes from (`tefillah.trans.tanakh_note`). The chapters' Hebrew is fetched with translation off too: the check and
   the list need it. A failed check or request leaves the part without a translation, never the prayer without text.
+  **A translation must have every verse the lines hold**: one that leaves a verse out (Sefaria lists a Community
+  translation of Psalm 113 that stops after two verses) is passed over for the next choice, remembered for the visit
+  (`_thinVerseVersions`) and no longer listed for that chapter; the checker counts each one's verses and lists the
+  short ones in the report.
 - **Torah parts** (`loadTanakhPart`): the Trainer's `fetchSefariaText` / `parseSefariaResponse`, which also record the
   returned versions' titles and licences. Translation: the stored choice, else JPS 1917, else by licence rank.
 - **Open Siddur parts** (`loadOpenSiddurPart`): below.
