@@ -15,6 +15,8 @@
  *   - a Torah source: verses numbered chapter:verse, trope classes on the verses only, the siddur's added line marked;
  *   - every text on screen is credited with its edition and licence;
  *   - ?prayer= and ?nusach= open only what the catalog lists, and no request ever names anything else;
+ *   - an Open Siddur snapshot file: its gendered pairs shown both ways or one, its own licence, contributors and page
+ *     credited, a missing file or a closed licence refused, a link it names that is not https opensiddur.org / creativecommons.org dropped;
  *   - a failed request shows the Try again card and no text.
  * Usage: node scripts/smoke-tefillah.mjs [--port 8096]. Needs the preinstalled Playwright + Chromium
  * (docs/reference/ops.md → the headless recipe); starts its own python3 -m http.server and aborts every other origin.
@@ -112,8 +114,20 @@ const CATALOG = { v: 1, hebrewPreference: ['Metsudah', 'Open'], groups: [{ key: 
   P('hidden-translation', { ashkenaz: ranged(N('Block'), 1, 2, OPEN) }),
   P('no-english', { ashkenaz: N('NoEnglish') }),
   P('torah', { ashkenaz: N('Plain'), torah: ['Deuteronomy 6:4', ranged(N('Plain'), 1, 1, MET, { added: true }), 'Deuteronomy 6:5-6'] }),
+  P('os', { ashkenaz: N('Plain'), opensiddur: 'os-fixture' }),
+  P('os-missing', { opensiddur: 'os-missing' }),
+  P('os-closed', { opensiddur: 'os-closed' }),
+  P('os-odd', { opensiddur: 'os-odd' }),
   P('not-a-siddur', { ashkenaz: 'Mishnah Berakhot 1:1' }),                       // a ref this page may not ask for: the source is dropped
 ] };
+// Open Siddur snapshot files (data/tefillah/opensiddur/<key>.json), served by this script
+const OS_F = WORDS[76], OS_M = WORDS[77];
+const OS_FILES = {
+  'os-fixture': { key: 'os-fixture', url: 'https://opensiddur.org/fixture/', title: 'A fixture page', contributors: ['First Contributor', 'Second Contributor'], license: 'CC BY-SA', licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0/', retrieved: '2026-01-01',
+    he: [`${OS_F}|${OS_M}, ${WORDS[78]}`, words(72, 3).join(' ')], en: ['Fixture one.', 'Fixture two.'], variants: true, variantOrder: 'fm' },
+  'os-closed': { key: 'os-closed', url: 'https://opensiddur.org/fixture/', title: 'Closed', contributors: ['Someone'], license: 'CC BY-NC-ND', he: [words(72, 3).join(' ')], variants: false },
+  'os-odd': { key: 'os-odd', url: 'https://evil.invalid/steal', title: '<img src=x onerror="window.__xss = 5">', contributors: ['<b onclick="window.__xss = 6">Someone</b>'], license: 'CC0', licenseUrl: 'javascript:window.__xss=7', he: [words(72, 3).join(' ')], variants: false },
+};
 const KNOWN_REFS = new Set([...Object.keys(NODES), ...Object.keys(TANAKH)]);
 
 // ── the fake Sefaria ─────────────────────────────────────────────────────────────────────────────
@@ -166,6 +180,8 @@ async function openPage(query, seed) {
   await page.route('**/*', (route) => {
     const u = route.request().url();
     if (u.startsWith(BASE + '/data/tefillah/catalog.json')) return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(CATALOG) });
+    const os = /\/data\/tefillah\/opensiddur\/([a-z0-9-]+)\.json/.exec(u);
+    if (os && u.startsWith(BASE) && OS_FILES[os[1]]) return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(OS_FILES[os[1]]) });
     if (u.startsWith(BASE) || u.startsWith('data:') || u.startsWith('blob:')) return route.continue();
     if (u.startsWith('https://www.sefaria.org/api/v3/texts/')) {
       if (down) { asked.push(decodeURIComponent(new URL(u).pathname.replace(/^\/api\/v3\/texts\//, ''))); return route.abort(); }
@@ -210,6 +226,7 @@ const snapshot = (page) => page.evaluate((H) => {
     picker: q('#prayerSelect').value, nusach: q('#nusachSelect').value,
     nusachOptions: qa('#nusachSelect option').map((o) => o.value), options: qa('#prayerSelect option').map((o) => o.value),
     torahLinks: qa('#ttTorahLinks a').map((a) => a.getAttribute('href')),
+    creditLinks: qa('#ttCredits a').map((a) => a.getAttribute('href')), genderRow: !q('#ttGenderRow').hidden,
   };
 }, HEB);
 
@@ -302,7 +319,32 @@ try {
     const stray = asked.filter((r) => !KNOWN_REFS.has(r));
     check('every request named a ref of the catalog (' + asked.length + ' requests)', asked.length > 10 && stray.length === 0, stray.slice(0, 5).join(' | '));
   }
-  // ── 7. Sefaria unreachable ──
+  // ── 7. an Open Siddur snapshot ──
+  {
+    const t = await openPage('?prayer=os&nusach=opensiddur', { showTranslation: true });
+    let s = await snapshot(t.page);
+    const joined = () => s.words.join(' ');
+    check('Open Siddur: offered beside the siddur, two lines, the gendered-forms row shown', s.nusachOptions.join() === 'ashkenaz,opensiddur' && s.rows.length === 2 && s.genderRow, JSON.stringify({ n: s.nusachOptions, rows: s.rows, row: s.genderRow }));
+    check('a gendered pair shows both forms, masculine first, and no pipe', s.text.includes(OS_M + ' / ' + OS_F + ',') && !s.text.includes('|'), s.words.slice(0, 5).join(' '));
+    check('its own licence, contributors and page are credited', s.credits.includes('A fixture page') && s.credits.includes('First Contributor, Second Contributor') && /CC BY-SA/.test(s.credits) && s.creditLinks.includes('https://creativecommons.org/licenses/by-sa/4.0/') && s.creditLinks.includes('https://opensiddur.org/fixture/'), s.credits + ' ' + s.creditLinks.join(' '));
+    check('its translation beside its lines', /Fixture one\./.test(s.text) && !s.block);
+    for (const [val, shown, gone] of [['m', OS_M, OS_F], ['f', OS_F, OS_M]]) {
+      await t.page.evaluate((v) => document.querySelector('input[name="optGendered"][value="' + v + '"]').click(), val); await t.page.waitForTimeout(300);
+      s = await snapshot(t.page);
+      check('gendered forms = ' + val + ': one form, its punctuation kept, and the credits say so', s.words.some((w) => w.startsWith(shown)) && !s.words.some((w) => w.startsWith(gone)) && s.text.includes(shown + ',') && !s.text.includes(' / ') && s.credits.length > 0 && s.rows.length === 2 && /gendered/i.test(s.credits), joined() + ' ¦ ' + s.credits);
+    }
+    for (const [key, why] of [['os-missing', 'a missing snapshot file'], ['os-closed', 'a snapshot with a closed licence']]) {
+      await t.page.evaluate((k) => choosePrayer(k), key); await t.page.waitForTimeout(600); await settled(t.page);
+      s = await snapshot(t.page);
+      check(why + ' is refused', s.empty && s.words.length === 0 && s.statusError && s.credits === '', s.status);
+    }
+    await t.page.evaluate(() => choosePrayer('os-odd')); await t.page.waitForTimeout(600); await settled(t.page);
+    s = await snapshot(t.page);
+    check('odd links and markup in a snapshot stay inert', s.rows.length === 1 && s.xss === undefined && s.forbidden === 0 && s.creditLinks.every((h) => /^https:\/\/(opensiddur\.org|creativecommons\.org|www\.sefaria\.org)/.test(h)), s.creditLinks.join(' ') + ' xss ' + s.xss);
+    check('no page error', t.errors.length === 0, t.errors.join(' | '));
+    await t.close();
+  }
+  // ── 8. Sefaria unreachable ──
   {
     down = true;
     const t = await openPage('?prayer=plain');

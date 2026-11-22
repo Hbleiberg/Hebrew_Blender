@@ -6269,6 +6269,7 @@
   "tefillah.copy.textarea_aria": "שורות שנבחרו (תצוגה מקדימה להעתקה)",
   "tefillah.copy.title": "העתקת שורות",
   "tefillah.credits.display_note": "המילים הן של כל מקור כלשונו. אפשרויות התצוגה כאן (הסתרת סימנים, הוראות או מספרי שורות) עשויות להיות שונות מהמקור.",
+  "tefillah.credits.gender_note": "במקום שבו המקור מביא מילה בשתי צורות, זכר ונקבה, הדף מציג את הצורה שנבחרה בהגדרות.",
   "tefillah.credits.hebrew": "עברית:",
   "tefillah.credits.title": "מקורות הטקסט",
   "tefillah.credits.translation": "תרגום:",

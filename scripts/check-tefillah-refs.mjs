@@ -142,6 +142,21 @@ function row(prayer, nusach, parts) {
   return `| ${prayer.en} | ${nusach} | ${ref} | ${lines} (${pointed}) | ${editions} | ${others} | ${eng.join('<br>') || 'none'} | ${parts.some((p) => p.teamim) ? 'yes' : 'no'} | ${ends} |`;
 }
 
+// An Open Siddur source names a snapshot file (scripts/build-tefillah-opensiddur.mjs): it must exist, hold Hebrew,
+// carry its own key and name an open licence — what the page checks before it shows the text.
+function checkOpenSiddur(prayerKey, key) {
+  const where = `${prayerKey}/opensiddur`;
+  if (typeof key !== 'string' || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(key)) { problems.push(`${where}: the source must be a snapshot key`); return; }
+  const file = path.join(path.dirname(CATALOG), 'opensiddur', key + '.json');
+  if (!fs.existsSync(file)) { problems.push(`${where}: data/tefillah/opensiddur/${key}.json does not exist`); return; }
+  let d = null;
+  try { d = JSON.parse(fs.readFileSync(file, 'utf8')); } catch (e) { problems.push(`${where}: ${key}.json is not JSON`); return; }
+  if (d.key !== key) problems.push(`${where}: ${key}.json names the key "${d.key}"`);
+  if (!Array.isArray(d.he) || !d.he.some((l) => typeof l === 'string' && l.trim())) problems.push(`${where}: ${key}.json holds no Hebrew`);
+  if (!isOpenLicense(d.license)) problems.push(`${where}: ${key}.json names no open licence (${d.license})`);
+  if (!d.contributors || !(Array.isArray(d.contributors) ? d.contributors.length : String(d.contributors).trim())) problems.push(`${where}: ${key}.json names no contributor`);
+}
+
 async function main() {
   const leaves = new Map();
   for (const t of SIDDUR_INDEXES) leaves.set(t, new Set(await leafPaths(t)));
@@ -153,8 +168,8 @@ async function main() {
     if (!cat.groups.some((g) => g.key === prayer.group)) problems.push(`${prayer.key}: unknown group ${prayer.group}`);
     if (ONLY && !ONLY.has(prayer.key)) continue;
     for (const nusach of NUSACHIM) {
-      if (nusach === 'opensiddur') continue;          // a key into data/tefillah/opensiddur/, checked by its own builder
       const src = prayer.sources[nusach];
+      if (nusach === 'opensiddur') { if (src != null) checkOpenSiddur(prayer.key, src); continue; }   // a key into data/tefillah/opensiddur/
       if (src == null) { if (nusach !== 'torah') notes.nulls.push(`${prayer.key} (${nusach})`); continue; }
       const where = `${prayer.key}/${nusach}`;
       const parts = [];

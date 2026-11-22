@@ -8340,3 +8340,4 @@ tefillah.settings.panel_backup,Backup,גיבוי,More tab section title: .ivrit 
 tefillah.backup.intro,Save your settings and favorite prayers to a <b>.ivrit</b> file on your device. Restore by dropping the file below or browsing for it.,"שמרו את ההגדרות ואת התפילות המועדפות בקובץ <b>.ivrit</b> במכשיר שלכם. לשחזור, גררו את הקובץ למטה או חפשו אותו.",Backup section intro (data-i18n-html),html
 tefillah.backup.manual_placeholder,The backup text appears here…,טקסט הגיבוי יופיע כאן…,Placeholder + aria-label of the manual backup textarea,
 tefillah.backup.manual_source,the pasted backup,הגיבוי שהודבק,The {source} of a restore from the manual textarea,
+tefillah.credits.gender_note,"Where the source gives a word in two gendered forms, this page shows the one chosen in Settings.","במקום שבו המקור מביא מילה בשתי צורות, זכר ונקבה, הדף מציג את הצורה שנבחרה בהגדרות.",credits footnote: an Open Siddur text shown with one gendered form,

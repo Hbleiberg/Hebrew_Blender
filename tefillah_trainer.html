@@ -4360,7 +4360,8 @@ function buildLines(parts) {
   const mixed = parts.some(p => p.kind === 'tanakh');
   parts.forEach((p, pi) => {
     p.he.lines.forEach((seg, si) => {
-      const text = seg.text;
+      let text = seg.text, variants = false;
+      if (p.kind === 'opensiddur' && p.he.variants && text.includes('|')) { const g = genderedText(text, p.he.variantOrder); text = g.text; variants = g.found; }
       if (!text) return;                                   // an empty segment (Sefaria has them) is nothing to show
       const tanakh = p.kind === 'tanakh';
       const inst = !tanakh && !readingWords(text).length;
@@ -4370,7 +4371,7 @@ function buildLines(parts) {
         teamim: !inst && !p.he.marks && REAL_TEAMIM_RE.test(text), trope: tanakh,
         reading: tanakh ? text : readingText(p.he.marks ? text.replace(READING_MARKS_RE, '') : text),
         translation: (p.en && p.en.aligned && p.en.lines[si]) || '',
-        vk: '', num: ''
+        variants, vk: '', num: ''
       };
       if (!inst) {
         if (tanakh) { v.vk = seg.vk; v.num = seg.vk; }
@@ -4802,7 +4803,7 @@ function creditRows() {
   const rows = [], seen = new Set();
   const withTrans = settings.showTranslation;
   for (const p of (currentParts || [])) {
-    const work = p.kind === 'tanakh' ? p.ref.replace(/ \d.*$/, '') : p.kind === 'opensiddur' ? (p.work || 'Open Siddur') : p.ref.split(',')[0];
+    const work = p.kind === 'tanakh' ? p.ref.replace(/ \d.*$/, '') : p.kind === 'opensiddur' ? '' : p.ref.split(',')[0];
     const add = (role, t) => {
       const k = [role, work, t.title, licenseName(t.license) || t.license].join('\u0001');
       if (seen.has(k)) return;
@@ -4835,7 +4836,7 @@ function renderCredits() {
     const src = document.createElement('span');
     src.setAttribute('dir', 'ltr'); src.setAttribute('lang', 'en');
     li.appendChild(document.createTextNode(' '));
-    src.appendChild(document.createTextNode(r.work + ' — '));
+    if (r.work) src.appendChild(document.createTextNode(r.work + ' — '));
     const title = document.createElement('cite');
     title.textContent = r.title;
     src.appendChild(title);
@@ -4844,11 +4845,16 @@ function renderCredits() {
     li.appendChild(document.createTextNode(' · '));
     const lic = document.createElement('bdi');
     lic.className = 'tt-credit-lic';
-    lic.textContent = licenseLabel(r.license);
+    if (r.licenseUrl) {
+      const la = document.createElement('a');
+      la.href = r.licenseUrl; la.target = '_blank'; la.rel = 'noopener license';
+      la.textContent = licenseLabel(r.license);
+      lic.appendChild(la);
+    } else lic.textContent = licenseLabel(r.license);
     li.appendChild(lic);
     li.appendChild(document.createTextNode(' · '));
     const via = document.createElement('a');
-    via.href = r.via === 'opensiddur' ? 'https://opensiddur.org' : 'https://www.sefaria.org';
+    via.href = r.via === 'opensiddur' ? (r.source || 'https://opensiddur.org') : 'https://www.sefaria.org';
     via.target = '_blank'; via.rel = 'noopener'; via.setAttribute('dir', 'auto');
     via.textContent = I18n.t(r.via === 'opensiddur' ? 'tefillah.credits.via_opensiddur' : 'tefillah.credits.via_sefaria');
     li.appendChild(via);
@@ -4859,6 +4865,14 @@ function renderCredits() {
   note.className = 'tt-credit-note';
   note.textContent = I18n.t('tefillah.credits.display_note');
   box.appendChild(note);
+  // A text that gives two gendered forms, shown with one of them: said so beside its credit (the source asks that a
+  // change be noted).
+  if (settings.genderedForms !== 'both' && ['m', 'f'].includes(settings.genderedForms) && currentVerses.some(v => v.variants)) {
+    const g = document.createElement('p');
+    g.className = 'tt-credit-note';
+    g.textContent = I18n.t('tefillah.credits.gender_note');
+    box.appendChild(g);
+  }
 }
 
 
@@ -6237,7 +6251,9 @@ function wireSettingsForm() {
     r.addEventListener('change', e => {
       if (!e.target.checked) return;
       settings.genderedForms = ['m', 'f'].includes(e.target.value) ? e.target.value : 'both';
-      saveSettings(); renderText(); updateCopyTextarea();
+      saveSettings();
+      if (currentParts) { currentVerses = buildLines(currentParts); _readingHasShem = detectShem(currentVerses); }
+      renderText(); updateCopyTextarea();
     });
   });
   // Per-row font-size sliders (Hebrew / Translit / English). Both directions now traverse
@@ -7206,13 +7222,63 @@ function wirePrayerPicker() {
   });
 }
 
-/* ── Open Siddur texts: a curated snapshot under data/tefillah/opensiddur/ (scripts/build-tefillah-opensiddur.mjs),
-   never fetched from opensiddur.org by this page. The index names the files that exist; none do yet. ── */
-let openSiddurIndex = new Set();
-function openSiddurHas(key) { return openSiddurIndex.has(key); }
-async function loadOpenSiddurPart(part) {
-  if (!openSiddurHas(part.key)) throw new TextUnavailable('opensiddur_missing');
-  throw new TextUnavailable('opensiddur_missing');
+/* ── Open Siddur texts: a curated snapshot, one data/tefillah/opensiddur/<key>.json per prayer, written by
+   scripts/build-tefillah-opensiddur.mjs and never fetched from opensiddur.org by this page. A catalog entry that names
+   a key promises its file. The file is this site's own, yet it is read like any text: no Hebrew, a wrong key or a
+   licence that is not open and nothing is shown. Each text keeps its own licence and contributor credit (the credits
+   under the prayer), never this site's. ── */
+const OPENSIDDUR_DATA_V = 1;           // the ?v= of every data/tefillah/opensiddur/ file: bump it with any edit there
+const OPENSIDDUR_URL_RE = /^https:\/\/opensiddur\.org\/[^\s"'<>]*$/;
+const LICENSE_URL_RE = /^https:\/\/(?:creativecommons\.org|opensiddur\.org)\/[^\s"'<>]*$/;
+const _osCache = new Map();
+function openSiddurHas(key) { return typeof key === 'string' && PRAYER_KEY_RE.test(key); }
+async function fetchOpenSiddur(key) {
+  const r = await fetch(`data/tefillah/opensiddur/${key}.json?v=${OPENSIDDUR_DATA_V}`);   // a network failure rejects: Try again
+  if (!r.ok) throw new TextUnavailable('opensiddur_missing');
+  try { return await r.json(); } catch (e) { throw new TextUnavailable('opensiddur_missing'); }
+}
+async function loadOpenSiddurPart(part, wantEnglish) {
+  if (!_osCache.has(part.key)) {
+    const p = fetchOpenSiddur(part.key);
+    _osCache.set(part.key, p);
+    p.catch(() => _osCache.delete(part.key));        // a failed request is asked again by the next load
+  }
+  const d = await _osCache.get(part.key);
+  const clean = list => (Array.isArray(list) ? list : []).map(x => (typeof x === 'string' ? x.replace(/\s+/g, ' ').trim() : ''));
+  const he = clean(d && d.he);
+  if (!d || typeof d !== 'object' || d.key !== part.key || !he.some(Boolean)) throw new TextUnavailable('opensiddur_missing');
+  if (!isOpenLicense(d.license)) throw new TextUnavailable('no_open_hebrew');
+  const meta = {
+    title: String(d.title || part.key).slice(0, 200), license: d.license,
+    licenseUrl: typeof d.licenseUrl === 'string' && LICENSE_URL_RE.test(d.licenseUrl) ? d.licenseUrl : '',
+    source: typeof d.url === 'string' && OPENSIDDUR_URL_RE.test(d.url) ? d.url : '',
+    contributors: (Array.isArray(d.contributors) ? d.contributors : [d.contributors]).filter(x => typeof x === 'string' && x.trim()).map(x => x.trim()).join(', ').slice(0, 300)
+  };
+  const en = clean(d.en), hasEn = en.some(Boolean);
+  return {
+    kind: 'opensiddur', ref: part.key, added: false, firstSeg: 1,
+    he: Object.assign({ marks: false, variants: d.variants === true, variantOrder: d.variantOrder === 'mf' ? 'mf' : 'fm', lines: he.map(t => ({ text: t, flags: null })) }, meta),
+    en: (wantEnglish && hasEn) ? Object.assign({ aligned: en.length === he.length, lines: en, hidden: false }, meta) : null,
+    enVersions: hasEn ? [{ versionTitle: meta.title, license: d.license, language: 'en', actualLanguage: 'en' }] : [],
+    heEditions: []
+  };
+}
+// "A|B" inside an Open Siddur line is one word in two gendered forms. Which side is the feminine one is the file's
+// variantOrder ('fm': feminine first, as the source pages write it, unless the file says 'mf'). Show both gives
+// "masculine / feminine"; punctuation after the pair stays after whichever form is shown; a token that is not
+// exactly two forms is left as the source wrote it.
+function genderedText(text, order) {
+  const want = ['m', 'f'].includes(settings.genderedForms) ? settings.genderedForms : 'both';
+  let found = false;
+  const out = text.split(' ').map(tok => {
+    const tail = (/[,.:;!?\u05C3]+$/.exec(tok) || [''])[0];
+    const forms = (tail ? tok.slice(0, -tail.length) : tok).split('|');
+    if (forms.length !== 2 || !forms[0] || !forms[1]) return tok;
+    found = true;
+    const f = order === 'mf' ? forms[1] : forms[0], m = order === 'mf' ? forms[0] : forms[1];
+    return (want === 'm' ? m : want === 'f' ? f : m + ' / ' + f) + tail;
+  }).join(' ');
+  return { text: out, found };
 }
 
 async function retryCatalog() {   // the empty card's Try again for a catalog that did not load

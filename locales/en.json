@@ -6269,6 +6269,7 @@
   "tefillah.copy.textarea_aria": "Selected lines (copy preview)",
   "tefillah.copy.title": "Copy lines",
   "tefillah.credits.display_note": "The words are each source's own. The display options here (hidden marks, instructions or line numbers) may differ from the source.",
+  "tefillah.credits.gender_note": "Where the source gives a word in two gendered forms, this page shows the one chosen in Settings.",
   "tefillah.credits.hebrew": "Hebrew:",
   "tefillah.credits.title": "Text sources",
   "tefillah.credits.translation": "Translation:",
