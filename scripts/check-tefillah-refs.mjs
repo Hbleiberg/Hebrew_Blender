@@ -47,7 +47,7 @@ const OUT = arg('--out');
 
 const cat = JSON.parse(fs.readFileSync(CATALOG, 'utf8'));
 const problems = [];        // blocking
-const notes = { noEnglish: [], unmatched: [], editionsDiffer: [], nulls: [], licences: new Map(), sharedSegment: [], pinned: [], pinOffDefault: [] };
+const notes = { noEnglish: [], unmatched: [], editionsDiffer: [], nulls: [], licences: new Map(), sharedSegment: [], pinned: [], pinOffDefault: [], pinInstructions: [] };
 const pairings = new Map();  // "<node> — <Hebrew edition> ⇄ <translation>" → Map(line number → [Hebrew, English]) for the review section
 const versePairs = new Map();  // "<node> — <Hebrew edition>" → Map(line number → [Hebrew, verses, found, English]) for the review section
 notes.tanakh = []; notes.versesOffDefault = []; notes.thin = [];
@@ -151,6 +151,7 @@ async function checkSiddurPart(part, where, leaves, nusach) {
     if (!pin || typeof pin !== 'object' || typeof pin.v !== 'string' || !pin.v) bad('must be { "v": "<title>", … }');
     else if (!ranged && (typeof pin.he !== 'string' || !pin.he)) bad('of a whole node must name the Hebrew edition it was read against ("he")');
     else if (ranged && pin.he !== undefined) bad('of a line range takes its Hebrew edition from the part, not from "en"');
+    else if (pin.instructions !== undefined && pin.instructions !== true) bad('"instructions" is true or absent');
     else {
       const entry = english.find((e) => e.raw === pin.v);
       let against = he;
@@ -173,13 +174,19 @@ async function checkSiddurPart(part, where, leaves, nusach) {
           const key = `${node} — ${short(against.versionTitle)} ⇄ ${short(pin.v)} [${lic(e.license)}]`;
           if (!pairings.has(key)) pairings.set(key, new Map());
           let translated = 0;
+          const alone = [];                       // translated lines beside an empty Hebrew line
           for (let i = a; i <= b; i++) {
             const h = plainText(against.lines[i - 1] || ''), t = plainText(e.lines[i - 1] || '');
             const has = englishWords(t).length > 0;
             if (has) translated++;
-            if (has && !h) bad(`has a line ${i} where the Hebrew has none`);
+            if (has && !h) { alone.push(i); if (!pin.instructions) bad(`has a line ${i} where the Hebrew has none`); }
             pairings.get(key).set(i, [h, has ? t : '']);
           }
+          // A bilingual siddur prints instructions in its translation only ("After the reading, the oleh says:"), on
+          // lines its Hebrew leaves empty. Elsewhere a translated line beside no Hebrew means the two are divided
+          // differently, so a pin accepts such lines only by saying so, and may not say so idly.
+          if (pin.instructions && !alone.length) bad('says "instructions", but no translated line of its range stands beside an empty Hebrew line');
+          if (pin.instructions && alone.length) notes.pinInstructions.push(`${where} (line${alone.length > 1 ? 's' : ''} ${alone.join(', ')})`);
           entry.pinned = true;
           entry.pinnedLines = `${translated} of ${b - a + 1}`;
           if (!ranged) entry.pinnedHe = short(against.versionTitle);
@@ -361,6 +368,7 @@ async function main() {
   list('Open translations of a named chapter that leave verses out (the page passes over them and stops listing them)', [...new Set(notes.thin)]);
   list('Translations exist but none matches the Hebrew line for line (a whole node shows one as a block; a line range shows none)', notes.unmatched);
   list('Pinned against a Hebrew edition the page does not show first (the pairing applies only once a visitor picks that edition)', [...new Set(notes.pinOffDefault)]);
+  list('Pinned translations with instruction lines of their own, beside empty Hebrew lines (the pin says so; the page shows no line whose Hebrew is empty, so these are not displayed)', notes.pinInstructions);
   list('Hebrew editions that divide a node differently', [...new Set(notes.editionsDiffer)]);
   out.push(`**Licence strings Sefaria uses on these nodes:** ${[...notes.licences].sort((a, b) => b[1] - a[1]).map(([k, n]) => `\`${k}\` ×${n} → ${licenseName(k) || 'refused'}`).join('; ')}`, '');
   out.push(problems.length ? `**Problems (${problems.length}):**\n${problems.map((p) => '- ' + p).join('\n')}` : '**Problems:** none.', '');

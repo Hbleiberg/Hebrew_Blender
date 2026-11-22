@@ -101,7 +101,7 @@ Notes:
   and no value at all on `trope/trope_approvals.json`, which `sw.js` serves network-first (an approval is live without a bump),
   `trope/trope_phrase_examples.json?v=1`,
   `hebrew_emojis.json?v=2`,
-  `tefillah/catalog.json?v=8` (the Tefillah Trainer's prayer catalog — the one corpus `sw.js` also fetches at
+  `tefillah/catalog.json?v=9` (the Tefillah Trainer's prayer catalog — the one corpus `sw.js` also fetches at
   install, `DATA_PRECACHE`, under that exact URL: **a bump changes it in both files**) and the Tefillah Trainer's Open Siddur
   snapshot files via **`OPENSIDDUR_DATA_V`** (`tefillah/opensiddur/<key>.json?v=1`, none yet),
   `parshiyot.json?v=1`, `pockettorah/manifest.json?v=1`, `pockettorah/aliyah.json?v=1`

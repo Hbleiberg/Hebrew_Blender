@@ -20,6 +20,7 @@ export const SEFARIA_API = 'https://www.sefaria.org/api';
 // lines are the Ashkenaz siddur's. The page's SIDDUR_NODE_RE lists the same titles: change both.
 export const SIDDUR_BY_NUSACH = {
   ashkenaz: ['Siddur Ashkenaz', 'The Koren Shalem Siddur; Ashkenaz'],
+  koren: ['The Koren Shalem Siddur; Ashkenaz'],          // the same nusach, read wholly from Koren (Hebrew and Rabbi Sacks' English)
   sefard: ['Siddur Sefard', 'Weekday Siddur Sefard Linear', 'Shabbat Siddur Sefard Linear'],
   edot: ['Siddur Edot HaMizrach'],
 };
@@ -166,7 +167,7 @@ export async function fetchVersion(node, lang, title) {
 // `from` / `to` are consonant skeletons stamped by check-tefillah-refs.mjs --stamp from Sefaria's
 // own text (never typed): the page compares them and refuses a range that no longer starts and
 // ends where it did, so an edit at Sefaria cannot shift a prayer silently.
-export const NUSACHIM = ['ashkenaz', 'sefard', 'edot', 'torah', 'opensiddur'];
+export const NUSACHIM = ['ashkenaz', 'koren', 'sefard', 'edot', 'torah', 'opensiddur'];
 export function sourceParts(src) {
   if (src == null) return [];
   return (Array.isArray(src) ? src : [src]).map((p) => (typeof p === 'string' ? { ref: p } : p));
@@ -197,6 +198,10 @@ export function rangeEnds(lines) {
 // by check-tefillah-refs.mjs --stamp from the translation's own lines (never typed): the first three
 // words of the first translated line and the last three of the last, lower case, a-z and 0-9 only.
 // The page compares them and falls back to its unpaired display when they differ.
+// A bilingual siddur prints some instructions in its translation only, on lines its Hebrew leaves empty. The checker
+// refuses a pinned translation line that stands beside no Hebrew (elsewhere that means the two are divided
+// differently) unless the pin says "instructions": true — each such line read, and listed in the report. The page
+// does not read the key: it shows no line whose Hebrew is empty, so these instructions are not displayed.
 export function englishWords(plain) {
   return String(plain || '').toLowerCase().replace(/&[a-z0-9#]+;/g, ' ').replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter(Boolean);
 }

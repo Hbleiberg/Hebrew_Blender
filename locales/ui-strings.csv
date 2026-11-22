@@ -8202,6 +8202,7 @@ tefillah.trans.version_opt,{title} — {license},{title} — {license},version s
 tefillah.controls.prayer_label,Prayer:,תפילה:,toolbar: label of the prayer picker,
 tefillah.controls.nusach_label,Nusach:,נוסח:,toolbar: label of the nusach list,
 tefillah.nusach.ashkenaz,Ashkenaz,אשכנז,nusach name,
+tefillah.nusach.koren,Ashkenaz (Koren),אשכנז (קורן),"nusach list: nusach Ashkenaz read from the Koren Shalem Siddur, Hebrew and Rabbi Sacks' English",
 tefillah.nusach.sefard,Sefard,ספרד,nusach name,
 tefillah.nusach.edot,Edot HaMizrach,עדות המזרח,nusach name,
 tefillah.nusach.torah,Torah text,נוסח התורה,nusach list: the Shema read from the Torah text,

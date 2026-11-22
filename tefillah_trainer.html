@@ -2750,7 +2750,7 @@ const SEFARIA_API = 'https://www.sefaria.org/api';
 
 const DEFAULTS = {
   prayerKey: null,             // a key of data/tefillah/catalog.json (null: the catalog's first prayer shows)
-  nusach: 'ashkenaz',          // 'ashkenaz' | 'sefard' | 'edot' | 'opensiddur' | 'torah'; a prayer that lacks it shows its first source and the choice stays stored
+  nusach: 'ashkenaz',          // 'ashkenaz' | 'koren' | 'sefard' | 'edot' | 'opensiddur' | 'torah'; a prayer that lacks it shows its first source and the choice stays stored
   filterService: 'all',        // the picker's Service filter: 'all' or one of SERVICE_IDS
   filterDay: 'all',            // the picker's Day filter: 'all' | 'weekday' | 'shabbat'
   hebEdition: '',              // a Hebrew edition's title chosen in the Text tab ('' = the catalog's preference); used only where the prayer offers it
@@ -4083,8 +4083,8 @@ function tokenizeTranslit(translitText, firstTwi, hebWordCount) {
    Nothing a URL, a saved favorite or a cloud row carries ever reaches Sefaria: a reading is always
    looked up here by its key, and a ref this page does not recognise is not offered at all.
    ══════════════════════════════════════════════════════ */
-const CATALOG_URL = 'data/tefillah/catalog.json?v=8';
-const NUSACH_IDS = ['ashkenaz', 'sefard', 'edot', 'opensiddur', 'torah'];
+const CATALOG_URL = 'data/tefillah/catalog.json?v=9';
+const NUSACH_IDS = ['ashkenaz', 'koren', 'sefard', 'edot', 'opensiddur', 'torah'];
 // A leaf of one of the siddurim this page may ask Sefaria for: its three own, and three whole published siddurim
 // whose Hebrew and English stand line against line (scripts/tefillah-sefaria.mjs → SIDDUR_BY_NUSACH lists the same
 // titles and says which nusach each serves; the checker holds a source to its nusach's own).

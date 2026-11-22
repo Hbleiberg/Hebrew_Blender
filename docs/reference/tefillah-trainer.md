@@ -22,7 +22,7 @@ maintainer, never fixed. The fixture smoke builds its texts from ordinary vocabu
 
 ## The catalog — `data/tefillah/catalog.json`
 
-A curated list, not the Sefaria tree. Fetched as `data/tefillah/catalog.json?v=8` (`CATALOG_URL`); `sw.js` precaches
+A curated list, not the Sefaria tree. Fetched as `data/tefillah/catalog.json?v=9` (`CATALOG_URL`); `sw.js` precaches
 that exact URL (`DATA_PRECACHE`), so **an edit bumps the `?v=` in both places**; once the new copy is in, the
 install step drops the path's older `?v=` copies (`precacheData` — the fetch handler's own eviction runs only on a
 cache miss, which a precached file never is).
@@ -34,7 +34,7 @@ cache miss, which a precached file never is).
   "groups":  [ { "key": "morning-waking", "nameKey": "tefillah.group.morning_waking", "en": "…", "he": "…" } ],
   "prayers": [ { "key": "modeh-ani", "nameKey": "tefillah.prayer.modeh_ani", "en": "Modeh Ani", "he": "…",
                  "group": "morning-waking", "service": ["shacharit"], "days": ["weekday", "shabbat"],
-                 "sources": { "ashkenaz": …, "sefard": …, "edot": …, "torah": …, "opensiddur": … } } ] }
+                 "sources": { "ashkenaz": …, "koren": …, "sefard": …, "edot": …, "torah": …, "opensiddur": … } } ] }
 ```
 
 A source is `null` (the nusach has no such prayer here: it is simply not offered, never filled from another), one part,
@@ -59,6 +59,13 @@ or an ordered list of parts. A part is:
   their lines, so its Hebrew and its translation are one work's and pair by the usual rules. The checker holds a
   source to its nusach's list; the page's `SIDDUR_NODE_RE` lists the same titles (change both). Edot HaMizrach has
   no second siddur on Sefaria.
+- **`koren` is a source id of its own**, listed right after `ashkenaz` as "Ashkenaz (Koren)": the same nusach read
+  wholly from *The Koren Shalem Siddur; Ashkenaz*, Hebrew and Rabbi Sacks' English together (`NUSACH_IDS` on the page,
+  `NUSACHIM` and `SIDDUR_BY_NUSACH.koren` in the script). The page treats every id other than `opensiddur` and `torah`
+  as a Sefaria siddur, so a favorite, a practice link (`?nusach=koren`) and the settings carry it like any nusach. A
+  prayer Koren already serves under `ashkenaz` keeps that source there too. Koren's text is shown as printed: the
+  Divine Name without points (below), the Leader's cue marks, and in its English the Hebrew catchword that opens a
+  paragraph.
 - **Refs are never guessed.** `scripts/walk-tefillah-index.mjs` prints every leaf path and, with `--lines`, a node line
   by line; a catalog ref is a path it printed and a range is lines it printed. Sefard and Edot HaMizrach hold most
   prayers inside large nodes, so most of their sources are line ranges.
@@ -71,7 +78,11 @@ or an ordered list of parts. A part is:
   section): never by a rule, since some translations follow another Hebrew edition's division. Its `from` / `to` are
   the first three words of the first translated line and the last three of the last (lower case, `a-z0-9` only),
   stamped by `--stamp` like the Hebrew's. The checker fails on a pin whose translation is gone or not open, has no
-  translated line there, has a line where the Hebrew has none, or no longer matches its stamp.
+  translated line there, has a line where the Hebrew has none, or no longer matches its stamp. One exception is
+  spelled out in the pin: a bilingual siddur prints some instructions in its translation only, on lines its Hebrew
+  leaves empty, and `"instructions": true` says those lines were read and are that (the report lists them; a pin
+  that says so with no such line fails). The page does not read the key: `buildLines` shows no line whose Hebrew is
+  empty, so such an instruction is not displayed, pinned or not.
 - **Lines that are Tanakh verses (`verses`)** exist for Hallel (and Edot HaMizrach's Psalm 150): Sefaria's siddurim
   hold no open translation of it, but every line of its psalms is whole verses, and the Book of Psalms has several
   open translations. An entry is one
@@ -240,12 +251,23 @@ Hebrew UI. It prints with the reading and the handout (the handout credits only 
 - Deep links: `?prayer=<key>&nusach=<ashkenaz|sefard|edot|opensiddur|torah>`, and `?s=` for a sender's look.
 - `saves.tool` names `TefillahTrainer` through `db/migrations/0014_saves_tool_tefillah_trainer.sql`.
 
+## The picker on a phone
+
+At 720px and under, and on a phone held sideways (a coarse pointer and at most 500px of height), the search box and
+the Service / Day filters fold behind `#prayerFindBtn` beside the Nusach list, so the prayer starts higher on a small
+screen. `syncFindFold(narrowed)` is the one writer (called from `populatePrayerPicker`): open once the button is
+pressed, and always while a search or a filter is in force — one in force is never hidden, and the button is then
+`aria-disabled` with a title that says why; once open it stays open until the button is pressed. Per visit, no
+stored key. Above that width the button is not rendered and the group always shows. Tour step 2 points at the
+button while the group is folded. At 600px and under the line-by-line layout puts each row label above its line, and
+under 720px "Side by side" orders the Hebrew column first (CSS `order`, screen only).
+
 ## Checks
 
 - `node scripts/smoke-tefillah.mjs` — the reading model against fixtures it serves itself (no Sefaria): markup never
   reaches the page, the reading marks, line ranges whose words moved, the licence refusals, aligned / block / hidden
   translations, a pinned translation (paired by position, refused when its stamp no longer matches), lines that are
-  Tanakh verses (their translation chosen from the open ones, refused when a line does not open with them), the Torah source, an Open Siddur snapshot and its gendered forms, the address bar, the Try again card.
+  Tanakh verses (their translation chosen from the open ones, refused when a line does not open with them), the Torah source, the Koren source id beside Ashkenaz, an Open Siddur snapshot and its gendered forms, the address bar, the Try again card.
 - `node scripts/check-tefillah-refs.mjs` — the catalog against Sefaria (above).
 - `scripts/smoke-tools.mjs` and `scripts/smoke-migration.mjs` carry the page (the account layer).
 - A new vowel key or colour control follows the Torah Trainer's rule (both schemes, and the `.nik-<key>` line here).

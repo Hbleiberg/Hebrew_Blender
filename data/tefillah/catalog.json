@@ -18,6 +18,7 @@
       "group": "morning-waking", "service": "shacharit", "days": ["weekday","shabbat"],
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Preparatory Prayers, Modeh Ani",
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Weekdays, On Waking:3", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "מודהמודה אני", "to": "רבה אמונתך" },
         "sefard": { "ref": "Siddur Sefard, Upon Arising, Modeh Ani:1-4", "he": "The Metsudah siddur, 1981", "from": "מודה אני", "to": "לעולם ועד" },
         "edot": "Siddur Edot HaMizrach, Preparatory Prayers, Modeh Ani",
         "torah": null,
@@ -27,6 +28,7 @@
       "group": "morning-waking", "service": "shacharit", "days": ["weekday","shabbat"],
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Preparatory Prayers, Netilat Yadayim",
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Weekdays, On Waking:5", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "ברוך אתה", "to": "נטילת ידים" },
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Morning Blessings:1", "he": "The Metsudah siddur, 1981", "from": "ברוך אתה", "to": "נטילת ידים" },
         "edot": { "ref": "Siddur Edot HaMizrach, Preparatory Prayers, Morning Blessings:2-3", "he": " Shaliehsaboo Edition", "from": "ברוך אתה", "to": "נטילת ידים" },
         "torah": null,
@@ -36,6 +38,7 @@
       "group": "morning-waking", "service": "shacharit", "days": ["weekday","shabbat"],
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Preparatory Prayers, Asher Yatzar",
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Weekdays, On Waking:6", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "ברוך אתה", "to": "ומפליא לעשות" },
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Morning Blessings:2", "he": "The Metsudah siddur, 1981", "from": "ברוך אתה", "to": "ומפליא לעשות" },
         "edot": { "ref": "Siddur Edot HaMizrach, Preparatory Prayers, Morning Blessings:4-5", "he": " Shaliehsaboo Edition", "from": "ברוך אתה", "to": "ומפליא לעשות" },
         "torah": null,
@@ -45,6 +48,7 @@
       "group": "morning-waking", "service": "shacharit", "days": ["weekday","shabbat"],
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Preparatory Prayers, Elokai Neshama",
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Weekdays, On Waking:7", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "אלהי נשמה", "to": "לפגרים מתים" },
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Morning Blessings:3", "he": "The Metsudah siddur, 1981", "from": "אלהי נשמה", "to": "לפגרים מתים" },
         "edot": { "ref": "Siddur Edot HaMizrach, Preparatory Prayers, Morning Blessings:6-7", "he": " Shaliehsaboo Edition", "from": "אלהי נשמה", "to": "לפגרים מתים" },
         "torah": null,
@@ -54,6 +58,7 @@
       "group": "morning-waking", "service": "shacharit", "days": ["weekday","shabbat"],
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Preparatory Prayers, Torah Blessings",
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Weekdays, Blessings Over the Torah:2-3", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "ברוך אתה", "to": "נותן התורה" },
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Blessings on Torah:1-3", "he": "The Metsudah siddur, 1981", "from": "ברוך אתה", "to": "נותן התורה" },
         "edot": { "ref": "Siddur Edot HaMizrach, Preparatory Prayers, Torah Blessings:1-4", "he": " Shaliehsaboo Edition", "from": "ברוך אתה", "to": "נותן התורה" },
         "torah": null,
@@ -63,6 +68,7 @@
       "group": "morning-waking", "service": "shacharit", "days": ["weekday","shabbat"],
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Preparatory Prayers, Morning Blessings",
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Weekdays, Morning Blessings:2-17", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "ברוך אתה", "to": "בן ברית" },
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Blessings on Torah:8-26", "he": "The Metsudah siddur, 1981", "from": "ברוך אתה", "to": "של גיהנם" },
         "edot": { "ref": "Siddur Edot HaMizrach, Preparatory Prayers, Morning Blessings:8-27", "he": " Shaliehsaboo Edition", "from": "ברוך אתה", "to": "בן ברית" },
         "torah": null,
@@ -72,6 +78,7 @@
       "group": "morning-waking", "service": "shacharit", "days": ["weekday","shabbat"],
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Preparatory Prayers, Ma Tovu",
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Weekdays, Preparation for Prayer:2-4", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "מה טבו", "to": "באמת ישעך" },
         "sefard": { "ref": "Siddur Sefard, Upon Arising, Upon Entering Synagogue:3-4", "he": "The Metsudah siddur, 1981", "from": "מה טבו", "to": "באמת ישעך" },
         "edot": null,
         "torah": null,
@@ -81,6 +88,7 @@
       "group": "morning-waking", "service": "shacharit", "days": ["weekday","shabbat"],
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Preparatory Prayers, Adon Olam",
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Weekdays, Preparation for Prayer:6-15", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "אדון עולם", "to": "ולא אירא" },
         "sefard": { "ref": "Siddur Sefard, Upon Arising, Upon Entering Synagogue:5-15", "he": "The Metsudah siddur, 1981", "from": "אדון עולם", "to": "ולא אירא" },
         "edot": null,
         "torah": null,
@@ -90,6 +98,7 @@
       "group": "morning-waking", "service": "shacharit", "days": ["weekday","shabbat"],
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Preparatory Prayers, Yigdal",
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Weekdays, Preparation for Prayer:16-28", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "יגדל אלהים", "to": "שם תהלתו" },
         "sefard": { "ref": "Siddur Sefard, Upon Arising, Upon Entering Synagogue:16-42", "he": "The Metsudah siddur, 1981", "from": "יגדל אלהים", "to": "שם תהלתו" },
         "edot": null,
         "torah": null,
@@ -99,6 +108,7 @@
       "group": "pesukei-dzimra", "service": "shacharit", "days": ["weekday","shabbat"],
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Pesukei Dezimra, Barukh She'amar",
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Weekdays, Pesukei DeZimra:3-5", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "ברוך שאמר", "to": "מהלל בתשבחות" },
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Hodu:12-13", "he": "The Metsudah siddur, 1981", "from": "ברוך שאמר", "to": "מהלל בתשבחות" },
         "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Pesukei D'Zimra:2", "he": " Shaliehsaboo Edition", "from": "ברוך שאמר", "to": "מהלל בתשבחות", "en": { "v": "Sefaria Community Translation", "from": "blessed is he", "to": "lauded with praises" } },
         "torah": null,
@@ -108,6 +118,7 @@
       "group": "pesukei-dzimra", "service": ["shacharit","mincha"], "days": ["weekday","shabbat"],
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Pesukei Dezimra, Ashrei",
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Weekdays, Pesukei DeZimra:15-17", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "אשרי יושבי", "to": "עולם הללויה" },
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Hodu:18-19", "he": "The Metsudah siddur, 1981", "from": "אשרי יושבי", "to": "עולם הללויה" },
         "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Pesukei D'Zimra:6-7", "he": " Shaliehsaboo Edition", "from": "אשרי יושבי", "to": "עולם הללויה", "en": { "v": "Sefaria Community Translation", "from": "happy are those", "to": "praise g d" } },
         "torah": null,
@@ -117,6 +128,7 @@
       "group": "pesukei-dzimra", "service": "shacharit", "days": ["weekday","shabbat"],
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Pesukei Dezimra, Psalm 150",
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Weekdays, Pesukei DeZimra:22", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "הללויה הללו", "to": "יה הללויה" },
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Hodu:28-29", "he": "The Metsudah siddur, 1981", "from": "הללויה הללו", "to": "יה הללויה" },
         "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Pesukei D'Zimra:12", "he": " Shaliehsaboo Edition", "from": "הללויה הללו", "to": "יה הללויה", "verses": { "lines": ["Psalms 150:1-6"] } },
         "torah": null,
@@ -126,6 +138,7 @@
       "group": "pesukei-dzimra", "service": "shacharit", "days": ["weekday","shabbat"],
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Pesukei Dezimra, Yishtabach",
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Weekdays, Pesukei DeZimra:32", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "ישתבח שמך", "to": "חי העולמים" },
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Yishtabach:1-2", "he": "The Metsudah siddur, 1981", "from": "ישתבח שמך", "to": "חי העולמים" },
         "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Pesukei D'Zimra:19", "he": " Shaliehsaboo Edition", "from": "ישתבח שמך", "to": "העולמים אמן", "en": { "v": "Sefaria Community Translation", "from": "may your name", "to": "the worlds amen" } },
         "torah": null,
@@ -135,6 +148,7 @@
       "group": "shema", "service": ["shacharit","maariv"], "days": ["weekday","shabbat"],
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Blessings of the Shema, Barchu",
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Weekdays, Blessings of the Shema:2-4", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "ברכו את", "to": "לעולם ועד" },
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, The Shema:1-5", "he": "The Metsudah siddur, 1981", "from": "ברכו את", "to": "לעולם ועד" },
         "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Pesukei D'Zimra:24-26", "he": " Shaliehsaboo Edition", "from": "ברכו את", "to": "לעולם ועד" },
         "torah": null,
@@ -144,6 +158,7 @@
       "group": "shema", "service": "shacharit", "days": ["weekday","shabbat"],
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Blessings of the Shema, First Blessing before Shema",
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Weekdays, Blessings of the Shema:6-16", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "ברוך אתה", "to": "יוצר המאורות" },
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, The Shema:6-14", "he": "The Metsudah siddur, 1981", "from": "ברוך אתה", "to": "יוצר המאורות" },
         "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, The Shema:2-6", "he": " Shaliehsaboo Edition", "from": "ברוך אתה", "to": "יוצר המאורות" },
         "torah": null,
@@ -153,6 +168,7 @@
       "group": "shema", "service": "shacharit", "days": ["weekday","shabbat"],
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Blessings of the Shema, Second Blessing before Shema",
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Weekdays, Blessings of the Shema:17-19", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "אהבה רבה", "to": "ישראל באהבה" },
         "sefard": null,
         "edot": null,
         "torah": null,
@@ -162,6 +178,7 @@
       "group": "shema", "service": ["shacharit","maariv"], "days": ["weekday","shabbat"],
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Blessings of the Shema, Shema",
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Weekdays, Blessings of the Shema:21-33", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "אל מלך", "to": "אלהיכם אמת" },
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, The Shema:17-29", "he": "The Metsudah siddur, 1981", "from": "אל מלך", "to": "אלהיכם אמת" },
         "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, The Shema:10-16", "he": " Shaliehsaboo Edition", "from": "שמע ישראל", "to": "אלהיכם אמת" },
         "torah": [
@@ -178,6 +195,7 @@
       "group": "shema", "service": ["shacharit","maariv"], "days": ["weekday","shabbat"],
       "sources": {
         "ashkenaz": { "ref": "Siddur Ashkenaz, Weekday, Shacharit, Blessings of the Shema, Shema:6", "he": "The Metsudah siddur, 1981", "from": "ואהבת את", "to": "ביתך ובשעריך" },
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Weekdays, Blessings of the Shema:26", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "ואהבת את", "to": "ביתך ובשעריך" },
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, The Shema:23", "he": "The Metsudah siddur, 1981", "from": "ואהבת את", "to": "ביתך ובשעריך" },
         "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, The Shema:13", "he": " Shaliehsaboo Edition", "from": "ואהבת את", "to": "ביתך ובשעריך" },
         "torah": [
@@ -189,6 +207,7 @@
       "group": "shema", "service": "shacharit", "days": ["weekday","shabbat"],
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Blessings of the Shema, Blessing after Shema",
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Weekdays, Blessings of the Shema:34-50", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "ויציב ונכון", "to": "גאל ישראל" },
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, The Shema:30-38", "he": "The Metsudah siddur, 1981", "from": "ויציב ונכון", "to": "גאל ישראל" },
         "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, The Shema:17-21", "he": " Shaliehsaboo Edition", "from": "ויציב ונכון", "to": "גאל ישראל" },
         "torah": null,
@@ -198,6 +217,7 @@
       "group": "shema", "service": ["shacharit","maariv"], "days": ["weekday","shabbat"],
       "sources": {
         "ashkenaz": { "ref": "Siddur Ashkenaz, Weekday, Shacharit, Blessings of the Shema, Blessing after Shema:6-8", "he": "The Metsudah siddur, 1981", "from": "מי כמכה", "to": "לעולם ועד" },
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Weekdays, Blessings of the Shema:46-48", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "תהלות לאל", "to": "לעלם ועד" },
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, The Shema:35-37", "he": "The Metsudah siddur, 1981", "from": "מי כמכה", "to": "לעולם ועד" },
         "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, The Shema:21", "he": " Shaliehsaboo Edition", "from": "תהילות לאל", "to": "גאל ישראל" },
         "torah": null,
@@ -207,6 +227,7 @@
       "group": "amidah", "service": ["shacharit","mincha","maariv"], "days": ["weekday","shabbat"],
       "sources": {
         "ashkenaz": { "ref": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Patriarchs:2-6", "he": "The Metsudah siddur, 1981", "from": "אדני שפתי", "to": "מגן אברהם" },
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Weekdays, The Amida:2-6", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "אדני שפתי", "to": "מגן אברהם", "en": { "v": "English Edition; Koren Publishers Jerusalem, 2017", "from": "o lord open", "to": "shield of abraham" } },
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:1-7", "he": "The Metsudah siddur, 1981", "from": "אדני שפתי", "to": "מגן אברהם" },
         "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:2-3", "he": " Shaliehsaboo Edition", "from": "אדני שפתי", "to": "מגן אברהם", "en": { "v": "Sefaria Community Translation", "from": "my l rd", "to": "shield of avraham" } },
         "torah": null,
@@ -216,6 +237,7 @@
       "group": "amidah", "service": ["shacharit","mincha","maariv"], "days": ["weekday","shabbat"],
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Divine Might",
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Weekdays, The Amida:8-13", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "אתה גבור", "to": "מחיה המתים", "en": { "v": "English Edition; Koren Publishers Jerusalem, 2017", "from": "you are eternally", "to": "revives the dead", "instructions": true } },
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:8-19", "he": "The Metsudah siddur, 1981", "from": "אתה גבור", "to": "מחיה המתים" },
         "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:4-6", "he": " Shaliehsaboo Edition", "from": "אתה גבור", "to": "מחיה המתים", "en": { "v": "Sefaria Community Translation", "from": "you are mighty", "to": "revives the dead" } },
         "torah": null,
@@ -225,6 +247,7 @@
       "group": "amidah", "service": ["shacharit","mincha","maariv"], "days": ["weekday","shabbat"],
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Holiness of God",
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Weekdays, The Amida:23", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "אתה קדוש", "to": "המלך הקדוש", "en": { "v": "English Edition; Koren Publishers Jerusalem, 2017", "from": "you are holy", "to": "the holy king" } },
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:34-39", "he": "The Metsudah siddur, 1981", "from": "אתה קדוש", "to": "המלך הקדוש" },
         "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:10", "he": " Shaliehsaboo Edition", "from": "אתה קדוש", "to": "המלך הקדוש", "en": { "v": "Sefaria Community Translation", "from": "you are holy", "to": "the holy king" } },
         "torah": null,
@@ -234,6 +257,7 @@
       "group": "amidah", "service": ["shacharit","mincha"], "days": ["weekday","shabbat"],
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Kedushah",
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Weekdays, The Amida:17-20", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "נקדש את", "to": "המלך הקדוש", "en": { "v": "English Edition; Koren Publishers Jerusalem, 2017", "from": "cong then leader", "to": "the holy king" } },
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:20-33", "he": "The Metsudah siddur, 1981", "from": "נקדישך ונעריצך", "to": "ודר הללויה" },
         "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:7-9", "he": " Shaliehsaboo Edition", "from": "נקדישך ונעריצך", "to": "ודר הללויה", "en": { "v": "Sefaria Community Translation", "from": "kedousha said in", "to": "praise g d" } },
         "torah": null,
@@ -243,6 +267,7 @@
       "group": "amidah", "service": ["shacharit","mincha","maariv"], "days": ["weekday"],
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Knowledge",
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Weekdays, The Amida:26", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "אתה חונן", "to": "חונן הדעת", "en": { "v": "English Edition; Koren Publishers Jerusalem, 2017", "from": "you grace humanity", "to": "graciously grants knowledge" } },
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:40-41", "he": "The Metsudah siddur, 1981", "from": "אתה חונן", "to": "חונן הדעת" },
         "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:11", "he": " Shaliehsaboo Edition", "from": "אתה חונן", "to": "חונן הדעת", "en": { "v": "Sefaria Community Translation", "from": "you graciously bestow", "to": "graciously bestows knowledge" } },
         "torah": null,
@@ -252,6 +277,7 @@
       "group": "amidah", "service": ["shacharit","mincha","maariv"], "days": ["weekday"],
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Repentance",
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Weekdays, The Amida:28", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "השיבנו אבינו", "to": "הרוצה בתשובה", "en": { "v": "English Edition; Koren Publishers Jerusalem, 2017", "from": "bring us back", "to": "who desires repentance" } },
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:42-43", "he": "The Metsudah siddur, 1981", "from": "השיבנו אבינו", "to": "הרוצה בתשובה" },
         "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:12", "he": " Shaliehsaboo Edition", "from": "השיבנו אבינו", "to": "הרוצה בתשובה", "en": { "v": "Sefaria Community Translation", "from": "return us our", "to": "who desires repentance" } },
         "torah": null,
@@ -261,6 +287,7 @@
       "group": "amidah", "service": ["shacharit","mincha","maariv"], "days": ["weekday"],
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Forgiveness",
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Weekdays, The Amida:31", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "סלח לנו", "to": "המרבה לסלח", "en": { "v": "English Edition; Koren Publishers Jerusalem, 2017", "from": "forgive us our", "to": "who repeatedly forgives" } },
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:44-45", "he": "The Metsudah siddur, 1981", "from": "סלח לנו", "to": "המרבה לסלוח" },
         "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:13", "he": " Shaliehsaboo Edition", "from": "סלח לנו", "to": "המרבה לסלח", "en": { "v": "Sefaria Community Translation", "from": "pardon us our", "to": "who abundantly pardons" } },
         "torah": null,
@@ -270,6 +297,7 @@
       "group": "amidah", "service": ["shacharit","mincha","maariv"], "days": ["weekday"],
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Redemption",
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Weekdays, The Amida:33", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "ראה בענינו", "to": "גואל ישראל", "en": { "v": "English Edition; Koren Publishers Jerusalem, 2017", "from": "look on our", "to": "redeemer of israel" } },
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:46-48", "he": "The Metsudah siddur, 1981", "from": "ראה נא", "to": "עננו" },
         "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:14", "he": " Shaliehsaboo Edition", "from": "ראה נא", "to": "גואל ישראל", "en": { "v": "Sefaria Community Translation", "from": "behold please our", "to": "redeemer of yisrael" } },
         "torah": null,
@@ -279,6 +307,7 @@
       "group": "amidah", "service": ["shacharit","mincha","maariv"], "days": ["weekday"],
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Healing",
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Weekdays, The Amida:36-38", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "רפאנו יהוה", "to": "עמו ישראל", "en": { "v": "English Edition; Koren Publishers Jerusalem, 2017", "from": "heal us lord", "to": "his people israel" } },
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:49-53", "he": "The Metsudah siddur, 1981", "from": "רפאנו יהוה", "to": "עמו ישראל" },
         "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:18", "he": " Shaliehsaboo Edition", "from": "רפאנו יהוה", "to": "עמו ישראל", "en": { "v": "Sefaria Community Translation", "from": "heal us l", "to": "his people yisrael" } },
         "torah": null,
@@ -288,6 +317,7 @@
       "group": "amidah", "service": ["shacharit","mincha","maariv"], "days": ["weekday"],
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Prosperity",
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Weekdays, The Amida:41", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "ברך עלינו", "to": "מברך השנים", "en": { "v": "English Edition; Koren Publishers Jerusalem, 2017", "from": "bless this year", "to": "blesses the years" } },
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:54-61", "he": "The Metsudah siddur, 1981", "from": "ברך עלינו", "to": "ברך עלינו" },
         "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:19-22", "he": " Shaliehsaboo Edition", "from": "ברכנו יהוה", "to": "מברך השנים", "en": { "v": "Sefaria Community Translation", "from": "in summer", "to": "blesses the years" } },
         "torah": null,
@@ -297,6 +327,7 @@
       "group": "amidah", "service": ["shacharit","mincha","maariv"], "days": ["weekday"],
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Gathering the Exiles",
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Weekdays, The Amida:43", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "תקע בשופר", "to": "עמו ישראל", "en": { "v": "English Edition; Koren Publishers Jerusalem, 2017", "from": "sound the great", "to": "his people israel" } },
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:62-63", "he": "The Metsudah siddur, 1981", "from": "תקע בשופר", "to": "עמו ישראל" },
         "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:23", "he": " Shaliehsaboo Edition", "from": "תקע בשופר", "to": "עמו ישראל", "en": { "v": "Sefaria Community Translation", "from": "sound a great", "to": "his people israel" } },
         "torah": null,
@@ -306,6 +337,7 @@
       "group": "amidah", "service": ["shacharit","mincha","maariv"], "days": ["weekday"],
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Justice",
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Weekdays, The Amida:45", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "השיבה שופטינו", "to": "המלך המשפט", "en": { "v": "English Edition; Koren Publishers Jerusalem, 2017", "from": "restore our judges", "to": "king of justice" } },
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:64-69", "he": "The Metsudah siddur, 1981", "from": "השיבה שופטינו", "to": "המלך המשפט" },
         "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:24", "he": " Shaliehsaboo Edition", "from": "השיבה שופטינו", "to": "המלך המשפט", "en": { "v": "Sefaria Community Translation", "from": "restore our judges", "to": "king the judge" } },
         "torah": null,
@@ -315,6 +347,7 @@
       "group": "amidah", "service": ["shacharit","mincha","maariv"], "days": ["weekday"],
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Against Enemies",
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Weekdays, The Amida:47", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "ולמלשינים אל", "to": "ומכניע זדים", "en": { "v": "English Edition; Koren Publishers Jerusalem, 2017", "from": "for the slanderers", "to": "humbles the arrogant" } },
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:70-71", "he": "The Metsudah siddur, 1981", "from": "ולמלשינים אל", "to": "ומכניע זדים" },
         "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:25", "he": " Shaliehsaboo Edition", "from": "למינים ולמלשינים", "to": "ומכניע מינים", "en": { "v": "Sefaria Community Translation", "from": "for the informers", "to": "wicked the heretics" } },
         "torah": null,
@@ -324,6 +357,7 @@
       "group": "amidah", "service": ["shacharit","mincha","maariv"], "days": ["weekday"],
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, The Righteous",
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Weekdays, The Amida:49", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "על הצדיקים", "to": "ומבטח לצדיקים", "en": { "v": "English Edition; Koren Publishers Jerusalem, 2017", "from": "to the righteous", "to": "of the righteous" } },
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:72-73", "he": "The Metsudah siddur, 1981", "from": "על הצדיקים", "to": "ומבטח לצדיקים" },
         "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:26", "he": " Shaliehsaboo Edition", "from": "על הצדיקים", "to": "ומבטח לצדיקים", "en": { "v": "Sefaria Community Translation", "from": "upon the righteous", "to": "for the righteous" } },
         "torah": null,
@@ -333,6 +367,7 @@
       "group": "amidah", "service": ["shacharit","mincha","maariv"], "days": ["weekday"],
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Rebuilding Jerusalem",
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Weekdays, The Amida:51", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "ולירושלים עירך", "to": "בונה ירושלים", "en": { "v": "English Edition; Koren Publishers Jerusalem, 2017", "from": "to jerusalem your", "to": "who builds jerusalem" } },
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:74-75", "he": "The Metsudah siddur, 1981", "from": "ולירושלים עירך", "to": "בונה ירושלים" },
         "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:27", "he": " Shaliehsaboo Edition", "from": "תשכון בתוך", "to": "בונה ירושלים", "en": { "v": "Sefaria Community Translation", "from": "dwell within jerusalem", "to": "who builds jerusalem" } },
         "torah": null,
@@ -342,6 +377,7 @@
       "group": "amidah", "service": ["shacharit","mincha","maariv"], "days": ["weekday"],
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Kingdom of David",
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Weekdays, The Amida:53", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "את צמח", "to": "קרן ישועה", "en": { "v": "English Edition; Koren Publishers Jerusalem, 2017", "from": "may the offshoot", "to": "of salvation flourish" } },
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:76-77", "he": "The Metsudah siddur, 1981", "from": "את צמח", "to": "קרן ישועה" },
         "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:28", "he": " Shaliehsaboo Edition", "from": "את צמח", "to": "קרן ישועה", "en": { "v": "Sefaria Community Translation", "from": "the offspring of", "to": "salvation to sprout" } },
         "torah": null,
@@ -351,6 +387,7 @@
       "group": "amidah", "service": ["shacharit","mincha","maariv"], "days": ["weekday"],
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Response to Prayer",
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Weekdays, The Amida:55", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "שמע קולנו", "to": "שומע תפלה", "en": { "v": "English Edition; Koren Publishers Jerusalem, 2017", "from": "listen to our", "to": "listens to prayer" } },
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:78-79", "he": "The Metsudah siddur, 1981", "from": "אב הרחמן", "to": "שומע תפלה" },
         "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:29-32", "he": " Shaliehsaboo Edition", "from": "שמע קולנו", "to": "שומע תפלה", "en": { "v": "Sefaria Community Translation", "from": "hear our voice", "to": "who hears prayer" } },
         "torah": null,
@@ -360,6 +397,7 @@
       "group": "amidah", "service": ["shacharit","mincha","maariv"], "days": ["weekday","shabbat"],
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Temple Service",
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Weekdays, The Amida:58-60", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "רצה יהוה", "to": "שכינתו לציון", "en": { "v": "English Edition; Koren Publishers Jerusalem, 2017", "from": "find favor lord", "to": "presence to zion" } },
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:82-91", "he": "The Metsudah siddur, 1981", "from": "רצה יהוה", "to": "שכינתו לציון" },
         "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:33-40", "he": " Shaliehsaboo Edition", "from": "רצה יהוה", "to": "שכינתו לציון", "en": { "v": "Sefaria Community Translation", "from": "find favor l", "to": "presence to zion" } },
         "torah": null,
@@ -369,6 +407,7 @@
       "group": "amidah", "service": ["shacharit","mincha","maariv"], "days": ["weekday","shabbat"],
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Thanksgiving",
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Weekdays, The Amida:63-69", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "מודים אנחנו", "to": "נאה להודות", "en": { "v": "English Edition; Koren Publishers Jerusalem, 2017", "from": "we give thanks", "to": "thanks are due" } },
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:92-107", "he": "The Metsudah siddur, 1981", "from": "מודים אנחנו", "to": "נאה להודות" },
         "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:41-50", "he": " Shaliehsaboo Edition", "from": "מודים אנחנו", "to": "נאה להודות", "en": { "v": "Sefaria Community Translation", "from": "upon saying modim", "to": "to give thanks" } },
         "torah": null,
@@ -378,6 +417,7 @@
       "group": "amidah", "service": ["shacharit","mincha","maariv"], "days": ["weekday","shabbat"],
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Peace",
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Weekdays, The Amida:72-75", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "שים שלום", "to": "עושה השלום", "en": { "v": "English Edition; Koren Publishers Jerusalem, 2017", "from": "grant peace goodness", "to": "who makes peace" } },
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:116-121", "he": "The Metsudah siddur, 1981", "from": "שים שלום", "to": "ישראל בשלום" },
         "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:66", "he": " Shaliehsaboo Edition", "from": "שים שלום", "to": "בשלום אמן", "en": { "v": "Sefaria Community Translation", "from": "establish peace good", "to": "with peace amen" } },
         "torah": null,
@@ -410,6 +450,7 @@
           "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Peace",
           "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Concluding Passage"
         ],
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Weekdays, The Amida:2-81", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "אדני שפתי", "to": "וכשנים קדמניות", "en": { "v": "English Edition; Koren Publishers Jerusalem, 2017", "from": "o lord open", "to": "in former years", "instructions": true } },
         "sefard": "Siddur Sefard, Weekday Shacharit, Amidah",
         "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:1-72", "he": " Shaliehsaboo Edition", "from": "אדני שפתי", "to": "בלבב שלם", "en": { "v": "Sefaria Community Translation", "from": "amida of shah", "to": "a perfect heart" } },
         "torah": null,
@@ -419,6 +460,7 @@
       "group": "amidah", "service": ["shacharit","mincha","maariv"], "days": ["weekday","shabbat"],
       "sources": {
         "ashkenaz": { "ref": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Concluding Passage:2", "he": "The Metsudah siddur, 1981", "from": "אלהי נצור", "to": "צורי וגואלי" },
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Weekdays, The Amida:78", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "אלהי נצר", "to": "צורי וגאלי", "en": { "v": "English Edition; Koren Publishers Jerusalem, 2017", "from": "my god guard", "to": "rock and redeemer" } },
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:123", "he": "The Metsudah siddur, 1981", "from": "אלהי נצור", "to": "צורי וגואלי" },
         "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:68-69", "he": " Shaliehsaboo Edition", "from": "אלהי נצר", "to": "ימינך וענני", "en": { "v": "Sefaria Community Translation", "from": "my g d", "to": "us answer us" } },
         "torah": null,
@@ -428,6 +470,7 @@
       "group": "amidah", "service": ["shacharit","mincha","maariv"], "days": ["weekday","shabbat"],
       "sources": {
         "ashkenaz": { "ref": "Siddur Ashkenaz, Weekday, Shacharit, Amidah, Concluding Passage:3", "he": "The Metsudah siddur, 1981", "from": "עשה השלום", "to": "ואמרו אמן" },
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Weekdays, The Amida:80", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "עשה שלוםבעשרת", "to": "ואמרו אמן", "en": { "v": "English Edition; Koren Publishers Jerusalem, 2017", "from": "may he who", "to": "and say amen" } },
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Amidah:124", "he": "The Metsudah siddur, 1981", "from": "עשה השלום", "to": "ואמרו אמן" },
         "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Amida:71", "he": " Shaliehsaboo Edition", "from": "עשה שלום", "to": "ואמרו אמן", "en": { "v": "Sefaria Community Translation", "from": "he who makes", "to": "us say amen" } },
         "torah": null,
@@ -437,6 +480,7 @@
       "group": "concluding", "service": ["shacharit","mincha","maariv"], "days": ["weekday","shabbat"],
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Concluding Prayers, Alenu",
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Weekdays, Conclusion of the Service:31-32", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "עלינו לשבח", "to": "ושמו אחד" },
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Aleinu:1-3", "he": "The Metsudah siddur, 1981", "from": "עלינו לשבח", "to": "ושמו אחד" },
         "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Alenu:1-4", "he": " Shaliehsaboo Edition", "from": "עלינו לשבח", "to": "יהוה אחד", "en": { "v": "Sefaria Community Translation", "from": "aleinu leshabeah", "to": "rd is one" } },
         "torah": null,
@@ -446,6 +490,7 @@
       "group": "concluding", "service": ["shacharit","mincha","maariv"], "days": ["weekday","shabbat"],
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Concluding Prayers, Mourner's Kaddish",
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Weekdays, Conclusion of the Service:37-42", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "יתגדל ויתקדש", "to": "ואמרו אמן" },
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Aleinu:5-9", "he": "The Metsudah siddur, 1981", "from": "יתגדל ויתקדש", "to": "ואמרו אמן" },
         "edot": null,
         "torah": null,
@@ -455,6 +500,7 @@
       "group": "concluding", "service": ["shacharit","mincha","maariv"], "days": ["weekday","shabbat"],
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Pesukei Dezimra, Half Kaddish",
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Weekdays, Pesukei DeZimra:36-38", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "יתגדל ויתקדש", "to": "אמן אמן" },
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Yishtabach:5-9", "he": "The Metsudah siddur, 1981", "from": "יתגדל ויתקדש", "to": "ואמרו אמן" },
         "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Pesukei D'Zimra:22-23", "he": " Shaliehsaboo Edition", "from": "יתגדל ויתקדש", "to": "אמן אמן" },
         "torah": null,
@@ -464,6 +510,7 @@
       "group": "concluding", "service": ["shacharit","shabbat"], "days": ["weekday","shabbat"],
       "sources": {
         "ashkenaz": { "ref": "Siddur Ashkenaz, Weekday, Shacharit, Concluding Prayers, Korbanot (Israel), Ein Kelohenu:2-3", "he": "The Metsudah siddur, 1981", "from": "אין כאלהינו", "to": "קטרת הסמים" },
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Shabbat, Musaf for Shabbat:100-101", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "אין כאלהינו", "to": "קטרת הסמים" },
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Kaveh:2", "he": "The Metsudah siddur, 1981", "from": "אין כאלהינו", "to": "בא מועד" },
         "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Kaveh:3", "he": " Shaliehsaboo Edition", "from": "אין כאלהינו", "to": "בא מועד" },
         "torah": null,
@@ -473,6 +520,7 @@
       "group": "torah-service", "service": "shacharit", "days": ["weekday","shabbat"],
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Torah Reading, Removing the Torah from Ark, Vayehi Binsoa",
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Weekdays, Reading of the Torah:6", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "ויהי בנסע", "to": "ישראל בקדשתו", "en": { "v": "English Edition; Koren Publishers Jerusalem, 2017", "from": "whenever the ark", "to": "his people israel" } },
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Torah Reading:4-5", "he": "The Metsudah siddur, 1981", "from": "ויהי בנסע", "to": "ישראל בקדשתו" },
         "edot": null,
         "torah": null,
@@ -482,6 +530,7 @@
       "group": "torah-service", "service": ["shacharit","shabbat"], "days": ["shabbat"],
       "sources": {
         "ashkenaz": { "ref": "The Koren Shalem Siddur; Ashkenaz, Shabbat, Reading of the Torah:22-26", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "שמע ישראל", "to": "שמו יחדו" },
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Shabbat, Reading of the Torah:22-26", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "שמע ישראל", "to": "שמו יחדו" },
         "sefard": { "ref": "Siddur Sefard, Shabbat Morning Services, Shabbat Torah Reading:18-20", "he": "Torat Emet 357", "from": "שמע ישראל", "to": "שמו יחדו" },
         "edot": null,
         "torah": null,
@@ -491,6 +540,7 @@
       "group": "torah-service", "service": "shacharit", "days": ["weekday","shabbat"],
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Torah Reading, Reading from Sefer, Birkat HaTorah",
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Weekdays, Reading of the Torah:22-27", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "ברכו את", "to": "נותן התורה", "en": { "v": "English Edition; Koren Publishers Jerusalem, 2017", "from": "oleh bless the", "to": "of the torah", "instructions": true } },
         "sefard": "Siddur Sefard, Shabbat Morning Services, Blessings on Torah Reading",
         "edot": { "ref": "Siddur Edot HaMizrach, Weekday Shacharit, Torah Reading:10-18", "he": " Shaliehsaboo Edition", "from": "השם עמכם", "to": "נותן התורה" },
         "torah": null,
@@ -500,6 +550,7 @@
       "group": "torah-service", "service": "shacharit", "days": ["weekday","shabbat"],
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Shacharit, Torah Reading, Returning Sefer to Aron, Uvenucho Yomar",
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Weekdays, Reading of the Torah:60", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "ובנחה יאמר", "to": "ימינו כקדם", "en": { "v": "English Edition; Koren Publishers Jerusalem, 2017", "from": "when the ark", "to": "as of old" } },
         "sefard": { "ref": "Siddur Sefard, Weekday Shacharit, Ashrei:29-30", "he": "The Metsudah siddur, 1981", "from": "ובנחה יאמר", "to": "ימינו כקדם" },
         "edot": null,
         "torah": null,
@@ -509,6 +560,7 @@
       "group": "shabbat-holidays", "service": "shabbat", "days": ["shabbat"],
       "sources": {
         "ashkenaz": { "ref": "The Koren Shalem Siddur; Ashkenaz, Shabbat, Candle Lighting:2", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "ברוך אתה", "to": "של שבת" },
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Shabbat, Candle Lighting:2", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "ברוך אתה", "to": "של שבת" },
         "sefard": { "ref": "Siddur Sefard, Shabbat Candle Lighting:1-3", "he": "Torat Emet 357", "from": "ברוך אתה", "to": "של שבת", "en": { "v": "Translation based on the Metsudah linear siddur, by Avrohom Davis, 1981", "from": "the berachah for", "to": "the shabbos light" } },
         "edot": { "ref": "Siddur Edot HaMizrach, Shabbat Candle Lighting:2-3", "he": "Torat Emet 357", "from": "ברוך אתה", "to": "של שבת", "en": { "v": "Sefaria Community Translation", "from": "blessed are you", "to": "the shabbat candle" } },
         "torah": null,
@@ -518,6 +570,7 @@
       "group": "shabbat-holidays", "service": "shabbat", "days": ["shabbat"],
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Shabbat, Shabbat Evening, Shalom Aleichem",
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Shabbat, Kiddush and Zemirot for Shabbat Evening:9-13", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "שלום עליכם", "to": "ועד עולם" },
         "sefard": { "ref": "Siddur Sefard, Shabbat Evening Meal, Shalom Aleichem:1-6", "he": "Torat Emet 357", "from": "שלום עליכם", "to": "ועד עולם" },
         "edot": { "ref": "Siddur Edot HaMizrach, Shabbat Evening, Shalom Alekhem:2-9", "he": " Shaliehsaboo Edition", "from": "שלום עליכם", "to": "ועד עולם" },
         "torah": null,
@@ -527,6 +580,7 @@
       "group": "shabbat-holidays", "service": "shabbat", "days": ["shabbat"],
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Shabbat, Kabbalat Shabbat, Lekha Dodi",
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Shabbat, Kabbalat Shabbat:12-32", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "לכה דודי", "to": "שבת נקבלה" },
         "sefard": { "ref": "Siddur Sefard, Kabbalat Shabbat:16-38", "he": "Torat Emet 357", "from": "לכה דודי", "to": "שבת נקבלה" },
         "edot": { "ref": "Siddur Edot HaMizrach, Kabbalat Shabbat:9-24", "he": " Shaliehsaboo Edition", "from": "לכה דודי", "to": "שבת מלכתא" },
         "torah": null,
@@ -536,6 +590,7 @@
       "group": "shabbat-holidays", "service": "shabbat", "days": ["shabbat"],
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Shabbat, Shabbat Evening, Kiddush",
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Shabbat, Kiddush and Zemirot for Shabbat Evening:23-27", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "ויהי ערב", "to": "מקדש השבת" },
         "sefard": { "ref": "Siddur Sefard, Shabbat Evening Meal, Shabbat Eve Kiddush:1-8", "he": "Torat Emet 357", "from": "לשם יחוד", "to": "מקדש השבת", "en": { "v": "Translation based on the Metsudah linear siddur, by Avrohom Davis, 1981", "from": "the fourth of", "to": "of the sabbath" } },
         "edot": { "ref": "Siddur Edot HaMizrach, Shabbat Evening, Kiddush", "en": { "v": "Sefaria Community Translation", "he": " Shaliehsaboo Edition", "from": "kiddush of friday", "to": "sanctifies the shabbat" } },
         "torah": null,
@@ -545,6 +600,7 @@
       "group": "shabbat-holidays", "service": "shabbat", "days": ["shabbat"],
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Shabbat, Havdalah",
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Shabbat, Havdala at Home:2-11", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "הנה אל", "to": "קדש לחל" },
         "sefard": "Shabbat Siddur Sefard Linear, Havdalah",
         "edot": { "ref": "Siddur Edot HaMizrach, Havdalah, Havdala", "en": { "v": "Sefaria Community Translation", "he": " Shaliehsaboo Edition", "from": "havdala separation from", "to": "wine or juice" } },
         "torah": null,
@@ -554,6 +610,7 @@
       "group": "shabbat-holidays", "service": "holidays", "days": ["weekday","shabbat"],
       "sources": {
         "ashkenaz": { "ref": "The Koren Shalem Siddur; Ashkenaz, Festivals, Hallel:2", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "ברוך אתה", "to": "את ההלל", "en": { "v": "English Edition; Koren Publishers Jerusalem, 2017", "from": "blessed are you", "to": "recite the hallel" } },
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Festivals, Hallel:2", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "ברוך אתה", "to": "את ההלל", "en": { "v": "English Edition; Koren Publishers Jerusalem, 2017", "from": "blessed are you", "to": "recite the hallel" } },
         "sefard": { "ref": "Weekday Siddur Sefard Linear, Hallel:5-8", "he": "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981", "from": "ברוך אתה", "to": "את ההלל" },
         "edot": { "ref": "Siddur Edot HaMizrach, Rosh Hodesh, Hallel:1-5", "he": " Shaliehsaboo Edition", "from": "ברשות מורי", "to": "את ההלל" },
         "torah": null,
@@ -563,6 +620,7 @@
       "group": "shabbat-holidays", "service": "holidays", "days": ["weekday","shabbat"],
       "sources": {
         "ashkenaz": { "ref": "Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 113", "verses": [{ "he": "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981", "lines": ["Psalms 113:1-9"] }, { "he": "Daat Siddur Ashkenaz", "lines": ["Psalms 113:1-9"] }] },
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Festivals, Hallel:3", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "הללויה הללו", "to": "שמחה הללויה", "en": { "v": "English Edition; Koren Publishers Jerusalem, 2017", "from": "halleluya servants of", "to": "of children halleluya" } },
         "sefard": { "ref": "Siddur Sefard, Rosh Chodesh, Hallel:4", "he": "Torat Emet 357", "from": "הללויה הללו", "to": "שמחה הללויה", "verses": { "lines": ["Psalms 113:1-9"] } },
         "edot": { "ref": "Siddur Edot HaMizrach, Rosh Hodesh, Hallel:6", "he": " Shaliehsaboo Edition", "from": "הללויה הללו", "to": "שמחה הללויה", "verses": { "lines": ["Psalms 113:1-9"] } },
         "torah": null,
@@ -572,6 +630,7 @@
       "group": "shabbat-holidays", "service": "holidays", "days": ["weekday","shabbat"],
       "sources": {
         "ashkenaz": { "ref": "Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 114", "verses": [{ "he": "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981", "lines": ["Psalms 114:1-8"] }, { "he": "Daat Siddur Ashkenaz", "lines": ["Psalms 114:1-8"] }] },
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Festivals, Hallel:4", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "בצאת ישראל", "to": "למעינו מים", "en": { "v": "English Edition; Koren Publishers Jerusalem, 2017", "from": "when israel came", "to": "a flowing spring" } },
         "sefard": { "ref": "Siddur Sefard, Rosh Chodesh, Hallel:5", "he": "Torat Emet 357", "from": "בצאת ישראל", "to": "למעינו מים", "verses": { "lines": ["Psalms 114:1-8"] } },
         "edot": { "ref": "Siddur Edot HaMizrach, Rosh Hodesh, Hallel:7", "he": " Shaliehsaboo Edition", "from": "בצאת ישראל", "to": "למעינו מים", "verses": { "lines": ["Psalms 114:1-8"] } },
         "torah": null,
@@ -581,6 +640,7 @@
       "group": "shabbat-holidays", "service": "holidays", "days": ["weekday","shabbat"],
       "sources": {
         "ashkenaz": { "ref": "Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 115", "verses": [{ "he": "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981", "lines": ["Psalms 115:1-11","Psalms 115:12-18"] }, { "he": "Daat Siddur Ashkenaz", "lines": ["Psalms 115:1-18"] }] },
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Festivals, Hallel:6-7", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "לא לנו", "to": "עולם הללויה", "en": { "v": "English Edition; Koren Publishers Jerusalem, 2017", "from": "not to us", "to": "for ever halleluya" } },
         "sefard": { "ref": "Siddur Sefard, Rosh Chodesh, Hallel:6-8", "he": "Torat Emet 357", "from": "לא לנו", "to": "עולם הללויה", "verses": { "lines": [null,"Psalms 115:1-11","Psalms 115:12-18"] } },
         "edot": { "ref": "Siddur Edot HaMizrach, Rosh Hodesh, Hallel:8-10", "he": " Shaliehsaboo Edition", "from": "לא לנו", "to": "הללו יה", "verses": { "lines": [null,"Psalms 115:1-11","Psalms 115:12-18"] } },
         "torah": null,
@@ -590,6 +650,7 @@
       "group": "shabbat-holidays", "service": "holidays", "days": ["weekday","shabbat"],
       "sources": {
         "ashkenaz": { "ref": "Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 116", "verses": [{ "he": "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981", "lines": ["Psalms 116:1-11","Psalms 116:12-19"] }, { "he": "Daat Siddur Ashkenaz", "lines": ["Psalms 116:1-19"] }] },
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Festivals, Hallel:9-10", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "אהבתי כי", "to": "ירושלם הללויה", "en": { "v": "English Edition; Koren Publishers Jerusalem, 2017", "from": "i love the", "to": "midst jerusalem halleluya" } },
         "sefard": { "ref": "Siddur Sefard, Rosh Chodesh, Hallel:9-11", "he": "Torat Emet 357", "from": "אהבתי כי", "to": "ירושלים הללויה", "verses": { "lines": [null,"Psalms 116:1-11","Psalms 116:12-19"] } },
         "edot": { "ref": "Siddur Edot HaMizrach, Rosh Hodesh, Hallel:11-13", "he": " Shaliehsaboo Edition", "from": "אהבתי כי", "to": "ירושלם הללויה", "verses": { "lines": [null,"Psalms 116:1-11","Psalms 116:12-19"] } },
         "torah": null,
@@ -599,6 +660,7 @@
       "group": "shabbat-holidays", "service": "holidays", "days": ["weekday","shabbat"],
       "sources": {
         "ashkenaz": { "ref": "Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 117", "verses": [{ "he": "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981", "lines": ["Psalms 117:1-2"] }, { "he": "Daat Siddur Ashkenaz", "lines": ["Psalms 117:1-2"] }] },
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Festivals, Hallel:11", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "הללו את", "to": "לעולם הללויה", "en": { "v": "English Edition; Koren Publishers Jerusalem, 2017", "from": "praise the lord", "to": "is everlasting halleluya" } },
         "sefard": { "ref": "Siddur Sefard, Rosh Chodesh, Hallel:12", "he": "Torat Emet 357", "from": "הללו את", "to": "לעולם הללויה", "verses": { "lines": ["Psalms 117:1-2"] } },
         "edot": { "ref": "Siddur Edot HaMizrach, Rosh Hodesh, Hallel:14", "he": " Shaliehsaboo Edition", "from": "הללו את", "to": "לעולם הללויה", "verses": { "lines": ["Psalms 117:1-2"] } },
         "torah": null,
@@ -608,6 +670,7 @@
       "group": "shabbat-holidays", "service": "holidays", "days": ["weekday","shabbat"],
       "sources": {
         "ashkenaz": { "ref": "Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 118", "verses": [{ "he": "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981", "lines": ["Psalms 118:1","Psalms 118:2","Psalms 118:1","Psalms 118:3","Psalms 118:1","Psalms 118:4","Psalms 118:1","Psalms 118:5-24","Psalms 118:25",null,null,null,"Psalms 118:26-29"] }, { "he": "Daat Siddur Ashkenaz", "lines": ["Psalms 118:1-29"] }] },
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Festivals, Hallel:13-33", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "הודו ליהוה", "to": "לעולם חסדו", "en": { "v": "English Edition; Koren Publishers Jerusalem, 2017", "from": "thank the lord", "to": "is for ever", "instructions": true } },
         "sefard": { "ref": "Siddur Sefard, Rosh Chodesh, Hallel:13-24", "he": "Torat Emet 357", "from": "הודו ליהוה", "to": "לעולם חסדו", "verses": { "lines": ["Psalms 118:1","Psalms 118:1,2","Psalms 118:2","Psalms 118:1,3","Psalms 118:3","Psalms 118:1,4","Psalms 118:4","Psalms 118:1","Psalms 118:5-24","Psalms 118:25",null,"Psalms 118:26-29"] } },
         "edot": { "ref": "Siddur Edot HaMizrach, Rosh Hodesh, Hallel:15-23", "he": " Shaliehsaboo Edition", "from": "הודו ליהוה", "to": "לעולם חסדו", "verses": { "lines": ["Psalms 118:1","Psalms 118:2","Psalms 118:3","Psalms 118:4","Psalms 118:5-20","Psalms 118:21-24","Psalms 118:25",null,"Psalms 118:26-29"] } },
         "torah": null,
@@ -617,6 +680,7 @@
       "group": "shabbat-holidays", "service": "holidays", "days": ["weekday","shabbat"],
       "sources": {
         "ashkenaz": { "ref": "The Koren Shalem Siddur; Ashkenaz, Festivals, Hallel:34", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "יהללוך יהוה", "to": "מהלל בתשבחות", "en": { "v": "English Edition; Koren Publishers Jerusalem, 2017", "from": "all your works", "to": "extolled with praises" } },
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Festivals, Hallel:34", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "יהללוך יהוה", "to": "מהלל בתשבחות", "en": { "v": "English Edition; Koren Publishers Jerusalem, 2017", "from": "all your works", "to": "extolled with praises" } },
         "sefard": { "ref": "Weekday Siddur Sefard Linear, Hallel:242-257", "he": "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981", "from": "יהללוך יהוה", "to": "מהלל בתשבחות" },
         "edot": { "ref": "Siddur Edot HaMizrach, Rosh Hodesh, Hallel:24-25", "he": " Shaliehsaboo Edition", "from": "יהללוך יהוה", "to": "בתשבחות אמן" },
         "torah": null,
@@ -635,6 +699,7 @@
           { "ref": "Siddur Ashkenaz, Festivals, Rosh Chodesh, Hallel, Psalm 118", "verses": [{ "he": "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981", "lines": ["Psalms 118:1","Psalms 118:2","Psalms 118:1","Psalms 118:3","Psalms 118:1","Psalms 118:4","Psalms 118:1","Psalms 118:5-24","Psalms 118:25",null,null,null,"Psalms 118:26-29"] }, { "he": "Daat Siddur Ashkenaz", "lines": ["Psalms 118:1-29"] }] },
           { "ref": "The Koren Shalem Siddur; Ashkenaz, Festivals, Hallel:34", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "יהללוך יהוה", "to": "מהלל בתשבחות", "en": { "v": "English Edition; Koren Publishers Jerusalem, 2017", "from": "all your works", "to": "extolled with praises" } }
         ],
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Festivals, Hallel:2-34", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "ברוך אתה", "to": "מהלל בתשבחות", "en": { "v": "English Edition; Koren Publishers Jerusalem, 2017", "from": "blessed are you", "to": "extolled with praises", "instructions": true } },
         "sefard": [
           { "ref": "Weekday Siddur Sefard Linear, Hallel:5-8", "he": "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981", "from": "ברוך אתה", "to": "את ההלל" },
           { "ref": "Siddur Sefard, Rosh Chodesh, Hallel:4-24", "he": "Torat Emet 357", "from": "הללויה הללו", "to": "לעולם חסדו", "verses": { "lines": ["Psalms 113:1-9","Psalms 114:1-8",null,"Psalms 115:1-11","Psalms 115:12-18",null,"Psalms 116:1-11","Psalms 116:12-19","Psalms 117:1-2","Psalms 118:1","Psalms 118:1,2","Psalms 118:2","Psalms 118:1,3","Psalms 118:3","Psalms 118:1,4","Psalms 118:4","Psalms 118:1","Psalms 118:5-24","Psalms 118:25",null,"Psalms 118:26-29"] } },
@@ -648,6 +713,7 @@
       "group": "blessings", "service": "blessings", "days": ["weekday","shabbat"],
       "sources": {
         "ashkenaz": { "ref": "Siddur Ashkenaz, Berachot, Birkat Hanehenin, Eating, Barachot Rishonot:2", "he": "Daat Siddur Ashkenaz", "from": "ברוך אתה", "to": "מן הארץ", "en": { "v": "Sefaria Community Translation", "from": "praised are you", "to": "from the earth" } },
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Giving Thanks, Birkat HaMazon; Grace after Meals:4", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "ברוך אתה", "to": "מן הארץ" },
         "sefard": { "ref": "Shabbat Siddur Sefard Linear, Order of Shabbos in the Home, Kiddush for Shabbos Eve:31-33", "he": "The Metsudah Siddur, Metsudah Publications, 1981 - HE", "from": "ברוך אתה", "to": "מן הארץ", "en": { "v": "The Metsudah Siddur, Metsudah Publications, 1981 - EN", "from": "blessed are you", "to": "from the earth" } },
         "edot": null,
         "torah": null,
@@ -657,6 +723,7 @@
       "group": "blessings", "service": "blessings", "days": ["weekday","shabbat"],
       "sources": {
         "ashkenaz": { "ref": "The Koren Shalem Siddur; Ashkenaz, Giving Thanks, Birkat HaMazon; Grace after Meals:74", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "ברוך אתה", "to": "מיני מזונות" },
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Giving Thanks, Birkat HaMazon; Grace after Meals:74", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "ברוך אתה", "to": "מיני מזונות" },
         "sefard": { "ref": "Weekday Siddur Sefard Linear, Berachos Said Before Eating or Drinking:2-4", "he": "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981", "from": "ברוך אתה", "to": "מיני מזונות", "en": { "v": "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981 [en]", "from": "blessed are you", "to": "kinds of nourishment" } },
         "edot": { "ref": "Siddur Edot HaMizrach, Blessings on Enjoyments:2-3", "he": " Shaliehsaboo Edition", "from": "ברוך אתה", "to": "מיני מזונות", "en": { "v": "Sefaria Community Translation", "from": "blessed are you", "to": "varieties of foods" } },
         "torah": null,
@@ -666,6 +733,7 @@
       "group": "blessings", "service": "blessings", "days": ["weekday","shabbat"],
       "sources": {
         "ashkenaz": { "ref": "The Koren Shalem Siddur; Ashkenaz, Giving Thanks, Birkat HaMazon; Grace after Meals:76", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "ברוך אתה", "to": "פרי הגפן" },
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Giving Thanks, Birkat HaMazon; Grace after Meals:76", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "ברוך אתה", "to": "פרי הגפן" },
         "sefard": { "ref": "Weekday Siddur Sefard Linear, Berachos Said Before Eating or Drinking:6-8", "he": "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981", "from": "ברוך אתה", "to": "פרי הגפן", "en": { "v": "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981 [en]", "from": "blessed are you", "to": "of the vine" } },
         "edot": { "ref": "Siddur Edot HaMizrach, Blessings on Enjoyments:4-5", "he": " Shaliehsaboo Edition", "from": "ברוך אתה", "to": "פרי הגפן", "en": { "v": "Sefaria Community Translation", "from": "blessed are you", "to": "of the vine" } },
         "torah": null,
@@ -675,6 +743,7 @@
       "group": "blessings", "service": "blessings", "days": ["weekday","shabbat"],
       "sources": {
         "ashkenaz": { "ref": "The Koren Shalem Siddur; Ashkenaz, Giving Thanks, Birkat HaMazon; Grace after Meals:78", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "ברוך אתה", "to": "פרי העץ" },
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Giving Thanks, Birkat HaMazon; Grace after Meals:78", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "ברוך אתה", "to": "פרי העץ" },
         "sefard": { "ref": "Weekday Siddur Sefard Linear, Berachos Said Before Eating or Drinking:10-12", "he": "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981", "from": "ברוך אתה", "to": "פרי העץ", "en": { "v": "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981 [en]", "from": "blessed are you", "to": "of the tree" } },
         "edot": { "ref": "Siddur Edot HaMizrach, Blessings on Enjoyments:6-7", "he": " Shaliehsaboo Edition", "from": "ברוך אתה", "to": "פרי העץ", "en": { "v": "Sefaria Community Translation", "from": "blessed are you", "to": "of the tree" } },
         "torah": null,
@@ -684,6 +753,7 @@
       "group": "blessings", "service": "blessings", "days": ["weekday","shabbat"],
       "sources": {
         "ashkenaz": { "ref": "The Koren Shalem Siddur; Ashkenaz, Giving Thanks, Birkat HaMazon; Grace after Meals:80", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "ברוך אתה", "to": "פרי האדמה" },
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Giving Thanks, Birkat HaMazon; Grace after Meals:80", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "ברוך אתה", "to": "פרי האדמה" },
         "sefard": { "ref": "Weekday Siddur Sefard Linear, Berachos Said Before Eating or Drinking:14-16", "he": "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981", "from": "ברוך אתה", "to": "פרי האדמה", "en": { "v": "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981 [en]", "from": "blessed are you", "to": "of the earth" } },
         "edot": { "ref": "Siddur Edot HaMizrach, Blessings on Enjoyments:8-9", "he": " Shaliehsaboo Edition", "from": "ברוך אתה", "to": "פרי האדמה", "en": { "v": "Sefaria Community Translation", "from": "blessed are you", "to": "of the ground" } },
         "torah": null,
@@ -693,6 +763,7 @@
       "group": "blessings", "service": "blessings", "days": ["weekday","shabbat"],
       "sources": {
         "ashkenaz": { "ref": "The Koren Shalem Siddur; Ashkenaz, Giving Thanks, Birkat HaMazon; Grace after Meals:82", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "ברוך אתה", "to": "נהיה בדברו" },
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Giving Thanks, Birkat HaMazon; Grace after Meals:82", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "ברוך אתה", "to": "נהיה בדברו" },
         "sefard": { "ref": "Weekday Siddur Sefard Linear, Berachos Said Before Eating or Drinking:18-20", "he": "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981", "from": "ברוך אתה", "to": "נהיה בדברו", "en": { "v": "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981 [en]", "from": "blessed are you", "to": "came to be" } },
         "edot": { "ref": "Siddur Edot HaMizrach, Blessings on Enjoyments:10-11", "he": " Shaliehsaboo Edition", "from": "ברוך אתה", "to": "נהיה בדברו", "en": { "v": "Sefaria Community Translation", "from": "blessed are you", "to": "by his word" } },
         "torah": null,
@@ -702,6 +773,7 @@
       "group": "blessings", "service": "blessings", "days": ["weekday","shabbat"],
       "sources": {
         "ashkenaz": { "ref": "The Koren Shalem Siddur; Ashkenaz, Giving Thanks, Birkat HaMazon; Grace after Meals:84", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "ברוך אתה", "to": "לזמן הזה" },
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Giving Thanks, Birkat HaMazon; Grace after Meals:84", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "ברוך אתה", "to": "לזמן הזה" },
         "sefard": { "ref": "Weekday Siddur Sefard Linear, Berachos Said Before Eating or Drinking:22-25", "he": "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981", "from": "ברוך אתה", "to": "לזמן הזה", "en": { "v": "The Metsudah siddur: a new linear siddur with English translation by Avrohom Davis, 1981 [en]", "from": "blessed are you", "to": "to this time" } },
         "edot": null,
         "torah": null,
@@ -711,6 +783,7 @@
       "group": "blessings", "service": "blessings", "days": ["weekday","shabbat"],
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Berachot, Birkat HaMazon",
+        "koren": { "ref": "The Koren Shalem Siddur; Ashkenaz, Giving Thanks, Birkat HaMazon; Grace after Meals:7-70", "he": "Hebrew Edition; Koren Publishers Jerusalem, 2017", "from": "על נהרות", "to": "עמו בשלום" },
         "sefard": "Siddur Sefard, Birchat HaMazon, Birchat HaMazon",
         "edot": "Siddur Edot HaMizrach, Post Meal Blessing",
         "torah": null,
@@ -720,6 +793,7 @@
       "group": "blessings", "service": "blessings", "days": ["weekday","shabbat"],
       "sources": {
         "ashkenaz": null,
+        "koren": null,
         "sefard": null,
         "edot": null,
         "torah": null,
@@ -729,6 +803,7 @@
       "group": "bedtime", "service": "maariv", "days": ["weekday","shabbat"],
       "sources": {
         "ashkenaz": "Siddur Ashkenaz, Weekday, Maariv, Keri'at Shema al Hamita",
+        "koren": "The Koren Shalem Siddur; Ashkenaz, Weekdays, Shema before Sleep at Night",
         "sefard": "Siddur Sefard, Bedtime Shema",
         "edot": "Siddur Edot HaMizrach, Bedtime Shema",
         "torah": null,

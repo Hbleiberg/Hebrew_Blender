@@ -175,6 +175,8 @@ const CATALOG = { v: 1, hebrewPreference: ['Metsudah', 'Open'], versesEnglish: [
   P('os-closed', { opensiddur: 'os-closed' }),
   P('os-odd', { opensiddur: 'os-odd' }),
   P('koren', { ashkenaz: ranged(KOREN, 1, 1, OPEN) }),
+  P('koren-own', { ashkenaz: N('Plain'), koren: ranged(KOREN, 1, 2, OPEN) }),    // the same nusach read wholly from Koren: a source id of its own
+  P('pinned-instructions', { ashkenaz: ranged(N('Pinned'), 2, 5, OPEN, enPin(N('Pinned'), EN_P, 2, 5, { instructions: true })) }),   // a key only the checker reads: the pin still pairs
   P('other-siddur', { ashkenaz: 'Siddur Chabad, Smoke, Plain' }),                // a siddur this page does not read: the source is dropped
   P('not-a-siddur', { ashkenaz: 'Mishnah Berakhot 1:1' }),                       // a ref this page may not ask for: the source is dropped
 ] };
@@ -386,6 +388,17 @@ try {
     s = await go('koren');
     check('a line of another admitted siddur opens with its translation, credited to that siddur', s.rows.length === 1 && s.trans.join('|') === 'Koren one.' && /The Koren Shalem Siddur; Ashkenaz/.test(s.credits) && /CC BY-NC/.test(s.credits), JSON.stringify({ trans: s.trans, credits: s.credits }));
     check('…and the Divine Name printed without points is a word to read, not an instruction', s.words.length === 3 && s.words.includes(BARE_NAME) && s.instWords === 0, JSON.stringify({ words: s.words.length, inst: s.instWords }));
+    // Koren as a source id of its own, beside Ashkenaz: listed after it under its own name, and it opens on Koren's text
+    s = await go('koren-own');
+    check('a prayer with a Koren source offers it right after Ashkenaz', s.nusachOptions.join() === 'ashkenaz,koren' && s.nusach === 'ashkenaz' && !/Koren/.test(s.credits), JSON.stringify({ o: s.nusachOptions, n: s.nusach }));
+    check('…under its own name', await t.page.evaluate(() => [...document.querySelectorAll('#nusachSelect option')].map((o) => o.textContent).join('|')) === 'Ashkenaz|Ashkenaz (Koren)');
+    await t.page.selectOption('#nusachSelect', 'koren'); await t.page.waitForTimeout(500); await settled(t.page); s = await snapshot(t.page);
+    check('…and choosing it reads Koren\'s Hebrew and English, credited to Koren', s.nusach === 'koren' && s.rows.length === 2 && s.trans.join('|') === 'Koren one.|Koren two.' && /The Koren Shalem Siddur; Ashkenaz/.test(s.credits) && /CC BY-NC/.test(s.credits), JSON.stringify({ n: s.nusach, trans: s.trans, credits: s.credits }));
+    check('…the choice is stored like any nusach', await t.page.evaluate(() => JSON.parse(localStorage.getItem('hebrewTefillahTrainer_settings')).nusach) === 'koren');
+    await t.page.selectOption('#nusachSelect', 'ashkenaz'); await t.page.waitForTimeout(300); await settled(t.page);
+    // a pin that says its translation carries instruction lines of its own (a key only the checker reads) still pairs
+    s = await go('pinned-instructions');
+    check('a pin with the checker\'s "instructions" key pairs like any pin', s.rows.length === 4 && s.trans.join('|') === 'Pin two, the second line.||Pin four \u2014 the fourth line.|' && !s.block, JSON.stringify({ trans: s.trans }));
     // parts that share no translation: every one is offered, and a choice changes only the parts that have it
     s = await go('mixed');
     check('parts that share no translation list every one, each part in its own; the box names the one covering most lines', s.rows.length === 3 && s.trans.join('|') === 'Long two.|Second one. Second two.|Second three. Second four.' && s.versions.join('|') === [EN_A, PS_B, JPS].join('|') && s.credits.includes(EN_A) && s.credits.includes(PS_B), JSON.stringify({ trans: s.trans, versions: s.versions }));

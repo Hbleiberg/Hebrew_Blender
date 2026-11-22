@@ -1,5 +1,5 @@
 /* IvritSuite service worker — bump VERSION to invalidate the cache on deploy. */
-const VERSION = 'v1499';
+const VERSION = 'v1500';
 const CACHE = 'ivritsuite-' + VERSION;
 // Version-independent cache for the big data/ corpora (dictionary words / emoji / parshiyot /
 // pockettorah). Kept OUT of the version-scoped CACHE so a routine VERSION bump no longer evicts
@@ -66,7 +66,7 @@ const CORE_ASSETS = [
 // Data a page cannot open without, fetched once at install into DATA_CACHE under the exact URL the page asks for
 // (cache-first and keyed by ?v=: when the page's ?v= moves, this entry moves with it). The Tefillah Trainer's prayer
 // catalog: with it, the picker works on a first offline visit; the prayer texts themselves come from Sefaria.
-const DATA_PRECACHE = ['/data/tefillah/catalog.json?v=8'];
+const DATA_PRECACHE = ['/data/tefillah/catalog.json?v=9'];
 // One copy of a precached data file. The fetch handler below drops a path's older ?v= copies when a request MISSES
 // the cache; a file precached here is a hit from the page's first request, so that never ran and every ?v= bump left
 // the previous copy behind for good. Once the wanted URL is in the cache, the same path's other copies go. A failed
