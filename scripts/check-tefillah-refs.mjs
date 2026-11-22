@@ -85,7 +85,8 @@ async function tanakhChapter(book, chapter) {
 }
 const short = (t) => String(t).trim();
 const lic = (l) => licenseName(l) || `NOT OPEN (${l || 'none'})`;
-const isEnglish = (v) => v.language === 'en' && (v.actualLanguage || 'en') === 'en';
+// English by the title's own trailing tag ("… [ro]") before Sefaria's actualLanguage, which calls a few other-language versions English (the page's isEnglishVersion).
+const isEnglish = (v) => { const m = /\[([a-z]{2,3})\]\s*$/.exec(String(v.versionTitle || '')); return v.language === 'en' && (m ? m[1] : (v.actualLanguage || 'en')) === 'en'; };
 const isHebrew = (v) => v.language === 'he' && (v.actualLanguage || 'he') === 'he';
 
 function pickEdition(open, pref) {

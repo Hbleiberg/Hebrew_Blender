@@ -6575,6 +6575,7 @@
   "tefillah.trans.license_unknown": "unknown license",
   "tefillah.trans.no_versions": "(no openly licensed translation for this prayer)",
   "tefillah.trans.none_note": "Sefaria has no openly licensed translation of this prayer, so none is shown.",
+  "tefillah.trans.passed_note": "The translation you picked is divided differently from this prayer's Hebrew, so another one is shown here. Your pick still applies wherever it fits.",
   "tefillah.trans.place_label": "Show it",
   "tefillah.trans.place_row": "Own line",
   "tefillah.trans.place_word": "Under each word",

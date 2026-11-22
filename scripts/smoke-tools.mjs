@@ -294,7 +294,9 @@ const PAGES = [
           options: [...sel.options].map(o => o.value), grouped: [...sel.querySelectorAll('optgroup option')].map(o => o.value), groups: sel.querySelectorAll('optgroup').length,
           text: document.getElementById('ttReading').textContent, effective: effectiveVersion(), box: sel.value,
           footer: document.getElementById('ttFooterTrans').textContent, hebFooter: document.getElementById('ttFooterHeb').textContent,
-          heading: (document.querySelector('.tt-col-translation h3') || {}).textContent || '', colLang: document.querySelector('.tt-col-translation') ? document.querySelector('.tt-col-translation').getAttribute('lang') : null,
+          heading: (document.querySelector('.tt-col-translation h3') || {}).textContent || '',
+          headingInLang: !!(document.querySelector('.tt-col-translation h3') && document.querySelector('.tt-col-translation h3').closest('.tt-col-translation[lang], .tt-grid[lang]')),
+          colLang: document.querySelector('.tt-col-translation .tt-cell') ? document.querySelector('.tt-col-translation .tt-cell').getAttribute('lang') : null,
           inMemory: settings.translationVersion,
         });
         const first = snap();
@@ -303,13 +305,27 @@ const PAGES = [
         sel.value = FR; sel.dispatchEvent(new Event('change', { bubbles: true }));
         await new Promise(r => setTimeout(r, 100)); await settle(); await populateVersionDropdown('Genesis');
         const french = snap();
-        return { first, stored, french, asked, english: I18n.t('torah.reading.col_english'), translation: I18n.t('torah.reading.col_translation'), JPS, FR, RO };
+        // Page view carries the translation's language too
+        settings.layout = 'biblepage'; renderText();
+        const pageLang = document.querySelector('.tt-bible-translation') ? document.querySelector('.tt-bible-translation').getAttribute('lang') : 'no page-view translation';
+        settings.layout = 'sidebyside'; renderText();
+        // a list that arrives late, for a book no longer on screen, must not rewrite the box (the stored choice is the
+        // French one now; this book's list offers it, the other book's does not)
+        let release; const gate = new Promise(r => { release = r; });
+        fetchVersionsList = async (book) => { if (book === 'Isaiah') { await gate; return [LIST[0]]; } return LIST; };
+        const late = populateVersionDropdown('Isaiah');
+        await populateVersionDropdown('Genesis');
+        release(); await late;
+        const race = { box: sel.value, effective: effectiveVersion(), options: [...sel.options].map(o => o.value).length };
+        return { first, stored, french, asked, pageLang, race, english: I18n.t('torah.reading.col_english'), translation: I18n.t('torah.reading.col_translation'), JPS, FR, RO };
       });
       check(tag + ' F: a NoDerivatives version is not offered', !rf.first.options.includes('No Derivs') && rf.first.options.includes(rf.JPS), JSON.stringify(rf.first.options));
       check(tag + ' F: a version Sefaria returns under a closed licence is not shown; JPS 1917 is, and the box and footer say so', !/CLOSED/.test(rf.first.text) && /JPS one\./.test(rf.first.text) && rf.first.effective === rf.JPS && rf.first.box === rf.JPS && rf.first.footer.includes(rf.JPS), JSON.stringify({ effective: rf.first.effective, box: rf.first.box, footer: rf.first.footer, text: rf.first.text.slice(0, 120) }));
       check(tag + ' F: the refused choice stays the stored choice', rf.stored === 'Relicensed' && rf.first.inMemory === 'Relicensed', JSON.stringify({ stored: rf.stored, inMemory: rf.first.inMemory }));
       check(tag + ' F: other languages sit in their own group, by the title’s tag before Sefaria’s field', rf.first.groups === 1 && rf.first.grouped.join('|') === [rf.FR, rf.RO].join('|') && rf.first.heading === rf.english && !rf.first.colLang, JSON.stringify({ grouped: rf.first.grouped, heading: rf.first.heading }));
-      check(tag + ' F: a French version is asked for as a translation, shows, and the heading reads Translation', /Au commencement\./.test(rf.french.text) && rf.french.heading === rf.translation && rf.french.colLang === 'fr' && rf.french.footer.includes(rf.FR) && rf.asked.some(a => a.indexOf('translation|' + rf.FR) > -1) && !rf.asked.some(a => /english\|/.test(a)), JSON.stringify({ heading: rf.french.heading, lang: rf.french.colLang, footer: rf.french.footer, asked: rf.asked.slice(-2) }));
+      check(tag + ' F: a French version is asked for as a translation, shows, and the heading reads Translation', /Au commencement\./.test(rf.french.text) && rf.french.heading === rf.translation && rf.french.footer.includes(rf.FR) && rf.asked.some(a => a.indexOf('translation|' + rf.FR) > -1) && !rf.asked.some(a => /english\|/.test(a)), JSON.stringify({ heading: rf.french.heading, lang: rf.french.colLang, footer: rf.french.footer, asked: rf.asked.slice(-2) }));
+      check(tag + ' F: the French text is marked as French in every layout, and the heading (the interface\u2019s own word) is not', rf.french.colLang === 'fr' && !rf.french.headingInLang && rf.pageLang === 'fr', JSON.stringify({ cell: rf.french.colLang, headingInLang: rf.french.headingInLang, pageView: rf.pageLang }));
+      check(tag + ' F: a version list that arrives late, for a book no longer on screen, does not rewrite the box', rf.race.box === rf.FR && rf.race.effective === rf.FR && rf.race.options === 4, JSON.stringify(rf.race));
       check(tag + ' F: the footer names the Hebrew edition and licence Sefaria returned, and claims no other', /A Hebrew Edition/.test(rf.first.hebFooter) && /CC BY-SA/.test(rf.first.hebFooter) && !/public domain/i.test(rf.first.hebFooter), rf.first.hebFooter);
       check(tag + ' F: 0 pageerrors', f.errors.length === 0, f.errors.join(' | '));
       await f.ctx.close();

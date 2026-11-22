@@ -4204,7 +4204,10 @@ function byLicenseRank(list) {
   return list.map((v, i) => [v, i]).sort((a, b) => ((LICENSE_RANK[licenseName(a[0].license)] ?? 2) - (LICENSE_RANK[licenseName(b[0].license)] ?? 2)) || (a[1] - b[1])).map(x => x[0]);
 }
 const isHebrewVersion = v => v && v.language === 'he' && (v.actualLanguage || 'he') === 'he' && typeof v.versionTitle === 'string';
-const isEnglishVersion = v => v && v.language === 'en' && (v.actualLanguage || 'en') === 'en' && typeof v.versionTitle === 'string';
+// A title's own trailing tag ("… [ro]") is read before Sefaria's actualLanguage, which calls a Romanian and two
+// Turkish versions English (the Torah Trainer's versionLangOf keeps the same rule).
+const versionLangOf = v => { const m = /\[([a-z]{2,3})\]\s*$/.exec(String(v.versionTitle || '')); return m ? m[1] : (v.actualLanguage || 'en'); };
+const isEnglishVersion = v => v && v.language === 'en' && typeof v.versionTitle === 'string' && versionLangOf(v) === 'en';
 function versionOptionText(title, lic) { return I18n.t('tefillah.trans.version_opt', { title: String(title).trim().slice(0, 56), license: licenseLabel(lic) }); }
 
 /* ══════════════════════════════════════════════════════
@@ -4313,9 +4316,11 @@ function pickHebrewEdition(open, stored) {
   for (const pref of (catalog ? catalog.hebrewPreference : [])) { const hit = open.find(v => v.versionTitle.includes(pref)); if (hit) return hit; }
   return open[0];
 }
-// The English for one siddur node: the stored choice where the node has it, else the translation the catalog pins
-// to these lines, else the first open translation with as many lines as the Hebrew (Public Domain or CC0 before
-// CC BY, then the rest), else the first open one, unaligned.
+// The English for one siddur node: the stored choice where it stands line against line here, else the translation
+// the catalog pins to these lines, else the first open translation with as many lines as the Hebrew (Public Domain
+// or CC0 before CC BY, then the rest); and only when none can stand beside the lines, the stored choice or the
+// first open one, unaligned. The stored choice is one setting for every prayer: picked where it pairs, it must not
+// hide the translation of a prayer where it does not (`passed` says a choice was passed over, for the note).
 // A translation stands line against line when it has as many lines as the Hebrew, or when it is the pinned one
 // and its lines `pin.a`…`pin.b` still begin and end as the catalog stamped them (Sefaria keeps a translation's
 // lines at the Hebrew's positions, but many stop early or skip lines, so the count alone cannot tell).
@@ -4332,22 +4337,25 @@ async function pickEnglish(node, enVersions, heCount, stored, pin) {
     const ends = englishEnds(v.lines.slice(pin.a - 1, pin.b).map(x => parseSegment(x).text));
     return ends.from === pin.ends.from && ends.to === pin.ends.to;            // the lines moved: no pairing rather than a wrong one
   };
+  let chosen = null;                                    // the stored choice, where it cannot stand beside these lines
   if (stored && has(stored)) {
     const v = await ask(stored);
-    if (v) return { version: v, aligned: v.lines.length === heCount || paired(v) };
+    if (v && (v.lines.length === heCount || paired(v))) return { version: v, aligned: true };
+    chosen = v;
   }
-  if (pin && has(pin.v)) {
+  if (pin && pin.v !== stored && has(pin.v)) {
     const v = await ask(pin.v);
-    if (v && paired(v)) return { version: v, aligned: true };
+    if (v && paired(v)) return { version: v, aligned: true, passed: !!chosen };
   }
   let first = null;
-  for (const cand of byLicenseRank(enVersions).slice(0, 4)) {
+  for (const cand of byLicenseRank(enVersions).filter(c => c.versionTitle !== stored).slice(0, 4)) {
     const v = await ask(cand.versionTitle);
     if (!v) continue;
-    if (v.lines.length === heCount) return { version: v, aligned: true };
+    if (v.lines.length === heCount) return { version: v, aligned: true, passed: !!chosen };
     if (!first) first = v;
   }
-  return first ? { version: first, aligned: false } : null;
+  const last = chosen || first;
+  return last ? { version: last, aligned: false } : null;
 }
 // Lines that are Tanakh verses. Sefaria's siddurim hold no open translation of Hallel, but each of its lines is
 // whole verses of a psalm and the Book of Psalms has several. Nothing is taken on trust: before a translation is
@@ -4454,7 +4462,7 @@ async function loadSiddurPart(part, wantEnglish) {
     const pin = part.pin && (ranged || part.pin.he === he.title) ? { v: part.pin.v, ends: part.pin.ends, a: from, b: to } : null;
     const got = await pickEnglish(part.node, enVersions, total, settings.translationVersion, pin);
     const shownText = x => { const t = parseSegment(x).text; return englishWords(t).length ? t : ''; };
-    if (got) en = { title: got.version.title, license: got.version.license, source: got.version.source, aligned: got.aligned,
+    if (got) en = { title: got.version.title, license: got.version.license, source: got.version.source, aligned: got.aligned, passed: !!got.passed,
                     lines: (got.aligned ? got.version.lines.slice(from - 1, to) : (ranged ? [] : got.version.lines)).map(shownText),
                     hidden: !got.aligned && ranged };   // lines of a node whose translation is divided differently: no way to tell which are these
   }
@@ -4613,7 +4621,7 @@ async function fetchAndRender() {
       setStatus(() => I18n.t('tefillah.status.reading_load_failed', { label, error: e.message }) + (netDone ? '' : ' ' + I18n.t('tefillah.status.net_hint')), true);
     }
     // A failed load never leaves another prayer's text under this prayer's name.
-    currentVerses = null; currentParts = null;
+    currentVerses = null; currentParts = null; currentRangeLabel = '';
     syncVersionControls();
     syncReadingControls();
     renderEmptyReading(true);
@@ -4689,7 +4697,7 @@ function syncVersionControls() {
     const none = !!currentParts && !list.length;
     const hidden = !!shown && shown.hidden;
     const block = !!shown && !shown.aligned && !shown.hidden;
-    const key = none ? 'tefillah.trans.none_note' : hidden ? 'tefillah.trans.hidden_note' : block ? 'tefillah.trans.block_note' : shownAll.some(e => e.tanakh) ? 'tefillah.trans.tanakh_note' : '';
+    const key = none ? 'tefillah.trans.none_note' : hidden ? 'tefillah.trans.hidden_note' : block ? 'tefillah.trans.block_note' : shownAll.some(e => e.passed) ? 'tefillah.trans.passed_note' : shownAll.some(e => e.tanakh) ? 'tefillah.trans.tanakh_note' : '';
     note.hidden = !key;
     if (key) { note.dataset.i18nKey = key; note.textContent = I18n.t(key); } else { delete note.dataset.i18nKey; note.textContent = ''; }
   }
@@ -4987,6 +4995,7 @@ function renderBiblePage(verses, withTranslit, withTrans, wordIdxRef, underWord)
 function creditRows(wantTrans) {
   const rows = [], seen = new Set();
   const withTrans = wantTrans === undefined ? settings.showTranslation : !!wantTrans;   // a copy asks by its own option
+  const forCopy = wantTrans !== undefined;              // a copy's lines carry only a translation that stands beside them: a block is on screen, not in the copy
   for (const p of (currentParts || [])) {
     const work = p.kind === 'tanakh' ? p.ref.replace(/ \d.*$/, '') : p.kind === 'opensiddur' ? '' : p.ref.split(',')[0];
     const add = (role, t) => {
@@ -4997,7 +5006,7 @@ function creditRows(wantTrans) {
       rows.push({ role, work: w, title: String(t.title).trim(), license: t.license, licenseUrl: t.licenseUrl || '', source: t.source || '', via: p.kind === 'opensiddur' ? 'opensiddur' : 'sefaria', contributors: t.contributors || '' });
     };
     add('hebrew', p.he);
-    if (withTrans && p.en && !p.en.hidden && p.en.lines.some(Boolean)) add('translation', p.en);
+    if (withTrans && p.en && !p.en.hidden && p.en.lines.some(Boolean) && (!forCopy || p.en.aligned)) add('translation', p.en);
   }
   return rows;
 }
@@ -6935,6 +6944,12 @@ function _copyHebHTML(v, opts) {
   const div = document.createElement('div');
   // A fresh local word-index ref — the reading's running data-twi sequence is never touched.
   div.innerHTML = tokenizeHebrew(v.hebrew || '', { value: 0 }, opts, false, undefined, v);
+  // Hidden instructions are not copied: the plain flavour reads v.reading, and here the class that hid these words on
+  // screen is about to be swept away by _inlineCopyStyles, so the words go first.
+  if (settings.showInstructions === false) {
+    div.querySelectorAll('.tt-inst').forEach(e => e.remove());
+    div.innerHTML = div.innerHTML.replace(/^(?:\s|\u05BE)+|(?:\s|\u05BE)+$/g, '').replace(/[ \t]{2,}/g, ' ');
+  }
   _inlineCopyStyles(div, opts);
   return div.innerHTML;
 }
@@ -7584,10 +7599,11 @@ function favoriteRefNow() {
   const nusach = p ? effectiveNusach(p) : null;
   return (p && nusach) ? { kind: 'prayer', prayer: p.key, nusach } : null;
 }
+// Named for the prayer the favorite will open (favoriteRefNow), never for the text still on screen: while a
+// prayer loads, or after its load failed, currentRangeLabel is the previous prayer's.
 function favoriteLabelNow() {
-  if (currentRangeLabel) return currentRangeLabel;
   const r = resolveReading();
-  return r ? r.label : '';
+  return r ? resolveLabel(r) : '';
 }
 function favoriteLabelOf(fav) {
   const r = fav && fav.ref;

@@ -32,7 +32,7 @@ function brief(p) {
 async function printLines(node) {
   const first = await fetchVersion(node, 'hebrew');
   const editions = first.available.filter((v) => v.language === 'he' && isOpenLicense(v.license));
-  const english = first.available.filter((v) => v.language === 'en' && isOpenLicense(v.license) && (v.actualLanguage || 'en') === 'en');
+  const english = first.available.filter((v) => { const m = /\[([a-z]{2,3})\]\s*$/.exec(String(v.versionTitle || '')); return v.language === 'en' && isOpenLicense(v.license) && (m ? m[1] : (v.actualLanguage || 'en')) === 'en'; });
   console.log(`# ${node}`);
   console.log(`open Hebrew editions: ${editions.map((v) => `${v.versionTitle.trim()} [${licenseName(v.license)}]`).join(' / ') || 'NONE'}`);
   for (const e of english) {

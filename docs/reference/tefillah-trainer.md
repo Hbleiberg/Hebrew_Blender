@@ -23,7 +23,9 @@ maintainer, never fixed. The fixture smoke builds its texts from ordinary vocabu
 ## The catalog — `data/tefillah/catalog.json`
 
 A curated list, not the Sefaria tree. Fetched as `data/tefillah/catalog.json?v=8` (`CATALOG_URL`); `sw.js` precaches
-that exact URL (`DATA_PRECACHE`), so **an edit bumps the `?v=` in both places**.
+that exact URL (`DATA_PRECACHE`), so **an edit bumps the `?v=` in both places**; once the new copy is in, the
+install step drops the path's older `?v=` copies (`precacheData` — the fetch handler's own eviction runs only on a
+cache miss, which a precached file never is).
 
 ```jsonc
 { "v": 1,
@@ -117,9 +119,12 @@ reason on the status line and the Try again card): a prayer with a silent gap wo
   offers it openly). A whole node reads the stored choice (`settings.hebEdition`) where the node has it, else the
   first open edition matching `hebrewPreference`; the Text tab's *Hebrew text* section lists the others only where a
   one-part prayer has more than one.
-- **Translation** (`pickEnglish`): the stored choice where the node has it; else the translation the catalog pins to
-  the part; else the first open translation with as many lines as the Hebrew node (Public Domain or CC0 before CC BY,
-  then the rest); else the first open one. A translation stands **line against line** when it has as many lines as the
+- **Translation** (`pickEnglish`): the stored choice where it stands line against line here; else the translation the
+  catalog pins to the part; else the first open translation with as many lines as the Hebrew node (Public Domain or
+  CC0 before CC BY, then the rest); and only when none can stand beside the lines, the stored choice or the first
+  open one, unaligned. The stored choice is one setting for every prayer, so a version picked where it pairs must
+  not hide the translation of a prayer where it does not: it is passed over there (`passed`, with the note
+  `tefillah.trans.passed_note`), stays stored, and the Version box names what is shown. A translation stands **line against line** when it has as many lines as the
   Hebrew, or when it is the pinned one and its lines still begin and end as stamped (`englishEnds`; a range's pin
   holds for the range's own Hebrew edition, a whole node's only while the edition it names is the one on screen).
   Any other is shown as one block after the prayer (`.tt-trans-block`), or not at all for a line range (there is no
@@ -199,6 +204,9 @@ with a challenge); until a catalog entry names a key, the nusach list offers no 
   "masculine / feminine", or as the one chosen (`genderedText`; `variantOrder` says which side is feminine, `fm` by
   default). The row appears only for a text that has such pairs, the lines are rebuilt from the loaded parts on a
   change, and the credits note when one form was chosen.
+- **A copy credits what it carries**: `creditRows(wantTrans)` called for a copy lists a translation only when it
+  stands beside the lines (a block is on screen, not in the copied lines), and a colour-coded copy drops the
+  `.tt-inst` words when instructions are hidden, as the plain flavour does.
 - A text keeps its own licence and contributor credit (title, contributors, the licence linked, the page linked):
   never this site's licence.
 

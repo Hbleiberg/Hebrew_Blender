@@ -5973,9 +5973,9 @@ function renderSideBySide(verses, withTranslit, withTrans, wordIdxRef, canChant,
   let html = `<div class="${cls}" data-print-cols="${colHeb}">`;
   // Translation column (left)
   if (withTrans) {
-    html += `<div class="tt-grid-col tt-col-translation"${transLangAttr()}><h3 style="grid-row:1;grid-column:1">${esc(transHeading('col'))}</h3>`;
+    html += `<div class="tt-grid-col tt-col-translation"><h3 style="grid-row:1;grid-column:1">${esc(transHeading('col'))}</h3>`;   // the heading is the interface's own word: the translation's lang goes on its text only
     perVerse.forEach(({ v }, i) => {
-      html += `<div class="tt-grid-row" style="grid-row:${rowOf[i]};grid-column:1"><span class="tt-vnum">${v.chapter}:${v.verse}</span><span class="tt-cell">${stripHTML(v.translation)}</span></div>`;
+      html += `<div class="tt-grid-row" style="grid-row:${rowOf[i]};grid-column:1"><span class="tt-vnum">${v.chapter}:${v.verse}</span><span class="tt-cell"${transLangAttr()}>${stripHTML(v.translation)}</span></div>`;
     });
     html += `</div>`;
   } else {
@@ -6054,7 +6054,7 @@ function renderBiblePage(verses, withTranslit, withTrans, wordIdxRef, canChant, 
   }
   // English block
   if (withTrans) {
-    html += '<p class="tt-bible-blk tt-bible-translation" dir="ltr">';
+    html += `<p class="tt-bible-blk tt-bible-translation" dir="ltr"${transLangAttr()}>`;
     for (const { v } of perVerse) {
       const numLabel = `${v.chapter}:${v.verse}`;
       html += `<sup class="tt-bnum">${esc(numLabel)}</sup>${stripHTML(v.translation)} `;
@@ -6567,7 +6567,7 @@ function renderStaffView(verses, wordIdxRef, canChant, canLoop, aStartByLabel, u
     }
     // The Translation switch: the verse's translation under its systems (or its words-only row), with no row label
     // (the staff has none), left-aligned to the notation by the CSS and sized by --tt-english-size.
-    if (withTrans && v.translation) html += `  <div class="tt-verse-row"><span class="tt-translation">${stripHTML(v.translation)}</span></div>`;
+    if (withTrans && v.translation) html += `  <div class="tt-verse-row"><span class="tt-translation"${transLangAttr()}>${stripHTML(v.translation)}</span></div>`;
     html += `</div>`;
   }
   html += '</div>';
@@ -11171,10 +11171,16 @@ function transHeading(kind) { return I18n.t('torah.reading.' + kind + (shownTran
 function transLangAttr() { const l = shownTransLang(); return l === 'en' ? '' : ` lang="${l}"`; }   // l is [a-z]{2,3}
 function versionOptionText(title, lic) { return I18n.t('torah.trans.version_opt', { title: title.slice(0, 56), license: licenseLabel(lic) }); }
 
+let _versionListSeq = 0;
 async function populateVersionDropdown(book) {
+  const seq = ++_versionListSeq;
   const sel = document.getElementById('ttVersionSelect');
   sel.innerHTML = `<option value="">${esc(I18n.t('torah.controls.version_loading'))}</option>`;
   const versions = await fetchVersionsList(book);
+  // A newer call owns the box now: this book's list arrived after the reading moved on (a haftarah's, say, once the
+  // teacher is back on the Torah aliyah). Applying it would fill the box from the wrong book and set a substitute
+  // for a reading that needs none.
+  if (seq !== _versionListSeq) return;
   // Keep only versions whose license clearly permits redistribution.
   const safe = offeredVersions(versions);
   sel.innerHTML = '';

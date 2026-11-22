@@ -6575,6 +6575,7 @@
   "tefillah.trans.license_unknown": "רישיון לא ידוע",
   "tefillah.trans.no_versions": "(אין תרגום ברישיון פתוח לתפילה זו)",
   "tefillah.trans.none_note": "ב-Sefaria אין תרגום ברישיון פתוח לתפילה זו, ולכן לא מוצג תרגום.",
+  "tefillah.trans.passed_note": "התרגום שבחרתם מחולק לשורות אחרות מהעברית של תפילה זו, ולכן מוצג כאן תרגום אחר. הבחירה שלכם עדיין חלה בכל מקום שבו היא מתאימה.",
   "tefillah.trans.place_label": "הצגה",
   "tefillah.trans.place_row": "בשורה נפרדת",
   "tefillah.trans.place_word": "מתחת לכל מילה",

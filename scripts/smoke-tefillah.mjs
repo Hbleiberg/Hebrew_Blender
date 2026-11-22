@@ -94,6 +94,11 @@ NODES[N('Block')] = {
   he: { [OPEN]: { license: 'CC0', lines: [words(44, 4).join(' '), words(48, 4).join(' '), words(52, 4).join(' ')] } },
   en: { [EN_B]: { license: 'CC-BY-SA', lines: ['All of it in one paragraph that is divided unlike the Hebrew.', 'And a second half.'] } },
 };
+// Two translations of one node: one divided like the Hebrew, one not (a visitor may have stored the second elsewhere).
+NODES[N('Two')] = {
+  he: { [OPEN]: { license: 'CC0', lines: [words(44, 3).join(' '), words(47, 3).join(' '), words(50, 3).join(' ')] } },
+  en: { [EN_B]: { license: 'CC0', lines: ['Two as a block.', 'Two as a block, more.'] }, [EN_A]: { license: 'CC-BY', lines: ['Two one.', 'Two two.', 'Two three.'] } },
+};
 NODES[N('NoEnglish')] = {
   he: { [OPEN]: { license: 'Public Domain', lines: [words(56, 4).join(' ')] } },
   en: { 'A Closed Translation': { license: 'Copyright: Somebody', lines: ['Not to be shown.'] }, 'Eine Übersetzung': { license: 'CC0', actualLanguage: 'de', lines: ['Nicht zeigen.'] } },
@@ -120,16 +125,18 @@ NODES[KOREN] = {
   he: { [OPEN]: { license: 'CC-BY-NC', lines: [`${WORDS[40]} ${BARE_NAME} ${WORDS[41]}`, words(42, 3).join(' ')] } },
   en: { [EN_A]: { license: 'CC-BY-NC', lines: ['Koren one.', 'Koren two.'] } },
 };
+const TANAKH_EN_TITLE = 'The Holy Scriptures: A New Translation (JPS 1917)', RO = 'Tora Example [ro]';
 const TANAKH = {
   'Psalms.113': { sections: [113], he: PS.map(verse), ens: {
     [PS_B]: { license: 'CC-BY', text: ['Second one.', 'Second two.', 'Second three.', 'Second four.'] },
     [PS_CLOSED]: { license: 'Copyright: Somebody', text: ['Closed.', 'Closed.', 'Closed.', 'Closed.'] },
     [PS_THIN]: { license: 'CC0', text: ['Thin one.', 'Thin two.', '', ''] },
     [JPS]: { license: 'Public Domain', text: ['Verse one.', 'Verse two.', 'Verse three.', 'Verse four.'] } } },
-  'Deuteronomy.6.4': { sections: [6, 4], he: [verse(words(60, 6))], en: ['A fixture verse.'] },
-  'Deuteronomy.6.5-6': { sections: [6, 5], he: [verse(words(66, 5)), verse(words(71, 6))], en: ['Another one.', 'And a third.'] },
+  // Sefaria files every translation under language "en" and calls a Romanian one English in actualLanguage too: its title says otherwise.
+  'Deuteronomy.6.4': { sections: [6, 4], he: [verse(words(60, 6))], ens: { [TANAKH_EN_TITLE]: { license: 'Public Domain', text: ['A fixture verse.'] }, [RO]: { license: 'CC0', text: ['Un vers.'] } } },
+  'Deuteronomy.6.5-6': { sections: [6, 5], he: [verse(words(66, 5)), verse(words(71, 6))], ens: { [TANAKH_EN_TITLE]: { license: 'Public Domain', text: ['Another one.', 'And a third.'] }, [RO]: { license: 'CC0', text: ['Altul.', 'Al treilea.'] } } },
 };
-const TANAKH_HE = { title: 'A Tanakh Edition', license: 'CC-BY-SA' }, TANAKH_EN = { title: 'The Holy Scriptures: A New Translation (JPS 1917)', license: 'Public Domain' };
+const TANAKH_HE = { title: 'A Tanakh Edition', license: 'CC-BY-SA' }, TANAKH_EN = { title: TANAKH_EN_TITLE, license: 'Public Domain' };
 
 const ends = (node, a, b) => rangeEnds(NODES[node].he[Object.keys(NODES[node].he)[0]].lines.slice(a - 1, b));
 const ranged = (node, a, b, he, extra) => Object.assign({ ref: `${node}:${a === b ? a : a + '-' + b}`, he }, ends(node, a, b), extra || {});
@@ -147,6 +154,8 @@ const CATALOG = { v: 1, hebrewPreference: ['Metsudah', 'Open'], versesEnglish: [
   P('block', { ashkenaz: N('Block') }),
   P('hidden-translation', { ashkenaz: ranged(N('Block'), 1, 2, OPEN) }),
   P('no-english', { ashkenaz: N('NoEnglish') }),
+  P('two', { ashkenaz: N('Two') }),
+  P('two-ranged', { ashkenaz: ranged(N('Two'), 1, 2, OPEN) }),
   P('pinned', { ashkenaz: ranged(N('Pinned'), 2, 5, OPEN, enPin(N('Pinned'), EN_P, 2, 5)) }),
   P('pinned-moved', { ashkenaz: ranged(N('Pinned'), 2, 5, OPEN, { en: { v: EN_P, from: 'pin two the', to: 'some other words' } }) }),
   P('pinned-whole', { ashkenaz: Object.assign({ ref: N('Pinned') }, enPin(N('Pinned'), EN_P, 1, 6, { he: OPEN })) }),
@@ -408,6 +417,7 @@ try {
     check('cantillation present: the te\'amim switch is live and the accents show', !s.teamimOff && s.text.includes(ETNACHTA));
     check('Open in Torah Trainer: one link per passage', s.torahLinks.length === 2 && s.torahLinks.every((h) => /^torah_trainer\.html\?ref=Deuteronomy/.test(h)), s.torahLinks.join(' '));
     check('the nusach list offers what the prayer has', s.nusachOptions.join() === 'ashkenaz,torah' && s.nusach === 'torah', s.nusachOptions.join());
+    check('a translation whose title carries another language\u2019s tag is not offered as English, whatever Sefaria\u2019s field says', s.versions.length === 1 && !s.versions.includes(RO), s.versions.join(' | '));
     check('no page error', t.errors.length === 0, t.errors.join(' | '));
     await t.close();
   }
@@ -449,6 +459,46 @@ try {
     await t.page.evaluate(() => choosePrayer('os-odd')); await t.page.waitForTimeout(600); await settled(t.page);
     s = await snapshot(t.page);
     check('odd links and markup in a snapshot stay inert', s.rows.length === 1 && s.xss === undefined && s.forbidden === 0 && s.creditLinks.every((h) => /^https:\/\/(opensiddur\.org|creativecommons\.org|www\.sefaria\.org)/.test(h)), s.creditLinks.join(' ') + ' xss ' + s.xss);
+    check('no page error', t.errors.length === 0, t.errors.join(' | '));
+    await t.close();
+  }
+  // ── 7b. found by review ──
+  {
+    // a stored translation that cannot stand beside these lines does not hide one that can
+    const t = await openPage('?prayer=two', { showTranslation: true, translationVersion: EN_B });
+    const go = async (key) => { await t.page.evaluate((k) => choosePrayer(k), key); await t.page.waitForTimeout(500); await settled(t.page); return snapshot(t.page); };
+    let s = await snapshot(t.page);
+    const box = () => t.page.evaluate(() => ({ box: document.getElementById('ttVersionSelect').value, stored: settings.translationVersion }));
+    let b = await box();
+    check('a stored translation divided differently gives way to one that pairs (whole node), and the page says so', s.trans.join('|') === 'Two one.|Two two.|Two three.' && !s.block && s.versionNote.length > 10 && b.box === EN_A && b.stored === EN_B && s.credits.includes(EN_A), JSON.stringify({ trans: s.trans, block: s.block, note: s.versionNote, box: b }));
+    s = await go('two-ranged');
+    check('…and for a line range, instead of showing none', s.trans.join('|') === 'Two one.|Two two.' && s.credits.includes(EN_A), JSON.stringify({ trans: s.trans, note: s.versionNote }));
+    s = await go('block'); b = await box();
+    check('…while a prayer that has only the stored one still shows it as a block', s.block && /one paragraph/.test(s.blockText) && b.stored === EN_B, JSON.stringify({ block: s.block, box: b }));
+    // a favorite saved after a failed load is named for the prayer it opens
+    s = await go('unknown');
+    const fav = await t.page.evaluate(() => ({ label: favoriteLabelNow(), ref: favoriteRefNow() }));
+    check('a favorite saved after a load fails is named for the prayer it opens, not the one before', s.empty && fav.ref && fav.ref.prayer === 'unknown' && /unknown/.test(fav.label) && !/block/.test(fav.label), JSON.stringify(fav));
+    check('no page error', t.errors.length === 0, t.errors.join(' | '));
+    await t.close();
+  }
+  {
+    // a colour-coded copy leaves out the instructions when they are hidden, as the plain copy does
+    const BARE7 = bare(WORDS[7]);
+    for (const show of [false, true]) {
+      const t = await openPage('?prayer=plain', { showInstructions: show, copyColorCoding: true });
+      const r = await t.page.evaluate((w) => {
+        const v = currentVerses.find((x) => !x.inst && x.hebrew.indexOf(w) > -1);
+        const div = document.createElement('div'); div.innerHTML = buildCopyHTML([v]);
+        return { html: div.textContent.indexOf(w) > -1, plain: buildCopyPlain([v]).indexOf(w) > -1 };
+      }, BARE7);
+      check(`instructions ${show ? 'shown' : 'hidden'}: the colour-coded copy and the plain copy agree on the instruction word`, r.html === show && r.plain === show, JSON.stringify(r));
+      await t.close();
+    }
+    // a copy credits only the translation its lines carry
+    const t = await openPage('?prayer=block', { showTranslation: true, copyIncludeTrans: true, copyIncludeHeading: true });
+    const r = await t.page.evaluate(() => ({ copy: creditLinesPlain(true).join(' | '), screen: document.getElementById('ttCredits').innerText, plain: buildCopyPlain(currentVerses.filter((v) => !v.inst)) }));
+    check('a copy does not credit a block translation its lines do not carry; the screen, which shows the block, does', !r.copy.includes(EN_B) && r.screen.includes(EN_B) && !/one paragraph/.test(r.plain), JSON.stringify({ copy: r.copy, plain: r.plain.slice(0, 80) }));
     check('no page error', t.errors.length === 0, t.errors.join(' | '));
     await t.close();
   }

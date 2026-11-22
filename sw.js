@@ -1,5 +1,5 @@
 /* IvritSuite service worker — bump VERSION to invalidate the cache on deploy. */
-const VERSION = 'v1496';
+const VERSION = 'v1497';
 const CACHE = 'ivritsuite-' + VERSION;
 // Version-independent cache for the big data/ corpora (dictionary words / emoji / parshiyot /
 // pockettorah). Kept OUT of the version-scoped CACHE so a routine VERSION bump no longer evicts
@@ -67,11 +67,23 @@ const CORE_ASSETS = [
 // (cache-first and keyed by ?v=: when the page's ?v= moves, this entry moves with it). The Tefillah Trainer's prayer
 // catalog: with it, the picker works on a first offline visit; the prayer texts themselves come from Sefaria.
 const DATA_PRECACHE = ['/data/tefillah/catalog.json?v=8'];
+// One copy of a precached data file. The fetch handler below drops a path's older ?v= copies when a request MISSES
+// the cache; a file precached here is a hit from the page's first request, so that never ran and every ?v= bump left
+// the previous copy behind for good. Once the wanted URL is in the cache, the same path's other copies go. A failed
+// add (offline) changes nothing.
+function precacheData(cache, url) {
+  const want = new URL(url, self.location.href);
+  return cache.match(url)
+    .then((hit) => hit || cache.add(new Request(url, { cache: 'no-cache' })))
+    .then(() => cache.keys())
+    .then((keys) => Promise.all(keys.filter((k) => { const ku = new URL(k.url); return ku.pathname === want.pathname && ku.search !== want.search; }).map((k) => cache.delete(k))))
+    .catch(() => {});
+}
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(DATA_CACHE)
-      .then((cache) => Promise.all(DATA_PRECACHE.map((url) => cache.match(url).then((hit) => hit || cache.add(new Request(url, { cache: 'no-cache' })).catch(() => {})))))
+      .then((cache) => Promise.all(DATA_PRECACHE.map((url) => precacheData(cache, url))))
       .catch(() => {})
       .then(() => caches.open(CACHE))
       // add() per-asset so a single 404 can't abort the whole install

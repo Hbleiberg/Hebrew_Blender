@@ -1912,6 +1912,8 @@ Both pages sync one settings blob (and the Trope Tutor its mastery progress) thr
   decided anew at the start of every `fetchAndRender` (from the book's list where it is already cached, else by
   trying the stored choice and checking the answer), a new choice clears it, and `populateVersionDropdown` keeps
   the one the text path set — it used to clear it, leaving the box and the footer naming a version not on screen.
+  A list that arrives after a newer `populateVersionDropdown` call is ignored (`_versionListSeq`): a haftarah's list
+  landing once the teacher is back on the Torah aliyah must not fill the box.
 - **Which translations the Torah Trainer may show.** The licence rule is the Tefillah Trainer's `licenseName` /
   `isOpenLicense`, word for word (only Public Domain, CC0, CC BY, CC BY-SA, CC BY-NC, CC BY-NC-SA; NoDerivatives and
   `unknown` refused): keep the two copies alike. It is applied to the book's list (`offeredVersions`) **and to the
@@ -1921,7 +1923,8 @@ Both pages sync one settings blob (and the Trope Tutor its mastery progress) thr
   shows the English versions, then an *Other languages* group, split by the title's own `[xx]` tag before
   Sefaria's `actualLanguage` (`versionLangOf`: the field calls a Romanian and two Turkish versions English); the
   default and every automatic substitute are English; while another language is on screen the two "English"
-  headings read "Translation" (`transHeading`) and the cells carry its `lang`.
+  headings read "Translation" (`transHeading`) and the translation text carries its `lang` in every layout
+  (`transLangAttr`, on the text only — the heading is the interface's own word).
 - **The footer credits what is on screen.** `_shownTrans` / `_shownHeb` are the returned versions of the reading on
   screen (`parseSefariaResponse` keeps `_he` / `_en`): `updateTransFooter` names the translation and the licence it
   came back under, `updateHebFooter` appends the Hebrew edition and its licence to "Hebrew text via Sefaria" (a
