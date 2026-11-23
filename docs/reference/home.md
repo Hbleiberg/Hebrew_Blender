@@ -83,13 +83,17 @@ themes, in the source order **brand, settings, about, follow**, which is the rea
 ## Kintsugi cracks
 
 Thin gold cracks in the navy header and footer, after the craft of mending pottery with gold. Decoration only:
-`aria-hidden`, no pointer events, absent from print and from forced colours.
+`aria-hidden`, no pointer events, absent from print and from forced colours. The home page places them from the edges
+of its two bars (the points below, down to *Run the smoke*); every other page's header shows the header drawings in the
+gap between its title and its controls (*The header gap on every other page*, after them).
 
 - **Generated, never drawn by hand.** `brand/kintsugi/fractures.json` is the only hand-kept copy: sixteen *fractures*
   (a crack and its branches), each a list of centre-line points with a stroke width for every run of three segments.
   `node scripts/build-kintsugi.mjs` writes one `brand/kintsugi/<id>.svg` per fracture; `--print` also prints the two
-  `<div class="kin" aria-hidden="true">` blocks and the position rules the page carries, and `--check` fails when a
-  file on disk differs from what the JSON builds. Never edit an SVG; after a rebuild, bump `sw.js` `VERSION`.
+  `<div class="kin" aria-hidden="true">` blocks and the position rules the home page carries, and the gap markup and
+  rules of the other pages; `--check` fails when a file on disk differs from what the JSON builds, or when a root
+  page's gap markup or the shared gap rules differ from what `--print` prints. Never edit an SVG; after a rebuild,
+  bump `sw.js` `VERSION`.
 - **Anchors.** A fracture is placed from the edge it is anchored to (`start`, `center` or `end`; `top` or `bottom`),
   with logical insets and at its drawn size, so a wider or taller bar never stretches a crack or moves it relative to
   what it sits beside. Never scale, move or redraw one.
@@ -115,8 +119,53 @@ Thin gold cracks in the navy header and footer, after the craft of mending potte
   every fracture whatever its gate says and prints the widths at which each is clear: a gate hides its fracture below
   the first width from which it stays clear. The smoke needs the real UI fonts (it fetches Google Fonts and Sefaria's
   badge through the environment's proxy) and skips loudly without the fonts.
-- **Run the smoke** whenever a header control, a footer link or its label, the lockup's size, the Sefaria badge or
-  `fractures.json` changes.
+- **Run the smoke** whenever a header control, a page's title or tagline, a header's padding, a footer link or its
+  label, the lockup's size, the Sefaria badge or `fractures.json` changes. `--home` runs the home page alone, `--gaps`
+  the other pages alone, `--only <page>` one page's gap.
+
+### The header gap on every other page
+
+The home page's header holds only the lockup and three controls, so its cracks can be placed from the bar's edges.
+Every other header has a title, a tagline and its own row of buttons where those positions fall, and their widths
+change with the language and the sign-in state. So there the header drawings are placed in the one space that is
+always free: the gap between the title and the controls.
+
+- **`.kin-gap` is a spacer in the header's row**, the element right after the title block. From 1280px it takes the
+  row's free space, and a container query on its own width shows as many
+  drawings as fit: one from 64px, two from 232px, three from 320px, four from 736px. Each step adds a drawing; none
+  moves relative to the others, because they keep the home page's spacing, and the group is centred in the gap.
+- **The 6px rule holds by construction**: a drawing lies whole inside the spacer with 6px to spare at each end, the
+  spacer ends where the controls begin, and it starts a column gap after the title's own box, which is as wide as
+  its longest line. Every line of text and every control keeps the place it had without the spacer, in every state.
+- **A title block that grows to fill the row (`flex:1`) carries `.kin-title`.** Its box would otherwise swallow the
+  gap, so from 1280px the shared rules make it as wide as its text (`flex:0 1 auto`) and stop everything after it
+  from shrinking: when a long account name leaves the row tight, the title alone gives way, exactly as it did when
+  it filled the row. A title that is already as wide as its text (the pages whose button row is pushed to the end by
+  an auto margin) takes no class. Below 1280px nothing changes. The Font Maker's header may wrap, and a title as
+  wide as its text would push its buttons to a second line there, so that page keeps one row from 1280px.
+- **Each drawing is anchored to the bar edge it starts from** (`gap.set[].edge` in the JSON: `top` or `bottom`), so
+  in a taller or shorter bar a crack is cut at its thin far end, never at its root.
+- **Each page states its own header's block padding and column gap** in one line just below the shared block
+  (`header{--kin-pt:…;--kin-pb:…;--kin-gap:…;}`): the spacer's negative margins take it to the bar's edges, and a
+  negative end margin gives back the column gap it adds. The smoke fails when the spacer misses an edge, so a
+  change to a header's padding changes that line too.
+- **The rules ride inside the shared header-icons CSS block** (`shared-components.md` → *Icons*), byte-identical on
+  every carrier; the markup is one `<span class="kin-gap" aria-hidden="true">` of lazy images, printed by the
+  builder. A set that does not show is never downloaded.
+- **Two headers are built differently.** The 404 page has no title, so its gap follows the lockup's own box. Flash
+  Cards centres its title in a grid, so from 1280px its grid has a spacer on each side of the title (the title keeps
+  its place between them); the second holds the one drawing no other page has room for (`gap.alone`, `.kg-b`).
+- **The generated pages** (`parsha/`, `holidays/`, the coloring pages hub) take the markup from the page their
+  builder copies its header parts from, and state their header numbers in the builder's own CSS.
+- **The smoke** measures every root page that carries a gap, and one parsha page and one holiday page after checking
+  that all pages of a kind carry the same header: at 1280–1920px in 8px steps and beyond, in English and Hebrew, with
+  a mouse and a finger, signed out and signed in, in the dark theme (its *Light* label is the widest). A drawing
+  that shows is 6px or more from text and whole inside its gap, the gap reaches the bar's edges (a header that
+  wrapped onto a second row would fail here), nothing shows below 1280px, and every gap shows a drawing on a wide
+  screen.
+- **A long title leaves no gap.** Where a title and its controls fill the row (the Worksheet Generator, Word Lookup,
+  the Dashboard and the Letter Learner on a small laptop), that header shows no crack until the screen is wider.
+  Never shorten the 6px rule or draw over text to change that.
 
 ## Checks
 

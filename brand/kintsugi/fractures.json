@@ -1,5 +1,12 @@
 {
  "note": "Approved kintsugi cracks for the home page header and footer. One record per fracture: its cracks' centre-line points (px, in the frame's coordinates) and the stroke width of each 3-segment run. Hand-kept; brand/kintsugi/*.svg are built from it.",
+ "gap": {
+  "note": "How the header drawings are placed on every other page: in the gap between a page's title and its controls, at their home-page spacing, each anchored to the bar edge it starts from, the group centred in the gap. 'set' is shown one more drawing at a time as the gap grows; 'alone' is the one drawing a second gap holds (Flash Cards, whose title is centred). 'barInner' is the home header's height inside its border, which the frame coordinates are measured in; 'clear' is the room kept at each end of the gap.",
+  "barInner": 84,
+  "clear": 6,
+  "set": [{"id": "h1", "edge": "top"}, {"id": "h2", "edge": "bottom"}, {"id": "h3", "edge": "top"}, {"id": "h4", "edge": "bottom"}],
+  "alone": {"id": "h5", "edge": "top"}
+ },
  "fractures": [
   {"id": "h1", "area": "header", "frame": [1280, 88], "anchor": ["center", "top"], "cracks": [
     {"p": [[300,-2],[301.7,2.9],[302.8,8.5],[305.4,13.5],[306.7,19.4],[306.8,23.8],[308.4,29.5],[309.0,35.6],[311.5,38.8],[314.5,41.8],[317.7,47.6],[320.3,51.2],[325.1,53.1],[329.5,55.7],[332.8,58.6],[337.3,63.6],[339.3,67.8],[340.1,72.2],[340.9,77.5],[341.8,83.4],[342.4,88.8],[343.1,94.2]], "w": [1.39,1.75,1.52,1.16,0.62,0.66,0.5]}

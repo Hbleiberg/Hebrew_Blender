@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /*
- * smoke-kintsugi.mjs — the home page's gold cracks (brand/kintsugi/) keep clear of its text.
+ * smoke-kintsugi.mjs — the gold cracks (brand/kintsugi/) keep clear of text: the home page's, and every other header's.
  *
  * A fracture is decoration in the navy header or footer of index.html. The rule (docs/reference/home.md → Kintsugi):
  * wherever a fracture shows, its strokes stay CLEAR px or more from every piece of text and every control in its bar;
@@ -17,12 +17,26 @@
  *     the chip shows the cached name: the S659 probe's method).
  * It also checks that the wide set shows only from 1280px and the narrow set only up to 600px.
  *
+ * Every other page shows the header drawings in the gap between its title and its controls (.kin-gap: a spacer in the
+ * header's row; docs/reference/home.md → Kintsugi cracks). For each such page — every root page that carries a gap, and
+ * one generated parsha page and one holiday page, after checking that every generated page of a kind has the same header —
+ * this measures, at 1280-1920px in 8px steps and at 2000 / 2200 / 2560, EN and HE, a mouse and a finger, signed out and
+ * (where the page has the account chip) signed in with a 16-letter first name, in the dark theme (its "Light" label is
+ * the widest):
+ *   - every drawing that shows keeps its centre line CLEAR px from the header's text and controls, and lies whole inside its gap;
+ *   - the gap reaches the bar's top and bottom edges (the page's --kin-pt / --kin-pb match its header's padding);
+ *   - no gap shows below 1280px (checked at 390, 1024 and 1279), and at 2560px every gap shows a drawing.
+ *
  *   node scripts/smoke-kintsugi.mjs            exit 1 when a fracture that shows comes within CLEAR px of text
  *   node scripts/smoke-kintsugi.mjs --report   shows every fracture whatever its gate says and prints the widths at
  *                                              which each is clear: how a gate is set (hide the fracture below the
  *                                              first width from which it stays clear), never a reason to move one
+ *                                              (the home page only: a gap has no gate to set)
+ *   node scripts/smoke-kintsugi.mjs --home     the home page only          --gaps   the other pages only
+ *   node scripts/smoke-kintsugi.mjs --only contact.html [--only …]         those pages' gaps only
  *
- * Run it whenever a header control, a footer link or its label, the lockup's size or fractures.json changes.
+ * Run it whenever a header control, a page's title or tagline, a header's padding, a footer link or its label, the
+ * lockup's size or fractures.json changes.
  * Measured in the real UI fonts (the fallback faces are wider and invent collisions): Google Fonts are fetched by
  * curl through the environment's proxy into a cache under the OS temp dir; without them the script skips loudly.
  * Sefaria's badge in the footer is fetched the same way, so its real box is measured; where its host cannot be
@@ -38,6 +52,8 @@ import { execFileSync } from 'node:child_process';
 const { chromium } = pkg;
 const ROOT = process.env.ROOT || path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
 const REPORT = process.argv.includes('--report');
+const ONLY = process.argv.map((a, i) => (a === '--only' ? process.argv[i + 1] : null)).filter(Boolean);
+const DO_HOME = !process.argv.includes('--gaps') && !ONLY.length, DO_GAPS = !process.argv.includes('--home') && !REPORT;
 const CLEAR = 6;                                   // px between a stroke's centre line and the nearest text or control
 const NAME = 'Alexandrinaelena Vos';               // 16 letters before the space: the chip's longest first name
 const range = (a, b) => Array.from({ length: b - a + 1 }, (_, i) => a + i);
@@ -117,7 +133,7 @@ const spans = (all, some) => { const s = new Set(some), out = []; let a = null, 
   return out.join(', '); };
 
 const RUNS = [];
-for (const lang of ['en', 'he']) for (const dark of [true, false]) for (const touch of [false, true]) {
+if (DO_HOME) for (const lang of ['en', 'he']) for (const dark of [true, false]) for (const touch of [false, true]) {
   for (const name of ['', NAME]) RUNS.push({ set: 'wide', widths: WIDE, lang, dark, touch, name });
   RUNS.push({ set: 'narrow', widths: NARROW, lang, dark, touch, name: '' });
 }
@@ -178,7 +194,99 @@ for (const run of RUNS) {
   if (!REPORT) console.log(`${ok ? 'PASS' : 'FAIL'} ${label} (${chip}): ${shown} fractures show, the nearest ${nearest[1]} at ${nearest[0]}px${close.length ? ' — ' + close.join('; ') : ''}${stray.length ? ' — outside its range: ' + stray.join('; ') : ''}${errs.length ? ` — ${errs.length} page errors` : ''}`);
   else if (errs.length) console.log(`   ${errs.length} page errors`);
 }
+/* ───── Every other page: the header drawings in the gap between the title and the controls ───── */
+function measureGap(CLEAR) {
+  const header = document.querySelector('header'), rtl = document.documentElement.dir === 'rtl';
+  const hb = header.getBoundingClientRect(), cs = getComputedStyle(header);
+  const top = hb.top + parseFloat(cs.borderTopWidth), bottom = hb.bottom - parseFloat(cs.borderBottomWidth);
+  const rs = [], add = q => { if (q.width > 1 && q.height > 1) rs.push([q.left, q.top, q.right, q.bottom]); };
+  header.querySelectorAll('a, button, select, input, img, [role="button"]').forEach(el => { if (!el.closest('.kin-gap, .ivacct-menu') && el.getClientRects().length) add(el.getBoundingClientRect()); });
+  const tw = document.createTreeWalker(header, NodeFilter.SHOW_TEXT);
+  for (let n; (n = tw.nextNode());) { if (!n.nodeValue.trim() || n.parentElement.closest('.kin-gap, .ivacct-menu, script, style')) continue; const r = document.createRange(); r.selectNodeContents(n); for (const q of r.getClientRects()) add(q); }
+  const chip = document.querySelector('.ivacct-btn');
+  const out = { gaps: 0, rendered: 0, shown: 0, min: 9999, who: '', edge: 0, outside: '', empty: 0, chip: chip ? `${chip.textContent.trim()} [${chip.getAttribute('data-state')}]` : '' };
+  for (const gap of header.querySelectorAll('.kin-gap')) {
+    out.gaps++; if (!gap.getClientRects().length) continue;
+    out.rendered++; const g = gap.getBoundingClientRect(); let here = 0;
+    out.edge = Math.max(out.edge, Math.abs(g.top - top), Math.abs(g.bottom - bottom));
+    for (const img of gap.querySelectorAll('img')) {
+      if (!img.getClientRects().length) continue;
+      here++; out.shown++; const id = img.className.replace('kg-', ''), b = img.getBoundingClientRect();
+      if (b.left < g.left + CLEAR - 0.6 || b.right > g.right - CLEAR + 0.6) out.outside = id;   // a drawing keeps CLEAR px inside each end of its gap
+      for (const [x, y] of window.__kinPts[id]) { const px = rtl ? b.right - x : b.left + x, py = b.top + y; if (py < top || py > bottom) continue;
+        for (const [l, t, r, bt] of rs) { const d = Math.hypot(Math.max(l - px, 0, px - r), Math.max(t - py, 0, py - bt)); if (d < out.min) { out.min = d; out.who = id; } } }
+    }
+    if (!here) out.empty++;
+  }
+  out.min = Math.round(out.min * 10) / 10; out.edge = Math.round(out.edge * 10) / 10;
+  return out;
+}
+let gapRuns = 0, gapFails = 0;
+if (DO_GAPS) {
+  let pages = fs.readdirSync(ROOT).filter(n => n.endsWith('.html') && fs.readFileSync(path.join(ROOT, n), 'utf8').includes('class="kin-gap')).sort();
+  // the generated pages: every page of a kind carries the same header, so one of each stands for all of them
+  for (const dir of ['parsha', 'holidays']) {
+    const files = fs.readdirSync(path.join(ROOT, dir)).filter(n => n.endsWith('.html') && n !== 'index.html').sort();
+    const heads = new Set(files.map(n => (fs.readFileSync(path.join(ROOT, dir, n), 'utf8').match(/<header>[\s\S]*?<\/header>/) || [''])[0]));
+    if (heads.size !== 1 || ![...heads][0].includes('class="kin-gap')) { gapFails++; gapRuns++; console.log(`FAIL ${dir}/: the generated pages do not all carry one header with a gap (${heads.size} different headers)`); }
+    else pages.push(`${dir}/${files[0]}`);
+  }
+  if (ONLY.length) pages = pages.filter(p => ONLY.includes(p));
+  const GW = [390, 1024, 1279, ...Array.from({ length: 81 }, (_, i) => 1280 + i * 8), 2000, 2200, 2560];
+  const PTS = Object.fromEntries(FR.filter(f => f.bar === 'header').map(f => [f.id, f.pts]));
+  const jobs = [];
+  for (const pg of pages) { const chip = /<script[^>]*src="\/?js\/ivrit-account\.js/.test(fs.readFileSync(path.join(ROOT, pg), 'utf8'));   // the page loads the account module, so its header has the chip
+    for (const lang of ['en', 'he']) for (const touch of [false, true]) for (const name of chip ? ['', NAME] : ['']) jobs.push({ pg, lang, touch, name, chip }); }
+  async function gapRun(job) {
+    const label = `gap ${job.pg}, ${job.lang} ${job.touch ? 'touch' : 'mouse'}${job.chip ? (job.name ? ' signed in' : ' signed out') : ''}`;
+    const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, serviceWorkers: 'block', hasTouch: job.touch, isMobile: job.touch });
+    await ctx.route('**/*', async route => {
+      const u = route.request().url();
+      if (u.startsWith(base) || u.startsWith('data:') || u.startsWith('blob:')) return route.continue();
+      if (/^https:\/\/fonts\.(googleapis|gstatic)\.com\//.test(u)) { try { const c = font(u); return route.fulfill({ status: 200, body: c.body, headers: { 'content-type': c.type, 'access-control-allow-origin': '*' } }); } catch (e) { fontFail++; return route.abort(); } }
+      if (job.name && (u.startsWith('https://cdn.jsdelivr.net/npm/@supabase') || u.startsWith('https://hhkmqwpjsyxdeuhvcyis.supabase.co'))) return;   // held: the chip stays on the cached name
+      return route.abort();
+    });
+    await ctx.addInitScript(([lang, name]) => {
+      if (sessionStorage.getItem('__kin')) return;
+      sessionStorage.setItem('__kin', '1');
+      localStorage.setItem('hebrewBlender_lang', lang); localStorage.setItem('hebrewBlender_darkMode', '1');
+      if (name) { localStorage.setItem('sb-hhkmqwpjsyxdeuhvcyis-auth-token', JSON.stringify({ user: { id: '00000000-0000-4000-8000-000000000659' } })); localStorage.setItem('ivritSuite_accountCache', JSON.stringify({ email: 'teacher@example.com', name })); }
+    }, [job.lang, job.name]);
+    const page = await ctx.newPage(); const errs = []; page.on('pageerror', e => errs.push(String(e)));
+    await page.goto(`${base}/${job.pg}`, { waitUntil: 'domcontentloaded' });
+    await page.waitForTimeout(1500); await page.evaluate(() => document.fonts.ready);
+    if (fontFail) { await ctx.close(); return null; }
+    await page.evaluate(pts => { window.__kinPts = pts; }, PTS);
+    const bad = []; let nearest = [9999, '', 0], most = 0, chip = '';
+    for (const w of GW) {
+      await page.setViewportSize({ width: w, height: 900 });
+      await page.evaluate(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))));
+      const m = await page.evaluate(measureGap, CLEAR);
+      chip = chip || m.chip;
+      if (!m.gaps) { bad.push('no .kin-gap in the header'); break; }
+      if (job.chip && (job.name ? !(m.chip.includes('[loading]') && m.chip.includes(job.name.split(' ')[0])) : !m.chip.includes('[anonymous]'))) { bad.push(`the account chip left its state: ${m.chip}`); break; }
+      if (w < 1280) { if (m.rendered) bad.push(`a gap shows at ${w}px`); continue; }
+      if (m.rendered !== m.gaps) bad.push(`a gap is not laid out at ${w}px`);
+      if (m.edge > 1) bad.push(`at ${w}px the gap misses the bar's edge by ${m.edge}px (--kin-pt / --kin-pb)`);
+      if (m.outside) bad.push(`at ${w}px ${m.outside} is not ${CLEAR}px inside its gap`);
+      if (m.shown && m.min < CLEAR) bad.push(`at ${w}px ${m.who} is ${m.min}px from text`);
+      if (m.shown && m.min < nearest[0]) nearest = [m.min, m.who, w];
+      if (w === 2560 && m.empty) bad.push('a gap shows no drawing at 2560px');
+      most = Math.max(most, m.shown);
+    }
+    await ctx.close();
+    if (errs.length) bad.push(`${errs.length} page errors`);
+    const uniq = [...new Set(bad)];
+    console.log(`${uniq.length ? 'FAIL' : 'PASS'} ${label}${chip ? ` (${chip})` : ''}: up to ${most} drawings, the nearest ${nearest[1]} at ${nearest[0]}px (${nearest[2]}px wide)${uniq.length ? ' — ' + uniq.slice(0, 4).join('; ') + (uniq.length > 4 ? `; and ${uniq.length - 4} more` : '') : ''}`);
+    return !uniq.length;
+  }
+  // four pages at a time: each run is its own browser context
+  let next = 0, skipped = false;
+  await Promise.all(Array.from({ length: 4 }, async () => { while (next < jobs.length && !skipped) { const job = jobs[next++]; const ok = await gapRun(job); if (ok === null) { skipped = true; break; } gapRuns++; if (!ok) gapFails++; } }));
+  if (skipped) { console.log(`SKIP: Google Fonts unreachable (${fontFail} requests) — the real UI fonts are needed; the header gaps were not measured.`); await browser.close(); server.close(); process.exit(fails ? 1 : 0); }
+}
 await browser.close(); server.close();
 if (badgeFail) console.log(`NOTE: Sefaria's badge could not be fetched (${badgeFail} requests) — the footer was measured with its alt text in the badge's place.`);
-console.log(REPORT ? 'report only: nothing asserted' : `${RUNS.length - fails} / ${RUNS.length} runs clean`);
-process.exit(!REPORT && fails ? 1 : 0);
+console.log(REPORT ? 'report only: nothing asserted' : `${RUNS.length - fails} / ${RUNS.length} home-page runs clean` + (DO_GAPS ? `; ${gapRuns - gapFails} / ${gapRuns} header-gap runs clean` : ''));
+process.exit(!REPORT && (fails || gapFails) ? 1 : 0);

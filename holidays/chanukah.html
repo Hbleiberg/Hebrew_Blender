@@ -300,7 +300,36 @@ header{--bl-row:160px;}   /* the lockup, its divider and the header's gap: what 
 .footer-social{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:0 18px;margin-block-start:6px;}
 .footer-social a{display:inline-flex;align-items:center;gap:5px;}
 .footer-social.is-inline{display:inline-flex;margin-block-start:0;gap:0 12px;}
+/* Kintsugi in the header (every page but the home page, which places its own cracks from the edges of its bar): the
+   gold cracks sit in the gap between the page's title and its controls. .kin-gap is a spacer in the header's row,
+   after the title block: it takes the row's free space, reaches the bar's top and bottom edges (the page states its
+   own header's block padding and gap just below this block: --kin-pt, --kin-pb, --kin-gap) and a container query
+   shows as many drawings as it has room for, so a crack is never nearer than 6px to the title or a control. A title
+   block that grows to fill the row (flex:1) carries .kin-title: from 1280px it is as wide as its text and no wider,
+   and nothing after it shrinks, so the title alone gives way when the row is tight, as it did when it filled the row.
+   From 1280px only, as on the home page, and never on paper. The positions and steps are printed by
+   scripts/build-kintsugi.mjs --print and checked by its --check (docs/reference/home.md, Kintsugi cracks). */
+.kin-gap{display:none;}
+@media screen and (min-width:1280px){
+  header > .brand-lockup + .kin-title{flex:0 1 auto;}
+  header > .brand-lockup + .kin-title ~ *{flex-shrink:0;}
+  .kin-gap{display:block;flex:1 1 0;min-inline-size:0;align-self:stretch;position:relative;overflow:hidden;pointer-events:none;container-type:inline-size;margin-block:calc(var(--kin-pt,0px) * -1) calc(var(--kin-pb,0px) * -1);margin-inline-end:calc(var(--kin-gap,0px) * -1);}
+  .kin-gap img{position:absolute;display:none;max-inline-size:none;}
+  [dir="rtl"] .kin-gap img{transform:scaleX(-1);}
+  .kin-gap .kg-h1{inset-block-start:-6px;inset-inline-start:calc(50% - var(--kg-half) + 0px);}
+  .kin-gap .kg-h2{inset-block-end:-10px;inset-inline-start:calc(50% - var(--kg-half) + 155px);}
+  .kin-gap .kg-h3{inset-block-start:-6px;inset-inline-start:calc(50% - var(--kg-half) + 234px);}
+  .kin-gap .kg-h4{inset-block-end:-12px;inset-inline-start:calc(50% - var(--kg-half) + 680px);}
+  @container (min-width:64px){.kin-gap img{--kg-half:26px;}.kin-gap .kg-h1{display:block;}}
+  @container (min-width:232px){.kin-gap img{--kg-half:110px;}.kin-gap .kg-h1,.kin-gap .kg-h2{display:block;}}
+  @container (min-width:320px){.kin-gap img{--kg-half:154px;}.kin-gap .kg-h1,.kin-gap .kg-h2,.kin-gap .kg-h3{display:block;}}
+  @container (min-width:736px){.kin-gap img{--kg-half:362px;}.kin-gap .kg-h1,.kin-gap .kg-h2,.kin-gap .kg-h3,.kin-gap .kg-h4{display:block;}}
+  .kin-gap.kg-b .kg-h5{inset-block-start:-6px;inset-inline-start:calc(50% - 43.5px);}
+  @container (min-width:99px){.kin-gap.kg-b .kg-h5{display:block;}}
+}
+@media (forced-colors:active){.kin-gap{display:none;}}
 /* ═══ end header-icons CSS ═══ */
+header{--kin-pt:22px;--kin-pb:22px;--kin-gap:16px;}   /* this header's block padding and column gap, for the shared .kin-gap rules above */
 
 /* ═══ holiday-icons CSS ═══ shared block, byte-identical on: classroom_dashboard, holiday_guide, parsha_emojis, torah_trainer, the generated holidays/ pages (copied from holiday_guide by scripts/build-holiday-pages.mjs) (docs/reference/shared-components.md → Holiday icons).
    One flat 48×48 SVG per holiday family, drawn by holidayIconFor() (the holiday-icons JS block). The --hol-* tokens are
@@ -335,6 +364,7 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
     <div class="brand-title" data-i18n="holidaypage.header.title">Holiday Coloring Pages</div>
     <p data-i18n="holidaypage.header.tagline">Free coloring pages for the Jewish holidays</p>
   </div>
+  <span class="kin-gap" aria-hidden="true"><img class="kg-h1" src="/brand/kintsugi/h1.svg" width="52" height="105" alt="" loading="lazy" decoding="async"><img class="kg-h2" src="/brand/kintsugi/h2.svg" width="65" height="105" alt="" loading="lazy" decoding="async"><img class="kg-h3" src="/brand/kintsugi/h3.svg" width="74" height="72" alt="" loading="lazy" decoding="async"><img class="kg-h4" src="/brand/kintsugi/h4.svg" width="44" height="25" alt="" loading="lazy" decoding="async"></span>
   <div class="hright" data-nosnippet>
     <a class="hbtn" href="/"><svg class="hi hi-arrow dir-arrow" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M11 6l-6 6 6 6"/></svg><span class="hi-lbl" data-i18n="holidaypage.header.home">Home</span></a>
     <div data-i18n-switcher></div>

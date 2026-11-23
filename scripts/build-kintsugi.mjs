@@ -3,11 +3,16 @@
    brand/kintsugi/fractures.json. Never edit an output; edit the JSON and run this again, then bump sw.js VERSION and
    run scripts/smoke-kintsugi.mjs (a fracture stays 6px from text wherever it shows, or a gate hides it).
      node scripts/build-kintsugi.mjs            write the files
-     node scripts/build-kintsugi.mjs --print    also print the two <div class="kin"> blocks and the position rules for index.html
-     node scripts/build-kintsugi.mjs --check    exit 1 if a file on disk differs from what the JSON builds
+     node scripts/build-kintsugi.mjs --print    also print the two <div class="kin"> blocks and the position rules for index.html,
+                                                and the gap markup and rules every other page's header carries
+     node scripts/build-kintsugi.mjs --check    exit 1 if a file on disk differs from what the JSON builds, or a page's
+                                                gap markup or the shared gap rules differ from what --print prints
+   The home page places each fracture from an edge of its bar. Every other page's header has a title and its own
+   controls where those positions fall, so there the header drawings sit in the gap between the two ("gap" in the
+   JSON): a spacer in the header's row holds them, and a container query shows as many as the gap has room for.
    A crack is drawn in runs of three segments, each with its own width, so it swells and thins like a real seam:
    a dark underlay, the gold with a fine grain, and a pale highlight on the thicker runs. */
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -56,6 +61,28 @@ function position(fr, b) {
   return `${inline};${block}`;
 }
 
+// The gap set: the header drawings at their home spacing, measured from the first one's box. A drawing that starts at the
+// bar's top edge keeps its top offset; one that starts at the bottom edge keeps its distance from the bottom, so a taller
+// or shorter bar cuts each crack at the far end, where it tapers, never at its root.
+function gapSet() {
+  const g = data.gap, by = Object.fromEntries(data.fractures.map((fr) => [fr.id, build(fr)]));
+  const img = (id) => `<img class="kg-${id}" src="/brand/kintsugi/${id}.svg" width="${by[id].w}" height="${by[id].h}" alt="" loading="lazy" decoding="async">`;
+  const block = (e) => (e.edge === 'top' ? `inset-block-start:${by[e.id].box[1]}px` : `inset-block-end:${g.barInner - by[e.id].box[3]}px`);
+  const x0 = by[g.set[0].id].box[0];
+  const pos = g.set.map((e) => `.kin-gap .kg-${e.id}{${block(e)};inset-inline-start:calc(50% - var(--kg-half) + ${by[e.id].box[0] - x0}px);}`);
+  const steps = g.set.map((e, i) => { const span = by[e.id].box[0] - x0 + by[e.id].w;   // the group's width with this drawing added
+    return `@container (min-width:${span + 2 * g.clear}px){.kin-gap{--kg-half:${span / 2}px;}${g.set.slice(0, i + 1).map((s) => `.kin-gap .kg-${s.id}`).join(',')}{display:block;}}`; });
+  // custom properties cannot be set on a query container from its own query, so the half-width rides on the images
+  const stepsOnImg = steps.map((s) => s.replace('.kin-gap{--kg-half:', '.kin-gap img{--kg-half:'));
+  const a = g.alone, aw = by[a.id].w;
+  const alone = [`.kin-gap.kg-b .kg-${a.id}{${block(a)};inset-inline-start:calc(50% - ${aw / 2}px);}`, `@container (min-width:${aw + 2 * g.clear}px){.kin-gap.kg-b .kg-${a.id}{display:block;}}`];
+  return {
+    markup: `<span class="kin-gap" aria-hidden="true">${g.set.map((e) => img(e.id)).join('')}</span>`,
+    markupAlone: `<span class="kin-gap kg-b" aria-hidden="true">${img(a.id)}</span>`,
+    rules: [...pos, ...stepsOnImg, ...alone].map((r) => '  ' + r).join('\n'),
+  };
+}
+
 const args = new Set(process.argv.slice(2));
 const tags = { header: [], footer: [] }, rules = [];
 let stale = 0;
@@ -72,6 +99,19 @@ for (const fr of data.fractures) {
 if (args.has('--print')) {
   for (const host of ['header', 'footer']) console.log(`<!-- ${host} -->\n<div class="kin" aria-hidden="true">${tags[host].join('')}</div>\n`);
   console.log(rules.join('\n'));
+  const g = gapSet();
+  console.log(`\n<!-- every other page: after the header's title block -->\n${g.markup}\n\n<!-- a second gap (Flash Cards, after its centred title) -->\n${g.markupAlone}\n\n/* the gap rules, inside the shared header-icons CSS block */\n${g.rules}`);
 }
-if (args.has('--check')) { if (stale) process.exit(1); console.log('kintsugi: ' + data.fractures.length + ' files match fractures.json'); }
+if (args.has('--check')) {
+  // every root page that carries a gap carries the markup and the rules exactly as printed (the generated pages are their builders' to check)
+  const g = gapSet(); let pages = 0;
+  for (const f of readdirSync(ROOT).filter((n) => n.endsWith('.html'))) {
+    const t = readFileSync(path.join(ROOT, f), 'utf8'); if (!t.includes('class="kin-gap')) continue; pages++;
+    const found = t.match(/<span class="kin-gap[^"]*" aria-hidden="true">.*?<\/span>/g) || [];
+    if (!found.length || !found.every((m) => m === g.markup || m === g.markupAlone)) { stale++; console.error('stale gap markup: ' + f); }
+    if (!t.includes(g.rules)) { stale++; console.error('stale gap rules: ' + f); }
+  }
+  if (stale) process.exit(1);
+  console.log('kintsugi: ' + data.fractures.length + ' files match fractures.json; the gap markup and rules match on ' + pages + ' pages');
+}
 else console.log('kintsugi: wrote ' + data.fractures.length + ' files to brand/kintsugi/');

@@ -545,6 +545,10 @@ from `parsha_emojis` by `scripts/build-parsha-pages.mjs` and `scripts/build-colo
 Paste the CSS block, copy the snippets from any carrier (never redraw them), put labels in `.hi-lbl` spans,
 add the page to the carrier list in every block's header comment, sha-verify, and check the header headless
 with the Playwright recipe in light + dark and EN + HE (the arrow must mirror, the toggle must swap moon for sun).
+For the gold cracks, paste the `.kin-gap` span right after the title block (from any carrier, or
+`node scripts/build-kintsugi.mjs --print`), give the title block `.kin-title` if it grows to fill the row (`flex:1`), add the page's `header{--kin-pt:…;--kin-pb:…;--kin-gap:…;}` line below the
+block (its header's block padding and column gap), and run `node scripts/smoke-kintsugi.mjs --only <page>`
+(`home.md` → *The header gap on every other page*).
 
 ### Header lockup (every page with the header)
 The IvritSuite lockup — the cube and the wordmark — leads every header in place of the old ✡︎ star. Its CSS rides

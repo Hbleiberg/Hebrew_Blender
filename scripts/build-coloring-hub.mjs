@@ -95,6 +95,7 @@ const DARK_IIFE = cut(/<script>\(function\(\)\{try\{var s=localStorage\.getItem\
 const LANG_IIFE = cut(/<script>\n  \/\* No-flash UI-language IIFE[\s\S]*?<\/script>/, 'the no-flash language IIFE');
 const ROOT_VARS = cut(/:root \{\n[\s\S]*?\n\}\nhtml\.dark-early body,body\.dark \{\n[\s\S]*?\n\}/, 'the palette');
 const ICONS_CSS = cut(/\/\* ═══ header-icons CSS ═══[\s\S]*?\/\* ═══ end header-icons CSS ═══ \*\//, 'the header-icons CSS block');
+const KIN_GAP = cut(/<span class="kin-gap" aria-hidden="true">.*?<\/span>/, 'the header gap that holds the gold cracks');
 const SVG_ARROW = cut(/<svg class="hi hi-arrow dir-arrow"[\s\S]*?<\/svg>/, 'the hi-arrow icon');
 const SVG_MOON = cut(/<svg class="hi hi-moon"[\s\S]*?<\/svg>/, 'the hi-moon icon');
 const SVG_SUN = cut(/<svg class="hi hi-sun"[\s\S]*?<\/svg>/, 'the hi-sun icon');
@@ -215,7 +216,8 @@ html[lang="he"] footer [style*="letter-spacing:0.08em"]{letter-spacing:normal !i
   .ch-book h3{display:block;}
   .ch-card,.ch-letter{break-inside:avoid;}
 }
-${ICONS_CSS}`;
+${ICONS_CSS}
+header{--kin-pt:22px;--kin-pb:22px;--kin-gap:16px;}   /* this header's block padding and column gap, for the shared .kin-gap rules above */`;
 
 // ── The page's own script (inline: the CSP allows it, as on every root page) ────────────────────────────────────
 const SCRIPT = `'use strict';
@@ -503,6 +505,7 @@ ${CSS}
     <div class="brand-title" data-i18n="coloringhub.header.title">Jewish Coloring Pages</div>
     <p data-i18n="coloringhub.header.tagline">Free alef bet, parsha and holiday pages to print</p>
   </div>
+  ${KIN_GAP}
   <div class="hright" data-nosnippet>
     <a class="hbtn" href="/">${SVG_ARROW}<span class="hi-lbl" data-i18n="coloringhub.header.home">Home</span></a>
     <div data-i18n-switcher></div>
