@@ -99129,6 +99129,8 @@ _(prior)_ **Next session (S677):** **Branch `claude/zen-goldberg-1lov9k` (S676, 
 
 _(prior)_ **Next session (S678):** **Branch `claude/zen-goldberg-1lov9k` (S676–S677, draft PR #427): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1533**, FM **5.60**, corpus ?v=**8**, the prayer catalog ?v=**9**. ⚑ drift: main=d2d922c sw=v1533 fm=5.60 migration=0014_saves_tool_tefillah_trainer.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest next: the Tefillah Trainer, never audited by D, M (pointer: D, then M); then M atlas (S584), H dictionary (S585). ⚑ Unaudited (`9e702ae..a402f72`): the class roster, the hub, the footer and cracks, FM 5.60 — unseen by E, K, I, F, B. ⚑ Queue: the Tefillah Trainer's two S675 P3s (the translation's `lang`, the fullscreen bar's 4.18:1); the Tutor's dead `.footer-credits` rules. ⚑ Awaiting: S662, S653, S652. ⚑ 51 seeds.
 
+_(prior)_ **Next session (S679):** **Branch `claude/zen-goldberg-1lov9k` (S676–S678, draft PR #427): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1536**, FM **5.60**, corpus ?v=**8**, the prayer catalog ?v=**9**. ⚑ drift: main=d2d922c sw=v1536 fm=5.60 migration=0014_saves_tool_tefillah_trainer.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest next: M on the Tefillah Trainer, never audited (pointer: M); then M atlas (S584), H dictionary (S585), C torah (S586). ⚑ Unaudited (`9e702ae..a402f72`): the class roster, the hub, the footer and cracks, FM 5.60 — unseen by E, K, I, F, B. ⚑ Queue: the dead `footer .footer-credits` screen rule on three pages (one iteration); S675's Hebrew catchword outside `lang="he"`. ⚑ Awaiting: S662, S653, S652. ⚑ 51 seeds.
+
 
 <!-- archived by compact-ledger at the S679 boundary, 2026-11-23 -->
 ## Compaction (S679, 2026-11-23) — moved verbatim from the live ledger
@@ -99162,3 +99164,35 @@ _(prior)_ **Next session (S678):** **Branch `claude/zen-goldberg-1lov9k` (S676�
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 - D performance (one tool): 2026-11-23 (**S678 — `tefillah_trainer.html` (its first D): the 287-reading census, cold ×3 @1× / @4× over 8 starting states, a CPU profile, 23 interactions @4× by real input, scrolling, paper, heap, the waterfall. FOUND 1 (the Torah Trainer's S570 transliteration freeze, here too: not small), FIXED 3 from the queue. D-next: chrome (S590), trope (S598), dictionary (S605).**)
+
+
+<!-- archived by compact-ledger at the S680 boundary, 2026-11-23 -->
+## Compaction (S680, 2026-11-23) — moved verbatim from the live ledger
+
+### from Candidates — aged P4 (found more than 90 sessions before S680)
+
+- [ ] P4 (**NEW S589 G**) | torah_trainer.html | **Side by side at the Hebrew size's maximum (3.5rem) with transliteration under each word, a verse row taller than a Letter sheet leaves its bottom rule alone on the next sheet** (4 of 50 sheets; A4 none). | found S589
+
+### from Done
+
+- [x] 2026-11-23 | `a5a3c1d9` | tefillah_trainer.html, torah_trainer.html, sw.js, probe | (S674 H; pattern `button-focus-lost-to-its-own-rebuild`) **A practice link's banner hands the keyboard to the reading** | probe 12 / 12 (before 0 / 12)
+
+- [x] 2026-11-23 | (S674 close-out) | branch/deploy note | **S674 = H on `tefillah_trainer.html` (its first): FOUND 5 + 2 seeds, FIXED 2 + the atlas's S669 and S671 P4s; 3 logged.** Branch `claude/pensive-ramanujan-rsoncx` (fresh; PR #424 merged), `sw.js` v1519 → v1523; nothing live changed.
+
+- [x] 2026-11-23 | `b5a7cf6b` | trope_atlas.html, torah-and-trope.md, sw.js | (S674, the S671 H P4) **Note names can be switched from the phrase bar too** | probe S674 10 / 10 (before 0 / 10)
+
+- [x] 2026-11-23 | `91817418` | trope_atlas.html, torah-and-trope.md, sw.js | (S674, the S669 G P4) **The printed phrase section names its phrase group** | probe S674 6 / 6 (before 0 / 6); sheets unchanged
+
+- [x] 2026-11-23 | `5f3215f6` | tefillah_trainer.html, tefillah-trainer.md, sw.js | (S674 H) **On paper a paragraph-long line runs on to the next sheet** | 56 printed cases: 288 sheets → 247; probe S674 23 / 23 (before 17)
+
+- [x] 2026-11-23 | `0d4b4923` | tefillah_trainer.html, tefillah-trainer.md, sw.js | (S674 H; pattern `logical-inset-mirrors-onto-pinned-content`) **In fullscreen the first row clears the Exit button** | probe S674 13 / 13 (before 6)
+
+### from Per-session log (one line per session)
+
+- 2026-11-23 | **S679** | iters: 4 | tools: tefillah_trainer ×2, torah_trainer, trope_atlas, tefillah-trainer.md, sw ×3, probes ×2 | patterns fixed: — (live-region-display-none-while-empty kept) | pass run: M (tefillah_trainer, first; FOUND 3, FIXED 2 + 1 from the queue; 1 logged, gate 3) | SW: v1536→v1539
+
+- 2026-11-18 | **S659** | iters: 4 | tools: flash_cards, index, trope_tutor, hebrew_dictionary, shared-components.md, sw ×3, probe S659 | patterns fixed: header-wrap-gate-below-its-ceiling ×2 (its signed-in arm), decorative-glyph-carrier-exposed-to-assistive-tech ×1 | pass run: P (flash_cards, …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- M aesthetics & visual design (one surface): 2026-11-23 (**S679 — 46th M, `tefillah_trainer.html` (its first): 26 views × EN light / EN dark 1280, HE light / HE dark 800 (104 loads, 0 page errors) beside the Torah Trainer, a typed-search reflow arm (18 / 18 queries moved a control), the drawer by tab. FOUND 3, FIXED 2 + 1 from the queue; 1 logged (gate 3). M-next: atlas (S584), flash (S588), chrome (S603).**)
