@@ -7,8 +7,8 @@
 //
 //   node scripts/loop/probes/S675-chosen-radio-pill-in-forced-colours.mjs     exit 1 when a cell fails
 //   ROOT=<a git archive of the tree> runs it on another copy (the control: the tree before S675 fails every forced cell).
-//   PAGES=a.html,b.html checks other carriers (the two trainers and the Classroom Dashboard carry the same pills and
-//   are not fixed yet: they join FIXED below when they are).
+//   PAGES=a.html,b.html checks other carriers (the Tefillah Trainer carries the same pills and is not fixed yet: it joins
+//   FIXED below when it is).
 //
 // Per page × the system's light / dark palette × the stored theme light / dark, forced colours on: every .radio-group
 // with a chosen radio paints its chosen label apart from an unchosen one (fill or text colour, 3:1 between the two
@@ -20,7 +20,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 const { chromium } = pkg;
 const ROOT = process.env.ROOT || path.resolve(path.dirname(new URL(import.meta.url).pathname), '..', '..', '..');
-const FIXED = ['trope_tutor.html'];
+const FIXED = ['trope_tutor.html', 'torah_trainer.html', 'classroom_dashboard.html'];   // S676: the Torah Trainer and the dashboard
 const PAGES = process.env.PAGES ? process.env.PAGES.split(',') : FIXED;
 const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.json': 'application/json', '.webmanifest': 'application/manifest+json', '.svg': 'image/svg+xml', '.png': 'image/png', '.ttf': 'font/ttf', '.woff2': 'font/woff2' };
 const server = http.createServer((req, res) => {
