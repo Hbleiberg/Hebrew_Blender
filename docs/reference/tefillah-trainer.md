@@ -203,6 +203,12 @@ reason on the status line and the Try again card): a prayer with a silent gap wo
   and the print block lets such a row run on to the next sheet, its number kept with its first row and the geniza
   marker with its last. Kept whole, a line longer than what is left of a sheet moves to the next one and leaves the
   sheet before it mostly empty (`scripts/loop/probes/S674-tefillah-print-long-line-runs-on.mjs`).
+- **The credits never print alone in Line by line**: kept whole, they take the last line over to the next sheet with
+  them (`break-before: avoid`), and on paper `#ttReading` and its `.tt-interlinear` are `display: contents` so the rule
+  can reach a line on a sheet the reading has already crossed onto (a block already broken across sheets has nothing to
+  pull back — the geniza marker's reason for `genizaMarkIn`). Page view and Side by side (the parallel grid, which Chrome
+  answered by pushing the whole reading off the first sheet) are left out
+  (`scripts/loop/probes/S676-tefillah-credits-never-print-alone.mjs`).
 
 ## The Shema's Torah text
 

@@ -2059,6 +2059,14 @@ body.fullscreen #ttFsBar.visible .tt-fs-plate { pointer-events: auto; }
   .tt-verse[data-long], .tt-grid-row[data-long] { break-inside:auto; page-break-inside:auto; orphans:2; widows:2; }
   .tt-verse[data-long] > .tt-verse-head { break-after:avoid; page-break-after:avoid; }
   [data-long] > #ttGenizaMark { break-before:avoid; page-break-before:avoid; }
+  /* The credits never print alone on a last sheet. Kept whole, they moved to a sheet of their own whenever they did not
+     fit under the last line (Lecha Dodi's default print on Letter: three sheets, the third three lines of attribution).
+     They avoid a break before them, so the last line goes over with them. In Line by line the reading's two wrappers are
+     flattened on paper so the rule can reach that line: a block already broken across sheets has nothing to pull back
+     (the geniza marker's lesson, genizaMarkIn), and the rule alone left every reading longer than a sheet as it was.
+     Not on the parallel grid, which Chrome answered by pushing the whole reading off the first sheet, nor in Page view. */
+  #ttReading:has(> .tt-interlinear), #ttReading > .tt-interlinear { display:contents; }
+  #ttReading:has(> .tt-interlinear) + #ttCredits { break-before:avoid; page-break-before:avoid; }
 
   /* Trailing dead space paginates exactly like content: the boxes BELOW the last
      line still occupy flow, so a reading that happens to end near a page boundary
