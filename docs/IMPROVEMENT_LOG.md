@@ -16,13 +16,9 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P3 (**NEW S676 G — not small**) | tefillah_trainer.html | **Side by side with a translation leaves a sheet up to 47% blank before a long line**: the print grid keeps a `data-long` row whole (Chrome splits a grid row only past a full sheet; Hallel Sefard on Letter). | found S676
 
-- [ ] P3 (**NEW S675 C; pattern `selected-state-lost-in-forced-colors`; the fix is `7b02e398`; S676: the Torah Trainer and the dashboard FIXED `01c4aa3e`**) | tefillah_trainer.html | **In forced colours the chosen pill of a segmented choice reads like its neighbours** (10 `.radio-group`s). | found S675
-
 - [ ] P3 (**NEW S675 C**) | tefillah_trainer.html | **In the Hebrew UI the English translation carries no `lang`** (it inherits `he`); the row transliteration has no `he-Latn` on either trainer. | found S675
 
 - [ ] P3 (**NEW S675 C**) | tefillah_trainer.html, torah_trainer.html | **The fullscreen bar's switched-on Translit / Translation reads 4.18:1 in light mode** (`.18` for its `.24` fill gives 4.8). | found S675
-
-- [ ] P3 (**NEW S674 H — C's; pattern `button-focus-lost-to-its-own-rebuild`**) | tefillah_trainer.html, torah_trainer.html | **A practice link's banner drops the keyboard's place**: its two buttons hide it and the focus falls to `<body>`. | found S674
 
 - [ ] P3 (**NEW S644 H — not small**) | Hebrew_Font_Maker.html | **Below 1181px the fullscreen Draw canvas window (`100vh − 300px`) clips its drawing**: at 1024×768 the baseline sits 16px under its edge. | found S644
 
@@ -73,6 +69,10 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P3 (**NEW 2026-09-26**) | trope_tutor.html (trope_index.json) | **8 Learn example clips sit where PocketTorah's taps slip by a word** (`build-trope-phrases.mjs` TIMING_SLIPS), so each likely plays a neighbouring word; the index builder could skip those verses. **S454: not small** (findings S454). | found 2026-09-26
 
 - [ ] P3 (**NEW 2026-09-26**) | torah_trainer.html | **The karaoke highlight likely runs a word off in the 19 TIMING_SLIPS stretches** (Shemini 6 from Leviticus 11:8 on), where a timing file slips while its count still matches. | found 2026-09-26
+
+- [ ] P4 (**NEW S677 N — a shared script**) | js/i18n.js | **A Back or a reload on a Hebrew-UI page can restore its scroll in the English layout** (the locale lands after the restore; the hub's Back is fixed `3fe80435`, a reload there still lands ~50px off): every long page. | found S677
+
+- [ ] P4 (**NEW S677**) | trope_tutor.html | **The print block still styles `footer .footer-credits`, gone since the navy footer** (one credit a line, kept whole, Contact hidden): dead rules. | found S677
 
 - [ ] P4 (**NEW S676 G — after `016e91ef`**) | tefillah_trainer.html | **10 of 312 prints still end on the credits alone: Page view and Side by side** (on the grid the rule pushed the reading off sheet 1). | found S676
 
@@ -128,6 +128,8 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S599 H**) | torah_trainer.html | **After Create, the Assign dialog's fields stay live** (New code word changes only the box); the feedback label sits at its textarea's foot. | found S599
 
+- [ ] P4 (**NEW S597 G; S677 re-measured under the navy footer — not small**) | trope_tutor.html | **8 of 56 prints gain a sheet holding only the footer** (6 Phrases, 2 HE Learn Letter): a full last sheet leaves ~22px for its ~105; the footer's `break-before:avoid` moves nothing (the last card is 5 wrappers deep in a flex body; findings S677). | found S597
+
 - [ ] P4 (**NEW S595 N**) | Hebrew_Font_Maker.html | **A window opened mid-tour opens under the tour's card**: on a phone the card covers its Close (the card's ✕ still ends the tour). | found S595
 
 - [ ] P4 (**NEW S595 N — gate 2/4**) | Hebrew_Font_Maker.html | **A phone turned sideways gets the tablet notice** (tiered by width alone); one over 820px gets none. | found S595
@@ -135,8 +137,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S589 G**) | torah_trainer.html | **Side by side at the Hebrew size's maximum (3.5rem) with transliteration under each word, a verse row taller than a Letter sheet leaves its bottom rule alone on the next sheet** (4 of 50 sheets; A4 none). | found S589
 
 - [ ] P4 (**NEW S588 M — 13 carriers**) | footer About column | **At ~800px the licence line wraps after a separator** ("CC BY-NC-SA 4.0 · GitHub ·" / "Contact & Support"). | found S588
-
-- [ ] P4 (**NEW S597 G — after `18d72e52`**) | trope_tutor.html | **15 of 232 printed charts still end on a sheet holding only the footer credits** (the Torah and High Holiday Phrases at Letter, 4 cells each; 4 traditions' Learn in HE A4; 3 more): what is left is the credits block itself (~100px …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S672 P — verify first; pattern `synced-reading-follows-the-other-tab`**) | flash_cards.html, name_tags.html, letter_learner.html, hebrew_dictionary.html | **A synced settings row that names what is open may follow the other tab, as the two trainers' did**: run smoke-sync's `readingStays` shape on the deck or profile in use, the open list, the mode and card, the filters. | found …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -388,6 +388,14 @@ _(none)_
 
 ## Done
 
+- [x] 2026-11-23 | (S677 close-out) | branch/deploy note | **S677 = N on `jewish-coloring-pages.html` (its first, override 4): FOUND 1, FIXED 1 + 2 from the queue; the Tutor's S597 P4 re-measured, not small.** Draft PR #427 continues, `sw.js` v1530 → v1533; nothing live changed.
+
+- [x] 2026-11-23 | `3fe80435` | jewish-coloring-pages.html, build-coloring-hub.mjs, shared-components.md, sw.js, probe | (S677 N) **Back from a sheet puts the tapped card where it was, in Hebrew too** | probe 23 / 23 (before 13 / 23); Back 0 / 30 off (was 5 / 30)
+
+- [x] 2026-11-23 | `a035a3de` | tefillah_trainer.html, sw.js, probe | (S675 C; pattern `selected-state-lost-in-forced-colors`) **In forced colours the chosen pill stands apart, the last carrier** | probe S675 24 / 24 (Tefillah before 2 / 6)
+
+- [x] 2026-11-23 | `a5a3c1d9` | tefillah_trainer.html, torah_trainer.html, sw.js, probe | (S674 H; pattern `button-focus-lost-to-its-own-rebuild`) **A practice link's banner hands the keyboard to the reading** | probe 12 / 12 (before 0 / 12)
+
 - [x] 2026-11-23 | (S676 close-out) | branch/deploy note | **S676 = G on `tefillah_trainer.html` (its first): FOUND 3, FIXED 2 + the S675 pills on two pages; 2 logged.** Branch `claude/zen-goldberg-1lov9k` (fresh; #426 merged), `sw.js` v1527 → v1530; nothing live changed.
 
 - [x] 2026-11-23 | `016e91ef` | tefillah_trainer.html, tefillah-trainer.md, sw.js, probe | (S676 G) **On paper the credits never sit alone on the last sheet in Line by line** | census 26 → 10 of 312, none longer; probe 5 / 5 (before 4 / 5)
@@ -426,19 +434,11 @@ _(none)_
 
 - [x] 2026-11-23 | `dfcf0f20` | tefillah_trainer.html, sw.js, probe | (S673 N; pattern `install-banner-over-a-sheet's-bottom-controls`) **The iPhone install hint steps aside for the settings drawer and the copy dock** | probe `S673-install-hint-clears-drawer-and-dock.mjs` 6 / 6 (before 0 / 6)
 
-- [x] 2026-11-23 | (S672 close-out) | branch/deploy note | **S672 = P on `tefillah_trainer.html` (its first: the page landed outside the loop, now the twelfth tool surface): arms 1–8 clean; FOUND 1 shape on two pages (pattern `synced-reading-follows-the-other-tab`, new), FIXED 2 (the Tefillah and the Torah Trainer); 2 logged.** Draft PR #424 (fresh branch off `dd3f682`), `sw.js` v1511 → v1513; …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-23 | `e6cc4d53` | scripts/loop/coverage.mjs, loop-passes.md | (S672, tooling) **The Tefillah Trainer is a surface of the per-surface passes** (twelve tool pages) | the matrix diffed before and after: only the new column
-
-- [x] 2026-11-23 | `4c0b8f06` | torah_trainer.html, scripts/smoke-sync.mjs, torah-and-trope.md, sw.js | (S672; pattern `synced-reading-follows-the-other-tab` ×2) **Signed in, the parasha and portion on screen stay with their tab** (a pick in a second tab went back to the first tab's; a size change moved the reading; a page left open dropped its pick) | probe 28 / 28 (before 12); smoke-sync D47 10 …[full text: IMPROVEMENT_ARCHIVE.md]
-
-- [x] 2026-11-23 | `95a1c9b4` | tefillah_trainer.html, scripts/smoke-sync.mjs, tefillah-trainer.md, sw.js | (S672 P, its finding; NEW pattern `synced-reading-follows-the-other-tab`) **Signed in, the prayer on screen stays with its tab** (the same three cases) | probe 36 / 36 (before 18); smoke-sync D46 10 / 10 (before 7); the eight signed-in scenarios 43 / 43; smoke-tefillah 89
-
-- [x] 2026-11-23 | — | tefillah_trainer.html | (S672 P) **Refuted: a fresh device's "replaced" note for defaults nobody made (the module's stated design), and `?prayer=` staying in the address after another pick (UX rule 3)** (findings S672); no change
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-11-23 | **S677** | iters: 5 | tools: jewish-coloring-pages + build-coloring-hub, tefillah_trainer ×2, torah_trainer, trope_tutor (measured), 1 doc, sw ×3, probes ×2 + S675 ×1 | patterns fixed: button-focus-lost-to-its-own-rebuild ×1, selected-state-lost-in-forced-colors ×1 | pass run: N (the …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - 2026-11-23 | **S676** | iters: 4 | tools: tefillah_trainer ×2, torah_trainer, classroom_dashboard, 1 doc, sw ×3, probes ×3 | patterns fixed: selected-state-lost-in-forced-colors ×2 | pass run: G (tefillah_trainer, first; FOUND 3, FIXED 2) + the S675 pills on two …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -478,11 +478,9 @@ _(none)_
 
 - 2026-11-18 | **S658** | iters: 5 | tools: name_tags ×2, holidays/ + build-holiday-pages ×2, locales, llms-full, sitemap, sw ×2, probes S658 ×2 | patterns fixed: JSON-LD ↔ visible-content parity ×1 | pass run: L (suite, first since S622; 193 commits; FOUND 4, FIXED 4) | SW: v1412→v1414
 
-- 2026-11-18 | **S657** | iters: 4 | tools: hebrew_blend_generator ×2 (1 reverted), hebrew_dictionary, sw ×2, probes S657 ×2 | patterns fixed: overflow-past-a-scrollers-start-edge ×1 (new) | pass run: N (hebrew_blend_generator, first since S572; FOUND 3, FIXED 1) + the dictionary's S656 Bulk Copy …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S676 (2026-11-23):** tefillah_trainer ×2, torah_trainer, classroom_dashboard, tefillah-trainer.md ×2, sw.js ×3, probes S676 ×2 + S675 ×1, loop docs · S675: tefillah_trainer ×2, torah_trainer ×2, classroom_dashboard ×2, trope_tutor, flash_cards, sw.js ×4, probes S675 ×4
+- **Snapshot S677 (2026-11-23):** jewish-coloring-pages + build-coloring-hub, tefillah_trainer ×2, torah_trainer, shared-components.md, sw.js ×3, probes S677 ×2 + S675 ×1 · S676: tefillah_trainer ×2, torah_trainer, classroom_dashboard, tefillah-trainer.md ×2, sw.js ×3, probes ×3
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
 
@@ -518,7 +516,7 @@ _(none)_
 
 - `defaults-filed-as-the-device's-own-at-first-sign-in` | ACTIVE | owner P | det: recipe | last S546 | streak 0 | hits 6
 
-- `selected-state-lost-in-forced-colors` | ACTIVE | owner C | det: recipe | last S676 | streak 0
+- `selected-state-lost-in-forced-colors` | ACTIVE | owner C | det: recipe | last S677 | streak 0
 
 - `live-region-shown-with-its-text` | ACTIVE | owner G | det: recipe | last S553 | streak 0
 
@@ -626,7 +624,7 @@ _(none)_
 
 - `copy-claims-success-on-a-refused-clipboard` | ACTIVE | owner F | det: recipe | last S445 | streak 0
 
-- `button-focus-lost-to-its-own-rebuild` | ACTIVE | owner F | det: recipe | last S675 | streak 0
+- `button-focus-lost-to-its-own-rebuild` | ACTIVE | owner F | det: recipe | last S677 | streak 0
 
 - `dark-literal-escapes-the-print-tokens` | ACTIVE | owner G | det: recipe | last S669 | streak 0
 
@@ -858,7 +856,7 @@ _(none)_
 
 - O deslop — AI-design-tell sweep (one surface): SKIP since S403 — the sandbox refuses to execute the third-party detector ("Code from External"); runs again once the maintainer commits a `.claude/settings.json` permission rule for it (`docs/reference/deslop-detector.md`). Last run 2026-09-08 (S346, `flash_cards.html`, 6th O; the S399/S403 refusals are in the archive).
 
-- N mobile & touch-device (one surface): 2026-11-23 (**S673 — 46th N, `tefillah_trainer.html` (its first, override 4): 600 phone views (plants 5 / 5), touch 36 / 36. FOUND 4, FIXED 3 + the atlas's S665 P4 from the queue; 4 logged. N-next: fontmaker (S595), dictionary (S601), dashboard …[full text: IMPROVEMENT_ARCHIVE.md]
+- N mobile & touch-device (one surface): 2026-11-23 (**S677 — 47th N, `jewish-coloring-pages.html` (its first, override 4): 7 descriptors × EN/HE × light/dark × 8 views by taps (192 views, plants 4 / 4), Back / a flip / the iOS hint / the select 44 / 44, 4× CPU. FOUND 1, FIXED 1 + 2 from the queue. N-next: fontmaker (S595), dictionary (S601), dashboard (S608).**)
 
 - M aesthetics & visual design (one surface): 2026-11-18 (**S660 — 45th M, `hebrew_blend_generator.html` (its 3rd: S436 → S574 → S660; 49 commits to the page since): 34 views × 6 cells by real clicks (204 loads, 0 page errors), the text census, a dark-fill arm (light vs dark), the frozen bar over 113 widths × 3 states and 12 resizes. FOUND 5, FIXED 1 + the S657 P3; 4 logged. M-next: atlas (S584), …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -888,4 +886,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-11-08 (**S630 — 41st F, long-build progress (S542's F-next; the affordance's first F): 13 presses that build before they answer, by real clicks with an animation-frame recorder, real PDF libraries from a cache, a held CDN, double presses at raw points. FOUND 2, FIXED 2 (+1 P4). F-next: destructive-action confirms.**)
 
-**Next session (S677):** **Branch `claude/zen-goldberg-1lov9k` (S676, draft PR #427): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1530**, FM **5.60**, corpus ?v=**8**, the prayer catalog ?v=**9**. ⚑ drift: main=d2d922c sw=v1530 fm=5.60 migration=0014_saves_tool_tefillah_trainer.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Due (override 4): `jewish-coloring-pages.html` N **this session (S677)**. ⚑ Stalest next: the Tefillah Trainer, never audited by D, M (pointer: D, then M); then M atlas (S584), H dictionary (S585). ⚑ Unaudited (`9e702ae..a402f72`): the class roster, the hub, the footer and cracks, FM 5.60 — unseen by E, K, I, F, B. ⚑ Queue: the Tefillah Trainer's share of S675's P3s; S674's link banner focus; the Tutor's S597 credits sheet (try `016e91ef`'s rule). ⚑ Awaiting: S662, S653, S652. ⚑ 51 seeds.
+**Next session (S678):** **Branch `claude/zen-goldberg-1lov9k` (S676–S677, draft PR #427): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1533**, FM **5.60**, corpus ?v=**8**, the prayer catalog ?v=**9**. ⚑ drift: main=d2d922c sw=v1533 fm=5.60 migration=0014_saves_tool_tefillah_trainer.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest next: the Tefillah Trainer, never audited by D, M (pointer: D, then M); then M atlas (S584), H dictionary (S585). ⚑ Unaudited (`9e702ae..a402f72`): the class roster, the hub, the footer and cracks, FM 5.60 — unseen by E, K, I, F, B. ⚑ Queue: the Tefillah Trainer's two S675 P3s (the translation's `lang`, the fullscreen bar's 4.18:1); the Tutor's dead `.footer-credits` rules. ⚑ Awaiting: S662, S653, S652. ⚑ 51 seeds.

@@ -99098,3 +99098,31 @@ _(prior)_ **Next session (S674):** **Branch `claude/lucid-goldberg-dwlpfa` (S672
 - G print & export fidelity (one tool): 2026-11-20 (**S669 — `trope_atlas.html` (its 2nd G, S582 → S669; 22 commits to the page since): 24 PDFs with the real web fonts (the Grid's swapped-in cards / Stacked with a common key, note names and the Eicha phrases / the preview × EN/HE × light/dark × Letter/A4; dark = light on all), sheet markers, print media at 739 / 718 (controls fired), the singer …[full text: IMPROVEMENT_ARCHIVE.md]
 
 _(prior)_ **Next session (S676):** **Branch `claude/pensive-ramanujan-rsoncx` (S674–S675, draft PR #426): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1527**, FM **5.60**, corpus ?v=**8**, the prayer catalog ?v=**9**. ⚑ drift: main=a402f72 sw=v1527 fm=5.60 migration=0014_saves_tool_tefillah_trainer.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest next: the Tefillah Trainer, never audited by D, G, M (pointer: G, then D, M); then M atlas (S584), H dictionary (S585). ⚑ Unaudited (`9e702ae..a402f72`): the class roster, the hub, the footer and cracks, FM 5.60 — unseen by E, K, I, F, B. ⚑ Due (override 4): `jewish-coloring-pages.html` N by S677. ⚑ Queue: S675's three P3s; S674's link banner focus. ⚑ Awaiting: S662, S653, S652. ⚑ 51 seeds.
+
+
+<!-- archived by compact-ledger at the S678 boundary, 2026-11-23 -->
+## Compaction (S678, 2026-11-23) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-11-23 | — | trope_tutor.html | (S597 G P4) **Attempted, nothing committed: the footer-alone sheet** | 56-print census; two rule-only candidates move nothing (findings S677)
+
+- [x] 2026-11-23 | (S672 close-out) | branch/deploy note | **S672 = P on `tefillah_trainer.html` (its first: the page landed outside the loop, now the twelfth tool surface): arms 1–8 clean; FOUND 1 shape on two pages (pattern `synced-reading-follows-the-other-tab`, new), FIXED 2 (the Tefillah and the Torah Trainer); 2 logged.** Draft PR #424 (fresh branch off `dd3f682`), `sw.js` v1511 → v1513; …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-23 | `e6cc4d53` | scripts/loop/coverage.mjs, loop-passes.md | (S672, tooling) **The Tefillah Trainer is a surface of the per-surface passes** (twelve tool pages) | the matrix diffed before and after: only the new column
+
+- [x] 2026-11-23 | `4c0b8f06` | torah_trainer.html, scripts/smoke-sync.mjs, torah-and-trope.md, sw.js | (S672; pattern `synced-reading-follows-the-other-tab` ×2) **Signed in, the parasha and portion on screen stay with their tab** (a pick in a second tab went back to the first tab's; a size change moved the reading; a page left open dropped its pick) | probe 28 / 28 (before 12); smoke-sync D47 10 …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-23 | `95a1c9b4` | tefillah_trainer.html, scripts/smoke-sync.mjs, tefillah-trainer.md, sw.js | (S672 P, its finding; NEW pattern `synced-reading-follows-the-other-tab`) **Signed in, the prayer on screen stays with its tab** (the same three cases) | probe 36 / 36 (before 18); smoke-sync D46 10 / 10 (before 7); the eight signed-in scenarios 43 / 43; smoke-tefillah 89
+
+- [x] 2026-11-23 | — | tefillah_trainer.html | (S672 P) **Refuted: a fresh device's "replaced" note for defaults nobody made (the module's stated design), and `?prayer=` staying in the address after another pick (UX rule 3)** (findings S672); no change
+
+### from Per-session log (one line per session)
+
+- 2026-11-23 | **S677** | iters: 5 | tools: jewish-coloring-pages + build-coloring-hub, tefillah_trainer ×2, torah_trainer, trope_tutor (measured), 1 doc, sw ×3, probes ×2 + S675 ×1 | patterns fixed: button-focus-lost-to-its-own-rebuild ×1, selected-state-lost-in-forced-colors ×1 | pass run: N (the coloring hub, first, override 4; FOUND 1, FIXED 1) | gates: none | SW: v1530 → v1533 | PR #427
+
+- 2026-11-18 | **S657** | iters: 4 | tools: hebrew_blend_generator ×2 (1 reverted), hebrew_dictionary, sw ×2, probes S657 ×2 | patterns fixed: overflow-past-a-scrollers-start-edge ×1 (new) | pass run: N (hebrew_blend_generator, first since S572; FOUND 3, FIXED 1) + the dictionary's S656 Bulk Copy …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+_(prior)_ **Next session (S677):** **Branch `claude/zen-goldberg-1lov9k` (S676, draft PR #427): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1530**, FM **5.60**, corpus ?v=**8**, the prayer catalog ?v=**9**. ⚑ drift: main=d2d922c sw=v1530 fm=5.60 migration=0014_saves_tool_tefillah_trainer.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Due (override 4): `jewish-coloring-pages.html` N **this session (S677)**. ⚑ Stalest next: the Tefillah Trainer, never audited by D, M (pointer: D, then M); then M atlas (S584), H dictionary (S585). ⚑ Unaudited (`9e702ae..a402f72`): the class roster, the hub, the footer and cracks, FM 5.60 — unseen by E, K, I, F, B. ⚑ Queue: the Tefillah Trainer's share of S675's P3s; S674's link banner focus; the Tutor's S597 credits sheet (try `016e91ef`'s rule). ⚑ Awaiting: S662, S653, S652. ⚑ 51 seeds.
