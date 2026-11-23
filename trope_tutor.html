@@ -1338,6 +1338,9 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
   .tu-choice.armed, body.dark .tu-choice.armed, .tu-choice.good, body.dark .tu-choice.good { background: Highlight; border-color: Highlight; color: HighlightText; forced-color-adjust: none; }
   .tu-choice.armed .c-glyph, .tu-choice.armed .c-sub, body.dark .tu-choice.armed .c-sub, .tu-choice.good .c-glyph, .tu-choice.good .c-sub { color: HighlightText; }
   .tu-choice.bad, body.dark .tu-choice.bad { outline: 3px dashed CanvasText; outline-offset: -4px; }
+  /* The chosen pill of a segmented choice (the tradition, the transliteration style…) is a white fill on a tinted track,
+     and forced colours paint both Canvas: the choice read like its neighbours. It takes the selection pair. */
+  .radio-group input:checked + label, body.dark .radio-group input:checked + label { background: Highlight; color: HighlightText; box-shadow: none; forced-color-adjust: none; }
   /* A staff's ink is the page's own colour, and forced colours never replace a colour an SVG sets for itself: with a stored
      theme opposite the system's, every staff and motif drew navy on black or cream on white (1.3:1). The ink follows the
      system's text colour, the highlighted and the sounding note its selection colour, the family bars its muted one. */
