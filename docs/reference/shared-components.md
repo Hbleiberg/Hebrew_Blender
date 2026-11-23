@@ -399,7 +399,11 @@ clears it, and leaving fullscreen clears it. Nothing is saved.
   `pointer-events: none` is what makes the first tap on a touch device reveal rather than activate.
   What fades: the floating `#fsExitBtn` (Font Maker also `#fsPanelsBtn`; dashboard/generator/torah), the
   dictionary's floating `#fsBtn`, and on flash cards / Trope Tutor (whose header stays visible in
-  fullscreen) the header `#fsBtn`. The dashboard strip and torah `#ttFsBar` keep their own 4 s show/hide.
+  fullscreen) the header `#fsBtn`. The dashboard strip and torah `#ttFsBar` keep their own 4 s show/hide. Such a bar
+  (the dashboard's `#fsStrip`, the Torah and the Tefillah Trainer's `#ttFsBar`) is hidden by opacity, which never takes
+  its buttons out of the tab order, so it **shows on `focusin` and its hide function returns while a button inside it is
+  `:focus-visible`** (a pointer's press is not, so the bar still fades after one); `focusout` re-arms the timer
+  (`scripts/loop/probes/S675-fullscreen-bar-wakes-for-the-keyboard.mjs`).
 - **Verify** with a stubbed Fullscreen API (headless Chromium cannot enter real fullscreen): define
   `document.fullscreenElement` as a getter, dispatch `fullscreenchange`, then measure the control at
   t=0, after 3.3 s idle, after a `page.mouse.move`, while focused past the idle time, and after exit.

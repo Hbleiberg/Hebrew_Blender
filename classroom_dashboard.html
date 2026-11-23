@@ -12260,6 +12260,7 @@ async function onUploadEngFontPick(input){
     if (_activeEditable) return;                                                        // stay while editing text
     if (document.getElementById('fsTimerPop').style.display !== 'none') return;         // stay while timer popup open
     if (document.getElementById('fsPickPop').style.display !== 'none') return;          // stay while pick popup open
+    if (document.getElementById('fsStrip').querySelector(':focus-visible')) return;     // stay under the keyboard's focus (a pointer's press is not :focus-visible)
     document.getElementById('fsStrip').classList.remove('visible');
   }
   function fsStripTimerToggle() {
@@ -12648,7 +12649,10 @@ async function onUploadEngFontPick(input){
   document.addEventListener('pointerdown', _fsReveal, { passive: true });
   document.getElementById('fsStrip').addEventListener('pointerenter', () => { if (_fsStripTimer) clearTimeout(_fsStripTimer); });
   document.getElementById('fsStrip').addEventListener('pointerleave', showFsStrip);
-  document.getElementById('fsStrip').addEventListener('focusin', () => { if (_fsStripTimer) clearTimeout(_fsStripTimer); });
+  // Tab reaches the strip's buttons while it is faded out (opacity never takes a control out of the tab order): show it
+  // first, hold it while the focus is inside, and let it fade again once the focus has left.
+  document.getElementById('fsStrip').addEventListener('focusin', () => { showFsStrip(); if (_fsStripTimer) clearTimeout(_fsStripTimer); });
+  document.getElementById('fsStrip').addEventListener('focusout', showFsStrip);
 
   /* ────────── COLLAPSE HEADERS (the board columns, the video panel and the week editor's Saved Schedules) ────────── */
   // The settings drawer collapses nothing any more (seven tabs of flat sections — setSettingsTab above), so the

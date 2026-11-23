@@ -3227,6 +3227,9 @@ function hideFsBar() {
   const modal = document.getElementById('settingsModal');
   if (modal && modal.classList.contains('open')) return;
   const bar = document.getElementById('ttFsBar');
+  // …and while the keyboard's focus rests on one of its buttons: a control never fades under the focus (a button a
+  // key has just pressed re-arms the timer). A pointer's press is not :focus-visible, so the bar still fades after one.
+  if (bar && bar.querySelector(':focus-visible')) return;
   if (bar) bar.classList.remove('visible');
 }
 /* A−/A+ move the Hebrew row only: it is the row a class reads across a room, and the three
@@ -6876,7 +6879,8 @@ function wireSettingsForm() {
   if (_fsBar) {
     _fsBar.addEventListener('pointerenter', () => { if (_fsBarTimer) { clearTimeout(_fsBarTimer); _fsBarTimer = null; } });
     _fsBar.addEventListener('pointerleave', showFsBar);
-    _fsBar.addEventListener('focusin',      () => { if (_fsBarTimer) { clearTimeout(_fsBarTimer); _fsBarTimer = null; } });
+    // Tab reaches the bar's buttons while it is faded out (opacity never takes a control out of the tab order): show it first.
+    _fsBar.addEventListener('focusin',      () => { showFsBar(); if (_fsBarTimer) { clearTimeout(_fsBarTimer); _fsBarTimer = null; } });
     _fsBar.addEventListener('focusout',     showFsBar);
   }
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') saveSettingsFlush(); });
