@@ -99016,3 +99016,49 @@ _(prior)_ **Next session (S673):** **Branch `claude/lucid-goldberg-dwlpfa` (S672
 - H teacher walkthrough / paper-cuts (one tool): 2026-11-23 (**S674 — `tefillah_trainer.html` (its first H): 3 lessons by real input on Sefaria's own texts (a weekday blessings lesson EN light 1366: filter, both reveals, size, colours, a favorite, five lines copied, the handout, a practice link, a reload; a projector lesson HE dark 1024: search, the Shema, fullscreen and its bar, a favorite opened from it; Hallel in Sefard EN dark 1280: the verse translations, three layouts, the nusach fallback, a full copy, Sefaria down) + the student cell (a practice link by clicks, windowed 1366×768 and fullscreen 1024×768); a census of all 291 readings (0 failed). FOUND 5 + 2 seeds, FIXED 2 + the atlas's S669 and S671 P4s; 3 logged. H-next: dictionary (S585), torah (S599), chrome (S606).**)
 
 _(prior)_ **Next session (S674):** **Branch `claude/lucid-goldberg-dwlpfa` (S672–S673, draft PR #424): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1517**, FM **5.60**, corpus ?v=**8**, the prayer catalog ?v=**9**. ⚑ drift: main=dd3f682 sw=v1517 fm=5.60 migration=0014_saves_tool_tefillah_trainer.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest next: the Tefillah Trainer, never audited by C, D, G, H, M (pointer: H first, then C); then M atlas (S584), H dictionary (S585), C torah (S586). ⚑ Unaudited (`9e702ae..dd3f682`): the class roster, the hub, the footer and cracks, FM 5.60 — unseen by E, K, I, F, B. ⚑ Due (override 4): `jewish-coloring-pages.html` N by S677. ⚑ Queue: the Tefillah backup box (S673); the atlas's Note names (S671) and paper phrase group (S669); Page view's ring (S653); S666's holiday icons; the generator's S660 P4. ⚑ Awaiting: the atlas's phone layout (S662), the Trainer's ▶ and tabs (S653), the starter class (S652). ⚑ N: the S673 P4s; the FM's Draw window (S644). ⚑ P: the sync smoke alone in its lane; the S672 P3 / P4. ⚑ 49 seeds.
+
+
+<!-- archived by compact-ledger at the S676 boundary, 2026-11-23 -->
+## Compaction (S676, 2026-11-23) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-11-23 | (S675 close-out) | branch/deploy note | **S675 = C on `tefillah_trainer.html` (its first): 100 census views (plants 7 / 7), Tab walks both ways, 9 keyboard scenarios, 139 drawer presses, reduced motion, forced colours × the stored theme, text spacing; FOUND 6, FIXED 2 (each on three pages) + the Tutor's share of a third + Flash Cards' S645 P4; 4 logged.** Draft PR #426 continues, `sw.js` v1523 → v1527; nothing live changed; after the merge confirm the Pages deploy.
+
+- [x] 2026-11-23 | `16ee9fd4` | tefillah_trainer.html, torah_trainer.html, classroom_dashboard.html, shared-components.md, sw.js, probe | (S675 C, its finding; pattern `logical-inset-mirrors-onto-pinned-content`) **In fullscreen the Exit button goes under the open settings drawer** (left to right it covered the drawer's Close and dark buttons whole) | probe S675 12 / 12 (before 0 / 12); S674's fullscreen probe 13 / 13
+
+- [x] 2026-11-23 | `567e3d06` | tefillah_trainer.html, torah_trainer.html, classroom_dashboard.html, shared-components.md, sw.js, probe | (S675 C, its finding; NEW pattern `auto-hidden-bar-takes-focus-unseen`) **A fullscreen bar shows when the keyboard's focus enters it and stays while it rests there** (Tab walked onto its buttons at opacity 0) | probe S675 6 / 6 (before 0 / 6); recipe 24 / 24; smoke-tefillah 89 / 89
+
+- [x] 2026-11-21 | (S670 close-out) | branch/deploy note | **S670 = N on `holiday_guide.html` (its first, override 4) + its 17 `holidays/` pages: FOUND 1 (+2 by its probe), FIXED 1 + 3 from the queue; 1 logged.** Draft PR #417 (continued), `sw.js` v1463 → v1467; nothing live changed; `test-rls-assignments` 167 / 167, `smoke-assignments --sdk` 135 / 135.
+
+- [x] 2026-11-21 | `ef0adf69` | reading_assignments.html, sw.js | (S670, the S669 G P4) **Printed signed out, the Sign in button stays off paper** | probe S670 8 / 8 (before 0 / 8); PDFs: the button's line gone, the note kept, 1 sheet; screen equal 8 / 8; the two assignment checks
+
+- [x] 2026-11-21 | `ad75c707` | hebrew_blend_generator.html, sw.js | (S670, the S660 M P4; pattern `physical-property-that-never-mirrors` ×4) **In the Hebrew UI the sidebar's indented options sit under their own switch** | probe S670 56 / 56 by clicks (before: all 20 Hebrew cells fail); English pixel-equal 8 / 8
+
+- [x] 2026-11-21 | `c5db763e` | holiday_guide.html, holiday-guide.md, sw.js | (S670 N, its finding) **On a phone, a choice in the sheet maker keeps its option under the finger, and the popup opens on the sheet** | probe S670 90 / 90 (before 58: every no-anchoring tap, another holiday with anchoring, every reopen); 1280 unmoved
+
+### from Per-session log (one line per session)
+
+- 2026-11-23 | **S675** | iters: 5 | tools: tefillah_trainer ×2, torah_trainer ×2, classroom_dashboard ×2, trope_tutor, flash_cards, shared-components.md, sw ×4, probes S675 ×4 | patterns fixed: auto-hidden-bar-takes-focus-unseen ×3 (new), logical-inset-mirrors-onto-pinned-content ×3, selected-state-lost-in-forced-colors ×1, button-focus-lost-to-its-own-rebuild ×1 | pass run: C (tefillah_trainer, first; FOUND 6, FIXED 2 + 1 of 4 carriers) + Flash Cards' S645 P4 | gates: none | SW: v1523 → v1527
+
+- 2026-11-17 | **S655** | iters: 4 | tools: torah_trainer ×2, flash_cards, locales, torah-and-trope.md ×2, sw ×3, probe S655 | patterns fixed: — | pass run: D (torah, first since S570 + dashboard, since S576; FOUND 1, the S570 P4 FIXED ×2) + flash's S651 K half | SW: v1401→v1404
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- C accessibility (one tool): 2026-11-23 (**S675 — `tefillah_trainer.html` (its first C): a 25-view census × 4 cells (100 loads, plants 7 / 7, every control named), Tab and Shift+Tab walks (45 / 81 stops), 9 keyboard scenarios, 139 drawer presses, reduced motion, forced colours × the stored theme, text spacing. FOUND 6, FIXED 2 (each on three pages) + the Tutor's share of a third + Flash Cards' S645 P4; 4 logged. C-next: torah (S586), trope (S591), generator (S594).**)
+
+
+<!-- archived by compact-ledger at the S676 boundary, 2026-11-23 -->
+## Compaction (S676, 2026-11-23) — moved verbatim from the live ledger
+
+### from Per-session log (one line per session)
+
+- 2026-11-23 | **S675** | iters: 5 | tools: tefillah_trainer ×2, torah_trainer ×2, classroom_dashboard ×2, trope_tutor, flash_cards, sw ×4, probes S675 ×4 | patterns fixed: auto-hidden-bar-takes-focus-unseen ×3 (new), logical-inset… ×3, selected-state-lost… ×1, button-focus-lost… ×1 | pass run: C (tefillah_trainer, first; FOUND 6, FIXED 2 + 1 of 4 carriers) + Flash Cards' S645 P4 | gates: none | SW: v1523 → v1527
+
+
+<!-- archived by compact-ledger at the S676 boundary, 2026-11-23 -->
+## Compaction (S676, 2026-11-23) — moved verbatim from the live ledger
+
+### from Per-session log (one line per session)
+
+- 2026-11-23 | **S675** | iters: 5 | tools: tefillah_trainer ×2, torah_trainer ×2, classroom_dashboard ×2, trope_tutor, flash_cards, sw ×4, probes S675 ×4 | patterns fixed: auto-hidden-bar-takes-focus-unseen ×3 (new), logical-inset… ×3, selected-state-lost… ×1, button-focus-lost… ×1 | pass run: C (tefillah_trainer, first; FOUND 6, FIXED 2) + Flash Cards' S645 P4 | gates: none | SW: v1523 → v1527
