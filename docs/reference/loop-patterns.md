@@ -551,9 +551,10 @@
 - **Record (S663, P generator):** clean — the page's 7 confirms read by what they remove: the preset delete and the colour reset carry the signed-in branch; the two overwrites, the folder delete, the file-tool check and the imported list's clear (memory only) are exempt. The atlas has no confirm. A plant (the delete's `_cloud` branch dropped) fired.
 
 ## `logical-inset-mirrors-onto-pinned-content`
-- **Status:** ACTIVE · **Owner:** H · **Consequence:** normal · **Last:** S440 · **Streak:** 0 · **Detector:** recipe
-- **Shape:** A logical inset over physically pinned content lands on it in Hebrew.
+- **Status:** ACTIVE · **Owner:** H · **Consequence:** normal · **Last:** S674 · **Streak:** 0 · **Detector:** recipe
+- **Shape:** A logical inset over physically pinned content lands on it in Hebrew — or its mirror: a physically pinned control (a fullscreen Exit button at the top right) sits where a right-to-left page's first row starts.
 - **Detection:** HE, text Range rects ∩ the control's box.
+- **Record (S674):** the mirror shape, `tefillah_trainer.html`'s fullscreen: `#fsExitBtn` (physical top right, ends 71px down) over the prayer's name (70px of it) and, on the Shema, the Open in Torah Trainer lead; FIXED `0d4b4923` (the fullscreen page starts 78px down in the Hebrew UI; left to right the Torah links row wraps 84px early). The Torah Trainer measured clear (its status line, jump nav and chip put the heading at 158px). Probe `scripts/loop/probes/S674-tefillah-fullscreen-first-row-clears-exit.mjs`. Unswept: the dashboard's and flash cards' fullscreen in the Hebrew UI.
 - **Record (ledger row at S544):** - **`logical-inset-mirrors-onto-pinned-content`** (NEW S440; FIXED `23b7bb0f`): ACTIVE, streak 0. A logical inset over physically pinned content lands on it in Hebrew. Detection: HE, text Range rects ∩ the control's box.
 
 ## `tip-name-joins-its-field's-name`

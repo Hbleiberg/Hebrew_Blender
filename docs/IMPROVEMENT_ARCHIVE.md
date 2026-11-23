@@ -98976,3 +98976,43 @@ _(prior)_ **Next session (S673):** **Branch `claude/lucid-goldberg-dwlpfa` (S672
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 - N mobile & touch-device (one surface): 2026-11-23 (**S673 — 46th N, `tefillah_trainer.html` (its first, override 4): 6 descriptors × EN/HE × light/dark × 25 views by taps (600 views, plants 5 / 5), touch 36 / 36, every field, the forced install hint, a practice link, 4× CPU. FOUND 4, FIXED 3 + the atlas's S665 P4 from the queue; 4 logged. N-next: fontmaker (S595), dictionary (S601), dashboard (S608).**)
+
+
+<!-- archived by compact-ledger at the S675 boundary, 2026-11-23 -->
+## Compaction (S675, 2026-11-23) — moved verbatim from the live ledger
+
+### from Candidates — aged P4 (found more than 90 sessions before S675)
+
+- [ ] P4 (**NEW S584 M — verify on a real device**) | trope_atlas.html | **The sof pasuk mark (׃) in the sign table's role text has zero advance in headless Chromium on Linux** ("the two dots ׃ close" draws as "dots :close"): the cell's stack is `"Source Sans 3", sans-serif`, no Hebrew face; check a Mac / iPhone before wrapping ׃ and ׀ in a Hebrew-font span (the strings are i18n). | found S584
+
+### from Feature seeds (micro-features only; see the Micro-feature track in the session prompt)
+
+- [ ] S | tefillah_trainer.html | **Show a paragraph one verse to a row**: Ashrei is one 173-word line in Ashkenaz and Sefard (two in Edot HaMizrach, three in Koren) and Hallel's Psalm 118 holds a 160-word line, so "the first five verses" cannot be selected, copied or printed; a display option that starts a new row after each sof pasuk (display only: the source's lines stay the addresses). | found S674 H
+
+### from Done
+
+- [x] 2026-11-23 | (S674 close-out) | branch/deploy note | **S674 = H on `tefillah_trainer.html` (its first): 3 lessons + the student cell by real input on Sefaria's own texts, all 291 prayer × nusach readings load; FOUND 5 + 2 seeds, FIXED 2 + the atlas's S669 and S671 P4s; 3 logged.** Branch `claude/pensive-ramanujan-rsoncx` (fresh off `origin/main`; PR #424 merged), `sw.js` v1519 → v1523; nothing live changed; after the merge confirm the Pages deploy.
+
+- [x] 2026-11-21 | `2d95f5f8` | trope_atlas.html, torah-and-trope.md, shared-components.md, sw.js, S669 probe | (S670, the S669 P3; pattern `header-ink-on-a-plate-print-drops`) **Printed, the atlas's header names the page in ink** | header probe 22 / 22 (before: the atlas fails); 16 PDFs: title ink 135–171 → 38, sheets 84 / 79 unchanged; screen equal 8 / 8
+
+- [x] 2026-11-20 | (S669 close-out) | branch/deploy note | **S669 = G on `trope_atlas.html` (its 2nd, S582 → S669): FOUND 3 + 1 suite shape + 1 by the way; FIXED 2 on the atlas, the shape on 7 pages (new pattern `header-ink-on-a-plate-print-drops`) and the Holiday Guide's dark print; 3 logged.** Draft PR #417 (continued), `sw.js` v1459 → v1463; nothing live changed.
+
+- [x] 2026-11-20 | `6401b024` | holiday_guide.html, holiday-guide.md, sw.js | (S669, found by fix 3's PDFs; pattern `new-page-print-block-without-the-ink-remap`) **Printed from dark mode, the Holiday Guide takes the light palette** | dark = light 40 / 40 sheets (before 0 / 40); the light prints and the maker's run unchanged
+
+- [x] 2026-11-20 | `62ed3626` | account, contact, privacy, terms, resources, holiday_guide, reading_assignments, shared-components.md, sw.js | (S669, the G pass's suite shape; NEW pattern `header-ink-on-a-plate-print-drops`) **Printed, the header names the page in navy ink, not white on white** | probe S669 22 / 22 pages (before 15); 56 PDFs title ink 135–171 → 38, sheets equal
+
+- [x] 2026-11-20 | `ce1e6fc8` | trope_atlas.html, torah-and-trope.md, sw.js | (S669 G) **The printed sheet names the key its staffs are drawn in** (the bar's Key label and choice, the select as text) | probe S669 key 12 / 12 (before 0); no sheet count changed
+
+- [x] 2026-11-20 | `295e3868` | trope_atlas.html, torah-and-trope.md, sw.js | (S669 G; pattern `print-block-split-at-a-sheet-foot`) **Printed, a sign's card head stays with its first figure and a heading with its text** | probe S669 8 / 8, web and system faces (before 0 / 8); 24 PDFs dark = light; the screen pixel-equal 16 / 16
+
+### from Per-session log (one line per session)
+
+- 2026-11-23 | **S674** | iters: 5 | tools: tefillah_trainer ×2, trope_atlas ×2, 2 reference docs, sw ×4, probes S674 ×4 | patterns fixed: logical-inset-mirrors-onto-pinned-content ×1 | pass run: H (tefillah_trainer, first; FOUND 5, FIXED 2) + the atlas's S669 / S671 P4s | gates: none | SW: v1519→v1523
+
+- 2026-11-17 | **S654** | iters: 5 +1 | tools: flash ×2, generator, torah, letter_discrimination, locales, sw ×5 | patterns fixed: fixed-surface-missing-from-the-print-hide-list, placeholder-keeps-the-browser-gray | pass run: G (flash, first since S569; FOUND 3, FIXED 3) + 3 | SW: v1396→v1401
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- H teacher walkthrough / paper-cuts (one tool): 2026-11-23 (**S674 — `tefillah_trainer.html` (its first H): 3 lessons by real input on Sefaria's own texts (a weekday blessings lesson EN light 1366: filter, both reveals, size, colours, a favorite, five lines copied, the handout, a practice link, a reload; a projector lesson HE dark 1024: search, the Shema, fullscreen and its bar, a favorite opened from it; Hallel in Sefard EN dark 1280: the verse translations, three layouts, the nusach fallback, a full copy, Sefaria down) + the student cell (a practice link by clicks, windowed 1366×768 and fullscreen 1024×768); a census of all 291 readings (0 failed). FOUND 5 + 2 seeds, FIXED 2 + the atlas's S669 and S671 P4s; 3 logged. H-next: dictionary (S585), torah (S599), chrome (S606).**)
+
+_(prior)_ **Next session (S674):** **Branch `claude/lucid-goldberg-dwlpfa` (S672–S673, draft PR #424): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1517**, FM **5.60**, corpus ?v=**8**, the prayer catalog ?v=**9**. ⚑ drift: main=dd3f682 sw=v1517 fm=5.60 migration=0014_saves_tool_tefillah_trainer.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest next: the Tefillah Trainer, never audited by C, D, G, H, M (pointer: H first, then C); then M atlas (S584), H dictionary (S585), C torah (S586). ⚑ Unaudited (`9e702ae..dd3f682`): the class roster, the hub, the footer and cracks, FM 5.60 — unseen by E, K, I, F, B. ⚑ Due (override 4): `jewish-coloring-pages.html` N by S677. ⚑ Queue: the Tefillah backup box (S673); the atlas's Note names (S671) and paper phrase group (S669); Page view's ring (S653); S666's holiday icons; the generator's S660 P4. ⚑ Awaiting: the atlas's phone layout (S662), the Trainer's ▶ and tabs (S653), the starter class (S652). ⚑ N: the S673 P4s; the FM's Draw window (S644). ⚑ P: the sync smoke alone in its lane; the S672 P3 / P4. ⚑ 49 seeds.
