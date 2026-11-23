@@ -89,7 +89,7 @@ for (const pg of PAGES) for (const [dev, lang] of CELLS) {
     const launch = page.locator('#settingsModal button[onclick="openCopyBarFromDrawer()"]'); await launch.scrollIntoViewIfNeeded(); await launch.tap(); await page.waitForTimeout(600);
     rec.hint.push(await page.evaluate(hintState));                                             // 2: the drawer closed, nothing picked — visible
     await page.locator('label.toggle:has(#ttCopyBulkCb) .slider').tap(); await page.waitForTimeout(200);
-    const ln = page.locator('#ttReading [data-vk]').nth(1); await ln.scrollIntoViewIfNeeded(); await ln.tap({ position: { x: 24, y: 12 } }); await page.waitForTimeout(400);
+    const cb = page.locator('#ttReading [data-vk]').nth(1).locator('.tt-bulk-cb'); await cb.scrollIntoViewIfNeeded(); await cb.tap(); await page.waitForTimeout(400);   // the line's own checkbox: a tap on the row can land on one of its buttons
     rec.dock = await page.evaluate(() => { const d = document.getElementById('ttBulkDock'); return !!d && !d.hidden && d.getBoundingClientRect().height > 0; });
     rec.hint.push(await page.evaluate(hintState));                                             // 3: the dock up — hidden
     const c = await page.evaluate(coveredIn, '#ttBulkDock'); if (c.length) rec.covered.push('dock: ' + c.join(', '));
@@ -104,5 +104,5 @@ await browser.close(); server.close();
 const bad = records.filter(r => !r.ok || r.errors);
 if (JSON_OUT) console.log(JSON.stringify(records, null, 1));
 else for (const r of records) console.log(`${r.ok && !r.errors ? 'ok  ' : 'FAIL'} ${r.cell.padEnd(44)} tabs ${r.tabs} lines ${r.lines} hint ${r.hint.join('→')} covered ${r.covered.length ? r.covered.join(' | ').slice(0, 150) : 0}${r.note ? ' — ' + r.note : ''} errors ${r.errors}`);
-console.log(`${records.length - bad.length} / ${records.length}`);
+if (!JSON_OUT) console.log(`${records.length - bad.length} / ${records.length}`);
 process.exit(bad.length ? 1 : 0);

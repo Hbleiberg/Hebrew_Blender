@@ -1746,8 +1746,10 @@ body.dark .tt-fav-note { color:#ffb4a9; }
 body.dark .tt-emo-dialog { background:var(--navy-deep); }
 .tt-emo-backdrop[hidden], .tt-emo-dialog[hidden] { display:none; }
 /* pwa.js's install hint (fixed at the bottom, above everything) covered a fifth of the last card on a phone, the list
-   scrolled to its end. Hidden while the gallery is open — the hub's erase sheet and the Font Maker's windows do the same. */
-body:has(#ttEmoDialog:not([hidden])) #pwaInstallBanner { visibility:hidden; }
+   scrolled to its end. Hidden while the gallery is open — the hub's erase sheet and the Font Maker's windows do the same.
+   The settings drawer and the copy dock are the same case: the hint sat over the drawer's last control at its scroll end
+   (Print handout, the last holiday, the last font) and over the dock's Copy All and Clear, where a tap landed on it. */
+body:has(#ttEmoDialog:not([hidden]), #settingsModal.open, #ttBulkDock:not([hidden])) #pwaInstallBanner { visibility:hidden; }
 .tt-emo-dialog:focus { outline:none; }
 .tt-emo-head { flex:0 0 auto; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 16px; border-block-end:2px solid var(--gold); }
 .tt-emo-title { margin:0; font-family:'Libre Baskerville',serif; font-size:1.05rem; color:var(--navy); }
