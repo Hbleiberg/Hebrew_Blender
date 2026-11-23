@@ -2124,6 +2124,10 @@ body.fullscreen .tt-status { font-size: 1rem; }
 #fsExitBtn .fs-label { font-size: 0.7rem; letter-spacing: 0.04em; opacity: 0.85; white-space: nowrap; }
 html[lang="he"] #fsExitBtn .fs-label { letter-spacing: normal; }   /* spaced Hebrew letters read as separate letters (the dashboard's rule) */
 body.fullscreen #fsExitBtn { display: flex; }
+/* The settings drawer is modal and opens on the inline end, which left to right is the corner this button is pinned to:
+   at z-index 200 it lay over the drawer's dark toggle and Close button and the tops of its last tabs. While the drawer
+   is open the button goes under the drawer's backdrop (90), like everything else outside a modal. */
+body.fullscreen:has(#settingsModal.open) #fsExitBtn { z-index: 80; }
 /* Idle-hide (shared fullscreen idle-hide block): the exit plate fades after 3s without pointer activity, returns on
    the next move, never hides while keyboard-focused. #ttFsBar keeps its own 4s show/hide. */
 body.fs-idle #fsExitBtn:not(:focus-visible) { opacity: 0; pointer-events: none; }

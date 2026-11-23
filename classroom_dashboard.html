@@ -1787,6 +1787,10 @@ html[lang="he"] .hk-subhead{letter-spacing:normal;text-transform:none;}
      86→108px onto the zoom bar it already overlapped — the rule below is what makes that safe. */
   #fsExitBtn .fs-label { font-size: 0.7rem; letter-spacing: 0.04em; opacity: 0.85; white-space: nowrap; }
   body.fullscreen #fsExitBtn { display: flex; }
+  /* The settings drawer is modal and opens on the inline end, which left to right is the corner this button is pinned to:
+     at z-index 200 it lay over the drawer's dark toggle and Close button and the tops of its last tabs. While the drawer
+     is open the button goes under the drawer's backdrop (90), like everything else outside a modal. */
+  body.fullscreen:has(#settingsModal.open) #fsExitBtn { z-index: 80; }
   /* The plate is fixed at the physical top-right and the zoom bar is the first thing under it in
      fullscreen: it covered the bar's Reset button on a 320px phone (elementFromPoint at the button's
      centre returned the plate) and, in the Hebrew UI, the "🔍 Zoom" label at every width. Desktop

@@ -404,6 +404,10 @@ clears it, and leaving fullscreen clears it. Nothing is saved.
   its buttons out of the tab order, so it **shows on `focusin` and its hide function returns while a button inside it is
   `:focus-visible`** (a pointer's press is not, so the bar still fades after one); `focusout` re-arms the timer
   (`scripts/loop/probes/S675-fullscreen-bar-wakes-for-the-keyboard.mjs`).
+  **While the settings drawer is open in fullscreen, `#fsExitBtn` goes under the drawer's backdrop**
+  (`body.fullscreen:has(#settingsModal.open) #fsExitBtn`, on the dashboard and the two trainers): the button is pinned to
+  the physical top right at z-index 200 and the drawer opens on the inline end, so left to right it lay over the drawer's
+  Close button (`scripts/loop/probes/S675-fullscreen-exit-under-the-open-drawer.mjs`).
 - **Verify** with a stubbed Fullscreen API (headless Chromium cannot enter real fullscreen): define
   `document.fullscreenElement` as a getter, dispatch `fullscreenchange`, then measure the control at
   t=0, after 3.3 s idle, after a `page.mouse.move`, while focused past the idle time, and after exit.
