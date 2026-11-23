@@ -2279,6 +2279,8 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
   .font-opt.active, body.dark .font-opt.active { background: Highlight; border-color: Highlight; color: HighlightText; forced-color-adjust: none; }
   .font-opt.active .font-opt-preview, body.dark .font-opt.active .font-opt-preview, .font-opt.active .font-opt-name,
   .font-opt.active .font-opt-attr, body.dark .font-opt.active .font-opt-attr, .font-opt.active .font-opt-default { color: HighlightText; }
+  /* The chosen pill of a segmented choice (the layout, the transliteration style…) is a white fill on a tinted track. */
+  .radio-group input:checked + label, body.dark .radio-group input:checked + label { background: Highlight; color: HighlightText; box-shadow: none; forced-color-adjust: none; }
   .tt-fav-swatch[aria-pressed="true"] { outline: 3px solid Highlight; outline-offset: 2px; }
   /* A switch is two background fills, and forced colours paint every fill Canvas: without these it has no track and no knob. */
   .slider { forced-color-adjust:none; background:Canvas; border:1px solid ButtonText; }
