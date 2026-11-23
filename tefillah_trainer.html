@@ -2049,6 +2049,12 @@ body.fullscreen #ttFsBar.visible .tt-fs-plate { pointer-events: auto; }
   /* Never split a verse (or a side-by-side row) across a page break; best-effort —
      a verse taller than the page still breaks (browser overrides). */
   .tt-verse, .tt-grid-row { break-inside:avoid; page-break-inside:avoid; }
+  /* Except a paragraph-long line ([data-long], set by longAttr): kept whole it is pushed to the next sheet and leaves
+     the one before it mostly empty (Ashrei's one line: a first sheet holding its instruction alone). It runs on as a
+     paragraph does in a printed siddur, two rows at least on each sheet, and its number stays with its first row. */
+  .tt-verse[data-long], .tt-grid-row[data-long] { break-inside:auto; page-break-inside:auto; orphans:2; widows:2; }
+  .tt-verse[data-long] > .tt-verse-head { break-after:avoid; page-break-after:avoid; }
+  [data-long] > #ttGenizaMark { break-before:avoid; page-break-before:avoid; }
 
   /* Trailing dead space paginates exactly like content: the boxes BELOW the last
      line still occupy flow, so a reading that happens to end near a page boundary
@@ -5095,7 +5101,11 @@ function instLineHTML(v, withTrans, extraClass, style) {
     `<span class="tt-inst" lang="he" dir="rtl">${esc(v.hebrew)}</span>` +
     (withTrans && v.translation ? `<span class="tt-inst-en" dir="ltr">${esc(v.translation)}</span>` : '') + `</div>`;
 }
-function lineAttrs(v) { return `data-vk="${esc(v.vk)}" data-line="${v.line}" data-seg="${esc(v.seg)}"`; }
+// A line this long is a paragraph. On paper it may run on to the next sheet (the print block's [data-long] rule): kept
+// whole, it is pushed to the next sheet and leaves the one before it mostly empty.
+const LONG_LINE_WORDS = 25;
+function longAttr(v) { return v && !v.inst && String(v.reading || '').trim().split(/\s+/).length >= LONG_LINE_WORDS ? ' data-long="1"' : ''; }
+function lineAttrs(v) { return `data-vk="${esc(v.vk)}" data-line="${v.line}" data-seg="${esc(v.seg)}"${longAttr(v)}`; }
 function addedChipHTML(v) {
   return v.added ? `<span class="tt-added-chip" data-i18n="tefillah.reading.added_chip">${esc(I18n.t('tefillah.reading.added_chip'))}</span>` : '';
 }
@@ -5206,7 +5216,7 @@ function renderSideBySide(verses, withTranslit, withTrans, wordIdxRef, underWord
     html += `<div class="tt-grid-col tt-col-translation"><h3 style="grid-row:1;grid-column:1">${esc(I18n.t('tefillah.reading.col_english'))}</h3>`;
     per.forEach(({ v }, i) => {
       if (v.inst) { if (v.translation) html += `<div class="tt-grid-row tt-instrow" style="grid-row:${row(i)};grid-column:1"><span class="tt-inst-en">${esc(v.translation)}</span></div>`; return; }
-      html += `<div class="tt-grid-row" style="grid-row:${row(i)};grid-column:1"><span class="tt-vnum"><span class="tt-num">${esc(v.num)}</span></span><span class="tt-cell">${esc(v.translation)}</span></div>`;
+      html += `<div class="tt-grid-row"${longAttr(v)} style="grid-row:${row(i)};grid-column:1"><span class="tt-vnum"><span class="tt-num">${esc(v.num)}</span></span><span class="tt-cell">${esc(v.translation)}</span></div>`;
     });
     html += `</div>`;
   } else {
@@ -5216,7 +5226,7 @@ function renderSideBySide(verses, withTranslit, withTrans, wordIdxRef, underWord
     html += `<div class="tt-grid-col tt-col-translit"><h3 style="grid-row:1;grid-column:${colTranslit}">${esc(I18n.t('tefillah.reading.col_translit'))}</h3>`;
     per.forEach(({ v, firstTwi, hebCount }, i) => {
       if (v.inst) return;
-      html += `<div class="tt-grid-row" style="grid-row:${row(i)};grid-column:${colTranslit}"><span class="tt-vnum"><span class="tt-num">${esc(v.num)}</span></span><span class="tt-cell translit">${tokenizeTranslit(applyTranslit(v.reading), firstTwi, hebCount)}</span></div>`;
+      html += `<div class="tt-grid-row"${longAttr(v)} style="grid-row:${row(i)};grid-column:${colTranslit}"><span class="tt-vnum"><span class="tt-num">${esc(v.num)}</span></span><span class="tt-cell translit">${tokenizeTranslit(applyTranslit(v.reading), firstTwi, hebCount)}</span></div>`;
     });
     html += `</div>`;
   }

@@ -191,6 +191,11 @@ reason on the status line and the Try again card): a prayer with a silent gap wo
   emitted only on Torah verses (`v.trope`), so the legend, its chip and the Colors tab's trope section are off for a
   siddur text, with a note. The stored colour choice is kept.
 - **Words are not buttons** in this version: no click action, no roving focus.
+- **On paper a line stays whole, except a paragraph**: a line of `LONG_LINE_WORDS` (25) pointed words or more carries
+  `data-long` (`longAttr`, on its row in every layout and on its Side by side translation and transliteration cells),
+  and the print block lets such a row run on to the next sheet, its number kept with its first row and the geniza
+  marker with its last. Kept whole, a line longer than what is left of a sheet moves to the next one and leaves the
+  sheet before it mostly empty (`scripts/loop/probes/S674-tefillah-print-long-line-runs-on.mjs`).
 
 ## The Shema's Torah text
 
