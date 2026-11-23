@@ -26,7 +26,11 @@
  * the widest):
  *   - every drawing that shows keeps its centre line CLEAR px from the header's text and controls, and lies whole inside its gap;
  *   - the gap reaches the bar's top and bottom edges (the page's --kin-pt / --kin-pb match its header's padding);
- *   - no gap shows below 1280px (checked at 390, 1024 and 1279), and at 2560px every gap shows a drawing.
+ *   - no gap shows below 1280px (checked at 390, 1024 and 1279), and at 2560px every gap shows a drawing;
+ *   - on a page that takes the phone drawing (.kin-pgap, a spacer inside a short title's block), at 320-600px in 2px
+ *     steps: the spacer starts at the bar's top edge and the title shares the lockup's row, the drawing lies whole
+ *     inside the spacer and keeps CLEAR px from the header's text and controls, it shows at some phone width, and
+ *     nothing of it is laid out above 600px.
  * And every page's navy footer (.sf-bar; the generated pages as above), in EN and HE: each fracture and seam drawing that
  * shows keeps CLEAR px from the bar's text, its social buttons and Sefaria's badge at 1280-1500px in 4px steps and at
  * 1600 / 1920 / 2560, and at 320-600px in 4px steps; the wide set shows only from 1280px and the narrow set only up to
@@ -227,6 +231,26 @@ function measureGap(CLEAR) {
   out.min = Math.round(out.min * 10) / 10; out.edge = Math.round(out.edge * 10) / 10;
   return out;
 }
+/* A phone: the one drawing in the free space after a short title (.kin-pgap, the last child of the title block). */
+function measurePhoneGap(CLEAR) {
+  const header = document.querySelector('header'), rtl = document.documentElement.dir === 'rtl';
+  const top = header.getBoundingClientRect().top + parseFloat(getComputedStyle(header).borderTopWidth);
+  const rs = [], add = q => { if (q.width > 1 && q.height > 1) rs.push([q.left, q.top, q.right, q.bottom]); };
+  header.querySelectorAll('a, button, select, input, img, [role="button"]').forEach(el => { if (!el.closest('.kin-gap, .kin-pgap, .ivacct-menu') && el.getClientRects().length) add(el.getBoundingClientRect()); });
+  const tw = document.createTreeWalker(header, NodeFilter.SHOW_TEXT);
+  for (let n; (n = tw.nextNode());) { if (!n.nodeValue.trim() || n.parentElement.closest('.kin-gap, .kin-pgap, .ivacct-menu, script, style')) continue; const r = document.createRange(); r.selectNodeContents(n); for (const q of r.getClientRects()) add(q); }
+  const gap = header.querySelector('.kin-pgap'), out = { has: !!gap, rendered: false, shown: false, min: 9999, edge: 0, outside: false, lock: false };
+  if (!gap || !gap.getClientRects().length) return out;
+  out.rendered = true; const g = gap.getBoundingClientRect(), img = gap.querySelector('img');
+  out.edge = Math.round(Math.abs(g.top - top) * 10) / 10;                       // the spacer starts at the bar's top edge: the crack's root
+  const lock = header.querySelector('.brand-lockup'); out.lock = !!lock && Math.abs(lock.getBoundingClientRect().top - gap.parentElement.getBoundingClientRect().top) > 30;   // the title has left the lockup's row
+  if (!img.getClientRects().length) return out;
+  out.shown = true; const b = img.getBoundingClientRect(), id = img.className.replace('kg-', '');
+  if (b.left < g.left + CLEAR - 0.6 || b.right > g.right - CLEAR + 0.6) out.outside = true;
+  for (const [x, y] of window.__kinPts[id]) { const px = rtl ? b.right - x : b.left + x, py = b.top + y; if (py < g.top || py > g.bottom) continue;   // cut where the title's row ends
+    for (const [l, t, r, bt] of rs) { const d = Math.hypot(Math.max(l - px, 0, px - r), Math.max(t - py, 0, py - bt)); if (d < out.min) out.min = d; } }
+  out.min = Math.round(out.min * 10) / 10; return out;
+}
 function measureFooter() {
   const bar = document.querySelector('footer.site-footer .sf-bar'); if (!bar) return null;
   const rtl = document.documentElement.dir === 'rtl', rs = [], add = q => { if (q.width > 1 && q.height > 1) rs.push([q.left, q.top, q.right, q.bottom]); };
@@ -259,9 +283,10 @@ if (DO_GAPS) {
   const GW = [390, 1024, 1279, ...Array.from({ length: 81 }, (_, i) => 1280 + i * 8), 2000, 2200, 2560];
   const PTS = Object.fromEntries(FR.map(f => [f.id, f.pts]));
   const FW = [...Array.from({ length: 56 }, (_, i) => 1280 + i * 4), 1600, 1920, 2560, ...Array.from({ length: 71 }, (_, i) => 320 + i * 4), 601, 800, 1024, 1279];
+  const PW = [...Array.from({ length: 141 }, (_, i) => 320 + i * 2), 601, 800, 1024, 1280];
   const jobs = [];
-  for (const pg of pages) { const chip = /<script[^>]*src="\/?js\/ivrit-account\.js/.test(fs.readFileSync(path.join(ROOT, pg), 'utf8'));   // the page loads the account module, so its header has the chip
-    for (const lang of ['en', 'he']) for (const touch of [false, true]) for (const name of chip ? ['', NAME] : ['']) jobs.push({ pg, lang, touch, name, chip }); }
+  for (const pg of pages) { const src = fs.readFileSync(path.join(ROOT, pg), 'utf8'), chip = /<script[^>]*src="\/?js\/ivrit-account\.js/.test(src);   // the page loads the account module, so its header has the chip
+    for (const lang of ['en', 'he']) for (const touch of [false, true]) for (const name of chip ? ['', NAME] : ['']) jobs.push({ pg, lang, touch, name, chip, phone: src.includes('class="kin-pgap"') }); }
   async function gapRun(job) {
     const label = `gap ${job.pg}, ${job.lang} ${job.touch ? 'touch' : 'mouse'}${job.chip ? (job.name ? ' signed in' : ' signed out') : ''}`;
     const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, serviceWorkers: 'block', hasTouch: job.touch, isMobile: job.touch });
@@ -300,6 +325,28 @@ if (DO_GAPS) {
       if (w === 2560 && m.empty) bad.push('a gap shows no drawing at 2560px');
       most = Math.max(most, m.shown);
     }
+    // a phone: the page's one drawing after its title, at every second width up to 600px, and nowhere above
+    let phone = '';
+    if (job.phone && !bad.length) {
+      let near = [9999, 0], at = [];
+      for (const w of PW) {
+        await page.setViewportSize({ width: w, height: 900 });
+        await page.evaluate(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))));
+        const m = await page.evaluate(measurePhoneGap, CLEAR);
+        if (!m.has) { bad.push('no .kin-pgap in the header'); break; }
+        if (w > 600) { if (m.rendered) bad.push(`the phone gap shows at ${w}px`); continue; }
+        if (!m.rendered) { bad.push(`the phone gap is not laid out at ${w}px`); continue; }
+        if (m.lock) bad.push(`at ${w}px the title is not on the lockup's row`);
+        if (m.edge > 1) bad.push(`at ${w}px the phone gap misses the bar's top edge by ${m.edge}px (--kin-ppt)`);
+        if (!m.shown) continue;
+        at.push(w);
+        if (m.outside) bad.push(`at ${w}px the phone drawing is not ${CLEAR}px inside its gap`);
+        if (m.min < CLEAR) bad.push(`at ${w}px the phone drawing is ${m.min}px from text`);
+        if (m.min < near[0]) near = [m.min, w];
+      }
+      if (!at.length) bad.push('the phone gap shows no drawing at any phone width');
+      phone = `; phone: the drawing shows at ${spans(PW, at) || 'no width'}px, nearest ${near[0]}px (${near[1]}px wide)`;
+    }
     // the page's footer: once per language is enough (nothing in it follows the pointer or the sign-in state)
     let foot = '';
     if (!job.touch && !job.name && !bad.length) {
@@ -323,7 +370,7 @@ if (DO_GAPS) {
     await ctx.close();
     if (errs.length) bad.push(`${errs.length} page errors`);
     const uniq = [...new Set(bad)];
-    console.log(`${uniq.length ? 'FAIL' : 'PASS'} ${label}${chip ? ` (${chip})` : ''}: up to ${most} drawings, the nearest ${nearest[1]} at ${nearest[0]}px (${nearest[2]}px wide)${foot}${uniq.length ? ' — ' + uniq.slice(0, 4).join('; ') + (uniq.length > 4 ? `; and ${uniq.length - 4} more` : '') : ''}`);
+    console.log(`${uniq.length ? 'FAIL' : 'PASS'} ${label}${chip ? ` (${chip})` : ''}: up to ${most} drawings, the nearest ${nearest[1]} at ${nearest[0]}px (${nearest[2]}px wide)${phone}${foot}${uniq.length ? ' — ' + uniq.slice(0, 4).join('; ') + (uniq.length > 4 ? `; and ${uniq.length - 4} more` : '') : ''}`);
     return !uniq.length;
   }
   // four pages at a time: each run is its own browser context

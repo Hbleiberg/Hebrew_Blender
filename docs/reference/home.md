@@ -138,8 +138,8 @@ gap between its title and its controls (*The header gap on every other page*, af
   what it sits beside. Never scale, move or redraw one.
 - **Two sets.** `kin-wide` (header and footer) was drawn for 1280px bars and shows from 1280px up; `kin-narrow`
   was drawn for a 390px phone and shows up to 600px: four drawings on every page's footer, and two in the home
-  page's header. Between 601px and 1279px there are no cracks, and every other page's header has none below 1280px:
-  its title and controls leave no clear path there.
+  page's header. Between 601px and 1279px there are no cracks. Below 1280px every other page's header has none,
+  except one drawing after a short title on a phone (*A phone's header on a tool page*, below).
 - **The home page's header on a phone.** On a narrow phone the header's controls wrap to a row of their own, which
   leaves the space beside the lockup free: two drawings (`area: "header-phone"`), anchored to the bar's end edge and
   its top, sit there. Where the controls come back up beside the lockup, a gate hides both. That width follows the
@@ -219,6 +219,39 @@ always free: the gap between the title and the controls.
 - **A long title leaves no gap.** Where a title and its controls fill the row (the Worksheet Generator, Word Lookup,
   the Dashboard and the Letter Learner on a small laptop), that header shows no crack until the screen is wider.
   Never shorten the 6px rule or draw over text to change that.
+
+### A phone's header on a tool page
+
+Up to 600px, six tool pages show one drawing (`gap.phone` in the JSON: the home page's forked phone fracture, from
+the bar's top edge) in the free space after their title: the Letter Learner, Name Tags, the Tefillah Trainer, the
+Torah Trainer, the Trope Atlas and the Trope Tutor.
+
+- **Which pages.** A page qualifies when its phone header keeps the lockup and a one-line title on the first row at
+  every phone width (the shared title-row rule, `header > .brand-lockup + *{flex-basis:…}`) and hides its tagline
+  there. A page with a tagline, a long title, or a title that can drop to a second row has no free space that is
+  always the same space; Letter Discrimination was measured and left out for the last reason (a spacer on a second
+  row would start a crack in the middle of the bar).
+- **`.kin-pgap` is a spacer inside the title block**, its last child, not a sibling like `.kin-gap`. On a phone the
+  title block already fills the row beside the lockup, which is what keeps the buttons on a row of their own; a
+  header-level spacer would need the title to shrink to its text, and the buttons would then climb into the title's
+  row wherever they fit. Inside the block nothing at the header's level changes: the block becomes a row as tall as
+  the header's first row (`display:flex; align-self:stretch`, the title centred in it as before), the title takes
+  its text's width and the spacer the rest.
+- **One drawing, when it fits.** A container query on the spacer's own width shows the drawing from 71px (its 59px
+  box and 6px at each end), centred. The spacer starts at the bar's top edge (the page's
+  `@media (max-width:600px){header{--kin-ppt:…}}` line states the header's top padding on a phone) and ends where the
+  title's row ends, so the crack is cut at its thin end, a row gap above the buttons. A long title, a narrow phone or
+  a longer word in the other language leaves less than 71px, and that header shows no crack.
+- **The rules sit just below the shared header-icons block, on those six pages only** (the shared block is not
+  touched, so the other carriers and the generated pages do not change); the builder prints the markup and the
+  rules, and `--check` holds both on every page that carries either.
+- **The smoke** measures each of those pages at 320–600px in 2px steps, in English and Hebrew, with a mouse and a
+  finger, signed out and signed in: the spacer starts at the bar's top edge, the title shares the lockup's row, a
+  drawing that shows lies whole inside the spacer and 6px or more from the header's text and controls, the drawing
+  shows at some phone width, and nothing of it is laid out above 600px.
+- **Adding it to another page** means proving first that nothing in that header moves: every line of text and every
+  control at every phone width, in both languages, signed out and signed in with the longest and the shortest name,
+  against the page before the change.
 
 ## Checks
 

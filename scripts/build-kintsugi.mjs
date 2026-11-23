@@ -11,6 +11,8 @@
    lockup: area "header-phone"). Every other page's header has a title and its own
    controls where those positions fall, so there the header drawings sit in the gap between the two ("gap" in the
    JSON): a spacer in the header's row holds them, and a container query shows as many as the gap has room for.
+   On a phone a tool page with a short title shows one drawing after the title ("gap.phone"), in a spacer inside the
+   title block.
    A crack is drawn in runs of three segments, each with its own width, so it swells and thins like a real seam:
    a dark underlay, the gold with a fine grain, and a pale highlight on the thicker runs. */
 import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync } from 'node:fs';
@@ -77,7 +79,25 @@ function gapSet() {
   const stepsOnImg = steps.map((s) => s.replace('.kin-gap{--kg-half:', '.kin-gap img{--kg-half:'));
   const a = g.alone, aw = by[a.id].w;
   const alone = [`.kin-gap.kg-b .kg-${a.id}{${block(a)};inset-inline-start:calc(50% - ${aw / 2}px);}`, `@container (min-width:${aw + 2 * g.clear}px){.kin-gap.kg-b .kg-${a.id}{display:block;}}`];
+  // A phone: one drawing in the free space after a short title, in a spacer inside the title block. The block becomes a
+  // row (the title, then the spacer) as tall as the header's first row, so the title keeps its place and its line
+  // breaks, the header's own rows never change, and the spacer is exactly the space the title leaves.
+  const ph = g.phone, pw = by[ph.id].w;
+  const phoneRules = [
+    '.kin-pgap{display:none;}',
+    '@media screen and (max-width:600px){',
+    '  header > .kin-title{display:flex;align-items:center;align-self:stretch;}',
+    '  header > .kin-title > h1{flex:0 1 auto;min-inline-size:0;}',
+    '  .kin-pgap{display:block;flex:1 1 0;min-inline-size:0;align-self:stretch;position:relative;overflow:hidden;pointer-events:none;container-type:inline-size;margin-block-start:calc(var(--kin-ppt,0px) * -1);}',
+    `  .kin-pgap img{position:absolute;display:none;max-inline-size:none;${block(ph)};inset-inline-start:calc(50% - ${pw / 2}px);}`,
+    '  [dir="rtl"] .kin-pgap img{transform:scaleX(-1);}',
+    `  @container (min-width:${pw + 2 * g.clear}px){.kin-pgap img{display:block;}}`,
+    '}',
+    '@media (forced-colors:active){.kin-pgap{display:none;}}',
+  ].join('\n');
   return {
+    markupPhone: `<span class="kin-pgap" aria-hidden="true">${img(ph.id)}</span>`,
+    phoneRules,
     markup: `<span class="kin-gap" aria-hidden="true">${g.set.map((e) => img(e.id)).join('')}</span>`,
     markupAlone: `<span class="kin-gap kg-b" aria-hidden="true">${img(a.id)}</span>`,
     rules: [...pos, ...stepsOnImg, ...alone].map((r) => '  ' + r).join('\n'),
@@ -103,16 +123,22 @@ if (args.has('--print')) {
   for (const host of ['header', 'footer']) console.log(`<!-- ${host} -->\n<div class="kin" aria-hidden="true">${tags[host].join('')}</div>\n`);
   console.log(rules.join('\n'));
   const g = gapSet();
-  console.log(`\n<!-- every other page: after the header's title block -->\n${g.markup}\n\n<!-- a second gap (Flash Cards, after its centred title) -->\n${g.markupAlone}\n\n<!-- a tool page's footer: the seams before and after its Related Hebrew Tools -->\n${g.seams.join('\n')}\n\n/* the gap rules, inside the shared header-icons CSS block */\n${g.rules}`);
+  console.log(`\n<!-- every other page: after the header's title block -->\n${g.markup}\n\n<!-- a second gap (Flash Cards, after its centred title) -->\n${g.markupAlone}\n\n<!-- a tool page's footer: the seams before and after its Related Hebrew Tools -->\n${g.seams.join('\n')}\n\n/* the gap rules, inside the shared header-icons CSS block */\n${g.rules}\n\n<!-- a phone: the last child of a short title's block (.kin-title), on the pages that take it -->\n${g.markupPhone}\n\n/* a phone's rules: on those pages only, just below the shared block, after the page's own header{--kin-ppt:…} line */\n${g.phoneRules}`);
 }
 if (args.has('--check')) {
   // every root page that carries a gap carries the markup and the rules exactly as printed (the generated pages are their builders' to check)
-  const g = gapSet(); let pages = 0;
+  const g = gapSet(); let pages = 0, phones = 0;
   for (const f of readdirSync(ROOT).filter((n) => n.endsWith('.html'))) {
     const t = readFileSync(path.join(ROOT, f), 'utf8'); if (!t.includes('class="kin-gap')) continue; pages++;
     const found = t.match(/<span class="kin-gap[^"]*" aria-hidden="true">.*?<\/span>/g) || [];
     if (!found.length || !found.every((m) => m === g.markup || m === g.markupAlone)) { stale++; console.error('stale gap markup: ' + f); }
     if (!t.includes(g.rules)) { stale++; console.error('stale gap rules: ' + f); }
+    // a page that takes the phone drawing carries its markup as the last child of the title block, and the phone rules
+    const phone = t.match(/<span class="kin-pgap[^"]*" aria-hidden="true">.*?<\/span>/g) || [];
+    if (phone.length || t.includes('.kin-pgap')) { phones++;
+      if (phone.length !== 1 || phone[0] !== g.markupPhone || !new RegExp('</p>\\s*' + g.markupPhone.replace(/[.*+?^${}()|[\]\\/]/g, '\\$&') + '\\s*</div>').test(t)) { stale++; console.error('stale phone gap markup: ' + f); }
+      if (!t.includes(g.phoneRules) || !/header\{--kin-ppt:\d+px;\}/.test(t)) { stale++; console.error('stale phone gap rules: ' + f); }
+    }
   }
   // ...and every root page with the navy footer carries the footer's cracks, and a tool page its two seams, as printed
   const footKin = `<div class="kin" aria-hidden="true">${tags.footer.join('')}</div>`; let feet = 0;
@@ -123,6 +149,6 @@ if (args.has('--check')) {
     if (seams.length && (seams.length !== g.seams.length || seams.some((s, i) => s !== g.seams[i]))) { stale++; console.error('stale footer seams: ' + f); }
   }
   if (stale) process.exit(1);
-  console.log('kintsugi: ' + data.fractures.length + ' files match fractures.json; the gap markup and rules match on ' + pages + ' pages, the footer cracks on ' + feet);
+  console.log('kintsugi: ' + data.fractures.length + ' files match fractures.json; the gap markup and rules match on ' + pages + ' pages (the phone drawing on ' + phones + '), the footer cracks on ' + feet);
 }
 else console.log('kintsugi: wrote ' + data.fractures.length + ' files to brand/kintsugi/');

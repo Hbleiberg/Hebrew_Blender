@@ -7,7 +7,9 @@
   "set": [{"id": "h1", "edge": "top"}, {"id": "h2", "edge": "bottom"}, {"id": "h3", "edge": "top"}, {"id": "h4", "edge": "bottom"}],
   "alone": {"id": "h5", "edge": "top"},
   "seamsNote": "A tool page's footer holds its list of links where the footer fractures run, so it shows one drawing in the seam on each side of the list instead, from the bar's top edge.",
-  "seams": ["p1", "h1"]
+  "seams": ["p1", "h1"],
+  "phoneNote": "On a phone a tool page's title has a row of its own beside the lockup. Where the title is short, one drawing sits in the free space after it, from the bar's top edge: a spacer inside the title block (.kin-pgap), shown only while it is wide enough to hold the drawing with 'clear' at each end.",
+  "phone": {"id": "hp1", "edge": "top"}
  },
  "fractures": [
   {"id": "h1", "area": "header", "frame": [1280, 88], "anchor": ["center", "top"], "cracks": [
