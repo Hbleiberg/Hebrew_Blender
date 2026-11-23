@@ -98878,3 +98878,47 @@ _(prior)_ **Next session (S671):** **Branch `claude/sharp-shannon-3u51ut` (S667�
 - [x] 2026-11-21 | `a013e161` | classroom_dashboard.html | (PR #418; the open picker-direction P4) **A Hebrew name beside a Latin one no longer leads the Latin part with its last mark**: each script run in its own isolate (`pickerNameHTML`, *Names shown*) | browser pass, EN + HE, light + dark
 
 - [x] 2026-11-21 | `704dc61e` | flash_cards.html | (PR #418; the profiles-from-a-class-list seed) **Make profiles for this class**: one linked profile per student who has none, beside *Link profiles…* (each suggestion confirmed) | browser pass; the share code holds no class or student (smoke-tools)
+
+
+<!-- archived by compact-ledger at the S673 boundary, 2026-11-23 -->
+## Compaction (S673, 2026-11-23) — moved verbatim from the live ledger
+
+### from Candidates (prioritized, top = next)
+
+- [ ] P3 (**NEW S672 P — a shared module, not small**) | js/ivrit-saves.js | **Two tabs that change the same settings field: the tab in use does not win, though the reference says it does**: a page write to a stale kind rewrites the memory to that tab's view (`persistStaleView`), so `actionFor` takes `keepMine`, never `tabMerge`'s focus rule; the other tab's value comes back with the both-changed note and a kept copy. | found S672
+
+- [ ] P4 (**NEW S672 P — verify first; pattern `synced-reading-follows-the-other-tab`**) | flash_cards.html, name_tags.html, letter_learner.html, hebrew_dictionary.html | **A synced settings row that names what is open may follow the other tab, as the two trainers' did**: run smoke-sync's `readingStays` shape on the deck or profile in use, the open list, the mode and card, the filters. | found S672
+
+### from Done
+
+- [x] 2026-11-23 | (S672 close-out) | branch/deploy note | **S672 = P on `tefillah_trainer.html` (its first: the page landed outside the loop, now the twelfth tool surface): arms 1–8 clean; FOUND 1 shape on two pages (pattern `synced-reading-follows-the-other-tab`, new), FIXED 2 (the Tefillah and the Torah Trainer); 2 logged.** Draft PR #424 (fresh branch off `dd3f682`), `sw.js` v1511 → v1513; nothing live changed; smoke-sync 264 / 264 with D46 and D47.
+
+- [x] 2026-11-23 | `4c0b8f06` | torah_trainer.html, scripts/smoke-sync.mjs, torah-and-trope.md, sw.js | (S672; pattern `synced-reading-follows-the-other-tab` ×2) **Signed in, the parasha and portion on screen stay with their tab** (a pick in a second tab went back to the first tab's; a size change moved the reading; a page left open dropped its pick) | probe 28 / 28 (before 12); smoke-sync D47 10 / 10 (before 7), 264 / 264; migration 63, assignments 150
+
+- [x] 2026-11-22 | PR #419 | torah_trainer.html, torah-and-trope.md, sw.js | (the maintainer's ask, no loop session) **Torah Trainer on a phone: Hebrew first in Side by side, row labels above the line** (Genesis 1:1-5 on an iPhone 13: Hebrew column 965 → 540px; Interlinear Hebrew 310 → 366px wide) | probe 15 cells × 4 layouts: 16 phone cells changed, 44 identical
+
+- [x] 2026-11-22 | `f1457030`, `c4199f43`, `3c1b8b39` | tefillah_trainer.html, data/tefillah/catalog.json, scripts/tefillah-*.mjs, sw.js | (PR #419, the maintainer's two extras, no loop session) **Tefillah Trainer: a phone-size pass, and "Ashkenaz (Koren)" as its own source** — search box 16px under a finger, Hebrew first in Side by side, search and filters behind a Find button, row labels above the line (the prayer 415 → 318px on an iPhone 13); 74 Koren sources read line by line | phone survey 16 setups × 19 views; `check-tefillah-refs` 287 / 0; `smoke-tefillah` 89; 74 Koren prayers live
+
+- [x] 2026-11-20 | `1c5c8cc5` | letter_discrimination.html, letter-discrimination.md, sw.js | (S667, gate 4 answered by the maintainer: "fit the key column to the screen height") **The round's key column fits the window's height; its letters clear their badges** | probe S667 25 / 25 (before 9)
+
+- [x] 2026-11-20 | (S667 close-out) | branch/deploy note | **S667 = N on `letter_discrimination.html` (its first, override 4): FOUND 4 + 1 on the atlas, FIXED 2 + 2 on the atlas, 2 logged (one gate 4); one new pattern.** Draft PR #417, `sw.js` v1450 → v1454; nothing live changed …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-20 | `1485899a` | trope_atlas.html, sw.js | (S667, found by the drawer probe) **The bar's Contents button shows only below 1000px** (`.hi-btn` outranked `.at-idxbtn{display:none}`: a dead button over the open rail) | probe S667 12 / 12 (before 6)
+
+- [x] 2026-11-20 | `05be0ab1` | trope_atlas.html, torah-and-trope.md, sw.js | (S667, the S665 P3) **Below 1000px the contents drawer closes when the focus leaves it** | probe S667 5 / 5 (before 1); S665's, S666's probes pass
+
+- [x] 2026-11-20 | `c9d5637d` | letter_discrimination.html, letter-discrimination.md, sw.js | (S667 N) **On a touch screen the round's paper opens from its own top edge when it would not fit** (a swipe to reach Done painted squares) | probe S667 22 / 22 (before 7); recipe identical
+
+- [x] 2026-11-20 | `3b7d8749` | letter_discrimination.html, letter-discrimination.md, sw.js | (S667 N; NEW pattern viewport-height-fit-without-a-floor) **On a landscape phone the round's grid fills the screen's height** (was 70–110px: 8–12px squares) | probe S667 33 / 33 (before 17); recipe identical
+
+### from Per-session log (one line per session)
+
+- 2026-11-23 | **S672** | iters: 3 | tools: tefillah_trainer, torah_trainer, smoke-sync ×2, coverage.mjs, 4 reference docs, sw ×2 | patterns fixed: synced-reading-follows-the-other-tab ×2 (new) | pass run: P (tefillah_trainer, first; FOUND 1 shape on 2 pages, FIXED 2; 2 logged) | gates: none | SW: v1511→v1513
+
+- 2026-11-13 | **S652** | iters: 5 | tools: classroom_dashboard ×2, flash_cards ×2, locales, sw ×4 | patterns fixed: account-wide-delete-confirm-without-signed-in-wording ×1 | pass run: P (classroom_dashboard, first since S567; FOUND 3, FIXED 1 + 3 from the queue) | SW: v1386→v1390
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- P accounts & cloud (one surface): 2026-11-23 (**S672 — 29th P, `tefillah_trainer.html` (its first: a page that landed outside the loop, registered as the twelfth tool surface): arm 1 16 / 16 behind 2 / 2 plants; arm 2 by real input on a fake account with fixture texts, eight scenarios 43 / 43; the save-and-restore census (45 controls, 15 more fields, a reload, a file on a fresh profile); arms 3–7 clean; arm 8 read-only clean; the ten smokes green at the start. FOUND 1 shape on two pages (a synced reading follows the other tab or device: new pattern), FIXED 2 (the Tefillah and the Torah Trainer; smoke-sync D46, D47); 2 logged. P-next: torah (S602), dictionary (S609), trope (S609).**)
+
+_(prior)_ **Next session (S672):** **Branch `claude/sharp-shannon-3u51ut` (S667–S671, draft PR #417): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1470**, FM **5.59**, corpus ?v=**8**. ⚑ drift: main=9e702ae sw=v1470 fm=5.59 migration=0012_helpers_out_of_api.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest next: M atlas (S584), H dictionary (S585), C torah (S586). ⚑ Due (override 4): `jewish-coloring-pages.html` N by S677 — take it no later than S677 whatever is stalest. ⚑ Queue: the atlas's Note names in the phrase bar (S671 P4) and its phrase group on paper (S669); Page view's ring at its number (S653 remainder); S666's holiday icons; the generator's S660 P4; torah's S653 hover fill; the S570 staff double draw; the Font Maker's header (S669 P4). ⚑ Awaiting: the atlas's phone layout (S662), the Trainer's ▶ and drawer tabs (S653), the starter class (S652). ⚑ N: the Font Maker's Draw window (S644 P3). ⚑ E: links vs 8,190 bytes (S651). ⚑ F/A: Hebrew-only wrappers (S649); status lines (S656); ResizeObserver boxes (S660). ⚑ G: `leak.mjs` on 4 tools (S661). ⚑ P: the sync smoke in a lane of ≤ 3. ⚑ 49 seeds.
