@@ -5128,6 +5128,10 @@ function renderText() {
   applyTropeColors();
   applyNikkudColors();
   applyDisplayClasses();
+  // And for the transliteration module: a restored file, an account download or a favorite's look can switch the row
+  // (or the copy's line) on without the switch's own handler, and the module is asked for only once (its arrival
+  // re-renders through 'translitlibloaded'); never asked, the row read as unavailable.
+  maybeEnsureTranslit();
   if (!currentVerses || !currentVerses.length) {
     document.body.classList.remove('translit-under');
     renderEmptyReading();
@@ -5884,8 +5888,9 @@ function wireTranslit() {
     status.dataset.i18nKey = 'tefillah.trans.lib_failed';
   });
 }
+// The row, or a copy that carries it: Include transliteration is stored, so a later visit with the row off still copies it.
 function maybeEnsureTranslit() {
-  if (settings.showTranslit && window.HebrewTransliterator) {
+  if ((settings.showTranslit || settings.copyIncludeTranslit) && window.HebrewTransliterator) {
     window.HebrewTransliterator.ensureLoaded();
   }
 }

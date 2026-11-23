@@ -165,6 +165,13 @@ reason on the status line and the Try again card): a prayer with a silent gap wo
 - **Torah parts** (`loadTanakhPart`): the Trainer's `fetchSefariaText` / `parseSefariaResponse`, which also record the
   returned versions' titles and licences. Translation: the stored choice, else JPS 1917, else by licence rank.
 - **Open Siddur parts** (`loadOpenSiddurPart`): below.
+- **The transliteration module** (`window.HebrewTransliterator`, from esm.sh or jsDelivr) is never loaded for a visitor
+  who wants no transliteration — unlike the Torah Trainer, which preloads it on every visit. `renderText()` asks for it
+  (`maybeEnsureTranslit`) whenever the row **or** *Include transliteration* (a stored copy option) is on, so a restore,
+  an account download, a favorite's look or a later visit with only the copy option on all get it; its arrival
+  re-renders the reading and the copy preview (`translitlibloaded`). Never asked, the row read *No transliteration*
+  and a copy left the line out under a note blaming a failed load
+  (`scripts/loop/probes/S676-tefillah-translit-loads-for-a-stored-choice.mjs`).
 
 ## The line model
 
