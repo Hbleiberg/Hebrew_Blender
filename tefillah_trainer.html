@@ -1309,6 +1309,11 @@ body.trope-underline-fallback .tt-trope-swatch { background:var(--tt-sw-line); }
   border-top:3px solid var(--gold); box-shadow:0 -4px 16px rgba(0,0,0,0.18);
 }
 #ttBulkDock:not([hidden]) { display:flex; }
+/* pwa.js's install hint (#pwaInstallBanner: position:fixed at the bottom, z-index above everything; shown under 768px)
+   sat over this dock's Copy All and Clear, and over the settings drawer's last control once the drawer was scrolled
+   to its end (Print handout, Reset all, the last font): a tap landed on the hint. It steps aside while either is up
+   and is back when both are gone; only its own × dismisses it for good. */
+body:has(#settingsModal.open, #ttBulkDock:not([hidden])) #pwaInstallBanner { visibility:hidden; }
 body.dark #ttBulkDock { background:var(--navy-deep); }
 #ttBulkDockCount {
   font-family:'Libre Baskerville',serif; font-size:0.8rem;
