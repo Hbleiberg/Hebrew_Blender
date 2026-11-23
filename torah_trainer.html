@@ -13396,14 +13396,24 @@ function linkViewClaim(keys) {
   keys.forEach(k => { delete _linkView.own[k]; delete _linkView.shown[k]; });
   if (!Object.keys(_linkView.own).length) linkViewEnd();   // nothing of the link's is left on screen
 }
+// Both buttons hide the banner they sit in: a press from it hands the focus to the reading below (the skip link's own
+// target: no ring, no scroll), never to <body>, where a screen reader starts again from the top.
+function linkViewFocusIn() { const n = document.getElementById('ttLinkView'); return !!n && n.contains(document.activeElement); }
+function linkViewHandOff(fromBanner) {
+  const a = document.activeElement, n = document.getElementById('ttLinkView'), r = document.getElementById('ttReading');
+  if (fromBanner && r && (!a || a === document.body || (n && n.contains(a)))) r.focus({ preventScroll: true });
+}
 function linkViewKeep() {
   if (!_linkView) return;
+  const fromBanner = linkViewFocusIn();
   linkViewEnd();
   saveSettings();   // everything on screen is the reader's now
   showHintToast(I18n.t('torah.share.view_kept'));
+  linkViewHandOff(fromBanner);
 }
 function linkViewRevert() {
   if (!_linkView) return;
+  const fromBanner = linkViewFocusIn();
   // Land the stored form now (the reader's own values, plus anything they changed since), then
   // re-read it: the cloud-download path already repaints every control and the reading from it.
   if (_saveTimer) { clearTimeout(_saveTimer); _saveTimer = null; }
@@ -13411,6 +13421,7 @@ function linkViewRevert() {
   _linkLookFirst = false;   // the reader's own settings, not the link's look kept over a first sync
   cloudReread();
   showHintToast(I18n.t('torah.share.view_reverted'));
+  linkViewHandOff(fromBanner);
 }
 
 // The status region is made, empty, when the page loads rather than with its first message: a screen reader announces
