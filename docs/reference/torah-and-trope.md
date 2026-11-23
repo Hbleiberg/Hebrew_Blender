@@ -1153,6 +1153,11 @@ traditions were imported from, and was rebuilt on the suite's own pieces, so it 
   (`.tu-pn.is-sounding`, `svg.is-playing`) and its button pressed (`aria-pressed`; the name stays `atlas.sing.aria_m`,
   the icon turns to stop). A key, note-name, layout, melody or group change stops it, as do `beforeprint` and a
   hidden tab.
+- **Note names has two switches for one setting** (`names`): `#atNames` in the melody table's bar and `#atNamesPhr`
+  in the phrase bar, since the names are written under the phrase staffs too and the table's bar is a screen above
+  them in the Grid and some thirty in Stacked. `buildAtlas` and `buildPhrases` each set their own switch; the phrase
+  bar's listener scrolls the page by what the switch moved, so it stays under the pointer while the table above it
+  grows (`scripts/loop/probes/S674-atlas-phrase-bar-note-names.mjs`).
 - **Storage:** one blob, `hebrewTropeAtlas_settings` (`key`, `view`, `groups`, `names`, `mel`, `clause`), each
   field read through a validator so an unknown stored value shows the default and stays stored; registered at the
   hub's AllTools sites (export, import, erase, `IVRIT_CFG.gather/apply`) and not synced (no registry row; the page

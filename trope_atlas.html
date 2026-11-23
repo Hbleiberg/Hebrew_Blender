@@ -408,6 +408,9 @@ body.dark .at-phrasebar { background:var(--navy-deep); }
    page into it on every tap (pattern text-field-under-16px-zooms-on-ios-focus). */
 @media (pointer:coarse) { .at-phrasebar .at-sel { font-size:16px; } }
 .at-count { font-size:0.8rem; color:var(--muted); font-variant-numeric:tabular-nums; }
+/* The melody table's Note names switch, a second time: it writes the names under these staffs too, and from here the
+   table's own switch is a screen up in the Grid and some thirty in Stacked. One setting, two switches (the listeners). */
+.at-phrnames { display:inline-flex; align-items:center; gap:6px; min-height:24px; cursor:pointer; font-size:0.86rem; color:var(--text); }
 .at-melinfo .syshead { display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 14px; margin:4px 0; }
 .at-melinfo .syshead h3 { margin:0; }
 .at-melinfo .sub { color:var(--muted); font-size:0.88rem; }
@@ -893,6 +896,7 @@ kintsugi: wrote 18 files to brand/kintsugi/
     <label class="at-lbl" for="atMel" data-i18n="trope.melody.label">Melody</label>
     <select class="at-sel" id="atMel" disabled></select>
     <span class="at-count" id="atMelCount"></span>
+    <label class="at-phrnames"><input type="checkbox" id="atNamesPhr"> <span data-i18n="atlas.table.names">Note names</span></label>
   </div>
   <div id="atMelInfo" class="at-melinfo"></div>
   <div id="atClauses" class="at-chips at-clauses" role="group" aria-label="Phrase group" data-i18n-aria-label="atlas.phrases.groups_aria"></div>
@@ -1550,6 +1554,7 @@ function selectMel(id, scroll) {
 function buildPhrases() {
   const s = SETS[melVal()], cites = citeNumbers();
   document.getElementById('atMel').value = s.id;
+  document.getElementById('atNamesPhr').checked = namesOn();
   const rowsAll = s.rows;
   document.getElementById('atMelCount').textContent = I18n.t(rowsAll.length === 1 ? 'atlas.phrases.count.one' : 'atlas.phrases.count.other', { count: rowsAll.length });
   const info = document.getElementById('atMelInfo');
@@ -1679,6 +1684,13 @@ function fillKeySelect() {
 }
 document.getElementById('atKey').addEventListener('change', (e) => { settings.key = e.target.value; saveSettings(); singStop(); renderStaffs(); });
 document.getElementById('atNames').addEventListener('change', (e) => { settings.names = e.target.checked; saveSettings(); singStop(); renderStaffs(); });
+// The phrase bar's copy of that switch. The table above it gains or loses a row of names under every figure, so the
+// page is scrolled by what the switch moved: it stays under the pointer (a browser that anchors the scroll moved nothing).
+document.getElementById('atNamesPhr').addEventListener('change', (e) => {
+  const y = e.target.getBoundingClientRect().top;
+  settings.names = e.target.checked; saveSettings(); singStop(); renderStaffs();
+  window.scrollBy(0, e.target.getBoundingClientRect().top - y);
+});
 document.getElementById('atTable').addEventListener('keydown', roveKey);
 document.getElementById('atTable').addEventListener('focusin', (e) => { const b = e.target.closest('.at-sing'); const row = b && b.closest('tr, .at-card'); if (row && b.tabIndex !== 0) roveTo(row, b); if (b) clearSideways(b); });   // a click makes that figure the row's stop
 // The sign on screen, so a layout change keeps it there (a Grid scrolled to zakef katon became Stacked at sof pasuk,
