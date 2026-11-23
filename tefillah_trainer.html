@@ -7661,6 +7661,7 @@ function choosePrayer(key, nusach) {
   settings.prayerKey = key;
   _shownPrayerFallback = null;
   if (nusach && NUSACH_IDS.includes(nusach)) settings.nusach = nusach;
+  _readingPicked = true;
   saveSettings();
   syncPrayerPicker();
   fetchAndRender();
@@ -7673,6 +7674,7 @@ function wirePrayerPicker() {
   ns.addEventListener('change', () => {
     if (!NUSACH_IDS.includes(ns.value)) return;
     settings.nusach = ns.value;
+    _readingPicked = true;
     saveSettings();
     fetchAndRender();
   });
@@ -7788,6 +7790,10 @@ function ensureDefaultPrayer() {
 let _shownPrayerFallback = null;
 // The reading a ?prayer= link opened, kept over the account's copy until this load's first sync has landed.
 let _linkReading = null;
+// The reading on screen is this tab's own, and cloudReread keeps it: from the moment this load's first sync has landed
+// (_syncLanded), and before that once the reader has picked one here (_readingPicked: the prayer list, the nusach list,
+// a favorite). Until then a download is where the teacher left off on another device, and it is shown.
+let _syncLanded = false, _readingPicked = false;
 function linkReadingMark(keys) { _linkReading = {}; keys.forEach(k => { _linkReading[k] = settings[k] === undefined ? null : settings[k]; }); }
 
 async function init() {
@@ -7902,6 +7908,7 @@ function openFavorite(name) {
   }
   settings.prayerKey = p.key;
   if (NUSACH_IDS.includes(r.nusach) && prayerSources(p).includes(r.nusach)) settings.nusach = r.nusach;
+  _readingPicked = true;
   saveSettings();
   syncPrayerPicker();
   fetchAndRender();
@@ -8232,6 +8239,11 @@ function cloudReread() {
   // showing the link's. Only while the teacher is still on it: a reading chosen meanwhile is theirs.
   const keepLink = _linkReading && Object.keys(_linkReading).every(k => (settings[k] === undefined ? null : settings[k]) === _linkReading[k]) ? _linkReading : null;
   if (!keepLink) _linkReading = null;
+  // Every other re-read once the reading is this tab's own (_syncLanded, _readingPicked): the prayer and nusach on screen
+  // stay, and go up with the save below when the store holds another. The settings are one row, so a merge with what
+  // another tab or device wrote brings that side's prayer along: a prayer picked here was put back to the other tab's
+  // two seconds later, and a change of size alone moved the page to the prayer open in the other tab.
+  const keepOwn = !keepLink && (_syncLanded || _readingPicked) ? { prayerKey: settings.prayerKey, nusach: settings.nusach } : null;
   // The look a practice link opened, landed under the same way: what of it is still on screen stays there over the
   // downloaded settings, unsaved, its banner still offering Keep or Go back (it used to end with the view, ?s= and all,
   // a moment after it showed). A download after that sync, or Go back, ends the view.
@@ -8241,6 +8253,7 @@ function cloudReread() {
   settings = JSON.parse(JSON.stringify(DEFAULTS));
   loadSettings();
   if (keepLink) { Object.assign(settings, keepLink); saveSettings(); }
+  else if (keepOwn && (settings.prayerKey !== keepOwn.prayerKey || settings.nusach !== keepOwn.nusach)) { Object.assign(settings, keepOwn); saveSettings(); }
   if (keepLook) {
     const own = {}, shown = {};
     Object.keys(keepLook).forEach(k => {
@@ -8264,9 +8277,9 @@ function initCloudSaves() {
   // A font from the account landed in the shared store: re-list My Fonts, which also re-applies a face
   // this page had chosen by name but could not show until now.
   window.addEventListener('ivritsuite:fonts', () => { try { refreshMyFonts(); } catch (e) {} });
-  // This load's first sync has landed (its download, if any, already re-read above): from now on a download is a
-  // choice made elsewhere after the link was opened, and takes the reading as usual.
-  window.addEventListener('ivritsuite:hydrated', e => { const d = e.detail || {}; if (d.ok && Array.isArray(d.tools) && d.tools.includes('TefillahTrainer')) { _linkReading = null; _linkLookFirst = false; } });
+  // This load's first sync has landed (its download, if any, already re-read above): the link has done its work, and
+  // from now on the reading on screen is this tab's own (cloudReread) — a later re-read changes the look, never the prayer.
+  window.addEventListener('ivritsuite:hydrated', e => { const d = e.detail || {}; if (d.ok && Array.isArray(d.tools) && d.tools.includes('TefillahTrainer')) { _linkReading = null; _linkLookFirst = false; _syncLanded = true; } });
   IvritSaves.attach({
     tool: 'TefillahTrainer',
     status: '#cloudSavesPanel',

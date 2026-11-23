@@ -172,6 +172,12 @@
  *      list and another list in: both show the same three classes (the pair as one), the account holds one row a
  *      class; a student added on one tab shows on the other with no old key written; a class deleted on the
  *      Dashboard leaves both tabs and the account (its row, the old roster, the old list) and stays gone on reload.
+ *  D46. The Tefillah Trainer's prayer stays with its tab: the settings are one row, so a merge with another tab's or
+ *      device's write brings that side's prayer along. Two tabs on two prayers: a prayer picked in the second stays
+ *      there and reaches the account (it went back to the first tab's two seconds later), and a change of size alone
+ *      leaves the first tab on its own prayer (it moved to the other tab's) while the size still reaches the account;
+ *      a page left open while another device chose a prayer keeps the one picked on it; a fresh load still opens
+ *      the prayer the account holds.
  */
 import pkg from '/opt/node22/lib/node_modules/playwright/index.js';
 import { spawn } from 'node:child_process';
@@ -2313,6 +2319,69 @@ try {
     check('D45: 0 pageerrors', A.errors.length === 0 && B.errors.length === 0, A.errors.concat(B.errors).join(' | '));
     await ctx.close();
   }
+  // ---- D46. a trainer's reading stays with its tab (the settings row carries it, so a merge brings the other side's along) ----
+  const readingStays = async (tag, T) => {
+    const TOOLS = [T.tool, 'Suite'];
+    // the page's own stored blob and three readings its list offers, from one plain anonymous load
+    let blob = null, picks = [];
+    { const ctx0 = await browser.newContext({ serviceWorkers: 'block', viewport: { width: 1280, height: 900 } });
+      await ctx0.route('**/*', route => { const u = route.request().url(); return (u.startsWith(BASE) || u.startsWith('data:') || u.startsWith('blob:')) ? route.continue() : route.abort(); });
+      const p0 = await ctx0.newPage();
+      await p0.goto(BASE + '/' + T.file, { waitUntil: 'domcontentloaded' });
+      await p0.waitForFunction((sel) => { const s = document.querySelector(sel); return s && s.options.length > 3; }, T.sel, { timeout: HYDRATE_MS }).catch(() => {});
+      await p0.waitForTimeout(1200);
+      await p0.evaluate(() => { try { saveSettings(); saveSettingsFlush(); } catch (e) {} });
+      blob = await p0.evaluate((k) => JSON.parse(localStorage.getItem(k) || 'null'), T.lsKey);
+      picks = await p0.evaluate((sel) => [...document.querySelector(sel).options].map(o => o.value).filter(Boolean).slice(1, 4), T.sel);
+      await ctx0.close(); }
+    const usable = !!blob && picks.length === 3 && new Set(picks.concat([blob[T.field]])).size === 4;
+    check(tag + ': the page stores its settings and offers three other readings', usable, JSON.stringify({ blob: !!blob, picks, now: blob && blob[T.field] }));
+    if (!usable) return;
+    const mk = () => {
+      const cloud = new FakeCloud([{ tool: T.tool, kind: 'settings', name: 'default', data: Object.fromEntries(Object.entries(blob).filter(([k]) => !omitted(k, T.omit))) }, { tool: 'Suite', kind: 'prefs', name: 'default', data: { lang: 'en', darkMode: '0', inputMode: 'auto' } }]);
+      const seed = SEED({ memory: { [T.tool]: { settings: { default: memOf(cloud.find('settings', 'default')) } }, Suite: { prefs: { default: memOf(cloud.find('prefs', 'default')) } } }, extra: { [T.lsKey]: JSON.stringify(blob), hebrewBlender_lang: 'en', hebrewBlender_darkMode: '0', [T.tourKey]: '1' } });
+      return { cloud, seed };
+    };
+    const shown = (page) => page.evaluate((sel) => document.querySelector(sel).value, T.sel);
+    const row = (cloud) => cloud.find('settings', 'default').data;
+    const moveAccount = (cloud, fields) => { const r = cloud.find('settings', 'default'); r.data = Object.assign({}, r.data, fields); r.data_hash = hashOf(r.data); r.updated_at = cloud.stamp(); };
+    const bigger = (page) => page.evaluate(() => { const sl = document.getElementById('optHebSize'); sl.value = String(parseFloat(sl.value) + 0.3); sl.dispatchEvent(new Event('input', { bubbles: true })); sl.dispatchEvent(new Event('change', { bubbles: true })); return parseFloat(sl.value); });
+    const rest = async (...pages) => { await sleep(WRITE_MS); for (const pg of pages) await settled(pg, TOOLS, 15000); await sleep(400); };
+    // two tabs
+    { const { cloud, seed } = mk(); const ctx = await openContext(browser, cloud, seed);
+      const A = await openPage(ctx, T.file, { tools: TOOLS }), B = await openPage(ctx, T.file, { tools: TOOLS });
+      await A.page.bringToFront(); await A.page.selectOption(T.sel, picks[0]); await rest(A.page, B.page);
+      const b0 = await shown(B.page);
+      check(tag + ': two tabs — a reading picked in the first tab leaves the second on the one it opened', b0 === blob[T.field], JSON.stringify({ b0, opened: blob[T.field], picked: picks[0] }));
+      await B.page.bringToFront(); await B.page.selectOption(T.sel, picks[1]); await rest(B.page, A.page);
+      const a1 = await shown(A.page), b1 = await shown(B.page);
+      check(tag + ': two tabs — a reading picked in the second tab stays there, the first keeps its own, the account holds the one picked last', b1 === picks[1] && a1 === picks[0] && row(cloud)[T.field] === picks[1], JSON.stringify({ a1, b1, account: row(cloud)[T.field], picks }));
+      await A.page.bringToFront(); const size = await bigger(A.page); await rest(A.page, B.page);
+      const a2 = await shown(A.page), b2 = await shown(B.page);
+      check(tag + ': two tabs — a change of size alone leaves the first tab on its reading; the size reaches the account', a2 === picks[0] && b2 === picks[1] && Math.abs(row(cloud).hebFontSize - size) < 0.001, JSON.stringify({ a2, b2, size, account: row(cloud).hebFontSize }));
+      const from = cloud.log.length; await sleep(WRITE_MS + 1500);
+      const later = cloud.log.slice(from).filter(e => e.table === 'saves' && e.m !== 'GET');
+      check(tag + ': two tabs — then nothing more is written', later.length === 0, methods(cloud, from));
+      check(tag + ': two tabs — 0 pageerrors', A.errors.length === 0 && B.errors.length === 0, A.errors.concat(B.errors).join(' | '));
+      await ctx.close(); }
+    // a page left open while another device chose a reading
+    { const { cloud, seed } = mk(); const ctx = await openContext(browser, cloud, seed);
+      const A = await openPage(ctx, T.file, { tools: TOOLS });
+      moveAccount(cloud, { [T.field]: picks[0], showTranslit: !blob.showTranslit });
+      await A.page.selectOption(T.sel, picks[1]); await rest(A.page);
+      const a = await shown(A.page), live = await A.page.evaluate(() => settings.showTranslit);
+      check(tag + ': a page left open — the reading picked on it stays over the one another device chose since, and that device\'s other change arrives', a === picks[1] && row(cloud)[T.field] === picks[1] && live === !blob.showTranslit && row(cloud).showTranslit === !blob.showTranslit, JSON.stringify({ a, account: row(cloud)[T.field], live }));
+      check(tag + ': a page left open — 0 pageerrors', A.errors.length === 0, A.errors.join(' | '));
+      await ctx.close(); }
+    // unchanged: a load opens where the teacher left off on another device
+    { const { cloud, seed } = mk(); moveAccount(cloud, { [T.field]: picks[2] });
+      const ctx = await openContext(browser, cloud, seed);
+      const A = await openPage(ctx, T.file, { tools: TOOLS }); await sleep(600);
+      const sent = cloud.log.filter(e => e.table === 'saves' && e.m !== 'GET');
+      check(tag + ': a fresh load still opens the reading the account holds, and sends nothing', await shown(A.page) === picks[2] && sent.length === 0 && A.errors.length === 0, JSON.stringify({ shown: await shown(A.page), want: picks[2], sent: sent.length, errors: A.errors }));
+      await ctx.close(); }
+  };
+  if (want('D46')) await readingStays('D46', { file: 'tefillah_trainer.html', tool: 'TefillahTrainer', lsKey: 'hebrewTefillahTrainer_settings', sel: '#prayerSelect', field: 'prayerKey', omit: [], tourKey: 'hebrewTefillahTrainer_tourSeen' });
 } finally {
   await browser.close();
   srv.kill();

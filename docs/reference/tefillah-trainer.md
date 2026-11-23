@@ -245,6 +245,13 @@ Hebrew UI. It prints with the reading and the handout (the handout credits only 
   its first source (`effectiveNusach`), a translation the prayer lacks shows another (`_versionFallback`).
 - A favorite is a pointer looked up in the catalog on every open (`openFavorite`), so a file or an account row can
   name nothing the page will fetch.
+- **The prayer on screen stays with its tab.** The settings are one row, so a merge with what another tab or another
+  device wrote brings that side's `prayerKey` and `nusach` along. `cloudReread()` keeps the two that are on screen,
+  and saves them again when the store holds others, once this load's first sync has landed (`_syncLanded`, set by
+  `ivritsuite:hydrated`) or the reader has picked a reading here (`_readingPicked`: the prayer list, the nusach
+  list, a favorite). Until then a download is where the teacher left off on another device, and it is shown; a
+  practice link's reading is kept as before (`_linkReading`). Everything else in the row is re-read as usual, so the
+  look still follows the other tab or device. Proved by `smoke-sync.mjs` D46.
 - `.ivrit`: `IVRIT_CFG { tool: 'TefillahTrainer' }` (the More tab's Backup section) holds `favorites`,
   `favoriteFolders` and `liveState`; its `apply` also reads the AllTools keys `tefillahTrainerSettings`,
   `tefillahTrainerFavorites` and `tefillahTrainerFavoriteFolders`.
