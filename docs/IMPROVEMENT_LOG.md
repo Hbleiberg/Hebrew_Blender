@@ -16,10 +16,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P3 (**NEW S676 G — not small**) | tefillah_trainer.html | **Side by side with a translation leaves a sheet up to 47% blank before a long line**: the print grid keeps a `data-long` row whole (Chrome splits a grid row only past a full sheet; Hallel Sefard on Letter). | found S676
 
-- [ ] P3 (**NEW S675 C**) | tefillah_trainer.html | **In the Hebrew UI the English translation carries no `lang`** (it inherits `he`); the row transliteration has no `he-Latn` on either trainer. | found S675
-
-- [ ] P3 (**NEW S675 C**) | tefillah_trainer.html, torah_trainer.html | **The fullscreen bar's switched-on Translit / Translation reads 4.18:1 in light mode** (`.18` for its `.24` fill gives 4.8). | found S675
-
 - [ ] P3 (**NEW S644 H — not small**) | Hebrew_Font_Maker.html | **Below 1181px the fullscreen Draw canvas window (`100vh − 300px`) clips its drawing**: at 1024×768 the baseline sits 16px under its edge. | found S644
 
 - [ ] P3 (**NEW S593 G — verify on a Mac first**) | Hebrew_Font_Maker.html | **Every font named only in Hebrew exports with nameID 6 `MyHebrewFont-Regular` (and `MyHebrewFont.ttf`)**: two such fonts share one PostScript name, which Font Book and Mac apps key fonts by; a stem from the name (a short hash or a transliteration) would keep them apart. | found S593
@@ -54,7 +50,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P3 (**NEW S595 N — needs the tour-engine extraction, UX rule 1**) | Hebrew_Font_Maker.html, hebrew_dictionary.html, tour engine | **On a landscape phone (750×342) the tour card falls back onto its own target**: the starting-font tour's steps 2, 3, 7 covered 93–100%; the shared engine shares the fallback; the dictionary's own engine (S601 N) covers 31–54% of steps 2–5 at 750×342 and 863×360. …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [ ] P3 (**NEW S570 D — not small: yield per verse or a worker**) | torah_trainer.html | **Turning Translit on freezes the page for the reading's first transliteration pass**: one task of 520 ms @1× / 2.45 s @4× on Vayera (2,085 words; the Trope staff 447 / 2,691), and a cold load with Translit on 536–582 / 2,751–2,948 — the library's syllabification; the memos spare only re-renders (findings …[full text: IMPROVEMENT_ARCHIVE.md]
+- [ ] P3 (**NEW S570 D — not small: yield per verse or a worker; S678: the Tefillah Trainer the same, a cold Amidah with Translit on 525–632 ms @1× / 2.5–2.8 s @4×, Under each word, a style, another prayer 1.2–1.9 s @4× (findings S678)**) | torah_trainer.html, tefillah_trainer.html | **Turning Translit on freezes the page for the reading's first transliteration pass**: one task of 520 ms @1× / …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P3 (**NEW S565 D — the intake half is gate 2**) | Hebrew_Font_Maker.html | **The Trace step still freezes 1.5–1.9 s on a 12 MP phone photo** (3.1–3.3 s before `6ef102d`; 16 s @4×): `flatCanvasFor` flattens the whole 3024×4032 photo (decode + `getImageData` ~1 s, the blur 0.55 s). Keeping intake photos near 2,000 px (`prepImageForItem`) would cut it ~4× and shrink every snapshot and file — a …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -70,9 +66,11 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P3 (**NEW 2026-09-26**) | torah_trainer.html | **The karaoke highlight likely runs a word off in the 19 TIMING_SLIPS stretches** (Shemini 6 from Leviticus 11:8 on), where a timing file slips while its count still matches. | found 2026-09-26
 
-- [ ] P4 (**NEW S677 N — a shared script**) | js/i18n.js | **A Back or a reload on a Hebrew-UI page can restore its scroll in the English layout** (the locale lands after the restore; the hub's Back is fixed `3fe80435`, a reload there still lands ~50px off): every long page. | found S677
+- [ ] P4 (**NEW S678**) | torah_trainer.html, tefillah_trainer.html, trope_atlas.html | **Each still carries the screen rule `footer .footer-credits`, matching nothing since the navy footer** (the Tutor's went `804dd767`). | found S678
 
-- [ ] P4 (**NEW S677**) | trope_tutor.html | **The print block still styles `footer .footer-credits`, gone since the navy footer** (one credit a line, kept whole, Contact hidden): dead rules. | found S677
+- [ ] P4 (**NEW S678 — S675's rest**) | tefillah_trainer.html | **Koren's English opens paragraphs with a Hebrew catchword, and the Share tab's handout label holds a Hebrew word, both outside `lang="he"`**. | found S678
+
+- [ ] P4 (**NEW S677 N — a shared script**) | js/i18n.js | **A Back or a reload on a Hebrew-UI page can restore its scroll in the English layout** (the locale lands after the restore; the hub's Back is fixed `3fe80435`, a reload there still lands ~50px off): every long page. | found S677
 
 - [ ] P4 (**NEW S676 G — after `016e91ef`**) | tefillah_trainer.html | **10 of 312 prints still end on the credits alone: Page view and Side by side** (on the grid the rule pushed the reading off sheet 1). | found S676
 
@@ -98,7 +96,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S653 M; S671: the rows FIXED `40ac2bb1`**) | torah_trainer.html | **Page view's selected or looping verse still meets its ring at its number** (the wrapped `.tt-bverse` spans: an inline padding would move the line's words — an outer ring may do); a wrapped holiday chip centres its second line. | found S653
 
-- [ ] P4 (**NEW S653 M**) | torah_trainer.html | **With vowel colours on, a hovered word's gold fill drops its coloured letters to 1.5–2.5:1**; the fullscreen bar's chosen Translit / Translation is 4.18:1 under the pointer. | found S653
+- [ ] P4 (**NEW S653 M; S678: the bar's half FIXED `590cf879`**) | torah_trainer.html | **With vowel colours on, a hovered word's gold fill drops its coloured letters to 1.5–2.5:1**. | found S653
 
 - [ ] P4 (**NEW S653 — what `d707bc8a` leaves; G's, gate 3**) | hebrew_blend_generator.html | **A landscape Inverse sheet exports seven columns where paper prints ten** (the capture is the 760px screen sheet). | found S653
 
@@ -135,8 +133,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S595 N — gate 2/4**) | Hebrew_Font_Maker.html | **A phone turned sideways gets the tablet notice** (tiered by width alone); one over 820px gets none. | found S595
 
 - [ ] P4 (**NEW S589 G**) | torah_trainer.html | **Side by side at the Hebrew size's maximum (3.5rem) with transliteration under each word, a verse row taller than a Letter sheet leaves its bottom rule alone on the next sheet** (4 of 50 sheets; A4 none). | found S589
-
-- [ ] P4 (**NEW S588 M — 13 carriers**) | footer About column | **At ~800px the licence line wraps after a separator** ("CC BY-NC-SA 4.0 · GitHub ·" / "Contact & Support"). | found S588
 
 - [ ] P4 (**NEW S672 P — verify first; pattern `synced-reading-follows-the-other-tab`**) | flash_cards.html, name_tags.html, letter_learner.html, hebrew_dictionary.html | **A synced settings row that names what is open may follow the other tab, as the two trainers' did**: run smoke-sync's `readingStays` shape on the deck or profile in use, the open list, the mode and card, the filters. | found …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -388,6 +384,14 @@ _(none)_
 
 ## Done
 
+- [x] 2026-11-23 | (S678 close-out) | branch/deploy note | **S678 = D on `tefillah_trainer.html` (its first): FOUND 1 (the Torah Trainer's S570 transliteration freeze here too, not small), FIXED 3 from the queue; 2 logged.** Draft PR #427 continues, `sw.js` v1533 → v1536; nothing live changed.
+
+- [x] 2026-11-23 | `804dd767` | trope_tutor.html, sw.js | (S677 queue) **The print block's dead `footer .footer-credits` rules go** | identity: footer pixels 56 / 56, 32 PDFs (302 sheets) by text and raster, 0 matches
+
+- [x] 2026-11-23 | `590cf879` | tefillah_trainer.html, torah_trainer.html, sw.js, probe | (S675 C, S653 M; pattern `contrast-below-AA-on-a-tinted-or-coloured-plate`) **The fullscreen bar's switched-on Translit / Translation reads 4.8:1** | probe 8 / 8 (before 4 / 8)
+
+- [x] 2026-11-23 | `7565dc4e` | tefillah_trainer.html, torah_trainer.html, 2 docs, sw.js, probe | (S675 C; pattern `pinned-english-without-lang`) **A translation says `en` and a transliteration row `he-Latn`** | probe 12 / 12 (before 0 / 12); pixels 24 / 24 equal
+
 - [x] 2026-11-23 | (S677 close-out) | branch/deploy note | **S677 = N on `jewish-coloring-pages.html` (its first, override 4): FOUND 1, FIXED 1 + 2 from the queue; the Tutor's S597 P4 re-measured, not small.** Draft PR #427 continues, `sw.js` v1530 → v1533; nothing live changed.
 
 - [x] 2026-11-23 | `3fe80435` | jewish-coloring-pages.html, build-coloring-hub.mjs, shared-components.md, sw.js, probe | (S677 N) **Back from a sheet puts the tapped card where it was, in Hebrew too** | probe 23 / 23 (before 13 / 23); Back 0 / 30 off (was 5 / 30)
@@ -424,19 +428,11 @@ _(none)_
 
 - [x] 2026-11-23 | `0d4b4923` | tefillah_trainer.html, tefillah-trainer.md, sw.js | (S674 H; pattern `logical-inset-mirrors-onto-pinned-content`) **In fullscreen the first row clears the Exit button** | probe S674 13 / 13 (before 6)
 
-- [x] 2026-11-23 | (S673 close-out) | branch/deploy note | **S673 = N on `tefillah_trainer.html` (its first, override 4): 600 phone views clean (plants 5 / 5); FOUND 4, FIXED 3 + the atlas's S665 P4; 4 logged.** Draft PR #424 continues, `sw.js` v1513 → v1517; nothing live changed; after the merge confirm the Pages deploy.
-
-- [x] 2026-11-23 | `2e20de5d` | trope_atlas.html, sw.js | (S673, the S665 C queue item; pattern `selected-state-lost-in-forced-colors`) **The contents list's current link shows in forced colours** | current vs neighbour 6–17 → 302–504 × 4 forced cells; outside them identical
-
-- [x] 2026-11-23 | `732175be` | tefillah_trainer.html, tefillah-trainer.md, sw.js, probe | (S673 N) **Side by side on a phone gives the Hebrew line its full width** (number and Copy in a row above it, 600px and under) | cell 231 → 296px at 320px; probe 6 / 6 (before 2 / 6)
-
-- [x] 2026-11-23 | `c444f492` | torah_trainer.html, sw.js, probe | (S673; the same pattern) **The iPhone install hint steps aside for the Trainer's drawer and copy dock** | the probe, both pages 12 / 12 (before 0 / 12)
-
-- [x] 2026-11-23 | `dfcf0f20` | tefillah_trainer.html, sw.js, probe | (S673 N; pattern `install-banner-over-a-sheet's-bottom-controls`) **The iPhone install hint steps aside for the settings drawer and the copy dock** | probe `S673-install-hint-clears-drawer-and-dock.mjs` 6 / 6 (before 0 / 6)
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-11-23 | **S678** | iters: 4 | tools: tefillah_trainer ×2, torah_trainer ×2, trope_tutor, 2 docs, sw ×3, probes ×2 | patterns fixed: pinned-english-without-lang ×1 (both trainers), contrast-below-AA-on-a-tinted-or-coloured-plate ×1 | pass run: D (tefillah_trainer, first; FOUND 1 = the S570 …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - 2026-11-23 | **S677** | iters: 5 | tools: jewish-coloring-pages + build-coloring-hub, tefillah_trainer ×2, torah_trainer, trope_tutor (measured), 1 doc, sw ×3, probes ×2 + S675 ×1 | patterns fixed: button-focus-lost-to-its-own-rebuild ×1, selected-state-lost-in-forced-colors ×1 | pass run: N (the …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -476,11 +472,9 @@ _(none)_
 
 - 2026-11-18 | **S659** | iters: 4 | tools: flash_cards, index, trope_tutor, hebrew_dictionary, shared-components.md, sw ×3, probe S659 | patterns fixed: header-wrap-gate-below-its-ceiling ×2 (its signed-in arm), decorative-glyph-carrier-exposed-to-assistive-tech ×1 | pass run: P (flash_cards, …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- 2026-11-18 | **S658** | iters: 5 | tools: name_tags ×2, holidays/ + build-holiday-pages ×2, locales, llms-full, sitemap, sw ×2, probes S658 ×2 | patterns fixed: JSON-LD ↔ visible-content parity ×1 | pass run: L (suite, first since S622; 193 commits; FOUND 4, FIXED 4) | SW: v1412→v1414
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S677 (2026-11-23):** jewish-coloring-pages + build-coloring-hub, tefillah_trainer ×2, torah_trainer, shared-components.md, sw.js ×3, probes S677 ×2 + S675 ×1 · S676: tefillah_trainer ×2, torah_trainer, classroom_dashboard, tefillah-trainer.md ×2, sw.js ×3, probes ×3
+- **Snapshot S678 (2026-11-23):** tefillah_trainer ×2, torah_trainer ×2, trope_tutor, torah-and-trope.md, tefillah-trainer.md, sw.js ×3, probes S678 ×2 · S677: jewish-coloring-pages + build-coloring-hub, tefillah_trainer ×2, torah_trainer, shared-components.md, sw.js ×3, probes S677 ×2 + S675 ×1
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
 
@@ -640,7 +634,7 @@ _(none)_
 
 - `designed-key-miss-probed-through-t` | ACTIVE | owner B | det: recipe | last S533 | streak 2
 
-- `pinned-english-without-lang` | ACTIVE | owner B | det: recipe | last S533 | streak 0
+- `pinned-english-without-lang` | ACTIVE | owner B | det: recipe | last S678 | streak 0
 
 - `toggle-name-flips-with-its-pressed-state` | ACTIVE | owner F | det: recipe | last S431 | streak 0
 
@@ -774,7 +768,7 @@ _(none)_
 
 - `dark-override-outranks-hover` | ACTIVE | owner A | det: recipe | last S357 | streak 1 | hits 0
 
-- `contrast-below-AA-on-a-tinted-or-coloured-plate` | ACTIVE | owner M | det: recipe | last S660 | streak 1
+- `contrast-below-AA-on-a-tinted-or-coloured-plate` | ACTIVE | owner M | det: recipe | last S678 | streak 0
 
 - `native-control-outside-the-field-rule` | ACTIVE | owner M | det: recipe | last S660 | streak 1 | hits 2
 
@@ -868,7 +862,7 @@ _(none)_
 
 - G print & export fidelity (one tool): 2026-11-23 (**S676 — `tefillah_trainer.html` (its first G): 444 PDFs with the real texts and web fonts (10 prayers × 11 set-ups × Letter / A4, EN light / HE light / HE dark; dark = light on 132 / 132, plant 1 / 1), 16 screen states on paper, the handout's options, the `.ivrit` file and the hub's backup round trips, 6 copies, 4 practice links. FOUND 3, FIXED …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- D performance (one tool): 2026-11-19 (**S664 — `trope_atlas.html` (its 2nd D, S579 → S664, 25 commits since) + `hebrew_blend_generator.html` (a clean surface buys a second; S590 → S664, 40 commits): each against its last D's tree, alternating — the atlas cold, ten starting states, 20 interactions @4×, scrolling, keys, the singer, paper, heap, a per-frame trace (a repaint is one 12–22 ms …[full text: IMPROVEMENT_ARCHIVE.md]
+- D performance (one tool): 2026-11-23 (**S678 — `tefillah_trainer.html` (its first D): the 287-reading census, cold ×3 @1× / @4× over 8 starting states, a CPU profile, 23 interactions @4× by real input, scrolling, paper, heap, the waterfall. FOUND 1 (the Torah Trainer's S570 transliteration freeze, here too: not small), FIXED 3 from the queue. D-next: chrome (S590), trope (S598), dictionary …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - I first-load & empty-state: 2026-11-08 (**S628 — 41st I, S539 → S627 (503 commits; the Trope Atlas', reading assignments', the review page's and the 55 `parsha/` pages' first I): 81 virgin cells (plants 482/486); storage = S539's; 88 seeds; 27 tours; ~260 openers + 24 drawer tabs; 164 bad URLs; the Atlas' load paths; 55 parsha pages. FOUND 4, FIXED 3.**)
 
@@ -886,4 +880,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-11-08 (**S630 — 41st F, long-build progress (S542's F-next; the affordance's first F): 13 presses that build before they answer, by real clicks with an animation-frame recorder, real PDF libraries from a cache, a held CDN, double presses at raw points. FOUND 2, FIXED 2 (+1 P4). F-next: destructive-action confirms.**)
 
-**Next session (S678):** **Branch `claude/zen-goldberg-1lov9k` (S676–S677, draft PR #427): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1533**, FM **5.60**, corpus ?v=**8**, the prayer catalog ?v=**9**. ⚑ drift: main=d2d922c sw=v1533 fm=5.60 migration=0014_saves_tool_tefillah_trainer.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest next: the Tefillah Trainer, never audited by D, M (pointer: D, then M); then M atlas (S584), H dictionary (S585). ⚑ Unaudited (`9e702ae..a402f72`): the class roster, the hub, the footer and cracks, FM 5.60 — unseen by E, K, I, F, B. ⚑ Queue: the Tefillah Trainer's two S675 P3s (the translation's `lang`, the fullscreen bar's 4.18:1); the Tutor's dead `.footer-credits` rules. ⚑ Awaiting: S662, S653, S652. ⚑ 51 seeds.
+**Next session (S679):** **Branch `claude/zen-goldberg-1lov9k` (S676–S678, draft PR #427): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1536**, FM **5.60**, corpus ?v=**8**, the prayer catalog ?v=**9**. ⚑ drift: main=d2d922c sw=v1536 fm=5.60 migration=0014_saves_tool_tefillah_trainer.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest next: M on the Tefillah Trainer, never audited (pointer: M); then M atlas (S584), H dictionary (S585), C torah (S586). ⚑ Unaudited (`9e702ae..a402f72`): the class roster, the hub, the footer and cracks, FM 5.60 — unseen by E, K, I, F, B. ⚑ Queue: the dead `footer .footer-credits` screen rule on three pages (one iteration); S675's Hebrew catchword outside `lang="he"`. ⚑ Awaiting: S662, S653, S652. ⚑ 51 seeds.

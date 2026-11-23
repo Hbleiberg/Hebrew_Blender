@@ -99126,3 +99126,39 @@ _(prior)_ **Next session (S676):** **Branch `claude/pensive-ramanujan-rsoncx` (S
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 _(prior)_ **Next session (S677):** **Branch `claude/zen-goldberg-1lov9k` (S676, draft PR #427): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1530**, FM **5.60**, corpus ?v=**8**, the prayer catalog ?v=**9**. ⚑ drift: main=d2d922c sw=v1530 fm=5.60 migration=0014_saves_tool_tefillah_trainer.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Due (override 4): `jewish-coloring-pages.html` N **this session (S677)**. ⚑ Stalest next: the Tefillah Trainer, never audited by D, M (pointer: D, then M); then M atlas (S584), H dictionary (S585). ⚑ Unaudited (`9e702ae..a402f72`): the class roster, the hub, the footer and cracks, FM 5.60 — unseen by E, K, I, F, B. ⚑ Queue: the Tefillah Trainer's share of S675's P3s; S674's link banner focus; the Tutor's S597 credits sheet (try `016e91ef`'s rule). ⚑ Awaiting: S662, S653, S652. ⚑ 51 seeds.
+
+_(prior)_ **Next session (S678):** **Branch `claude/zen-goldberg-1lov9k` (S676–S677, draft PR #427): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1533**, FM **5.60**, corpus ?v=**8**, the prayer catalog ?v=**9**. ⚑ drift: main=d2d922c sw=v1533 fm=5.60 migration=0014_saves_tool_tefillah_trainer.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest next: the Tefillah Trainer, never audited by D, M (pointer: D, then M); then M atlas (S584), H dictionary (S585). ⚑ Unaudited (`9e702ae..a402f72`): the class roster, the hub, the footer and cracks, FM 5.60 — unseen by E, K, I, F, B. ⚑ Queue: the Tefillah Trainer's two S675 P3s (the translation's `lang`, the fullscreen bar's 4.18:1); the Tutor's dead `.footer-credits` rules. ⚑ Awaiting: S662, S653, S652. ⚑ 51 seeds.
+
+
+<!-- archived by compact-ledger at the S679 boundary, 2026-11-23 -->
+## Compaction (S679, 2026-11-23) — moved verbatim from the live ledger
+
+### from Candidates — aged P4 (found more than 90 sessions before S679)
+
+- [ ] P4 (**NEW S588 M — 13 carriers**) | footer About column | **At ~800px the licence line wraps after a separator** ("CC BY-NC-SA 4.0 · GitHub ·" / "Contact & Support"). | found S588
+
+### from Candidates (prioritized, top = next)
+
+- [ ] P3 (**NEW S570 D — not small: yield per verse or a worker; S678: the Tefillah Trainer the same, a cold Amidah with Translit on 525–632 ms @1× / 2.5–2.8 s @4×, Under each word, a style, another prayer 1.2–1.9 s @4× (findings S678)**) | torah_trainer.html, tefillah_trainer.html | **Turning Translit on freezes the page for the reading's first transliteration pass**: one task of 520 ms @1× / 2.45 s @4× on Vayera (2,085 words; the Trope staff 447 / 2,691), and a cold load with Translit on 536–582 / 2,751–2,948 — the library's syllabification; the memos spare only re-renders (findings …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Done
+
+- [x] 2026-11-23 | (S673 close-out) | branch/deploy note | **S673 = N on `tefillah_trainer.html` (its first, override 4): 600 phone views clean (plants 5 / 5); FOUND 4, FIXED 3 + the atlas's S665 P4; 4 logged.** Draft PR #424 continues, `sw.js` v1513 → v1517; nothing live changed; after the merge confirm the Pages deploy.
+
+- [x] 2026-11-23 | `2e20de5d` | trope_atlas.html, sw.js | (S673, the S665 C queue item; pattern `selected-state-lost-in-forced-colors`) **The contents list's current link shows in forced colours** | current vs neighbour 6–17 → 302–504 × 4 forced cells; outside them identical
+
+- [x] 2026-11-23 | `732175be` | tefillah_trainer.html, tefillah-trainer.md, sw.js, probe | (S673 N) **Side by side on a phone gives the Hebrew line its full width** (number and Copy in a row above it, 600px and under) | cell 231 → 296px at 320px; probe 6 / 6 (before 2 / 6)
+
+- [x] 2026-11-23 | `c444f492` | torah_trainer.html, sw.js, probe | (S673; the same pattern) **The iPhone install hint steps aside for the Trainer's drawer and copy dock** | the probe, both pages 12 / 12 (before 0 / 12)
+
+- [x] 2026-11-23 | `dfcf0f20` | tefillah_trainer.html, sw.js, probe | (S673 N; pattern `install-banner-over-a-sheet's-bottom-controls`) **The iPhone install hint steps aside for the settings drawer and the copy dock** | probe `S673-install-hint-clears-drawer-and-dock.mjs` 6 / 6 (before 0 / 6)
+
+### from Per-session log (one line per session)
+
+- 2026-11-23 | **S678** | iters: 4 | tools: tefillah_trainer ×2, torah_trainer ×2, trope_tutor, 2 docs, sw ×3, probes ×2 | patterns fixed: pinned-english-without-lang ×1 (both trainers), contrast-below-AA-on-a-tinted-or-coloured-plate ×1 | pass run: D (tefillah_trainer, first; FOUND 1 = the S570 shape, not small) + 3 from the queue | SW: v1533→v1536
+
+- 2026-11-18 | **S658** | iters: 5 | tools: name_tags ×2, holidays/ + build-holiday-pages ×2, locales, llms-full, sitemap, sw ×2, probes S658 ×2 | patterns fixed: JSON-LD ↔ visible-content parity ×1 | pass run: L (suite, first since S622; 193 commits; FOUND 4, FIXED 4) | SW: v1412→v1414
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- D performance (one tool): 2026-11-23 (**S678 — `tefillah_trainer.html` (its first D): the 287-reading census, cold ×3 @1× / @4× over 8 starting states, a CPU profile, 23 interactions @4× by real input, scrolling, paper, heap, the waterfall. FOUND 1 (the Torah Trainer's S570 transliteration freeze, here too: not small), FIXED 3 from the queue. D-next: chrome (S590), trope (S598), dictionary (S605).**)
