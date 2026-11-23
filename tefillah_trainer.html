@@ -1784,6 +1784,12 @@ body.fullscreen .tt-page {
      body.tt-bulk-dock .tt-page reserves room for the bulk dock. */
   max-width: none; padding: 30px 48px 92px;
 }
+/* #fsExitBtn is pinned to the physical top right (the suite's place for it), and that is where a Hebrew
+   interface's first row starts: the prayer's name, or the Open in Torah Trainer row above it, began under the
+   button. There the page starts below it (the button ends 71px down). */
+[dir="rtl"] body.fullscreen .tt-page { padding-top: 78px; }
+/* Left to right only the Open in Torah Trainer row can run as far as the button (four links at 800px): it wraps before it. */
+html:not([dir="rtl"]) body.fullscreen .tt-torah-links { padding-inline-end: 84px; }
 /* Sizes stay the teacher's: every reading element in all three layouts already reads
    --tt-heb-size / --tt-translit-size / --tt-english-size, which applyFontSizes() sets from
    the drawer sliders. A literal font-size here out-specifies those vars and pins the

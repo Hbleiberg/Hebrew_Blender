@@ -274,6 +274,13 @@ the text takes the full width (`scripts/loop/probes/S673-tefillah-side-by-side-p
 The install hint (`pwa.js`, fixed at the bottom of a phone) is hidden while the settings drawer is open or the copy
 dock is up: both end where the hint sits (`scripts/loop/probes/S673-install-hint-clears-drawer-and-dock.mjs`).
 
+## Fullscreen
+
+The Exit fullscreen button is pinned to the physical top right, as on every page of the suite. In the Hebrew interface
+that is where the first row starts, so the fullscreen page starts below the button there (`[dir="rtl"] body.fullscreen
+.tt-page`); left to right, only the *Open in Torah Trainer* row can reach it, and it wraps before it
+(`scripts/loop/probes/S674-tefillah-fullscreen-first-row-clears-exit.mjs`).
+
 ## Checks
 
 - `node scripts/smoke-tefillah.mjs` — the reading model against fixtures it serves itself (no Sefaria): markup never
