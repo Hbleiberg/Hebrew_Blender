@@ -881,7 +881,11 @@ picture's `?v=`, and its footer nav is copied) and after the Letter Learner's li
   tabs (`.ch-book-tab` in a `tablist`, named by `torah.custom.book_*`) over five panels (`.ch-book`), shipped with
   the first book open and the rest `hidden`. The script opens the book being read now (the book of the card *This
   week* shows), and a chosen book rides `history.state` (`chBook`), so Back from a parsha page returns to the book
-  it was opened from. Where the browser has `beforematch`, a closed book is `hidden="until-found"`, so a
+  it was opened from. The card or letter tile tapped rides there too (`chLeft`, `chNow`, `chTop`: its link, whether it
+  was a *This week* copy, its top on the screen; a modified click opens a new tab and records nothing): the browser
+  restores the scroll before a Hebrew UI's language lands, in the longer English layout, so once the language is in
+  the return puts that card back where it was, unless the reader has scrolled, and forgets it (a reload keeps the
+  browser's own scroll). Where the browser has `beforematch`, a closed book is `hidden="until-found"`, so a
   find-in-page for a parasha's name opens its book — which is why the page's `[hidden]` rule excepts that value.
   Arrow keys walk the tabs as they lie on the screen (mirrored in the Hebrew UI), Home and End jump. All 54 cards
   stay in the markup: paper and a browser without scripts (the `<noscript>` style) show all five books under their

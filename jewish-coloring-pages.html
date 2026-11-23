@@ -904,6 +904,39 @@ header{--kin-pt:22px;--kin-pb:22px;--kin-gap:16px;}   /* this header's block pad
     selectBook(panel ? panel.dataset.book : tabs[0].dataset.book, false);
   }
 
+  // Back from a sheet: the browser puts the page back at the scroll it left, but in the Hebrew UI it can do that before
+  // the language lands, in the English layout (longer above the cards), and the card the teacher had tapped came back
+  // 100-250px lower. The tapped card and its place on the screen ride history.state beside the book; once the language
+  // is in, the return to this entry puts that card there again, unless the reader has scrolled meanwhile, and forgets
+  // it (a later reload keeps the browser's own scroll).
+  function copyState(drop) {
+    var st = null, s = {};
+    try { st = history.state; } catch (e) {}
+    if (st && typeof st === 'object') for (var k in st) if (Object.prototype.hasOwnProperty.call(st, k) && drop.indexOf(k) < 0) s[k] = st[k];
+    return s;
+  }
+  function rememberCard(a) {
+    var s = copyState([]);
+    s.chLeft = a.getAttribute('href');
+    s.chNow = !!a.closest('#chNow');
+    s.chTop = Math.round(a.getBoundingClientRect().top);
+    try { history.replaceState(s, ''); } catch (e) {}
+  }
+  var readerMoved = false;
+  function returnToCard() {
+    var st = null;
+    try { st = history.state; } catch (e) {}
+    if (!st || typeof st !== 'object' || typeof st.chLeft !== 'string' || typeof st.chTop !== 'number') return;
+    try { history.replaceState(copyState(['chLeft', 'chNow', 'chTop']), ''); } catch (e) {}
+    if (readerMoved) return;
+    var a = [].slice.call(document.querySelectorAll('a.ch-card, a.ch-letter')).filter(function (x) {
+      return x.getAttribute('href') === st.chLeft && !!x.closest('#chNow') === !!st.chNow;
+    })[0];
+    if (!a || (a.checkVisibility && !a.checkVisibility())) return;
+    var dy = Math.round(a.getBoundingClientRect().top - st.chTop);
+    if (Math.abs(dy) > 1) window.scrollBy(0, dy);
+  }
+
   // A picture's alt in the UI's language: the page's kind and name, and in English what the picture shows.
   function altAll() {
     var he = lang() === 'he';
@@ -953,6 +986,16 @@ header{--kin-pt:22px;--kin-pb:22px;--kin-gap:16px;}   /* this header's block pad
     initBooks();
     renderNow();   // English before the locale arrives; applyI18n re-says it in the UI's language
     if (window.I18n) { I18n.ready.then(applyI18n); I18n.onChange(applyI18n); }
+    document.addEventListener('click', function (e) {
+      if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey || e.button) return;   // a new tab or window: this page stays
+      var a = e.target && e.target.closest ? e.target.closest('a.ch-card, a.ch-letter') : null;
+      if (a) rememberCard(a);
+    });
+    ['wheel', 'touchstart', 'keydown'].forEach(function (t) {
+      window.addEventListener(t, function () { readerMoved = true; }, { once: true, passive: true });
+    });
+    var loaded = new Promise(function (r) { if (document.readyState === 'complete') r(); else window.addEventListener('load', function () { r(); }); });
+    Promise.all([window.I18n ? I18n.ready : null, loaded]).then(function () { requestAnimationFrame(returnToCard); }, function () {});
   });
 })();
 </script>
