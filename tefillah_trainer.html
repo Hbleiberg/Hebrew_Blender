@@ -1931,6 +1931,18 @@ body.fullscreen #ttFsBar.visible .tt-fs-plate { pointer-events: auto; }
   .tt-verse-row .tt-rowlabel { padding-top:0; min-width:0; }
   .tt-verse-row > .tt-heb, .tt-verse-row > .tt-translit, .tt-verse-row > .tt-translation { flex:none; }
 }
+/* Side by side on a phone is one column (the 720px collapse above), and the Hebrew row kept its number and Copy button
+   in a strip beside the whole line: 65px of 296px at 320px (78px in the Hebrew UI), so a paragraph-long line read
+   about four words a row. Here the strip lies above its line as a row, as the line-by-line layout's head row does
+   (starting at the UI's own edge: .tt-vnum is pinned ltr for its digits, so the Hebrew UI reverses the row), and the
+   text takes the full width. !important only against the builder's inline column style. Screen only. */
+@media screen and (max-width: 600px) {
+  .tt-grid-col.tt-col-heb .tt-grid-row:not(.tt-instrow) { flex-direction:column; gap:2px; }
+  .tt-grid-col.tt-col-heb .tt-grid-row .tt-vnum { display:flex; align-items:center; gap:10px; min-width:0; padding-top:0; }
+  [dir="rtl"] .tt-grid-col.tt-col-heb .tt-grid-row .tt-vnum { flex-direction:row-reverse; }
+  .tt-grid-col.tt-col-heb .tt-grid-row .tt-vnum .tt-verse-buttons { flex-direction:row !important; align-items:center; margin-top:0 !important; }
+  [dir="rtl"] .tt-grid-col.tt-col-heb .tt-grid-row .tt-vnum .tt-verse-buttons { flex-direction:row-reverse !important; }
+}
 
 /* Phone widths: let the header button row wrap onto a second line instead of pushing the
    page sideways (WCAG 1.4.10 reflow). max-width is the operative half — the row is

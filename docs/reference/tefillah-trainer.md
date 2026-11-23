@@ -267,7 +267,12 @@ pressed, and always while a search or a filter is in force — one in force is n
 `aria-disabled` with a title that says why; once open it stays open until the button is pressed. Per visit, no
 stored key. Above that width the button is not rendered and the group always shows. Tour step 2 points at the
 button while the group is folded. At 600px and under the line-by-line layout puts each row label above its line, and
-under 720px "Side by side" orders the Hebrew column first (CSS `order`, screen only).
+under 720px "Side by side" orders the Hebrew column first (CSS `order`, screen only); at 600px and under its Hebrew
+row lays the number, the Select-lines checkbox and Copy in one row above the line, starting at the UI's own edge, so
+the text takes the full width (`scripts/loop/probes/S673-tefillah-side-by-side-phone-head-row.mjs`).
+
+The install hint (`pwa.js`, fixed at the bottom of a phone) is hidden while the settings drawer is open or the copy
+dock is up: both end where the hint sits (`scripts/loop/probes/S673-install-hint-clears-drawer-and-dock.mjs`).
 
 ## Checks
 
