@@ -19,8 +19,10 @@ fallback) holds `.home-intro` (the `h2.home-headline` and `p.home-lede`) and `.t
   tiles leaves a gap or squeezes them.
 - **The Hebrew word beside a group title** (`span.tg-heb`, `lang="he" dir="rtl" aria-hidden="true"`) is pinned Hebrew
   for the English interface, never a key; the CSS hides it in the Hebrew interface, where the title is Hebrew already.
-- **A tile** is `<li><a class="tool-tile" href="…">` holding three spans: `.icon` (the drawing), `.tt-name`
-  (`home.tile.<key>.name`) and `.tt-desc` (`home.tile.<key>.desc`, one sentence). A badge sits between the name and the
+- **A tile** is `<li><a class="tool-tile" href="…">` holding `.icon` (the drawing), `.tt-name`
+  (`home.tile.<key>.name`) and `.tt-desc` (`home.tile.<key>.desc`, one sentence). **The name is an `h4`**, so the
+  page's outline lists every tool under its group's `h3` (the old cards' names were headings; a crawler and a screen
+  reader both read the outline). The My Fonts tile is a button, which cannot hold a heading, so its name is a span. A badge sits between the name and the
   sentence: `.beta-tag` (`home.badge.beta`) or `.new-tag` (`home.badge.new`).
 - **The *New* badge is hand-kept**: it comes off a tile when its tool stops being new, and nothing else changes.
 - **My Fonts is not a page.** Its tile is a `<button type="button" class="tool-tile">` calling `openMyFonts()`, which
@@ -74,7 +76,9 @@ themes, in the source order **brand, settings, about, follow**, which is the rea
 - **Two labels per link.** Each settings and about link carries `.lbl-long` (shown in the columns) and `.lbl-short`
   (`home.footer.short.*`, shown on a phone, where the links run in two wrapping rows); the CSS shows one at a time. The
   short ones carry `data-nosnippet`, so a search snippet built from page text never reads both — Google honours that
-  attribute on a `span`, never on an `a` or a `nav`. Existing strings are reused for the long labels wherever the words
+  attribute on a `span`, never on an `a` or a `nav`. The settings column's long labels and the footer's lockup carry
+  it too: *My IvritSuite Fonts* would otherwise be the one sentence of body text that names the site, and a search
+  for the name could be answered with it and its neighbours (`ops.md` → *Search snippets*). Existing strings are reused for the long labels wherever the words
   are the same.
 - **Phones:** the CSS shows the logo and the social buttons first and the credits last; the Tab order follows the
   source.
