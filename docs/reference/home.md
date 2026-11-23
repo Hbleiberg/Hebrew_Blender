@@ -9,7 +9,12 @@ not part of the layout.
 ## Groups and tiles
 
 `#mainContent` (`<div class="hero" role="main" tabindex="-1">`, the skip link's target and the What's-new card's focus
-fallback) holds `.home-intro` (the `h2.home-headline` and `p.home-lede`) and `.tool-groups`.
+fallback) holds `.home-intro` (the `h2.home-headline`, `p.home-lede` and `p.home-tools`) and `.tool-groups`.
+
+- **`p.home-tools` names the tools in the words people search for** (`home.hero.tools`: Hebrew worksheets, flash
+  cards, the alef-bet, a Hebrew dictionary, Torah and trope, a font maker). The tiles are short on purpose, and the
+  old cards' long descriptions went with them, so this line is where the page's body text says what the suite
+  holds. A reworded line keeps "Hebrew" and each tool's plain name.
 
 - **A group** is `<section class="tool-group" aria-labelledby="tg<Id>" style="--n:<tiles>">`: a `.tg-head` with the
   small-caps *who it is for* line (`p.tg-for`, `home.group.<id>.for`) and the `h3` title (`home.group.<id>.title`),
