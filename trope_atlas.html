@@ -528,6 +528,10 @@ html[lang="he"] footer [style*="letter-spacing:0.08em"] { letter-spacing:normal 
   .tu-pstaff .tu-pn.is-sounding, .tu-pstaff .tu-pn.is-rest.is-sounding, body.dark .tu-pstaff .tu-pn.is-sounding { color:Highlight; }
   .tu-pstaff .tu-pn.is-sounding ellipse, body.dark .tu-pstaff .tu-pn.is-sounding ellipse { stroke:CanvasText; }
   .tu-pstaff .tu-pn.is-sounding .tu-nn { fill:Highlight; }
+  /* The contents list's "you are here" link was gold text alone: here every link is LinkText and each sub-link's
+     transparent edge is drawn, so the current one read like its neighbours. It takes the selection colours. */
+  .at-index a.cur, .at-index .at-sysidx li.g > a.cur { background:Highlight; color:HighlightText; forced-color-adjust:none; }   /* the group heads name their own gold */
+  .at-index .at-sysidx li.g ul a.cur { border-inline-start-color:Highlight; }
 }
 /* The header's title row (docs/reference/shared-components.md → Header lockup): up to 491px the title squeezed beside the
    buttons is narrower than its own longest word, which then paints past it (English, the real UI fonts; Hebrew 480),
