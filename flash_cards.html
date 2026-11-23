@@ -9098,6 +9098,9 @@ function chooseTile(chosen, answer, tileEl) {
   const ok = (chosen.heb === answer.heb);   // graded against the PROMPT card, not the tapped tile
   applyMark(ok);
   const grid = document.getElementById('lcChoices');
+  // A tile picked with Tab + Enter is disabled under its own focus, which fell to <body> and stayed there through the
+  // auto-advance. The speaker takes it instead: every card starts silent, so it is the next card's first press.
+  if (document.activeElement === tileEl) { const sp = document.getElementById('lcReplay'); if (sp && sp.getClientRects().length) sp.focus({ preventScroll: true }); }
   grid.querySelectorAll('.lc-tile').forEach(t => {
     t.disabled = true;
     if (t.dataset.heb === answer.heb) { t.classList.add('good'); t.appendChild(lcMark(true)); }
