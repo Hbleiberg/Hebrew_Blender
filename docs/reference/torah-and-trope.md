@@ -1935,6 +1935,7 @@ Both pages sync one settings blob (and the Trope Tutor its mastery progress) thr
   screen (`parseSefariaResponse` keeps `_he` / `_en`): `updateTransFooter` names the translation and the licence it
   came back under, `updateHebFooter` appends the Hebrew edition and its licence to "Hebrew text via Sefaria" (a
   pinned-English credit; the Hebrew is credited, not gated).
+- **The install hint steps aside.** `pwa.js`'s hint (fixed at the bottom of a phone) is hidden while the picture gallery, the settings drawer or the copy dock is up: each ends where the hint sits (`scripts/loop/probes/S673-install-hint-clears-drawer-and-dock.mjs`).
 - **The reading on screen stays with its tab.** The settings are one row, so a merge with what another tab or another
   device wrote brings that side's reading along (`READING_KEYS`: `parshahKey`, `scope`, `holidayKey`, `holidayPart`,
   `customRef`, `customLabel`). `cloudReread()` keeps the six that are on screen, and saves them again when the store
