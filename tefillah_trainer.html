@@ -332,8 +332,11 @@ body.hide-linenums .tt-num { display:none; }
 .tt-credit-lic { font-weight:600; }
 .tt-credits a { color:var(--gold-text); }
 .tt-credit-note { margin:4px 0 0; font-size:0.72rem; }
-.form-row.is-off > label:first-child { opacity:0.55; }
-.tt-set.is-off .radio-group, .tt-set.is-off #tropeColorPickerList, .tt-set.is-off #tropeResetRow, .tt-set.is-off #tropeByRow { opacity:0.5; }
+/* A row that cannot act on this text reads as one, name and control alike: the te'amim switch kept its full "on" gold
+   beside a dimmed name, and the trope list's name stayed full beside its dimmed choices. */
+.form-row.is-off > label:first-child, .form-row.is-off > .toggle { opacity:0.55; }
+.tt-set.is-off .radio-group, .tt-set.is-off #tropeColorPickerList, .tt-set.is-off #tropeResetRow, .tt-set.is-off #tropeByRow,
+.tt-set.is-off > .form-row:not(#tropeByRow) > label:first-child { opacity:0.5; }
 @media print {
   .tt-torah-links, .tt-filter-note { display:none !important; }
   .tt-credits { color:#333; border-top:1px solid #999; break-inside:avoid; page-break-inside:avoid; font-size:8pt; }
@@ -2574,11 +2577,11 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
           <label><span id="lblShowCantillation" data-i18n="tefillah.display.show_cantillation">Show cantillation marks (te'amim)</span> <span class="tip-wrap" data-i18n-tip="tefillah.display.show_cantillation_tip" data-tip="Cantillation marks (above and below letters) indicate chanting melody. Toggle off to see only nikkud (vowels)."><i class="tip-icon">?</i></span></label>
           <label class="toggle"><input type="checkbox" id="optShowCantillation" aria-labelledby="lblShowCantillation"><span class="slider"></span></label>
         </div>
+        <p class="tt-set-note" id="ttTeamimNote" data-i18n="tefillah.display.no_teamim_note" hidden>This text has no cantillation marks, so there are none to show or hide.</p>
         <div class="form-row">
           <label for="optShowNikkud" data-i18n="tefillah.display.show_nikkud">Show nikkud (vowels)</label>
           <label class="toggle"><input type="checkbox" id="optShowNikkud"><span class="slider"></span></label>
         </div>
-        <p class="tt-set-note" id="ttTeamimNote" data-i18n="tefillah.display.no_teamim_note" hidden>This text has no cantillation marks, so there are none to show or hide.</p>
         <div class="form-row">
           <label for="optShowLineNumbers" data-i18n="tefillah.display.show_line_numbers">Show line numbers</label>
           <label class="toggle"><input type="checkbox" id="optShowLineNumbers"><span class="slider"></span></label>

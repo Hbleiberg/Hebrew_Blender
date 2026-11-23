@@ -196,7 +196,9 @@ reason on the status line and the Try again card): a prayer with a silent gap wo
   only for a text that has them.
 - **Te'amim and trope**: the te'amim switch is live only when a loaded line carries real accents; trope classes are
   emitted only on Torah verses (`v.trope`), so the legend, its chip and the Colors tab's trope section are off for a
-  siddur text, with a note. The stored colour choice is kept.
+  siddur text, with a note. The stored colour choice is kept. A row that is off reads as one — the te'amim row's name
+  and switch dim together (`.form-row.is-off`), as do the trope list's name and choices (`.tt-set.is-off`) — and its
+  note sits right under that row (`scripts/loop/probes/S679-tefillah-a-row-that-cannot-act-reads-whole.mjs`).
 - **Words are not buttons** in this version: no click action, no roving focus.
 - **Each row names its language**: the translation (a line's row, a Side by side cell, Page view's block, an
   instruction's English, each line of the unaligned block — never the UI's heading or note above it) carries
