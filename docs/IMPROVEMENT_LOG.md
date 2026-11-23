@@ -478,7 +478,7 @@ _(none)_
 
 - `restore-step-undoes-a-saved-choice` | ACTIVE | owner P | det: scripts/loop/detect-restore-step-undoes-a-saved-choice.mjs | last S666 | streak 1 | hits 3
 
-- `synced-reading-follows-the-other-tab` | ACTIVE | owner P | det: recipe | last S672 | streak 0 | hits 1
+- `synced-reading-follows-the-other-tab` | ACTIVE | owner P | det: recipe | last S672 | streak 0 | hits 2
 
 - `async-export-runs-twice-on-a-second-press` | ACTIVE | owner F | det: recipe | last S631 | streak 0 | hits 3
 

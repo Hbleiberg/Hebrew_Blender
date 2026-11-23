@@ -178,6 +178,7 @@
  *      leaves the first tab on its own prayer (it moved to the other tab's) while the size still reaches the account;
  *      a page left open while another device chose a prayer keeps the one picked on it; a fresh load still opens
  *      the prayer the account holds.
+ *  D47. The same on the Torah Trainer, whose reading is the parasha with its portion, custom range and holiday.
  */
 import pkg from '/opt/node22/lib/node_modules/playwright/index.js';
 import { spawn } from 'node:child_process';
@@ -2319,7 +2320,7 @@ try {
     check('D45: 0 pageerrors', A.errors.length === 0 && B.errors.length === 0, A.errors.concat(B.errors).join(' | '));
     await ctx.close();
   }
-  // ---- D46. a trainer's reading stays with its tab (the settings row carries it, so a merge brings the other side's along) ----
+  // ---- D46, D47. a trainer's reading stays with its tab (the settings row carries it, so a merge brings the other side's along) ----
   const readingStays = async (tag, T) => {
     const TOOLS = [T.tool, 'Suite'];
     // the page's own stored blob and three readings its list offers, from one plain anonymous load
@@ -2332,7 +2333,7 @@ try {
       await p0.waitForTimeout(1200);
       await p0.evaluate(() => { try { saveSettings(); saveSettingsFlush(); } catch (e) {} });
       blob = await p0.evaluate((k) => JSON.parse(localStorage.getItem(k) || 'null'), T.lsKey);
-      picks = await p0.evaluate((sel) => [...document.querySelector(sel).options].map(o => o.value).filter(Boolean).slice(1, 4), T.sel);
+      picks = await p0.evaluate(([sel, now]) => [...document.querySelector(sel).options].map(o => o.value).filter(v => v && v !== now).slice(1, 4), [T.sel, blob && blob[T.field]]);
       await ctx0.close(); }
     const usable = !!blob && picks.length === 3 && new Set(picks.concat([blob[T.field]])).size === 4;
     check(tag + ': the page stores its settings and offers three other readings', usable, JSON.stringify({ blob: !!blob, picks, now: blob && blob[T.field] }));
@@ -2377,11 +2378,13 @@ try {
     { const { cloud, seed } = mk(); moveAccount(cloud, { [T.field]: picks[2] });
       const ctx = await openContext(browser, cloud, seed);
       const A = await openPage(ctx, T.file, { tools: TOOLS }); await sleep(600);
-      const sent = cloud.log.filter(e => e.table === 'saves' && e.m !== 'GET');
-      check(tag + ': a fresh load still opens the reading the account holds, and sends nothing', await shown(A.page) === picks[2] && sent.length === 0 && A.errors.length === 0, JSON.stringify({ shown: await shown(A.page), want: picks[2], sent: sent.length, errors: A.errors }));
+      // (the suite-preferences row is not this page's: each page keeps its own set of those fields)
+      const sent = cloud.log.filter(e => e.table === 'saves' && e.m !== 'GET' && !((e.hit || []).length && e.hit.every(h => h === 'prefs:default')));
+      check(tag + ': a fresh load still opens the reading the account holds, and sends nothing of its settings', await shown(A.page) === picks[2] && sent.length === 0 && A.errors.length === 0, JSON.stringify({ shown: await shown(A.page), want: picks[2], sent: methods(cloud), errors: A.errors }));
       await ctx.close(); }
   };
   if (want('D46')) await readingStays('D46', { file: 'tefillah_trainer.html', tool: 'TefillahTrainer', lsKey: 'hebrewTefillahTrainer_settings', sel: '#prayerSelect', field: 'prayerKey', omit: [], tourKey: 'hebrewTefillahTrainer_tourSeen' });
+  if (want('D47')) await readingStays('D47', { file: 'torah_trainer.html', tool: 'TorahTrainer', lsKey: 'hebrewTorahTrainer_settings', sel: '#parshaSelect', field: 'parshahKey', omit: ['*Collapsed', 'lastPos', 'loopVerse'], tourKey: 'hebrewTorahTrainer_tourSeen' });
 } finally {
   await browser.close();
   srv.kill();

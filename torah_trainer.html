@@ -11542,6 +11542,14 @@ let _linkReading = null;
 // The same for a practice link's look (?s=, LINK VIEW): true from the load that opened it until that first sync has landed.
 let _linkLookFirst = false;
 function linkReadingMark(keys) { _linkReading = {}; keys.forEach(k => { _linkReading[k] = settings[k] === undefined ? null : settings[k]; }); }
+// The reading on screen is this tab's own, and cloudReread keeps it: from the moment this load's first sync has landed
+// (_syncLanded), and before that once the reader has chosen another reading than the one the page opened on
+// (_readingAtAttach, taken by initCloudSaves). Until then a download is where the teacher left off on another device,
+// and it is shown.
+const READING_KEYS = ['parshahKey', 'scope', 'holidayKey', 'holidayPart', 'customRef', 'customLabel'];
+function readingNow() { const o = {}; READING_KEYS.forEach(k => { o[k] = settings[k] === undefined ? null : settings[k]; }); return o; }
+function readingDiffers(r) { return READING_KEYS.some(k => (settings[k] === undefined ? null : settings[k]) !== r[k]); }
+let _syncLanded = false, _readingAtAttach = null;
 let _handoutSnap = null;
 let _handoutVersesSnap = null;   // currentVerses swapped out for a selected-verses-only handout
 function _handoutEnter() {
@@ -12591,6 +12599,11 @@ function cloudReread() {
   // showing the link's. Only while the teacher is still on it: a reading chosen meanwhile is theirs.
   const keepLink = _linkReading && Object.keys(_linkReading).every(k => (settings[k] === undefined ? null : settings[k]) === _linkReading[k]) ? _linkReading : null;
   if (!keepLink) _linkReading = null;
+  // Every other re-read once the reading is this tab's own (_syncLanded, or one chosen here since the page opened): the
+  // reading on screen stays, and goes up with the save below when the store holds another. The settings are one row, so
+  // a merge with what another tab or device wrote brings that side's reading along: a parasha picked here was put back
+  // to the other tab's two seconds later, and a change of size alone moved the page to the reading open in the other tab.
+  const keepOwn = !keepLink && (_syncLanded || (_readingAtAttach && readingDiffers(_readingAtAttach))) ? readingNow() : null;
   // The look a practice link opened, landed under the same way: what of it is still on screen stays there over the
   // downloaded settings, unsaved, its banner still offering Keep or Go back (it used to end with the view, ?s= and all,
   // a moment after it showed). A download after that sync, or Go back, ends the view.
@@ -12600,6 +12613,7 @@ function cloudReread() {
   settings = JSON.parse(JSON.stringify(DEFAULTS));
   loadSettings();
   if (keepLink) { Object.assign(settings, keepLink); saveSettings(); }
+  else if (keepOwn && readingDiffers(keepOwn)) { Object.assign(settings, keepOwn); saveSettings(); }
   if (keepLook) {
     const own = {}, shown = {};
     Object.keys(keepLook).forEach(k => {
@@ -12632,9 +12646,10 @@ function initCloudSaves() {
   // A font from the account landed in the shared store: re-list My Fonts, which also re-applies a face
   // this page had chosen by name but could not show until now.
   window.addEventListener('ivritsuite:fonts', () => { try { refreshMyFonts(); } catch (e) {} });
-  // This load's first sync has landed (its download, if any, already re-read above): from now on a download is a
-  // choice made elsewhere after the link was opened, and takes the reading as usual.
-  window.addEventListener('ivritsuite:hydrated', e => { const d = e.detail || {}; if (d.ok && Array.isArray(d.tools) && d.tools.includes('TorahTrainer')) { _linkReading = null; _linkLookFirst = false; } });
+  // This load's first sync has landed (its download, if any, already re-read above): the link has done its work, and
+  // from now on the reading on screen is this tab's own (cloudReread) — a later re-read changes the look, never the reading.
+  _readingAtAttach = readingNow();
+  window.addEventListener('ivritsuite:hydrated', e => { const d = e.detail || {}; if (d.ok && Array.isArray(d.tools) && d.tools.includes('TorahTrainer')) { _linkReading = null; _linkLookFirst = false; _syncLanded = true; } });
   IvritSaves.attach({
     tool: 'TorahTrainer',
     status: '#cloudSavesPanel',

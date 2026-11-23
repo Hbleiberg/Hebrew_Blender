@@ -1935,6 +1935,14 @@ Both pages sync one settings blob (and the Trope Tutor its mastery progress) thr
   screen (`parseSefariaResponse` keeps `_he` / `_en`): `updateTransFooter` names the translation and the licence it
   came back under, `updateHebFooter` appends the Hebrew edition and its licence to "Hebrew text via Sefaria" (a
   pinned-English credit; the Hebrew is credited, not gated).
+- **The reading on screen stays with its tab.** The settings are one row, so a merge with what another tab or another
+  device wrote brings that side's reading along (`READING_KEYS`: `parshahKey`, `scope`, `holidayKey`, `holidayPart`,
+  `customRef`, `customLabel`). `cloudReread()` keeps the six that are on screen, and saves them again when the store
+  holds others, once this load's first sync has landed (`_syncLanded`, set by `ivritsuite:hydrated`) or the reader
+  has chosen another reading than the one the page opened on (`_readingAtAttach`, taken in `initCloudSaves`).
+  Until then a download is where the teacher left off on another device, and it is shown; a link's reading is kept
+  as above. Everything else in the row is re-read as usual, so the look still follows the other tab or device.
+  The Tefillah Trainer does the same for its prayer and nusach. Proved by `smoke-sync.mjs` D47 (D46 there).
 - **The Torah Trainer's favorites are two rows beside the settings blob** — `favorite` (one row per saved
   reading) and `favoriteFolders` (its tree, merged through the page's `merges: { favoriteFolders: ftMergeTrees }`).
   `onLocalChanged(kind)` branches on the kind: the two favorites kinds only re-render the list
