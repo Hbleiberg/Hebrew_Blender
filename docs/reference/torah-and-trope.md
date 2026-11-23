@@ -1183,7 +1183,9 @@ traditions were imported from, and was rebuilt on the suite's own pieces, so it 
   gives the Grid back where it was scrolled), in the light palette whatever the theme, with the rail, the chips, the
   Melody select and the Sing buttons off. The bar prints only its Key label and choice, the select as plain text: the
   printed notes say a melody is in its source's key unless a common key is chosen at the top of the page, so the top
-  of the sheet says which. The sign tables wrap to the sheet and a long figure shrinks to its
+  of the sheet says which. The phrase group prints the same way, as one line under the melody's key (the chip row's
+  translated `aria-label` and the pressed chip's name; the other chips and every count stay off), so a one-group
+  handout says which group its rows are (`scripts/loop/probes/S674-atlas-print-names-its-phrase-group.mjs`). The sign tables wrap to the sheet and a long figure shrinks to its
   column. The cards and phrase rows stack as blocks on paper, not grid rows, so the break rules hold: a heading or a
   card's head stays with what follows it, and a figure, a phrase row and the footer stay whole (Chrome honours none of
   that across a grid's rows, and printed blank sheets with it there). The header prints white under navy ink, its
