@@ -214,6 +214,146 @@ header{--bl-row:160px;}   /* the lockup, its divider and the header's gap: what 
   @container (min-width:99px){.kin-gap.kg-b .kg-h5{display:block;}}
 }
 @media (forced-colors:active){.kin-gap{display:none;}}
+/* The navy footer (every page; docs/reference/home.md, Footer). <footer class="site-footer"> holds .page-help, the page's
+   own fold-outs on the page's ground (where it has any), and .sf-bar, the navy bar: the lockup and credits, columns of
+   links and the social buttons, and on a tool page its Related Hebrew Tools list (.sf-tools) and its source credits
+   (.hf-src). The bar is navy in both themes. The home page (.sf-home) adds its settings column. */
+footer.site-footer{margin-block-start:40px;padding:0;border:0;background:none;}
+body.dark footer.site-footer{background:none;}   /* a page's own dark footer ground gives way: the bar inside is navy in both themes */
+footer.site-footer.sf-home{margin-block-start:72px;}
+.sf-bar,.sf-bar *,.page-help{box-sizing:border-box;}
+.page-help{max-inline-size:1280px;margin-inline:auto;padding:0 40px 22px;}
+.sf-bar{position:relative;border-top:4px solid var(--gold,#c9922a);background:#1a2744;color:#dde4f0;font-size:0.9375rem;line-height:1.5;text-align:start;}
+.hf-inner{position:relative;display:flex;flex-wrap:wrap;gap:32px 56px;max-inline-size:1280px;margin-inline:auto;padding:40px 40px 20px;}
+.hf-brand{flex:1 1 280px;display:flex;flex-direction:column;align-items:flex-start;gap:12px;}
+.hf-brand .brand-lockup{--lockup-h:48px;--lockup-h-sm:38px;}
+.hf-credits{display:flex;flex-direction:column;gap:6px;max-inline-size:340px;color:#c9d2e3;}
+.hf-credit{margin:0;}
+.hf-by{display:block;}
+.hf-col{flex:0 1 200px;display:flex;flex-direction:column;align-items:flex-start;gap:4px;}
+.hf-follow{flex-basis:180px;gap:10px;}
+.hf-head{margin:0;margin-block-end:4px;font-size:inherit;font-weight:700;color:#f0d080;}
+.hf-follow .hf-head{margin-block-end:0;}
+.sf-bar a,.hf-link{display:inline-flex;align-items:center;min-block-size:24px;padding:0;border:none;background:none;font:inherit;color:#fdf8ef;text-decoration:none;cursor:pointer;}
+.sf-bar a:hover,.hf-link:hover{color:#f0d080;text-decoration:underline;}
+.sf-bar :focus-visible{outline:2px solid #f0d080;outline-offset:2px;}
+.sf-bar .hf-credit a,.sf-bar .hf-src a{text-decoration:underline;}   /* a link inside a sentence: not told apart by colour alone */
+.hf-sefaria{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0;}
+.sf-bar .sefaria-attr img{block-size:28px;inline-size:auto;vertical-align:middle;}   /* Sefaria's file is a "Powered by Sefaria" badge: under 28px its wordmark is too small to read */
+.sf-bar .hf-src .sefaria-attr img{block-size:22px;}
+/* the bar is navy in both themes, so the screen always shows Sefaria's dark-ground badge; paper shows the other */
+.sf-bar .sefaria-attr .sefaria-light{display:none;}
+.sf-bar .sefaria-attr .sefaria-dark{display:inline-block;}
+.lbl-short,.hf-fold{display:none;}
+.hf-tip{min-block-size:0;font-size:0.8125rem;color:#c9d2e3;opacity:0;transition:opacity 0.25s;}
+.hf-tip.show{opacity:1;}
+/* the social links as round icon buttons: the platform names stay in the markup for a screen reader */
+.sf-bar .footer-social{justify-content:flex-start;gap:10px;margin-block-start:0;}
+.sf-bar .footer-social{font-size:inherit;}
+.sf-bar .footer-social a{justify-content:center;inline-size:44px;block-size:44px;border:1px solid #4a5878;border-radius:50%;background:#1a2744;color:#fdf8ef;}
+.sf-bar .footer-social a:hover{border-color:#f0d080;text-decoration:none;}
+.sf-bar .footer-social .hi{inline-size:20px;block-size:20px;}
+.sf-bar .footer-social span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;}
+/* a tool page: its Related Hebrew Tools in two columns, and its own source credits on one small line along the bottom */
+.hf-tools ul{list-style:none;margin:0;padding:0;columns:2;column-gap:24px;inline-size:100%;}
+.hf-tools li{break-inside:avoid;min-block-size:24px;}
+.sf-bar .hf-tools a{display:inline-block;min-block-size:0;padding-block:2px;font-size:0.9rem;line-height:1.3;}
+.hf-tools a::first-letter{text-transform:uppercase;}   /* the links keep their descriptive wording; a list reads better capitalised */
+.hf-src{flex:1 1 100%;display:flex;flex-wrap:wrap;gap:0 20px;align-items:center;padding-block-start:10px;border-block-start:1px solid #33415f;font-size:0.78rem;line-height:1.6;color:#c9d2e3;}
+.hf-seam{display:none;}
+@media (min-width:601px){
+  .sf-tools .hf-inner{gap:20px 36px;padding-block:34px 18px;}
+  .sf-tools .hf-brand{flex:0 1 250px;}
+  .sf-tools .hf-tools{flex:1 1 430px;}
+  .sf-tools .hf-about{flex:0 0 140px;}
+  .sf-tools .hf-follow{flex:0 0 152px;}
+}
+@media (min-width:1280px){
+  /* a seam on each side of the tool list: a spacer as wide as the column gap it replaces, holding one drawing from the bar's top edge */
+  .sf-tools .hf-inner{gap:20px 0;}
+  .sf-tools .hf-tools a{white-space:nowrap;}
+  .sf-tools .hf-about{margin-inline-end:30px;}
+  .hf-seam{display:block;flex:0 0 60px;align-self:stretch;position:relative;margin-block-start:-34px;overflow:hidden;pointer-events:none;}
+}
+@media (max-width:600px){
+  footer.site-footer,footer.site-footer.sf-home{margin-block-start:32px;}
+  .page-help{padding:0 20px 16px;}
+  .hf-inner,.sf-tools .hf-inner{display:grid;grid-template-columns:1fr auto;grid-template-areas:"logo social" "tools tools" "set set" "about about" "credit credit" "src src";align-items:center;gap:0 12px;padding:22px 20px 26px;}
+  .hf-brand{display:contents;}
+  .hf-brand .brand-lockup{grid-area:logo;justify-self:start;}
+  .hf-follow{grid-area:social;}
+  .sf-bar .footer-social{gap:8px;}
+  .hf-settings{grid-area:set;margin-block-start:16px;}
+  .hf-about{grid-area:about;margin-block-start:16px;}
+  .hf-settings + .hf-about,.hf-seam + .hf-about{margin-block-start:0;}
+  .hf-settings,.hf-about{flex-direction:row;flex-wrap:wrap;gap:0 18px;}
+  .hf-head{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;}
+  .sf-bar .hf-col a,.hf-link{min-block-size:40px;}
+  .hf-credits{grid-area:credit;max-inline-size:none;margin-block-start:12px;font-size:0.8125rem;}
+  .lbl-long{display:none;}
+  .lbl-short{display:inline;}
+  /* the tool list folds away under its heading: a button there, the plain heading everywhere else */
+  .hf-tools{grid-area:tools;margin-block-start:12px;}
+  .hf-fold{display:inline-flex;align-items:center;gap:10px;min-block-size:40px;padding:0;border:none;background:none;font:inherit;font-weight:700;color:#f0d080;cursor:pointer;}
+  .hf-fold::after{content:"";inline-size:7px;block-size:7px;border:solid #f0d080;border-width:0 2px 2px 0;transform:translateY(-3px) rotate(45deg);}
+  .hf-tools.open .hf-fold::after{transform:translateY(1px) rotate(-135deg);}
+  .hf-tools ul{display:none;column-gap:14px;}
+  .hf-tools.open ul{display:block;margin-block-end:6px;}
+  .sf-bar .hf-tools a{padding-block:6px;font-size:0.875rem;}
+  .hf-src{grid-area:src;margin-block-start:12px;}
+}
+@media (max-width:339px){.sf-bar .footer-social a{inline-size:40px;block-size:40px;}}   /* the lockup and three 44px buttons need a 327px screen: under that the row of buttons would break in two */
+/* Kintsugi: gold cracks in the navy bars (decorative; brand/kintsugi/, built by scripts/build-kintsugi.mjs). One image per
+   fracture, placed from the edge it is anchored to, so a bar can grow without its cracks drifting. The wide set was drawn
+   for a 1280px bar and the narrow set for a 390px footer: each shows only where its layout holds. Logical insets mirror
+   the positions in the Hebrew UI; the flip mirrors each drawing. (A header's own cracks: the home page's rules, and
+   .kin-gap above for every other page.) */
+.kin{position:absolute;inset:0;overflow:hidden;pointer-events:none;}
+.kin-f{position:absolute;display:none;max-inline-size:none;}
+[dir="rtl"] .kin-f{transform:scaleX(-1);}
+@media (min-width:1280px){.kin-wide{display:block;}}
+@media (max-width:600px){.kin-narrow{display:block;}}
+/* positions: printed by scripts/build-kintsugi.mjs --print */
+.kin-f1{inset-inline-start:calc(50% + 27px);inset-block-start:-13px;}
+.kin-f2{inset-inline-start:calc(50% + 273px);inset-block-start:-6px;}
+.kin-f3{inset-inline-start:calc(50% - 166px);inset-block-end:-6px;}
+.kin-f4{inset-inline-start:calc(50% + 382px);inset-block-end:-6px;}
+.kin-f5{inset-inline-start:-6px;inset-block-end:-11px;}
+.kin-f6{inset-inline-end:-10px;inset-block-start:16px;}
+.kin-f7{inset-inline-end:-10px;inset-block-start:74px;}
+.kin-p1{inset-inline-start:152px;inset-block-start:-6px;}
+.kin-p2{inset-inline-end:-14px;inset-block-start:72px;}
+.kin-p3{inset-inline-start:-6px;inset-block-end:4px;}
+.kin-p4{inset-inline-end:-4px;inset-block-end:-17px;}
+.hf-seam .kin-f{inset-block-start:-6px;}
+.hf-seam-a .kin-f{inset-inline-start:12px;}
+.hf-seam-b .kin-f{inset-inline-start:4px;}
+/* gates: a fracture is hidden wherever one of its strokes would come within 6px of text or a control. Measured, never
+   chosen: node scripts/smoke-kintsugi.mjs holds them */
+@media (max-width:359px){.kin-p1{display:none;}}    /* the phone footer's top fracture meets the social buttons up to 355px */
+.sf-tools .kin-f1,.sf-tools .kin-f2,.sf-tools .kin-f3{display:none;}   /* a tool page's list of links fills the middle of the bar, where these three run */
+.sf-src .kin-f4{display:none;}   /* a page's source credits run along the bottom, under this one, and their wording changes with what the page shows */
+@media (max-width:1319px){.sf-tools .kin-f7{display:none;}}   /* on a tool page the end-edge fracture meets the social buttons up to 1319px */
+@media print{
+  .kin,.hf-seam{display:none;}
+  footer.site-footer,footer.site-footer.sf-home{margin-block-start:24px;}
+  .sf-bar{border-top:1px solid #c8bfa8;background:#fff;color:#1a2744;}
+  .sf-bar a,.hf-head,.hf-credits,.hf-src{color:#1a2744;}
+  .hf-settings,.hf-follow,.hf-tools{display:none;}   /* settings actions, social links and a list of links do nothing on paper */
+  .sf-bar .sefaria-attr .sefaria-light{display:inline-block;}
+  .sf-bar .sefaria-attr .sefaria-dark{display:none;}
+  /* every page but the home page: one compact line of credits, so the footer never takes a sheet of its own (its links go nowhere on paper) */
+  footer.site-footer:not(.sf-home){margin-block-start:12px;}
+  .site-footer:not(.sf-home) .hf-inner{display:flex;gap:4px 16px;padding:8px 0 0;}
+  .site-footer:not(.sf-home) .hf-about{display:none;}
+  .site-footer:not(.sf-home) .hf-brand{display:flex;flex-direction:row;flex:1 1 100%;align-items:center;gap:12px;}
+  .site-footer:not(.sf-home) .hf-brand .brand-lockup{--lockup-h:22px;--lockup-h-sm:22px;}
+  .site-footer:not(.sf-home) .hf-credits{max-inline-size:none;margin:0;font-size:0.7rem;line-height:1.35;}
+  .site-footer:not(.sf-home) .hf-by{display:inline;}
+  .site-footer:not(.sf-home) .hf-by::after{content:" · ";}
+  .site-footer:not(.sf-home) .hf-src{padding-block-start:4px;font-size:0.66rem;line-height:1.35;}
+}
+@media (forced-colors:active){.kin,.hf-seam{display:none;}}
 /* ═══ end header-icons CSS ═══ */
 header{--kin-pt:10px;--kin-pb:10px;--kin-gap:14px;}   /* this header's block padding and column gap, for the shared .kin-gap rules above (scripts/smoke-kintsugi.mjs checks the spacer reaches the bar's edges) */
 @media screen and (min-width:1280px){html header{flex-wrap:nowrap;}}   /* this header may wrap (its own rule, further down); from 1280px its title is as wide as its text, which in a wrapping row would push the buttons to a second line when a long account name leaves it no room: one row, and the title gives way, as it always has */
@@ -1287,6 +1427,14 @@ header{--kin-pt:10px;--kin-pb:10px;--kin-gap:14px;}   /* this header's block pad
   footer { border-top: 1px solid var(--border); background: var(--white); color: var(--muted); padding: 12px 18px; font-size: 0.74rem; line-height: 1.5; }
   footer a { color: var(--gold-text); text-decoration: none; }
   footer a:hover { text-decoration: underline; }   /* the chrome pages' link hover idiom (theme-proof, no token) */
+  /* Navy, as every page's footer (docs/reference/home.md, Footer): this one keeps its single compact row, because the
+     workspace fills the screen. The palette tokens are restated for the bar, so the row, its fold-outs and their text
+     take the navy ground's ink in both themes without a rule for each. */
+  @media screen {
+    footer, body.dark footer { --white:#1a2744; --cream:#1a2744; --warm-gray:#24335a; --text:#dde4f0; --muted:#c9d2e3; --border:#33415f; --gold-text:#f0d080;
+      background:#1a2744; border-top:4px solid var(--gold); color:#c9d2e3; }
+    footer :focus-visible { outline-color:#f0d080; }
+  }
   /* Compact footer bar (see the <footer> comment): at rest it is ONE row — the FAQ, About and
      Related-tools disclosures, then the credits at the end — instead of a three-column block as
      tall as a panel. An opened disclosure takes the whole row so its body gets prose width. */
@@ -4738,7 +4886,7 @@ const ICON_WARN_SM = '<svg class="hi hi-sm hi-warning" viewBox="0 0 24 24" width
 const ICON_PENCIL_SM = '<svg class="hi hi-sm hi-pencil" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21l1.35-5L14.95 5.35a2.6 2.6 0 0 1 3.7 3.7L8.05 19.65Z"/><path d="M12.85 7.5l3.65 3.65"/></svg>';
 const ICON_GEAR_SM = '<svg class="hi hi-sm hi-gear" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12.0 1.8 L14.0 2.0 L15.1 4.6 L16.4 5.3 L19.2 4.8 L20.5 6.3 L19.4 8.9 L19.8 10.4 L22.2 12.0 L22.0 14.0 L19.4 15.1 L18.7 16.4 L19.2 19.2 L17.7 20.5 L15.1 19.4 L13.6 19.8 L12.0 22.2 L10.0 22.0 L8.9 19.4 L7.6 18.7 L4.8 19.2 L3.5 17.7 L4.6 15.1 L4.2 13.6 L1.8 12.0 L2.0 10.0 L4.6 8.9 L5.3 7.6 L4.8 4.8 L6.3 3.5 L8.9 4.6 L10.4 4.2 Z"/><circle cx="12" cy="12" r="3.2"/></svg>';
 const ICON_PLAY_SM = '<svg class="hi hi-sm hi-play" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 5.4 19 12 8.5 18.6Z" fill="currentColor"/></svg>';
-const FONT_MAKER_VERSION = '5.59';   // bump on release; add a matching Changelog entry in the About tab
+const FONT_MAKER_VERSION = '5.60';   // bump on release; add a matching Changelog entry in the About tab
 const HELP_CONTENT = {
   start: `
     <h4>Welcome 👋</h4>
@@ -4981,6 +5129,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
+      <li><strong>v5.60</strong> &mdash; <strong>A new look for the top and bottom bars.</strong> The strip under the workspace is navy now, like the footer on every IvritSuite page, and it is still one slim row. On a wide screen, thin gold lines run through the header in the space between the title and the buttons. Nothing about making a font has changed. <span style="color:var(--muted);">(November 2026)</span></li>
       <li><strong>v5.59</strong> &mdash; <strong>Sheet imports keep every letter&rsquo;s own size, and Trace all does the tracing for you.</strong> When <span class="ui">Auto-detect letters</span> cuts a photographed alphabet sheet into letters, every letter used to be stretched to the full guide height on its own &mdash; so a small yod came out as tall as an alef, and the final letters lost their tails. The sheet now gets one scale for all of its letters, so each keeps the size you drew it at (a new <span class="ui">Sizing</span> choice in the review dialog brings back the old fit-each-letter behaviour, and a letter you box by hand on that sheet afterwards is sized the same way). Fit-each-letter itself now gives a final letter its tail below the baseline instead of squeezing it in above. And under each letter grid a new <span class="ui">Trace all</span> button traces every letter that has a photo but no outline yet, in one step &mdash; one Ctrl+Z undoes them all, and letters you already traced are left alone. <span style="color:var(--muted);">(October 2026)</span></li>
       <li><strong>v5.58</strong> &mdash; <strong>Recent projects can no longer disappear.</strong> Projects you save in this browser now live in the Font Maker's own project storage instead of the small settings space, so the list has no limit of six: nothing leaves <span class="ui">Recent</span> unless you remove it with its trash button. If a save to this browser ever does not fit, the Font Maker says so instead of quietly dropping an older project to make room. Your existing Recent projects move over by themselves the first time you open this version.</li>
       <li><strong>v5.57</strong> &mdash; <strong>Your work is safer around signing in and out.</strong> Signing out of your IvritSuite account now finishes saving first: the copy in this browser is completed and a project kept in your account receives your last changes before the sign-out, and the page is no longer reloaded (signing out in another tab no longer reloads the Font Maker either). If the browser closes while your account copy still has changes waiting, <span class="ui">Continue where you left off</span> picks the saving up again. A save to this browser that is asked for while another is still being written is no longer skipped, so the very last edit before you close the tab is kept. Removing a font from <span class="ui">My Fonts</span> while signed in now says that it also leaves your account, and a removal made while the page is still connecting is no longer lost. An edit you make while a project is being saved to your account is no longer marked as saved before it is sent, and an automatic save never puts a project into the account of whoever signs in next on a shared browser. Continuing from this browser's backup copy without photos no longer replaces the photos of your account copy. While you are signed in, <span class="ui">My Fonts</span> and your suite-wide preferences (language and dark mode) now come from your account here too.</li>
@@ -5147,7 +5296,7 @@ function buildAboutBody() {
   // for en and THIS body for every other language, so a release written only into HELP_CONTENT.about
   // is invisible to non-English readers — which is how v5.10 and v5.11 came to be missing from the
   // Hebrew changelog while showing correctly in English.
-  const CUR_KEY = 'fontmaker.changelog.v5_59';
+  const CUR_KEY = 'fontmaker.changelog.v5_60';
   const cur = T(CUR_KEY);
   const v5li = (cur && cur !== CUR_KEY) ? '<li>' + esc(cur) + '</li>' : '';
   return '<p>' + esc(T('fontmaker.about.about_intro', { version: FONT_MAKER_VERSION })) + '</p>'

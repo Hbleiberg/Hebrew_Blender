@@ -4,7 +4,8 @@
 //   hub      — printed while the one-time What's-new card shows (a returning visitor): the sheets and the first text's
 //              position equal a print without the card (its reserved edge had opened sheet 1 about 3in down, a sheet
 //              more on Letter);
-//   contact  — one sheet, the footer's social row on it (it had printed alone on a second Letter sheet);
+//   contact  — one sheet, the footer's credit line on it (the old footer's social row had printed alone on a second
+//              Letter sheet; the navy footer prints as one line of credits, its links and social buttons off paper);
 //   fonts    — the Resources Fonts view: the first card on sheet 1 (in Hebrew on Letter the grid had moved whole to
 //              sheet 2, leaving the heading alone), no sheet under 100 characters, no card button label on paper.
 // × EN/HE × Letter/A4 (0.4in, no backgrounds), page.pdf read back with poppler. Sheet fit depends on the faces, so the
@@ -77,11 +78,11 @@ for (const lang of ['en', 'he']) {
     report(shown && na === nb && Math.abs(ya - yb) <= 2 && !a.errs.length && !b.errs.length, `hub ${lang} ${paper}: the What's-new card ${shown ? 'shown' : 'NOT SHOWN (no control)'} → ${na} sheets, first text at ${ya}pt; without it ${nb} sheets, ${yb}pt`);
   }
   await a.ctx.close(); await b.ctx.close();
-  // contact: one sheet, the social row on it
+  // contact: one sheet, the footer's credit line on it, and no social names (they are buttons, nothing on paper)
   const c = await load('contact.html', lang);
   for (const [paper, w, h] of PAPERS) {
     const t = sheets(await pdfOf(c.page, `contact-${lang}-${paper}`, w, h));
-    report(t.length === 1 && /Threads/.test(t[0]) && !c.errs.length, `contact ${lang} ${paper}: ${t.length} sheet${t.length > 1 ? 's' : ''}, the social row ${/Threads/.test(t[0]) ? 'on sheet 1' : 'on sheet ' + (t.findIndex(x => /Threads/.test(x)) + 1)}`);
+    report(t.length === 1 && /CC BY-NC-SA 4\.0/.test(t[0]) && !/Threads/.test(t.join(' ')) && !c.errs.length, `contact ${lang} ${paper}: ${t.length} sheet${t.length > 1 ? 's' : ''}, the credit line ${/CC BY-NC-SA 4\.0/.test(t[0]) ? 'on sheet 1' : 'on sheet ' + (t.findIndex(x => /CC BY-NC-SA 4\.0/.test(x)) + 1)}${/Threads/.test(t.join(' ')) ? ', the social names printed' : ''}`);
   }
   await c.ctx.close();
   // resources Fonts view: the first card on sheet 1, no near-empty sheet, no button label

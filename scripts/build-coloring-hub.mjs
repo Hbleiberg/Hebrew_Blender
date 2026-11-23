@@ -100,11 +100,12 @@ const SVG_ARROW = cut(/<svg class="hi hi-arrow dir-arrow"[\s\S]*?<\/svg>/, 'the 
 const SVG_MOON = cut(/<svg class="hi hi-moon"[\s\S]*?<\/svg>/, 'the hi-moon icon');
 const SVG_SUN = cut(/<svg class="hi hi-sun"[\s\S]*?<\/svg>/, 'the hi-sun icon');
 const SVG_PRINT = cut(/<svg class="hi hi-sm hi-print"[\s\S]*?<\/svg>/, 'the hi-print icon');
-const NAV_UL = cut(/<nav aria-label="Related Hebrew Tools"[\s\S]*?<\/nav>/, 'the Related Hebrew Tools nav')
-  .replace(/href="(?!https?:|\/)([^"]+)"/g, 'href="/$1"')
+// The footer's navy bar, whole, from the source page (the lockup and credits, its Related Hebrew Tools, About, the social
+// buttons and the gold cracks), with its relative addresses made absolute: these pages sit in a folder or are served anywhere.
+const SF_BAR = cut(/  <div class="sf-bar">[\s\S]*?\n  <\/div>\n(?=<\/footer>)/, "the footer's navy bar").replace(/href="(?!https?:|\/|#|mailto:)([^"]+)"/g, 'href="/$1"')
   .replace(/\n\s*<li><a href="\/jewish-coloring-pages\.html"[^\n]*/, '')   // this page does not list itself
-  .replace('<li><a href="/torah_trainer.html"', '<li><a href="/parsha_emojis.html" style="font-size:0.8rem;" data-i18n="shared.nav.link_parshaemojis">parsha emojis and coloring pages →</a></li>\n      <li><a href="/torah_trainer.html"');
-const SOCIAL = cut(/<!-- IvritSuite on social media;[^\n]*-->\n\s*<div class="footer-social"[\s\S]*?<\/div>/, 'the footer\'s social links');
+  // the source page does not list itself: these pages list it, before the Torah Trainer
+  .replace('<li><a href="/torah_trainer.html"', '<li><a href="/parsha_emojis.html" data-i18n="shared.nav.link_parshaemojis">parsha emojis and coloring pages</a></li>\n            <li><a href="/torah_trainer.html"');
 const CSP = "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'";
 
 const CSS = `@font-face{font-family:'Frank Ruhl Libre';src:url('/fonts/FrankRuhlLibre-Regular.ttf') format('truetype');font-weight:400;font-display:swap;}
@@ -582,17 +583,8 @@ ${faqHtml}
   </section>
 </main>
 
-<footer>
-  <!-- pinned-English credits (never translated): dir="ltr" keeps each phrase in English order in the RTL UI, and lang="en" has a screen reader voice it in English -->
-  <span dir="ltr" lang="en">Created by <a href="https://harrisonbleiberg.wpcomstaging.com/" target="_blank" style="font-weight:600;">Harrison Bleiberg</a></span><br>
-  <span data-i18n="shared.footer.license_note">Free to use and adapt for non-commercial educational purposes with attribution</span> &nbsp;·&nbsp;
-  <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> &nbsp;·&nbsp;
-  <a href="https://github.com/hbleiberg/Hebrew_Blender" target="_blank">GitHub</a> &nbsp;·&nbsp;
-  <a href="/privacy.html" data-i18n="shared.footer.privacy_link">Privacy Policy</a> &nbsp;·&nbsp;
-  <a href="/terms.html" data-i18n="shared.footer.terms_link">Terms of Use</a>
-  ${NAV_UL}
-  ${SOCIAL}
-</footer>
+<footer class="site-footer sf-tools">
+${SF_BAR}</footer>
 <script>
 ${SCRIPT}
 </script>

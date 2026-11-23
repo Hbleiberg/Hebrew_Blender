@@ -80,6 +80,8 @@ function gapSet() {
     markup: `<span class="kin-gap" aria-hidden="true">${g.set.map((e) => img(e.id)).join('')}</span>`,
     markupAlone: `<span class="kin-gap kg-b" aria-hidden="true">${img(a.id)}</span>`,
     rules: [...pos, ...stepsOnImg, ...alone].map((r) => '  ' + r).join('\n'),
+    // a tool page's footer: one drawing in the seam on each side of its list of links, from the bar's top edge
+    seams: g.seams.map((id, i) => `<span class="hf-seam hf-seam-${'ab'[i]}" aria-hidden="true"><img class="kin-f kin-wide" src="/brand/kintsugi/${id}.svg" width="${by[id].w}" height="${by[id].h}" alt="" loading="lazy" decoding="async"></span>`),
   };
 }
 
@@ -100,7 +102,7 @@ if (args.has('--print')) {
   for (const host of ['header', 'footer']) console.log(`<!-- ${host} -->\n<div class="kin" aria-hidden="true">${tags[host].join('')}</div>\n`);
   console.log(rules.join('\n'));
   const g = gapSet();
-  console.log(`\n<!-- every other page: after the header's title block -->\n${g.markup}\n\n<!-- a second gap (Flash Cards, after its centred title) -->\n${g.markupAlone}\n\n/* the gap rules, inside the shared header-icons CSS block */\n${g.rules}`);
+  console.log(`\n<!-- every other page: after the header's title block -->\n${g.markup}\n\n<!-- a second gap (Flash Cards, after its centred title) -->\n${g.markupAlone}\n\n<!-- a tool page's footer: the seams before and after its Related Hebrew Tools -->\n${g.seams.join('\n')}\n\n/* the gap rules, inside the shared header-icons CSS block */\n${g.rules}`);
 }
 if (args.has('--check')) {
   // every root page that carries a gap carries the markup and the rules exactly as printed (the generated pages are their builders' to check)
@@ -111,7 +113,15 @@ if (args.has('--check')) {
     if (!found.length || !found.every((m) => m === g.markup || m === g.markupAlone)) { stale++; console.error('stale gap markup: ' + f); }
     if (!t.includes(g.rules)) { stale++; console.error('stale gap rules: ' + f); }
   }
+  // ...and every root page with the navy footer carries the footer's cracks, and a tool page its two seams, as printed
+  const footKin = `<div class="kin" aria-hidden="true">${tags.footer.join('')}</div>`; let feet = 0;
+  for (const f of readdirSync(ROOT).filter((n) => n.endsWith('.html'))) {
+    const t = readFileSync(path.join(ROOT, f), 'utf8'), m = t.match(/\n<footer class="site-footer[^"]*">[\s\S]*?<\/footer>/); if (!m) continue; feet++;
+    if (!m[0].includes(footKin)) { stale++; console.error('stale footer cracks: ' + f); }
+    const seams = m[0].match(/<span class="hf-seam[^"]*" aria-hidden="true">.*?<\/span>/g) || [];
+    if (seams.length && (seams.length !== g.seams.length || seams.some((s, i) => s !== g.seams[i]))) { stale++; console.error('stale footer seams: ' + f); }
+  }
   if (stale) process.exit(1);
-  console.log('kintsugi: ' + data.fractures.length + ' files match fractures.json; the gap markup and rules match on ' + pages + ' pages');
+  console.log('kintsugi: ' + data.fractures.length + ' files match fractures.json; the gap markup and rules match on ' + pages + ' pages, the footer cracks on ' + feet);
 }
 else console.log('kintsugi: wrote ' + data.fractures.length + ' files to brand/kintsugi/');

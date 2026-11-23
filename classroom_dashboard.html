@@ -2593,6 +2593,146 @@ header{--bl-row:160px;}   /* the lockup, its divider and the header's gap: what 
   @container (min-width:99px){.kin-gap.kg-b .kg-h5{display:block;}}
 }
 @media (forced-colors:active){.kin-gap{display:none;}}
+/* The navy footer (every page; docs/reference/home.md, Footer). <footer class="site-footer"> holds .page-help, the page's
+   own fold-outs on the page's ground (where it has any), and .sf-bar, the navy bar: the lockup and credits, columns of
+   links and the social buttons, and on a tool page its Related Hebrew Tools list (.sf-tools) and its source credits
+   (.hf-src). The bar is navy in both themes. The home page (.sf-home) adds its settings column. */
+footer.site-footer{margin-block-start:40px;padding:0;border:0;background:none;}
+body.dark footer.site-footer{background:none;}   /* a page's own dark footer ground gives way: the bar inside is navy in both themes */
+footer.site-footer.sf-home{margin-block-start:72px;}
+.sf-bar,.sf-bar *,.page-help{box-sizing:border-box;}
+.page-help{max-inline-size:1280px;margin-inline:auto;padding:0 40px 22px;}
+.sf-bar{position:relative;border-top:4px solid var(--gold,#c9922a);background:#1a2744;color:#dde4f0;font-size:0.9375rem;line-height:1.5;text-align:start;}
+.hf-inner{position:relative;display:flex;flex-wrap:wrap;gap:32px 56px;max-inline-size:1280px;margin-inline:auto;padding:40px 40px 20px;}
+.hf-brand{flex:1 1 280px;display:flex;flex-direction:column;align-items:flex-start;gap:12px;}
+.hf-brand .brand-lockup{--lockup-h:48px;--lockup-h-sm:38px;}
+.hf-credits{display:flex;flex-direction:column;gap:6px;max-inline-size:340px;color:#c9d2e3;}
+.hf-credit{margin:0;}
+.hf-by{display:block;}
+.hf-col{flex:0 1 200px;display:flex;flex-direction:column;align-items:flex-start;gap:4px;}
+.hf-follow{flex-basis:180px;gap:10px;}
+.hf-head{margin:0;margin-block-end:4px;font-size:inherit;font-weight:700;color:#f0d080;}
+.hf-follow .hf-head{margin-block-end:0;}
+.sf-bar a,.hf-link{display:inline-flex;align-items:center;min-block-size:24px;padding:0;border:none;background:none;font:inherit;color:#fdf8ef;text-decoration:none;cursor:pointer;}
+.sf-bar a:hover,.hf-link:hover{color:#f0d080;text-decoration:underline;}
+.sf-bar :focus-visible{outline:2px solid #f0d080;outline-offset:2px;}
+.sf-bar .hf-credit a,.sf-bar .hf-src a{text-decoration:underline;}   /* a link inside a sentence: not told apart by colour alone */
+.hf-sefaria{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0;}
+.sf-bar .sefaria-attr img{block-size:28px;inline-size:auto;vertical-align:middle;}   /* Sefaria's file is a "Powered by Sefaria" badge: under 28px its wordmark is too small to read */
+.sf-bar .hf-src .sefaria-attr img{block-size:22px;}
+/* the bar is navy in both themes, so the screen always shows Sefaria's dark-ground badge; paper shows the other */
+.sf-bar .sefaria-attr .sefaria-light{display:none;}
+.sf-bar .sefaria-attr .sefaria-dark{display:inline-block;}
+.lbl-short,.hf-fold{display:none;}
+.hf-tip{min-block-size:0;font-size:0.8125rem;color:#c9d2e3;opacity:0;transition:opacity 0.25s;}
+.hf-tip.show{opacity:1;}
+/* the social links as round icon buttons: the platform names stay in the markup for a screen reader */
+.sf-bar .footer-social{justify-content:flex-start;gap:10px;margin-block-start:0;}
+.sf-bar .footer-social{font-size:inherit;}
+.sf-bar .footer-social a{justify-content:center;inline-size:44px;block-size:44px;border:1px solid #4a5878;border-radius:50%;background:#1a2744;color:#fdf8ef;}
+.sf-bar .footer-social a:hover{border-color:#f0d080;text-decoration:none;}
+.sf-bar .footer-social .hi{inline-size:20px;block-size:20px;}
+.sf-bar .footer-social span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;}
+/* a tool page: its Related Hebrew Tools in two columns, and its own source credits on one small line along the bottom */
+.hf-tools ul{list-style:none;margin:0;padding:0;columns:2;column-gap:24px;inline-size:100%;}
+.hf-tools li{break-inside:avoid;min-block-size:24px;}
+.sf-bar .hf-tools a{display:inline-block;min-block-size:0;padding-block:2px;font-size:0.9rem;line-height:1.3;}
+.hf-tools a::first-letter{text-transform:uppercase;}   /* the links keep their descriptive wording; a list reads better capitalised */
+.hf-src{flex:1 1 100%;display:flex;flex-wrap:wrap;gap:0 20px;align-items:center;padding-block-start:10px;border-block-start:1px solid #33415f;font-size:0.78rem;line-height:1.6;color:#c9d2e3;}
+.hf-seam{display:none;}
+@media (min-width:601px){
+  .sf-tools .hf-inner{gap:20px 36px;padding-block:34px 18px;}
+  .sf-tools .hf-brand{flex:0 1 250px;}
+  .sf-tools .hf-tools{flex:1 1 430px;}
+  .sf-tools .hf-about{flex:0 0 140px;}
+  .sf-tools .hf-follow{flex:0 0 152px;}
+}
+@media (min-width:1280px){
+  /* a seam on each side of the tool list: a spacer as wide as the column gap it replaces, holding one drawing from the bar's top edge */
+  .sf-tools .hf-inner{gap:20px 0;}
+  .sf-tools .hf-tools a{white-space:nowrap;}
+  .sf-tools .hf-about{margin-inline-end:30px;}
+  .hf-seam{display:block;flex:0 0 60px;align-self:stretch;position:relative;margin-block-start:-34px;overflow:hidden;pointer-events:none;}
+}
+@media (max-width:600px){
+  footer.site-footer,footer.site-footer.sf-home{margin-block-start:32px;}
+  .page-help{padding:0 20px 16px;}
+  .hf-inner,.sf-tools .hf-inner{display:grid;grid-template-columns:1fr auto;grid-template-areas:"logo social" "tools tools" "set set" "about about" "credit credit" "src src";align-items:center;gap:0 12px;padding:22px 20px 26px;}
+  .hf-brand{display:contents;}
+  .hf-brand .brand-lockup{grid-area:logo;justify-self:start;}
+  .hf-follow{grid-area:social;}
+  .sf-bar .footer-social{gap:8px;}
+  .hf-settings{grid-area:set;margin-block-start:16px;}
+  .hf-about{grid-area:about;margin-block-start:16px;}
+  .hf-settings + .hf-about,.hf-seam + .hf-about{margin-block-start:0;}
+  .hf-settings,.hf-about{flex-direction:row;flex-wrap:wrap;gap:0 18px;}
+  .hf-head{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;}
+  .sf-bar .hf-col a,.hf-link{min-block-size:40px;}
+  .hf-credits{grid-area:credit;max-inline-size:none;margin-block-start:12px;font-size:0.8125rem;}
+  .lbl-long{display:none;}
+  .lbl-short{display:inline;}
+  /* the tool list folds away under its heading: a button there, the plain heading everywhere else */
+  .hf-tools{grid-area:tools;margin-block-start:12px;}
+  .hf-fold{display:inline-flex;align-items:center;gap:10px;min-block-size:40px;padding:0;border:none;background:none;font:inherit;font-weight:700;color:#f0d080;cursor:pointer;}
+  .hf-fold::after{content:"";inline-size:7px;block-size:7px;border:solid #f0d080;border-width:0 2px 2px 0;transform:translateY(-3px) rotate(45deg);}
+  .hf-tools.open .hf-fold::after{transform:translateY(1px) rotate(-135deg);}
+  .hf-tools ul{display:none;column-gap:14px;}
+  .hf-tools.open ul{display:block;margin-block-end:6px;}
+  .sf-bar .hf-tools a{padding-block:6px;font-size:0.875rem;}
+  .hf-src{grid-area:src;margin-block-start:12px;}
+}
+@media (max-width:339px){.sf-bar .footer-social a{inline-size:40px;block-size:40px;}}   /* the lockup and three 44px buttons need a 327px screen: under that the row of buttons would break in two */
+/* Kintsugi: gold cracks in the navy bars (decorative; brand/kintsugi/, built by scripts/build-kintsugi.mjs). One image per
+   fracture, placed from the edge it is anchored to, so a bar can grow without its cracks drifting. The wide set was drawn
+   for a 1280px bar and the narrow set for a 390px footer: each shows only where its layout holds. Logical insets mirror
+   the positions in the Hebrew UI; the flip mirrors each drawing. (A header's own cracks: the home page's rules, and
+   .kin-gap above for every other page.) */
+.kin{position:absolute;inset:0;overflow:hidden;pointer-events:none;}
+.kin-f{position:absolute;display:none;max-inline-size:none;}
+[dir="rtl"] .kin-f{transform:scaleX(-1);}
+@media (min-width:1280px){.kin-wide{display:block;}}
+@media (max-width:600px){.kin-narrow{display:block;}}
+/* positions: printed by scripts/build-kintsugi.mjs --print */
+.kin-f1{inset-inline-start:calc(50% + 27px);inset-block-start:-13px;}
+.kin-f2{inset-inline-start:calc(50% + 273px);inset-block-start:-6px;}
+.kin-f3{inset-inline-start:calc(50% - 166px);inset-block-end:-6px;}
+.kin-f4{inset-inline-start:calc(50% + 382px);inset-block-end:-6px;}
+.kin-f5{inset-inline-start:-6px;inset-block-end:-11px;}
+.kin-f6{inset-inline-end:-10px;inset-block-start:16px;}
+.kin-f7{inset-inline-end:-10px;inset-block-start:74px;}
+.kin-p1{inset-inline-start:152px;inset-block-start:-6px;}
+.kin-p2{inset-inline-end:-14px;inset-block-start:72px;}
+.kin-p3{inset-inline-start:-6px;inset-block-end:4px;}
+.kin-p4{inset-inline-end:-4px;inset-block-end:-17px;}
+.hf-seam .kin-f{inset-block-start:-6px;}
+.hf-seam-a .kin-f{inset-inline-start:12px;}
+.hf-seam-b .kin-f{inset-inline-start:4px;}
+/* gates: a fracture is hidden wherever one of its strokes would come within 6px of text or a control. Measured, never
+   chosen: node scripts/smoke-kintsugi.mjs holds them */
+@media (max-width:359px){.kin-p1{display:none;}}    /* the phone footer's top fracture meets the social buttons up to 355px */
+.sf-tools .kin-f1,.sf-tools .kin-f2,.sf-tools .kin-f3{display:none;}   /* a tool page's list of links fills the middle of the bar, where these three run */
+.sf-src .kin-f4{display:none;}   /* a page's source credits run along the bottom, under this one, and their wording changes with what the page shows */
+@media (max-width:1319px){.sf-tools .kin-f7{display:none;}}   /* on a tool page the end-edge fracture meets the social buttons up to 1319px */
+@media print{
+  .kin,.hf-seam{display:none;}
+  footer.site-footer,footer.site-footer.sf-home{margin-block-start:24px;}
+  .sf-bar{border-top:1px solid #c8bfa8;background:#fff;color:#1a2744;}
+  .sf-bar a,.hf-head,.hf-credits,.hf-src{color:#1a2744;}
+  .hf-settings,.hf-follow,.hf-tools{display:none;}   /* settings actions, social links and a list of links do nothing on paper */
+  .sf-bar .sefaria-attr .sefaria-light{display:inline-block;}
+  .sf-bar .sefaria-attr .sefaria-dark{display:none;}
+  /* every page but the home page: one compact line of credits, so the footer never takes a sheet of its own (its links go nowhere on paper) */
+  footer.site-footer:not(.sf-home){margin-block-start:12px;}
+  .site-footer:not(.sf-home) .hf-inner{display:flex;gap:4px 16px;padding:8px 0 0;}
+  .site-footer:not(.sf-home) .hf-about{display:none;}
+  .site-footer:not(.sf-home) .hf-brand{display:flex;flex-direction:row;flex:1 1 100%;align-items:center;gap:12px;}
+  .site-footer:not(.sf-home) .hf-brand .brand-lockup{--lockup-h:22px;--lockup-h-sm:22px;}
+  .site-footer:not(.sf-home) .hf-credits{max-inline-size:none;margin:0;font-size:0.7rem;line-height:1.35;}
+  .site-footer:not(.sf-home) .hf-by{display:inline;}
+  .site-footer:not(.sf-home) .hf-by::after{content:" · ";}
+  .site-footer:not(.sf-home) .hf-src{padding-block-start:4px;font-size:0.66rem;line-height:1.35;}
+}
+@media (forced-colors:active){.kin,.hf-seam{display:none;}}
 /* ═══ end header-icons CSS ═══ */
 header{--kin-pt:14px;--kin-pb:14px;--kin-gap:16px;}   /* this header's block padding and column gap, for the shared .kin-gap rules above (scripts/smoke-kintsugi.mjs checks the spacer reaches the bar's edges) */
 

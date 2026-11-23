@@ -26,6 +26,10 @@
  *   - every drawing that shows keeps its centre line CLEAR px from the header's text and controls, and lies whole inside its gap;
  *   - the gap reaches the bar's top and bottom edges (the page's --kin-pt / --kin-pb match its header's padding);
  *   - no gap shows below 1280px (checked at 390, 1024 and 1279), and at 2560px every gap shows a drawing.
+ * And every page's navy footer (.sf-bar; the generated pages as above), in EN and HE: each fracture and seam drawing that
+ * shows keeps CLEAR px from the bar's text, its social buttons and Sefaria's badge at 1280-1500px in 4px steps and at
+ * 1600 / 1920 / 2560, and at 320-600px in 4px steps; the wide set shows only from 1280px and the narrow set only up to
+ * 600px; and a footer shows cracks at all (three or more on a desktop, two or more on a phone).
  *
  *   node scripts/smoke-kintsugi.mjs            exit 1 when a fracture that shows comes within CLEAR px of text
  *   node scripts/smoke-kintsugi.mjs --report   shows every fracture whatever its gate says and prints the widths at
@@ -107,8 +111,8 @@ function measure() {
       if (el.matches('p, .hf-head, .hf-tip') || (el.closest('footer') && el.matches('a, button') && !el.closest('.footer-social'))) lines(el);
       else add(el.getBoundingClientRect()); });
     return rs; };
-  const bars = { header: document.querySelector('header'), footer: document.querySelector('footer.home-footer') };
-  if (!bars.header || !bars.footer) return { missing: 'header or footer.home-footer' };
+  const bars = { header: document.querySelector('header'), footer: document.querySelector('footer.site-footer .sf-bar') };
+  if (!bars.header || !bars.footer) return { missing: 'header or footer.site-footer .sf-bar' };
   const text = { header: boxes(bars.header), footer: boxes(bars.footer) };
   const chip = document.querySelector('.ivacct-btn');
   const out = { chip: chip ? `${chip.textContent.trim()} [${chip.getAttribute('data-state')}]` : '', fr: {} };
@@ -221,6 +225,24 @@ function measureGap(CLEAR) {
   out.min = Math.round(out.min * 10) / 10; out.edge = Math.round(out.edge * 10) / 10;
   return out;
 }
+function measureFooter() {
+  const bar = document.querySelector('footer.site-footer .sf-bar'); if (!bar) return null;
+  const rtl = document.documentElement.dir === 'rtl', rs = [], add = q => { if (q.width > 1 && q.height > 1) rs.push([q.left, q.top, q.right, q.bottom]); };
+  bar.querySelectorAll('.hf-inner img:not(.kin-f), .footer-social a').forEach(e => { if (e.getClientRects().length) add(e.getBoundingClientRect()); });
+  const tw = document.createTreeWalker(bar.querySelector('.hf-inner'), NodeFilter.SHOW_TEXT);
+  for (let n; (n = tw.nextNode());) { const pe = n.parentElement; if (!n.nodeValue.trim() || !pe.getClientRects().length || pe.closest('.footer-social')) continue;
+    let hid = false; for (let e = pe; e && e !== bar; e = e.parentElement) if (getComputedStyle(e).clipPath !== 'none') hid = true;   // a heading kept for a screen reader only
+    if (hid) continue; const r = document.createRange(); r.selectNodeContents(n); for (const q of r.getClientRects()) add(q); }
+  const clip = bar.getBoundingClientRect(), out = { shown: 0, min: 9999, who: '', sets: [] };
+  for (const img of bar.querySelectorAll('.kin-f')) {
+    if (!img.getClientRects().length) continue;
+    const seam = img.closest('.hf-seam'), id = img.getAttribute('src').match(/([a-z]\d)\.svg/)[1], b = img.getBoundingClientRect(), c2 = seam ? seam.getBoundingClientRect() : clip;
+    out.shown++; out.sets.push(img.classList.contains('kin-narrow') ? 'narrow' : 'wide');
+    for (const [x, y] of window.__kinPts[id]) { const px = rtl ? b.right - x : b.left + x, py = b.top + y; if (px < c2.left || px > c2.right || py < Math.max(c2.top, clip.top) || py > clip.bottom) continue;
+      for (const [l, t, r, bt] of rs) { const d = Math.hypot(Math.max(l - px, 0, px - r), Math.max(t - py, 0, py - bt)); if (d < out.min) { out.min = d; out.who = id + (seam ? ' (seam)' : ''); } } }
+  }
+  out.min = Math.round(out.min * 10) / 10; return out;
+}
 let gapRuns = 0, gapFails = 0;
 if (DO_GAPS) {
   let pages = fs.readdirSync(ROOT).filter(n => n.endsWith('.html') && fs.readFileSync(path.join(ROOT, n), 'utf8').includes('class="kin-gap')).sort();
@@ -233,7 +255,8 @@ if (DO_GAPS) {
   }
   if (ONLY.length) pages = pages.filter(p => ONLY.includes(p));
   const GW = [390, 1024, 1279, ...Array.from({ length: 81 }, (_, i) => 1280 + i * 8), 2000, 2200, 2560];
-  const PTS = Object.fromEntries(FR.filter(f => f.bar === 'header').map(f => [f.id, f.pts]));
+  const PTS = Object.fromEntries(FR.map(f => [f.id, f.pts]));
+  const FW = [...Array.from({ length: 56 }, (_, i) => 1280 + i * 4), 1600, 1920, 2560, ...Array.from({ length: 71 }, (_, i) => 320 + i * 4), 601, 800, 1024, 1279];
   const jobs = [];
   for (const pg of pages) { const chip = /<script[^>]*src="\/?js\/ivrit-account\.js/.test(fs.readFileSync(path.join(ROOT, pg), 'utf8'));   // the page loads the account module, so its header has the chip
     for (const lang of ['en', 'he']) for (const touch of [false, true]) for (const name of chip ? ['', NAME] : ['']) jobs.push({ pg, lang, touch, name, chip }); }
@@ -275,10 +298,30 @@ if (DO_GAPS) {
       if (w === 2560 && m.empty) bad.push('a gap shows no drawing at 2560px');
       most = Math.max(most, m.shown);
     }
+    // the page's footer: once per language is enough (nothing in it follows the pointer or the sign-in state)
+    let foot = '';
+    if (!job.touch && !job.name && !bad.length) {
+      await page.evaluate(() => Promise.all([...document.querySelectorAll('.sf-bar img:not(.kin-f)')].map(i => { i.loading = 'eager'; return i.complete ? 0 : new Promise(r => { i.onload = i.onerror = r; }); })));
+      let near = [9999, '', 0], at1440 = 0, at390 = 0, has = true;
+      for (const w of FW) {
+        await page.setViewportSize({ width: w, height: 900 });
+        await page.evaluate(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))));
+        const m = await page.evaluate(measureFooter);
+        if (!m) { has = false; break; }
+        if (m.sets.includes('wide') && w < 1280) bad.push(`the footer's wide set shows at ${w}px`);
+        if (m.sets.includes('narrow') && w > 600) bad.push(`the footer's narrow set shows at ${w}px`);
+        if (m.shown && m.min < CLEAR) bad.push(`in the footer at ${w}px ${m.who} is ${m.min}px from text`);
+        if (m.shown && m.min < near[0]) near = [m.min, m.who, w];
+        if (w === 1440) at1440 = m.shown; if (w === 392) at390 = m.shown;
+      }
+      if (has) { if (at1440 < 3) bad.push(`the footer shows ${at1440} cracks at 1440px`); if (at390 < 2) bad.push(`the footer shows ${at390} cracks at 392px`);
+        foot = `; footer: ${at1440} cracks at 1440px, ${at390} at 392px, the nearest ${near[1]} at ${near[0]}px (${near[2]}px wide)`; }
+      else foot = '; footer: its own (no navy bar)';
+    }
     await ctx.close();
     if (errs.length) bad.push(`${errs.length} page errors`);
     const uniq = [...new Set(bad)];
-    console.log(`${uniq.length ? 'FAIL' : 'PASS'} ${label}${chip ? ` (${chip})` : ''}: up to ${most} drawings, the nearest ${nearest[1]} at ${nearest[0]}px (${nearest[2]}px wide)${uniq.length ? ' — ' + uniq.slice(0, 4).join('; ') + (uniq.length > 4 ? `; and ${uniq.length - 4} more` : '') : ''}`);
+    console.log(`${uniq.length ? 'FAIL' : 'PASS'} ${label}${chip ? ` (${chip})` : ''}: up to ${most} drawings, the nearest ${nearest[1]} at ${nearest[0]}px (${nearest[2]}px wide)${foot}${uniq.length ? ' — ' + uniq.slice(0, 4).join('; ') + (uniq.length > 4 ? `; and ${uniq.length - 4} more` : '') : ''}`);
     return !uniq.length;
   }
   // four pages at a time: each run is its own browser context

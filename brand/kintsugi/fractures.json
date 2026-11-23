@@ -5,7 +5,9 @@
   "barInner": 84,
   "clear": 6,
   "set": [{"id": "h1", "edge": "top"}, {"id": "h2", "edge": "bottom"}, {"id": "h3", "edge": "top"}, {"id": "h4", "edge": "bottom"}],
-  "alone": {"id": "h5", "edge": "top"}
+  "alone": {"id": "h5", "edge": "top"},
+  "seamsNote": "A tool page's footer holds its list of links where the footer fractures run, so it shows one drawing in the seam on each side of the list instead, from the bar's top edge.",
+  "seams": ["p1", "h1"]
  },
  "fractures": [
   {"id": "h1", "area": "header", "frame": [1280, 88], "anchor": ["center", "top"], "cracks": [

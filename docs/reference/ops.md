@@ -419,8 +419,8 @@ push, is what updates the live site.
   builders and the coloring hub's builder write theirs the same way. Without the name, the hub's snippet
   went back to header labels ("EN, עברית. Sign in. Dark."). A new indexed page's description names the site
   too. Every page's header controls carry `data-nosnippet` on their container. No control label in the body may
-  name the site outside one: the hub's footer marks its settings labels (*My IvritSuite Fonts* among them) and its
-  lockup for that reason.
+  name the site outside one: the hub's footer marks its settings labels (*My IvritSuite Fonts* among them) for that
+  reason, and every footer marks its lockup and the second copy of any label it writes twice.
   Google honours that attribute on `div`, `span` and `section` only, never on a `button` or `a`. The
   containers are `.hright` on most pages and in the three page builders (parsha, holidays, the coloring
   hub), `.h-right` on Flash Cards and `.hdr-actions` on the Font Maker. The generator has no container,

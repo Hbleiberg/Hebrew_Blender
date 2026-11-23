@@ -89,7 +89,9 @@ const SVG_ARROW = cut(/<svg class="hi hi-arrow dir-arrow"[\s\S]*?<\/svg>/, 'the 
 const SVG_MOON = cut(/<svg class="hi hi-moon"[\s\S]*?<\/svg>/, 'the hi-moon icon');
 const SVG_SUN = cut(/<svg class="hi hi-sun"[\s\S]*?<\/svg>/, 'the hi-sun icon');
 const SVG_PRINT = cut(/<svg class="hi hi-print"[\s\S]*?<\/svg>/, 'the hi-print icon');
-const NAV_UL = cut(/<nav aria-label="Related Hebrew Tools"[\s\S]*?<\/nav>/, 'the Related Hebrew Tools nav').replace(/href="(?!https?:|\/)([^"]+)"/g, 'href="/$1"');
+// The footer's navy bar, whole, from the source page (the lockup and credits, its Related Hebrew Tools, About, the social
+// buttons and the gold cracks), with its relative addresses made absolute: these pages sit in a folder or are served anywhere.
+const SF_BAR = cut(/  <div class="sf-bar">[\s\S]*?\n  <\/div>\n(?=<\/footer>)/, "the footer's navy bar").replace(/href="(?!https?:|\/|#|mailto:)([^"]+)"/g, 'href="/$1"');
 const CSP = "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'";
 
 // The hub agrees with the switch, and its hand-kept list names exactly the holidays that have a page.
@@ -391,22 +393,8 @@ ${symbols}
   </nav>
 </main>
 
-<footer>
-  <!-- pinned-English credits (never translated): dir="ltr" keeps each phrase in English order in the RTL UI, and lang="en" has a screen reader voice it in English -->
-  <span dir="ltr" lang="en">Created by <a href="https://harrisonbleiberg.wpcomstaging.com/" target="_blank" style="font-weight:600;">Harrison Bleiberg</a></span><br>
-  <span data-i18n="shared.footer.license_note">Free to use and adapt for non-commercial educational purposes with attribution</span> &nbsp;·&nbsp;
-  <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> &nbsp;·&nbsp;
-  <a href="https://github.com/hbleiberg/Hebrew_Blender" target="_blank">GitHub</a> &nbsp;·&nbsp;
-  <a href="/privacy.html" data-i18n="shared.footer.privacy_link">Privacy Policy</a> &nbsp;·&nbsp;
-  <a href="/terms.html" data-i18n="shared.footer.terms_link">Terms of Use</a>
-  ${NAV_UL}
-  <!-- IvritSuite on social media; the platform names are brand names, never translated (pinned English, as the credits) -->
-  <div class="footer-social" role="group" aria-label="IvritSuite on social media" data-i18n-aria-label="shared.footer.social_label">
-    <a href="https://www.instagram.com/ivritsuite/" target="_blank" rel="noopener"><svg class="hi" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="3.8"/><circle cx="17.1" cy="6.9" r="0.6" fill="currentColor"/></svg><span dir="ltr" lang="en">Instagram</span></a>
-    <a href="https://www.facebook.com/ivritsuite" target="_blank" rel="noopener"><svg class="hi" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.6"/><path d="M15 7.9h-1.2a2.3 2.3 0 0 0-2.3 2.3v10.4M9.2 12.6h5.2"/></svg><span dir="ltr" lang="en">Facebook</span></a>
-    <a href="https://www.threads.com/@ivritsuite" target="_blank" rel="noopener"><svg class="hi" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16.3 11.2c-.3-2.4-1.9-3.8-4.3-3.8-2.6 0-4.2 1.9-4.2 4.6s1.6 4.6 4.1 4.6c2 0 3.3-1.1 3.3-2.7 0-1.5-1.2-2.4-3-2.4"/><path d="M12.2 11.5c4.3 0 6.3 2 6.3 4.6 0 3-2.8 5.4-6.6 5.4-5 0-8.4-3.7-8.4-9.5S6.9 2.5 12 2.5c4 0 6.8 2.1 7.6 5.6"/></svg><span dir="ltr" lang="en">Threads</span></a>
-  </div>
-</footer>
+<footer class="site-footer sf-tools">
+${SF_BAR}</footer>
 </body>
 </html>
 `;

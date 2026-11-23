@@ -591,7 +591,8 @@ the standard lockup with a navy wordmark, both precached in `sw.js`.
   controls together). Re-measure a page's title row whenever its title, its tagline or a header control changes width.
 
 ### Footer social links (every page with a footer)
-IvritSuite's Instagram, Facebook and Threads accounts are the last row of every footer: a `.footer-social` group
+IvritSuite's Instagram, Facebook and Threads accounts are in every footer (the *Follow* column of the navy footer —
+`home.md` → *Footer* — and inline in the Font Maker's compact row): a `.footer-social` group
 (`role="group"`, named by `shared.footer.social_label`) of three links that open in a new tab, each the platform's mark
 (drawn for this suite in the header icons' outline style, `.hi`, no third-party icon set) beside its name. The names are
 brand names, pinned English like the credits (`dir="ltr" lang="en"`, never a key). The row's CSS rides inside the

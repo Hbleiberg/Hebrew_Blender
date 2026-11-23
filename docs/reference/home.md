@@ -1,4 +1,4 @@
-# The home page (`index.html`) — reference
+# The home page (`index.html`), the navy footer and the kintsugi cracks — reference
 
 The hub shows every tool at once: sixteen tiles in five groups named for who each serves, under a headline and one
 sentence, between the navy header and a navy footer in columns. It also hosts the AllTools window (Import / Export /
@@ -59,30 +59,60 @@ header, under the print lockup's navy ink.
 
 ## Footer
 
-`<footer class="home-footer">` is this page's alone (every other page keeps the suite's centred footer): navy in both
-themes, in the source order **brand, settings, about, follow**, which is the reading order of the columns.
+Every page ends in the same navy footer. Its rules ride inside the shared header-icons CSS block
+(`shared-components.md` → *Icons*), byte-identical on every carrier, so a page carries markup only.
 
-- **Brand:** the lockup (48px, 38px under 600px; both images, as in the header), the pinned-English credit and licence
-  line, and the Sefaria credit (`home.footer.sefaria_note` and Sefaria's badge as a real link). The footer is navy in
-  both themes, so the screen always shows the badge drawn for a dark ground and paper shows the other; it is drawn 28px
-  tall, the size at which its wordmark reads.
-- **Settings** (`nav`, `home.footer.settings_header`): the account page, My IvritSuite Fonts, Import / Export All
-  Settings and Bookmark this page, with `#bookmarkTip` (`role="status"`, the only response to the Bookmark button).
-- **About** (`nav`, `shared.footer.about_header`): Contact, Privacy, Terms, GitHub, and *Hebrew Fonts*
-  (`resources.html?view=fonts`).
-- **Follow:** the shared `.footer-social` group, markup unchanged; this page's CSS draws its three links as 44px round
-  buttons (40px under 340px, so the lockup and all three stay on one row at 320px) and hides the platform names
-  visually.
-- **Two labels per link.** Each settings and about link carries `.lbl-long` (shown in the columns) and `.lbl-short`
-  (`home.footer.short.*`, shown on a phone, where the links run in two wrapping rows); the CSS shows one at a time. The
+```html
+<footer class="site-footer [sf-tools] [sf-src] [sf-home]">
+  <div class="page-help">…</div>        <!-- the page's own fold-outs (FAQ, How To Use), where it has any -->
+  <div class="sf-bar">                  <!-- the navy bar -->
+    <div class="kin" aria-hidden="true">…</div>
+    <div class="hf-inner">brand · [seam · tools · seam] · [settings] · about · follow · [source credits]</div>
+  </div>
+</footer>
+```
+
+- **The bar is navy in both themes**, with the header's gold line along its top. The `<footer>` element itself is
+  bare (no ground, no padding), so a page's older `footer { … }` rules no longer paint anything; what they set that
+  inherits (alignment, type size) still reaches `.page-help`, which is why each page's fold-outs look as they did.
+- **Brand:** the lockup (48px, 38px under 600px; both images, as in the header, marked `data-nosnippet`), the
+  pinned-English credit and the licence line.
+- **About** (`nav`, `shared.footer.about_header`): Contact, Privacy, Terms, GitHub and *Hebrew Fonts*
+  (`resources.html?view=fonts`), the same five on every page.
+- **Follow** (`shared.footer.follow_header`): the shared `.footer-social` group, markup unchanged, drawn as 44px round
+  buttons (40px under 340px, so the lockup and all three stay on one row at 320px) with the platform names kept for a
+  screen reader.
+- **Two labels per link.** Each About link (and each of the home page's settings links) carries `.lbl-long`, shown in
+  the columns, and `.lbl-short` (`shared.footer.short.*`), shown on a phone, where the links run in wrapping rows. The
   short ones carry `data-nosnippet`, so a search snippet built from page text never reads both — Google honours that
-  attribute on a `span`, never on an `a` or a `nav`. The settings column's long labels and the footer's lockup carry
-  it too: *My IvritSuite Fonts* would otherwise be the one sentence of body text that names the site, and a search
-  for the name could be answered with it and its neighbours (`ops.md` → *Search snippets*). Existing strings are reused for the long labels wherever the words
-  are the same.
-- **Phones:** the CSS shows the logo and the social buttons first and the credits last; the Tab order follows the
-  source.
-- **Paper:** a white footer in navy ink, the settings column and the social row hidden (they do nothing on paper).
+  attribute on a `span`, never on an `a` or a `nav`.
+- **A tool page (`.sf-tools`)** adds its *Related Hebrew Tools* between the brand and About: the page's own list, in
+  its own order, two columns, the links' descriptive wording kept (it is what a search engine reads; CSS capitalises
+  the first letter). On a phone the list folds under a button (`.hf-fold`, `aria-expanded`, `aria-controls`); on
+  wider screens the button is not rendered and a plain heading stands over the open list. The heading's words appear
+  twice in the markup for that reason, the button's copy marked `data-nosnippet`.
+- **Source credits (`.sf-src`, `.hf-src`)**: what a page owes its sources (Sefaria, PocketTorah, Kaikki, the Trope
+  Atlas's transcriptions) is one small line along the bottom of the bar. The Torah Trainer's line is written by the
+  page as the reading changes; its spans keep their ids.
+- **The page's fold-outs** (*Frequently Asked Questions*, *How To Use*) sit in `.page-help`, on the page's own ground
+  just above the bar and still inside the `<footer>`, so the page's `footer details` rules and its print rules reach
+  them as before. They are the visible twins of the page's FAQPage / HowTo JSON-LD: never drop one.
+- **The home page (`.sf-home`)** has no tool list (its tiles are the list). It adds the settings column (the account
+  page, My IvritSuite Fonts, Import / Export All Settings, Bookmark this page with `#bookmarkTip`) and Sefaria's badge
+  in the brand block. Its settings labels are `data-nosnippet`: *My IvritSuite Fonts* would otherwise be the one
+  sentence of body text that names the site (`ops.md` → *Search snippets*).
+- **The Font Maker** keeps its one compact row, because its workspace fills the screen; it takes the navy ground by
+  restating the palette tokens on its `<footer>`, so the row and its fold-outs follow without a rule each. It shows no
+  cracks. The Dashboard has no footer.
+- **The generated pages** (`parsha/`, `holidays/`, the coloring pages hub) take `.sf-bar` whole from the page their
+  builder copies its chrome from, with the addresses made absolute.
+- **The Worksheet Generator** reserves the height of its frozen *Generate* bar inside `.sf-bar`, so no link ends under
+  it at the page's end.
+- **Phones:** the logo and the social buttons first, then the tool list's button, the links, the credits, the source
+  line; the Tab order follows the source.
+- **Paper:** a white footer in navy ink. The home page prints its About links; every other page prints one compact
+  line of credits (and its source line), so the footer never takes a sheet of its own. Social buttons, settings, the
+  tool list and the cracks are off paper everywhere.
 
 ## Kintsugi cracks
 
@@ -102,7 +132,7 @@ gap between its title and its controls (*The header gap on every other page*, af
   with logical insets and at its drawn size, so a wider or taller bar never stretches a crack or moves it relative to
   what it sits beside. Never scale, move or redraw one.
 - **Two sets.** `kin-wide` (header and footer) was drawn for 1280px bars and shows from 1280px up; `kin-narrow`
-  (footer only) was drawn for a 390px footer and shows up to 600px. Between 601px and 1279px there are no cracks, and
+  (footer only) was drawn for a 390px footer and shows up to 600px, on every page's footer. Between 601px and 1279px there are no cracks, and
   the header has none below 1280px: its controls leave no clear path there.
 - **Lazy loading is deliberate.** Every crack image is `loading="lazy"`, so a set that is `display:none` is never
   downloaded: a phone fetches the narrow files, a desktop the wide ones, a tablet none. The files are decorative and
@@ -117,6 +147,12 @@ gap between its title and its controls (*The header gap on every other page*, af
   boxes of the words everywhere else (a footer link is words alone; its tap row on a phone is not ink). Where a layout
   cannot give it that, a **gate** — a `max-width` rule beside the position rules — hides the fracture. Hiding is the
   only remedy.
+- **A footer's gates follow what it holds.** A plain footer and the home page's show all seven wide fractures. A tool
+  page's list of links fills the middle of the bar, so `.sf-tools` hides the three that run there and shows one drawing
+  in the **seam** on each side of the list instead (`.hf-seam`: a spacer as wide as the column gap it replaces, its
+  drawing anchored to the bar's top edge; `gap.seams` in the JSON); `.sf-src` hides the one that runs under the source
+  line, whose wording changes with what the page shows; and the end-edge fracture waits for 1320px on a tool page,
+  where the social buttons sit nearer the edge. On a phone every footer shares the home page's one gate.
 - **Gates are measured, never chosen.** `node scripts/smoke-kintsugi.mjs` measures the rule at every width each set
   shows at, in English and Hebrew, light and dark, with a mouse and with a finger, and for the header signed out and
   signed in with a 16-letter first name; it also checks that each set shows only in its own range. `--report` shows
