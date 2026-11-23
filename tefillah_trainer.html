@@ -286,6 +286,13 @@ html[lang="he"] .settings-header h2, html[lang="he"] .tt-set-sub, html[lang="he"
 }
 .tt-ctrl input[type="search"]:focus { outline:2px solid var(--focus-ring); outline-offset:0; }
 .tt-filter-note { font-size:0.75rem; color:var(--muted); }
+/* The count under the search (or "No prayer matches") is out of the flow, just under the group — in the space the
+   row's taller reveal switches and the bar's padding leave free — so a search being typed never moves the bar: not the
+   search box under the caret, not the switches or Settings along the row or onto the next. Out of the flow it stays
+   rendered while empty, for its live region. The phone block below puts it back in the flow: there the group has a
+   row of its own. */
+.tt-ctrl.tt-filters { position:relative; }
+.tt-ctrl.tt-filters .tt-filter-note { position:absolute; inset-block-start:calc(100% + 2px); inset-inline-start:0; line-height:1.25; }
 /* A filter's label and its list wrap as one piece (the label used to stay on the search row while its list dropped
    to the next). */
 .tt-pair { display:inline-flex; align-items:center; gap:6px; min-width:0; }
@@ -1947,6 +1954,7 @@ body.fullscreen #ttFsBar.visible .tt-fs-plate { pointer-events: auto; }
   .tt-controls:not(.tt-find-open) #prayerFilters { display:none; }
   .tt-ctrl.tt-filters { flex-basis:100%; }
   .tt-ctrl.tt-filters input[type="search"] { flex:1 1 100%; }   /* its own row, so each label stays beside its list */
+  .tt-ctrl.tt-filters .tt-filter-note { position:static; line-height:normal; }
   .tt-stack-toggles { flex-direction:row; flex-wrap:wrap; align-items:center; gap:6px 14px; }
 }
 /* Line by line on a phone: the row label ("Hebrew", "English") sat in a 50px gutter beside every line, which left
@@ -7671,12 +7679,17 @@ function filterValue(id, allowed) {
 function populatePrayerPicker() {
   const sel = document.getElementById('prayerSelect');
   if (!sel) return;
-  sel.textContent = '';
-  const note = document.getElementById('prayerFilterNote');
-  if (!catalog) { if (note) note.textContent = ''; return; }
   const service = filterValue('filterService', SERVICE_IDS), day = filterValue('filterDay', DAY_IDS);
   const q = (document.getElementById('prayerSearch') || {}).value || '';
   const narrowed = service !== 'all' || day !== 'all' || !!q.trim();
+  // A select is as wide as its longest option, so each letter typed into the search re-sized the list and slid
+  // everything after it along the row, the search box under the caret too. Narrowed, the list keeps the width it had
+  // before (read while its options are still there); with every prayer listed, its own width again.
+  if (!narrowed) sel.style.inlineSize = '';
+  else if (!sel.style.inlineSize && sel.options.length && sel.offsetWidth) sel.style.inlineSize = sel.offsetWidth + 'px';
+  sel.textContent = '';
+  const note = document.getElementById('prayerFilterNote');
+  if (!catalog) { if (note) note.textContent = ''; return; }
   syncFindFold(narrowed);
   let shown = 0;
   const curKey = (currentPrayer() || {}).key || '';

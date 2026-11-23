@@ -280,6 +280,16 @@ Hebrew UI. It prints with the reading and the handout (the handout credits only 
 - Deep links: `?prayer=<key>&nusach=<ashkenaz|sefard|edot|opensiddur|torah>`, and `?s=` for a sender's look.
 - `saves.tool` names `TefillahTrainer` through `db/migrations/0014_saves_tool_tefillah_trainer.sql`.
 
+## The picker while a search is typed
+
+The prayer list is a `<select>`, as wide as its longest option, and `populatePrayerPicker` rebuilds its options on
+every key, so while the list is narrowed (a search or a filter in force) it keeps the width it had with every prayer
+listed — an inline `inline-size` read before the options are rebuilt, cleared once nothing narrows it. Above 720px the
+count under the search (`#prayerFilterNote`: "5 prayers", "No prayer matches…") is out of the flow, just under the
+filter group, so typing never moves the bar — not the search box, not the reveal switches or Settings; empty it stays
+rendered for its live region. At phone width it is back in the flow (the group has a row of its own there)
+(`scripts/loop/probes/S679-prayer-search-holds-the-picker-bar-still.mjs`).
+
 ## The picker on a phone
 
 At 720px and under, and on a phone held sideways (a coarse pointer and at most 500px of height), the search box and
