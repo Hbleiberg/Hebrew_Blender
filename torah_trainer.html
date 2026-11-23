@@ -6174,7 +6174,7 @@ function renderInterlinear(verses, withTranslit, withTrans, wordIdxRef, canChant
     html += `  <div class="tt-verse-row">${labelRows ? `<span class="tt-rowlabel">${esc(I18n.t('torah.reading.row_hebrew'))}</span>` : ''}<span class="tt-heb" lang="he">${hebHtml}</span></div>`;
     if (withTranslit) {
       const tr = applyTranslit(v.hebrew);
-      html += `  <div class="tt-verse-row"><span class="tt-rowlabel">${esc(I18n.t('torah.reading.row_translit'))}</span><span class="tt-translit">${tokenizeTranslit(tr, firstTwi, hebCount)}</span></div>`;
+      html += `  <div class="tt-verse-row"><span class="tt-rowlabel">${esc(I18n.t('torah.reading.row_translit'))}</span><span class="tt-translit" lang="he-Latn">${tokenizeTranslit(tr, firstTwi, hebCount)}</span></div>`;
     }
     if (withTrans) {
       html += `  <div class="tt-verse-row"><span class="tt-rowlabel">${esc(transHeading('row'))}</span><span class="tt-translation"${transLangAttr()}>${stripHTML(v.translation)}</span></div>`;
@@ -6230,7 +6230,7 @@ function renderSideBySide(verses, withTranslit, withTrans, wordIdxRef, canChant,
     html += `<div class="tt-grid-col tt-col-translit"><h3 style="grid-row:1;grid-column:${colTranslit}">${esc(I18n.t('torah.reading.col_translit'))}</h3>`;
     perVerse.forEach(({ v, firstTwi, hebCount }, i) => {
       const tr = applyTranslit(v.hebrew);
-      html += `<div class="tt-grid-row" style="grid-row:${rowOf[i]};grid-column:${colTranslit}"><span class="tt-vnum">${v.chapter}:${v.verse}</span><span class="tt-cell translit">${tokenizeTranslit(tr, firstTwi, hebCount)}</span></div>`;
+      html += `<div class="tt-grid-row" style="grid-row:${rowOf[i]};grid-column:${colTranslit}"><span class="tt-vnum">${v.chapter}:${v.verse}</span><span class="tt-cell translit" lang="he-Latn">${tokenizeTranslit(tr, firstTwi, hebCount)}</span></div>`;
     });
     html += `</div>`;
   }
@@ -6288,7 +6288,7 @@ function renderBiblePage(verses, withTranslit, withTrans, wordIdxRef, canChant, 
   html += '</p>';
   // Transliteration block (uses the Hebrew word indices captured above)
   if (withTranslit) {
-    html += '<p class="tt-bible-blk tt-bible-translit" dir="ltr">';
+    html += '<p class="tt-bible-blk tt-bible-translit" dir="ltr" lang="he-Latn">';
     for (const { v, firstTwi, hebCount } of perVerse) {
       const numLabel = `${v.chapter}:${v.verse}`;
       const tr = applyTranslit(v.hebrew);
@@ -11413,7 +11413,8 @@ function defaultVersionOf(safe) {
 // The heading over the translation: "English", or "Translation" when the one on screen is in another language.
 function shownTransLang() { return _shownTrans ? versionLangOf(_shownTrans.title, _shownTrans.lang) : 'en'; }
 function transHeading(kind) { return I18n.t('torah.reading.' + kind + (shownTransLang() === 'en' ? '_english' : '_translation')); }
-function transLangAttr() { const l = shownTransLang(); return l === 'en' ? '' : ` lang="${l}"`; }   // l is [a-z]{2,3}
+// English too: in the Hebrew UI an unmarked translation is read under the page's lang="he".
+function transLangAttr() { return ` lang="${shownTransLang()}"`; }   // [a-z]{2,3}
 function versionOptionText(title, lic) { return I18n.t('torah.trans.version_opt', { title: title.slice(0, 56), license: licenseLabel(lic) }); }
 
 let _versionListSeq = 0;

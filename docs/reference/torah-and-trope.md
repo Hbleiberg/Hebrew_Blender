@@ -1937,7 +1937,10 @@ Both pages sync one settings blob (and the Trope Tutor its mastery progress) thr
   Sefaria's `actualLanguage` (`versionLangOf`: the field calls a Romanian and two Turkish versions English); the
   default and every automatic substitute are English; while another language is on screen the two "English"
   headings read "Translation" (`transHeading`) and the translation text carries its `lang` in every layout
-  (`transLangAttr`, on the text only — the heading is the interface's own word).
+  (`transLangAttr`, on the text only — the heading is the interface's own word), English included: unmarked, it
+  is read under the Hebrew UI's `lang="he"`. A transliteration row, cell or Page view block carries
+  `lang="he-Latn"`, as the under-word one does (the Tefillah Trainer alike;
+  `scripts/loop/probes/S678-trainer-translation-and-translit-carry-their-language.mjs`).
 - **The footer credits what is on screen.** `_shownTrans` / `_shownHeb` are the returned versions of the reading on
   screen (`parseSefariaResponse` keeps `_he` / `_en`): `updateTransFooter` names the translation and the licence it
   came back under, `updateHebFooter` appends the Hebrew edition and its licence to "Hebrew text via Sefaria" (a

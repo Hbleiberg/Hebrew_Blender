@@ -5116,7 +5116,7 @@ function lineOpts(v) { return v; }
 function instLineHTML(v, withTrans, extraClass, style) {
   return `<div class="tt-instline${extraClass ? ' ' + extraClass : ''}" data-line="${v.line}" data-seg="${esc(v.seg)}"${style ? ` style="${style}"` : ''}>` +
     `<span class="tt-inst" lang="he" dir="rtl">${esc(v.hebrew)}</span>` +
-    (withTrans && v.translation ? `<span class="tt-inst-en" dir="ltr">${esc(v.translation)}</span>` : '') + `</div>`;
+    (withTrans && v.translation ? `<span class="tt-inst-en" dir="ltr" lang="en">${esc(v.translation)}</span>` : '') + `</div>`;
 }
 // A line this long is a paragraph. On paper it may run on to the next sheet (the print block's [data-long] rule): kept
 // whole, it is pushed to the next sheet and leaves the one before it mostly empty.
@@ -5187,7 +5187,7 @@ function transBlockHTML() {
   if (!blocks.length) return '';
   let html = `<div class="tt-trans-block" dir="ltr"><h3 data-i18n="tefillah.trans.block_title">${esc(I18n.t('tefillah.trans.block_title'))}</h3>` +
     `<p class="tt-trans-block-note" data-i18n="tefillah.trans.block_note">${esc(I18n.t('tefillah.trans.block_note'))}</p>`;
-  for (const p of blocks) for (const line of p.en.lines) if (line) html += `<p>${esc(line)}</p>`;
+  for (const p of blocks) for (const line of p.en.lines) if (line) html += `<p lang="en">${esc(line)}</p>`;   // the heading and note above are the UI's
   return html + `</div>`;
 }
 function renderInterlinear(verses, withTranslit, withTrans, wordIdxRef, underWord) {
@@ -5207,10 +5207,10 @@ function renderInterlinear(verses, withTranslit, withTrans, wordIdxRef, underWor
     const labelRows = withTranslit || (withTrans && !!v.translation);
     html += `  <div class="tt-verse-row">${labelRows ? `<span class="tt-rowlabel">${esc(I18n.t('tefillah.reading.row_hebrew'))}</span>` : ''}<span class="tt-heb" lang="he">${hebHtml}</span></div>`;
     if (withTranslit) {
-      html += `  <div class="tt-verse-row"><span class="tt-rowlabel">${esc(I18n.t('tefillah.reading.row_translit'))}</span><span class="tt-translit">${tokenizeTranslit(applyTranslit(v.reading), firstTwi, hebCount)}</span></div>`;
+      html += `  <div class="tt-verse-row"><span class="tt-rowlabel">${esc(I18n.t('tefillah.reading.row_translit'))}</span><span class="tt-translit" lang="he-Latn">${tokenizeTranslit(applyTranslit(v.reading), firstTwi, hebCount)}</span></div>`;
     }
     if (withTrans && v.translation) {
-      html += `  <div class="tt-verse-row"><span class="tt-rowlabel">${esc(I18n.t('tefillah.reading.row_english'))}</span><span class="tt-translation">${esc(v.translation)}</span></div>`;
+      html += `  <div class="tt-verse-row"><span class="tt-rowlabel">${esc(I18n.t('tefillah.reading.row_english'))}</span><span class="tt-translation" lang="en">${esc(v.translation)}</span></div>`;
     }
     html += `</div>`;
   }
@@ -5236,8 +5236,8 @@ function renderSideBySide(verses, withTranslit, withTrans, wordIdxRef, underWord
   if (withTrans) {
     html += `<div class="tt-grid-col tt-col-translation"><h3 style="grid-row:1;grid-column:1">${esc(I18n.t('tefillah.reading.col_english'))}</h3>`;
     per.forEach(({ v }, i) => {
-      if (v.inst) { if (v.translation) html += `<div class="tt-grid-row tt-instrow" style="grid-row:${row(i)};grid-column:1"><span class="tt-inst-en">${esc(v.translation)}</span></div>`; return; }
-      html += `<div class="tt-grid-row"${longAttr(v)} style="grid-row:${row(i)};grid-column:1"><span class="tt-vnum"><span class="tt-num">${esc(v.num)}</span></span><span class="tt-cell">${esc(v.translation)}</span></div>`;
+      if (v.inst) { if (v.translation) html += `<div class="tt-grid-row tt-instrow" style="grid-row:${row(i)};grid-column:1"><span class="tt-inst-en" lang="en">${esc(v.translation)}</span></div>`; return; }
+      html += `<div class="tt-grid-row"${longAttr(v)} style="grid-row:${row(i)};grid-column:1"><span class="tt-vnum"><span class="tt-num">${esc(v.num)}</span></span><span class="tt-cell" lang="en">${esc(v.translation)}</span></div>`;
     });
     html += `</div>`;
   } else {
@@ -5247,7 +5247,7 @@ function renderSideBySide(verses, withTranslit, withTrans, wordIdxRef, underWord
     html += `<div class="tt-grid-col tt-col-translit"><h3 style="grid-row:1;grid-column:${colTranslit}">${esc(I18n.t('tefillah.reading.col_translit'))}</h3>`;
     per.forEach(({ v, firstTwi, hebCount }, i) => {
       if (v.inst) return;
-      html += `<div class="tt-grid-row"${longAttr(v)} style="grid-row:${row(i)};grid-column:${colTranslit}"><span class="tt-vnum"><span class="tt-num">${esc(v.num)}</span></span><span class="tt-cell translit">${tokenizeTranslit(applyTranslit(v.reading), firstTwi, hebCount)}</span></div>`;
+      html += `<div class="tt-grid-row"${longAttr(v)} style="grid-row:${row(i)};grid-column:${colTranslit}"><span class="tt-vnum"><span class="tt-num">${esc(v.num)}</span></span><span class="tt-cell translit" lang="he-Latn">${tokenizeTranslit(applyTranslit(v.reading), firstTwi, hebCount)}</span></div>`;
     });
     html += `</div>`;
   }
@@ -5283,7 +5283,7 @@ function renderBiblePage(verses, withTranslit, withTrans, wordIdxRef, underWord)
   }
   html += '</p>';
   if (withTranslit) {
-    html += '<p class="tt-bible-blk tt-bible-translit" dir="ltr">';
+    html += '<p class="tt-bible-blk tt-bible-translit" dir="ltr" lang="he-Latn">';
     for (const { v, firstTwi, hebCount } of per) {
       if (v.inst) continue;
       html += `<sup class="tt-bnum tt-num">${esc(v.num)}</sup><span class="tt-translit">${tokenizeTranslit(applyTranslit(v.reading), firstTwi, hebCount)}</span> `;
@@ -5291,7 +5291,7 @@ function renderBiblePage(verses, withTranslit, withTrans, wordIdxRef, underWord)
     html += '</p>';
   }
   if (withTrans) {
-    html += '<p class="tt-bible-blk tt-bible-translation" dir="ltr">';
+    html += '<p class="tt-bible-blk tt-bible-translation" dir="ltr" lang="en">';
     for (const { v } of per) {
       if (!v.translation) continue;
       html += v.inst ? `<span class="tt-inst-en">${esc(v.translation)}</span> ` : `<sup class="tt-bnum tt-num">${esc(v.num)}</sup>${esc(v.translation)} `;
