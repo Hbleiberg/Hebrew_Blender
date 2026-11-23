@@ -486,7 +486,8 @@ html[lang="he"] .new-tag{letter-spacing:normal;text-transform:none;}
 
 /* ───── Kintsugi in this page's header (the shared block has the footer's cracks and the rules every crack shares) ─────
    The home page's header holds only the lockup and three controls, so its cracks are placed from the bar's edges
-   (every other page: .kin-gap, in the shared block). */
+   (every other page: .kin-gap, in the shared block). On a phone it shows two of its own (.kin-hp1, .kin-hp2: the
+   narrow set, so the shared block shows them up to 600px and the gate below says where they stop). */
 header{position:relative;}
 header > :not(.kin){position:relative;}   /* positioned, so the content paints over the cracks without a stacking context (the account chip's menu keeps its place in the page's order) */
 @media (min-width:1280px){
@@ -499,8 +500,15 @@ header > :not(.kin){position:relative;}   /* positioned, so the content paints o
 .kin-h3{inset-inline-start:calc(50% - 110px);inset-block-start:-6px;}
 .kin-h4{inset-inline-start:calc(50% + 336px);inset-block-start:71px;}
 .kin-h5{inset-inline-end:14px;inset-block-start:-6px;}
+.kin-hp1{inset-inline-end:45px;inset-block-start:-6px;}
+.kin-hp2{inset-inline-end:-6px;inset-block-start:20px;}
 /* gate (measured, never chosen: node scripts/smoke-kintsugi.mjs holds it, and its --report prints the widths at which each fracture is clear) */
 @media (max-width:1323px){.kin-h5{display:none;}}   /* the header's end-edge fracture runs under the dark toggle up to 1322px */
+/* A phone's header: two fractures beside the lockup, while the controls keep a row of their own. Where the row can come
+   back up beside the lockup they would run under it, so they are hidden from there: 438px with a mouse and 448px under a
+   finger, measured with the narrowest account chip there is (a one-letter name; Hebrew, light). */
+@media (min-width:438px){.kin-hp1,.kin-hp2{display:none;}}
+@media (pointer:coarse) and (min-width:438px) and (max-width:447px){.kin-hp1,.kin-hp2{display:block;}}
 @media print{
   header, body.dark header{background:#fff !important;color:#1a2744;}   /* the white plate every other page gives its header on paper: the print lockup is navy ink */
   .tool-group{box-shadow:none;}
@@ -676,7 +684,7 @@ html.wn-open body{padding-block-end:calc(var(--wn-h, 0px) + 28px);}
 </head>
 <body><a class="skip-link" href="#mainContent" data-i18n="home.a11y.skip_to_tools">Skip to the tools</a>
 <header>
-  <div class="kin" aria-hidden="true"><img class="kin-f kin-wide kin-h1" src="/brand/kintsugi/h1.svg" width="52" height="105" alt="" loading="lazy" decoding="async"><img class="kin-f kin-wide kin-h2" src="/brand/kintsugi/h2.svg" width="65" height="105" alt="" loading="lazy" decoding="async"><img class="kin-f kin-wide kin-h3" src="/brand/kintsugi/h3.svg" width="74" height="72" alt="" loading="lazy" decoding="async"><img class="kin-f kin-wide kin-h4" src="/brand/kintsugi/h4.svg" width="44" height="25" alt="" loading="lazy" decoding="async"><img class="kin-f kin-wide kin-h5" src="/brand/kintsugi/h5.svg" width="87" height="106" alt="" loading="lazy" decoding="async"></div>
+  <div class="kin" aria-hidden="true"><img class="kin-f kin-wide kin-h1" src="/brand/kintsugi/h1.svg" width="52" height="105" alt="" loading="lazy" decoding="async"><img class="kin-f kin-wide kin-h2" src="/brand/kintsugi/h2.svg" width="65" height="105" alt="" loading="lazy" decoding="async"><img class="kin-f kin-wide kin-h3" src="/brand/kintsugi/h3.svg" width="74" height="72" alt="" loading="lazy" decoding="async"><img class="kin-f kin-wide kin-h4" src="/brand/kintsugi/h4.svg" width="44" height="25" alt="" loading="lazy" decoding="async"><img class="kin-f kin-wide kin-h5" src="/brand/kintsugi/h5.svg" width="87" height="106" alt="" loading="lazy" decoding="async"><img class="kin-f kin-narrow kin-hp1" src="/brand/kintsugi/hp1.svg" width="59" height="68" alt="" loading="lazy" decoding="async"><img class="kin-f kin-narrow kin-hp2" src="/brand/kintsugi/hp2.svg" width="46" height="34" alt="" loading="lazy" decoding="async"></div>
   <div>
     <h1 class="brand-lockup"><img class="bl-img bl-screen" src="/brand/ivritsuite-lockup-english-dark.svg" alt="IvritSuite" width="166" height="50"><img class="bl-img bl-print" src="/brand/ivritsuite-lockup-english.svg" alt="" width="166" height="50"></h1>
   </div>

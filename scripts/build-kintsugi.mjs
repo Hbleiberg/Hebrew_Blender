@@ -7,7 +7,8 @@
                                                 and the gap markup and rules every other page's header carries
      node scripts/build-kintsugi.mjs --check    exit 1 if a file on disk differs from what the JSON builds, or a page's
                                                 gap markup or the shared gap rules differ from what --print prints
-   The home page places each fracture from an edge of its bar. Every other page's header has a title and its own
+   The home page places each fracture from an edge of its bar (on a phone its header shows two of its own, beside the
+   lockup: area "header-phone"). Every other page's header has a title and its own
    controls where those positions fall, so there the header drawings sit in the gap between the two ("gap" in the
    JSON): a spacer in the header's row holds them, and a container query shows as many as the gap has room for.
    A crack is drawn in runs of three segments, each with its own width, so it swells and thins like a real seam:
@@ -93,9 +94,9 @@ for (const fr of data.fractures) {
   const b = build(fr), file = path.join(DIR, fr.id + '.svg');
   if (args.has('--check')) { if (!existsSync(file) || readFileSync(file, 'utf8') !== b.svg) { stale++; console.error('stale: brand/kintsugi/' + fr.id + '.svg'); } }
   else writeFileSync(file, b.svg);
-  // the wide set was drawn for the 1280px bars, the narrow set for the 390px footer
-  const set = fr.area === 'footer-phone' ? 'narrow' : 'wide';
-  tags[fr.area === 'header' ? 'header' : 'footer'].push(`<img class="kin-f kin-${set} kin-${fr.id}" src="/brand/kintsugi/${fr.id}.svg" width="${b.w}" height="${b.h}" alt="" loading="lazy" decoding="async">`);
+  // the wide set was drawn for the 1280px bars, the narrow set for a 390px phone's: its footer, and the home page's header
+  const set = fr.area.endsWith('-phone') ? 'narrow' : 'wide';
+  tags[fr.area.startsWith('header') ? 'header' : 'footer'].push(`<img class="kin-f kin-${set} kin-${fr.id}" src="/brand/kintsugi/${fr.id}.svg" width="${b.w}" height="${b.h}" alt="" loading="lazy" decoding="async">`);
   rules.push(`.kin-${fr.id}{${position(fr, b)};}`);
 }
 if (args.has('--print')) {

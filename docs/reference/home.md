@@ -126,7 +126,7 @@ Thin gold cracks in the navy header and footer, after the craft of mending potte
 of its two bars (the points below, down to *Run the smoke*); every other page's header shows the header drawings in the
 gap between its title and its controls (*The header gap on every other page*, after them).
 
-- **Generated, never drawn by hand.** `brand/kintsugi/fractures.json` is the only hand-kept copy: sixteen *fractures*
+- **Generated, never drawn by hand.** `brand/kintsugi/fractures.json` is the only hand-kept copy: eighteen *fractures*
   (a crack and its branches), each a list of centre-line points with a stroke width for every run of three segments.
   `node scripts/build-kintsugi.mjs` writes one `brand/kintsugi/<id>.svg` per fracture; `--print` also prints the two
   `<div class="kin" aria-hidden="true">` blocks and the position rules the home page carries, and the gap markup and
@@ -137,8 +137,14 @@ gap between its title and its controls (*The header gap on every other page*, af
   with logical insets and at its drawn size, so a wider or taller bar never stretches a crack or moves it relative to
   what it sits beside. Never scale, move or redraw one.
 - **Two sets.** `kin-wide` (header and footer) was drawn for 1280px bars and shows from 1280px up; `kin-narrow`
-  (footer only) was drawn for a 390px footer and shows up to 600px, on every page's footer. Between 601px and 1279px there are no cracks, and
-  the header has none below 1280px: its controls leave no clear path there.
+  was drawn for a 390px phone and shows up to 600px: four drawings on every page's footer, and two in the home
+  page's header. Between 601px and 1279px there are no cracks, and every other page's header has none below 1280px:
+  its title and controls leave no clear path there.
+- **The home page's header on a phone.** On a narrow phone the header's controls wrap to a row of their own, which
+  leaves the space beside the lockup free: two drawings (`area: "header-phone"`), anchored to the bar's end edge and
+  its top, sit there. Where the controls come back up beside the lockup, a gate hides both. That width follows the
+  account chip, so it is measured with the narrowest chip there is (a one-letter name) as well as the widest; the
+  wrap rules' own widths are no guide (they say where the header *may* wrap, not where it does).
 - **Lazy loading is deliberate.** Every crack image is `loading="lazy"`, so a set that is `display:none` is never
   downloaded: a phone fetches the narrow files, a desktop the wide ones, a tablet none. The files are decorative and
   the service worker's cache-first catch-all stores them on first view, so they are not in `CORE_ASSETS`.
@@ -160,9 +166,11 @@ gap between its title and its controls (*The header gap on every other page*, af
   where the social buttons sit nearer the edge. On a phone every footer shares the home page's one gate.
 - **Gates are measured, never chosen.** `node scripts/smoke-kintsugi.mjs` measures the rule at every width each set
   shows at, in English and Hebrew, light and dark, with a mouse and with a finger, and for the header signed out and
-  signed in with a 16-letter first name; it also checks that each set shows only in its own range. `--report` shows
+  signed in with a 16-letter first name (the phone header also with a one-letter name); it also checks that each set
+  shows only in its own range. `--report` shows
   every fracture whatever its gate says and prints the widths at which each is clear: a gate hides its fracture below
-  the first width from which it stays clear. The smoke needs the real UI fonts (it fetches Google Fonts and Sefaria's
+  the first width from which it stays clear (the phone header's two are clear only *up to* a width, so their gate is
+  a `min-width` rule). The smoke needs the real UI fonts (it fetches Google Fonts and Sefaria's
   badge through the environment's proxy) and skips loudly without the fonts.
 - **Run the smoke** whenever a header control, a page's title or tagline, a header's padding, a footer link or its
   label, the lockup's size, the Sefaria badge or `fractures.json` changes. `--home` runs the home page alone, `--gaps`

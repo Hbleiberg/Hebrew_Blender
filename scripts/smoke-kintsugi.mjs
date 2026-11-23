@@ -12,9 +12,10 @@
  *     everywhere else (the footer's links, headings and credits);
  *   - at every width its set shows at: the wide set at 1280-1500px and at 1600 / 1920 / 2560, the narrow set at
  *     320-600px;
- *   - EN and HE, light and dark, a mouse and a finger (hasTouch + isMobile, which flips pointer:coarse), and for the
- *     wide set signed out and signed in with a 16-letter first name (a stored session with the SDK request held, so
- *     the chip shows the cached name: the S659 probe's method).
+ *   - EN and HE, light and dark, a mouse and a finger (hasTouch + isMobile, which flips pointer:coarse), signed out
+ *     and signed in with a 16-letter first name (a stored session with the SDK request held, so the chip shows the
+ *     cached name: the S659 probe's method) — the phone header's two fractures sit beside the lockup while the
+ *     controls keep a row of their own, and the chip's width decides where that stops.
  * It also checks that the wide set shows only from 1280px and the narrow set only up to 600px.
  *
  * Every other page shows the header drawings in the gap between its title and its controls (.kin-gap: a spacer in the
@@ -60,6 +61,7 @@ const ONLY = process.argv.map((a, i) => (a === '--only' ? process.argv[i + 1] : 
 const DO_HOME = !process.argv.includes('--gaps') && !ONLY.length, DO_GAPS = !process.argv.includes('--home') && !REPORT;
 const CLEAR = 6;                                   // px between a stroke's centre line and the nearest text or control
 const NAME = 'Alexandrinaelena Vos';               // 16 letters before the space: the chip's longest first name
+const SHORT = 'i';                                 // …and its shortest: the narrowest chip, with which the phone header keeps one row from the smallest width
 const range = (a, b) => Array.from({ length: b - a + 1 }, (_, i) => a + i);
 const WIDE = [...range(1280, 1500), 1600, 1920, 2560], NARROW = range(320, 600), BETWEEN = [601, 800, 1024, 1279];
 const allowed = { wide: w => w >= 1280, narrow: w => w <= 600 };
@@ -74,7 +76,7 @@ const FR = JSON.parse(fs.readFileSync(path.join(DIR, 'fractures.json'), 'utf8'))
     const [ax, ay] = c.p[i], [bx, by] = c.p[i + 1], n = Math.max(1, Math.ceil(Math.hypot(bx - ax, by - ay) / 2));
     for (let k = 0; k <= n; k++) pts.push([+(ax + (bx - ax) * k / n - vb[1]).toFixed(1), +(ay + (by - ay) * k / n - vb[2]).toFixed(1)]);
   }
-  return { id: f.id, set: f.area === 'footer-phone' ? 'narrow' : 'wide', bar: f.area === 'header' ? 'header' : 'footer', pts };
+  return { id: f.id, set: f.area.endsWith('-phone') ? 'narrow' : 'wide', bar: f.area.startsWith('header') ? 'header' : 'footer', pts };
 });
 
 const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.json': 'application/json', '.svg': 'image/svg+xml', '.png': 'image/png', '.ttf': 'font/ttf', '.woff2': 'font/woff2', '.css': 'text/css', '.webmanifest': 'application/manifest+json' };
@@ -138,13 +140,13 @@ const spans = (all, some) => { const s = new Set(some), out = []; let a = null, 
 
 const RUNS = [];
 if (DO_HOME) for (const lang of ['en', 'he']) for (const dark of [true, false]) for (const touch of [false, true]) {
-  for (const name of ['', NAME]) RUNS.push({ set: 'wide', widths: WIDE, lang, dark, touch, name });
-  RUNS.push({ set: 'narrow', widths: NARROW, lang, dark, touch, name: '' });
+  for (const name of ['', NAME]) for (const [set, widths] of [['wide', WIDE], ['narrow', NARROW]]) RUNS.push({ set, widths, lang, dark, touch, name });
+  RUNS.push({ set: 'narrow', widths: NARROW, lang, dark, touch, name: SHORT });
 }
 const browser = await chromium.launch();
 let fails = 0;
 for (const run of RUNS) {
-  const label = `${run.set} set, ${run.lang} ${run.dark ? 'dark' : 'light'} ${run.touch ? 'touch' : 'mouse'}${run.set === 'wide' ? (run.name ? ' signed in' : ' signed out') : ''}`;
+  const label = `${run.set} set, ${run.lang} ${run.dark ? 'dark' : 'light'} ${run.touch ? 'touch' : 'mouse'}${run.name ? (run.name === SHORT ? ' signed in, a short name' : ' signed in') : ' signed out'}`;
   const ctx = await browser.newContext({ viewport: { width: run.widths[0], height: 900 }, serviceWorkers: 'block', hasTouch: run.touch, isMobile: run.touch });
   await ctx.route('**/*', async route => {
     const u = route.request().url();

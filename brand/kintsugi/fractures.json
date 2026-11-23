@@ -1,5 +1,5 @@
 {
- "note": "Approved kintsugi cracks for the home page header and footer. One record per fracture: its cracks' centre-line points (px, in the frame's coordinates) and the stroke width of each 3-segment run. Hand-kept; brand/kintsugi/*.svg are built from it.",
+ "note": "Approved kintsugi cracks for the home page header and footer (area: header and footer for 1280px bars, footer-phone for a 390px footer, header-phone for the space beside the lockup in the home page's 390px header). One record per fracture: its cracks' centre-line points (px, in the frame's coordinates) and the stroke width of each 3-segment run. Hand-kept; brand/kintsugi/*.svg are built from it.",
  "gap": {
   "note": "How the header drawings are placed on every other page: in the gap between a page's title and its controls, at their home-page spacing, each anchored to the bar edge it starts from, the group centred in the gap. 'set' is shown one more drawing at a time as the gap grows; 'alone' is the one drawing a second gap holds (Flash Cards, whose title is centred). 'barInner' is the home header's height inside its border, which the frame coordinates are measured in; 'clear' is the room kept at each end of the gap.",
   "barInner": 84,
@@ -30,6 +30,14 @@
     {"p": [[1189.2,82.9],[1187.7,87.5],[1186.1,91.3],[1183.2,95.9]], "w": [0.3]},
     {"p": [[1225.4,84.7],[1221.9,86.8],[1217.4,88.4],[1213.3,86.1],[1211.3,82.6],[1209.5,77.1],[1205.4,76.9],[1199.5,78.3],[1193.3,81.1],[1189.2,82.9]], "w": [0.81,0.61,0.3]},
     {"p": [[1262,-2],[1258.4,3.8],[1254.4,8.6],[1251.7,13.3],[1249.1,18.1],[1247.1,23.2],[1244.9,26.9],[1240.7,30.3],[1238.6,34.5],[1236.4,38.8],[1233.2,43.3],[1230.3,48.9],[1229.0,54.2],[1228.4,59.5],[1226.8,64.2],[1226.6,68.4],[1225.9,75.2],[1225.2,80.5],[1225.4,84.7],[1223.7,89.5],[1217.8,93.2],[1213.0,93.5]], "w": [1.24,1.29,1.01,0.88,0.51,0.46,0.43]}
+  ]},
+  {"id": "hp1", "area": "header-phone", "frame": [390, 116], "anchor": ["end", "top"], "cracks": [
+    {"p": [[315.5,16.6],[320.2,19.8],[324.1,23.3],[328.7,25.4],[332.3,25.6],[337.6,28.8],[340.2,32.3]], "w": [0.62,0.42]},
+    {"p": [[324,-2],[323.1,4.7],[321,10.1],[317.9,12.5],[315.5,16.6],[314.3,20.5],[313.5,26.5],[310.8,30.5],[307,34.4],[303,39],[300.6,44.7],[298.9,50.3],[295.2,53.7],[290.7,57.3]], "w": [1.2,1.02,0.68,0.49,0.3]}
+  ]},
+  {"id": "hp2", "area": "header-phone", "frame": [390, 116], "anchor": ["end", "top"], "cracks": [
+    {"p": [[375.1,39.1],[373.1,35.3],[372,30.9],[369.4,28.8],[366.8,24.8]], "w": [0.5,0.42]},
+    {"p": [[392,36],[386.1,37.6],[380.5,38.9],[375.1,39.1],[370.7,36.9],[367,40.7],[361.6,42.2],[358.4,46.6],[354.1,49.9]], "w": [1.05,0.74,0.3]}
   ]},
   {"id": "f1", "area": "footer", "frame": [1280, 190], "anchor": ["center", "top"], "cracks": [
     {"p": [[717.8,16.8],[720.9,13.6],[725.0,9.3],[727.8,6.2],[731.8,2.7],[734.5,-3.0],[738.3,-8.7]], "w": [0.73,0.35]},
