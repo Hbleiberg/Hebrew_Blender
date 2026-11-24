@@ -208,7 +208,10 @@ Tags class panel, Flash Cards' profile manager, the reading-assignments class po
   A page with a capture-phase modal handler of its own (the reading-assignments page) steps aside while
   `isEditorOpen()`.
 - **Its CSS** is one `<style>` the file adds when the editor first opens (every carrier's CSP already allows
-  inline styles), written with logical properties only. Its strings are `shared.classes.*`, English and
+  inline styles), written with logical properties only. It draws in the suite's palette (navy, gold and cream; the
+  hub's dark surfaces under `body.dark`; system colours only in forced colours) and the host page's own font, so it
+  reads as part of whichever tool opened it; only the icon buttons (↕ ▲ ▼ ×) keep the system face, which draws those
+  glyphs full-size. Its strings are `shared.classes.*`, English and
   Hebrew, re-rendered on a language switch.
 - **Untrusted data:** names arrive from other devices and from files. Storage is read with a prototype-safe
   parser and merged without `Object.assign`; nothing reaches `innerHTML`.

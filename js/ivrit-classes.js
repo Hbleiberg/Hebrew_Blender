@@ -1234,12 +1234,14 @@
   function Tn(key, n, params) { var p = { n: n }; if (params) for (var k in params) if (hasOwn(params, k)) p[k] = params[k]; return T(key + (n === 1 ? '.one' : '.other'), p); }
 
   var CSS = [
-    '.ivc-overlay{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(10,18,40,.55);color-scheme:light;--ivc-accent:#1a2e5a;--ivc-on-accent:#fff;--ivc-line:#c9cfdc;--ivc-soft:#f1f3f8;--ivc-warn:#8a4b00;--ivc-muted:#525b70;}',
-    'body.dark .ivc-overlay{color-scheme:dark;--ivc-accent:#e8c66a;--ivc-on-accent:#14203c;--ivc-line:#46506a;--ivc-soft:#232c44;--ivc-warn:#f0b866;--ivc-muted:#b9c1d3;}',
-    '.ivc-dialog{box-sizing:border-box;display:flex;flex-direction:column;inline-size:min(1040px,100%);max-block-size:100%;background:Canvas;color:CanvasText;border:1px solid var(--ivc-line);border-radius:12px;box-shadow:0 18px 60px rgba(0,0,0,.35);font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;text-align:start;}',
+    /* the suite's palette (navy, gold, cream; the dark surfaces of the hub's dark mode) and the host page's own font, so
+       the editor reads as part of whichever tool opened it; every text colour is 5.6:1 or more on its ground */
+    '.ivc-overlay{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(10,18,40,.55);color-scheme:light;--ivc-bg:#fff;--ivc-ink:#1a2744;--ivc-field:#fff;--ivc-btn:#fff;--ivc-accent:#1a2744;--ivc-on-accent:#f0d080;--ivc-line:#c8bfa8;--ivc-soft:#f8f3e8;--ivc-warn:#8a4b00;--ivc-muted:#5c5446;}',
+    'body.dark .ivc-overlay{color-scheme:dark;--ivc-bg:#1e2535;--ivc-ink:#dde4f0;--ivc-field:#161c2a;--ivc-btn:#283149;--ivc-accent:#e0a832;--ivc-on-accent:#14203c;--ivc-line:#46506a;--ivc-soft:#161c2a;--ivc-warn:#f0b866;--ivc-muted:#b9c1d3;}',
+    '.ivc-dialog{box-sizing:border-box;display:flex;flex-direction:column;inline-size:min(1040px,100%);max-block-size:100%;background:var(--ivc-bg);color:var(--ivc-ink);border:1px solid var(--ivc-line);border-radius:12px;box-shadow:0 18px 60px rgba(0,0,0,.35);font-size:15px;line-height:1.4;font-family:inherit;text-align:start;}',
     '.ivc-dialog *{box-sizing:border-box;}',
     '.ivc-head{display:flex;align-items:center;gap:12px;padding:12px 16px;border-block-end:1px solid var(--ivc-line);}',
-    '.ivc-head h2{flex:1;margin:0;font-size:1.2rem;color:CanvasText;}',
+    '.ivc-head h2{flex:1;margin:0;font-size:1.2rem;color:var(--ivc-ink);}',
     '.ivc-body{display:grid;grid-template-columns:minmax(170px,230px) minmax(0,1fr);min-block-size:0;flex:1;}',
     '.ivc-side{border-inline-end:1px solid var(--ivc-line);padding:12px;overflow:auto;display:flex;flex-direction:column;gap:8px;}',
     '.ivc-side h3,.ivc-main h3{margin:0;font-size:.8rem;text-transform:uppercase;letter-spacing:.04em;color:var(--ivc-muted);}',
@@ -1254,13 +1256,13 @@
     '.ivc-row>.ivc-field{flex:1 1 220px;}',
     '.ivc-main>*{flex:none;}',
     '.ivc-field>span,.ivc-lbl{font-size:.82rem;color:var(--ivc-muted);}',
-    '.ivc-dialog input[type=text],.ivc-dialog select,.ivc-dialog textarea{font:inherit;color:FieldText;background:Field;border:1px solid var(--ivc-line);border-radius:6px;padding:7px 9px;min-block-size:36px;inline-size:100%;}',
+    '.ivc-dialog input[type=text],.ivc-dialog select,.ivc-dialog textarea{font:inherit;color:var(--ivc-ink);background:var(--ivc-field);border:1px solid var(--ivc-line);border-radius:6px;padding:7px 9px;min-block-size:36px;inline-size:100%;}',
     '.ivc-dialog textarea{min-block-size:110px;resize:vertical;}',
-    '.ivc-btn{font:inherit;min-block-size:36px;padding:6px 12px;border:1px solid var(--ivc-line);border-radius:8px;background:ButtonFace;color:ButtonText;cursor:pointer;}',
+    '.ivc-btn{font:inherit;font-weight:500;min-block-size:36px;padding:6px 12px;border:1px solid var(--ivc-line);border-radius:8px;background:var(--ivc-btn);color:var(--ivc-ink);cursor:pointer;}',
     '.ivc-btn:hover{border-color:var(--ivc-accent);}',
     '.ivc-btn.ivc-primary{background:var(--ivc-accent);color:var(--ivc-on-accent);border-color:var(--ivc-accent);font-weight:600;}',
     '.ivc-btn.ivc-danger{color:#b3261e;} body.dark .ivc-btn.ivc-danger{color:#ffb4ab;}',
-    '.ivc-btn.ivc-icon{min-inline-size:36px;padding:6px;}',
+    '.ivc-btn.ivc-icon{min-inline-size:36px;padding:6px;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;}',   /* ↕ ▲ ▼ ×: a text face draws them small */
     '.ivc-btn[aria-disabled="true"]{opacity:.5;cursor:default;}',
     '.ivc-dialog :focus-visible{outline:3px solid var(--ivc-accent);outline-offset:2px;}',
     '.ivc-chips{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0;padding:0;list-style:none;}',
@@ -1280,7 +1282,7 @@
     /* a column's heading and its cells sit on the side their script reads from, in either UI direction */
     '.ivc-table th.ivc-he{text-align:right;} .ivc-table th.ivc-tr,.ivc-table th.ivc-en{text-align:left;} .ivc-table th.ivc-ex{text-align:start;}',
     '.ivc-table input.ivc-cell{border-color:transparent;background:transparent;min-block-size:34px;}',
-    '.ivc-table input.ivc-cell:hover,.ivc-table input.ivc-cell:focus{border-color:var(--ivc-line);background:Field;}',
+    '.ivc-table input.ivc-cell:hover,.ivc-table input.ivc-cell:focus{border-color:var(--ivc-line);background:var(--ivc-field);}',
     '.ivc-table input[lang=he]{font-family:"Frank Ruhl Libre","IvritSuite Taamim",serif;font-size:1.1rem;}',
     '.ivc-grip{touch-action:none;cursor:grab;}',
     '.ivc-table tr.ivc-drop-before td{box-shadow:inset 0 3px 0 var(--ivc-accent);} .ivc-table tr.ivc-drop-after td{box-shadow:inset 0 -3px 0 var(--ivc-accent);}',
@@ -1293,7 +1295,7 @@
     '.ivc-kbd{border-block-start:1px solid var(--ivc-line);padding:8px 16px;max-block-size:46vh;overflow:auto;}',
     '.ivc-sr{position:absolute;inline-size:1px;block-size:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;}',
     '@media (max-width:800px){.ivc-overlay{padding:0;}.ivc-dialog{border-radius:0;block-size:100%;inline-size:100%;}.ivc-body{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr);}.ivc-side{border-inline-end:0;border-block-end:1px solid var(--ivc-line);max-block-size:32vh;}}',
-    '@media (forced-colors:active){.ivc-dialog,.ivc-btn,.ivc-chip,.ivc-panel,.ivc-tablewrap{border:1px solid CanvasText;}.ivc-class[aria-current="true"]{border:2px solid Highlight;}.ivc-table input.ivc-cell{border-color:CanvasText;}.ivc-overlay{background:Canvas;}}',
+    '@media (forced-colors:active){.ivc-dialog{background:Canvas;color:CanvasText;}.ivc-btn{background:ButtonFace;color:ButtonText;}.ivc-dialog,.ivc-btn,.ivc-chip,.ivc-panel,.ivc-tablewrap{border:1px solid CanvasText;}.ivc-class[aria-current="true"]{border:2px solid Highlight;}.ivc-table input.ivc-cell{border-color:CanvasText;}.ivc-overlay{background:Canvas;}}',
     '@media (prefers-reduced-motion:reduce){.ivc-overlay *{animation-duration:.001ms !important;transition-duration:.001ms !important;}}',
     '@media print{.ivc-overlay{display:none !important;}}'
   ].join('\n');
