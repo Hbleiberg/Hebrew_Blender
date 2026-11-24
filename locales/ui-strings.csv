@@ -3181,7 +3181,7 @@ fontmaker.panels.stage_margin_right,right margin,מרווח ימני,stage — r
 fontmaker.panels.style,Style,סגנון,font style field label,
 fontmaker.panels.style_bold,Bold,מודגש,style option,
 fontmaker.panels.style_regular,Regular,רגיל,style option,
-fontmaker.panels.style_title,Pick Bold to export this project as the Bold style of the same family — install the Regular and Bold files together and the B button switches between them.,"בחרו מודגש כדי לייצא את הפרויקט כסגנון המודגש של אותה משפחה — התקינו את קובץ הרגיל ואת קובץ המודגש יחד, וכפתור B יעבור ביניהם.",field title,
+fontmaker.panels.style_title,"Pick the member of the family this project exports as: Regular, Bold, Italic or Bold Italic. Install the files together and the B and I buttons switch between them. Use the exact same Family name in each project.","בחרו כאיזה חבר במשפחה הפרויקט הזה מיוצא: רגיל, מודגש, נטוי או מודגש נטוי. התקינו את הקבצים יחד, והכפתורים B ו־I יחליפו ביניהם. השתמשו בדיוק באותו שם משפחה בכל פרויקט.",field title,
 fontmaker.panels.svg_outline_hint,"Imported from SVG — no tracing needed. Fine-tune the shape with <b>Edit points</b>, or re-upload under <b>Add Letters</b> to replace it.","יובא מ-SVG — אין צורך במעקב. כווננו את הצורה עם <b>עריכת נקודות</b>, או העלו מחדש תחת <b>הוספת אותיות</b> כדי להחליף אותה.",panel hint,
 fontmaker.panels.taller,Taller,גבוה יותר,adjust button,
 fontmaker.panels.trace_all,Trace all,עקיבה אחר הכול,button — traces every photo on this tab that has no outline yet,
@@ -3477,7 +3477,6 @@ fontmaker.status.smoothed.one,Smoothed {count} corner,הוחלקה {count} פי�
 fontmaker.status.smoothed.other,Smoothed {count} corners,הוחלקו {count} פינות,toast,plural
 fontmaker.status.smoothed_skipped,", skipped {count} (too tight for this radius).",", דולגו {count} (צפופות מדי עבור רדיוס זה).",toast fragment,
 fontmaker.status.starting_export,Starting export…,מתחיל ייצוא…,toast,
-fontmaker.status.style_bold_detected,This font is marked Bold — Style was set to Bold (see Font Details).,הגופן הזה מסומן כמודגש — הסגנון הוגדר למודגש (ראו פרטי גופן).,toast after font import,
 fontmaker.status.svg_sheet_loaded,"SVG sheet loaded. Drag a box around a letter, or name elements like id=""uni05D0"" and click Auto-split by name.","דף SVG נטען. גררו תיבה סביב אות, או תנו לרכיבים שם כמו id=""uni05D0"" ולחצו על פיצול אוטומטי לפי שם.",toast,html
 fontmaker.status.sheets_added,"{count} sheets added — pick a letter, then drag a box around it.","נוספו {count} דפים — בחרו אות, ואז גררו תיבה סביבה.",toast after uploading several template sheets,{count} > 1
 fontmaker.status.sheet_loaded,"Sheet loaded. Pick a letter, then drag a box around it.","הדף נטען. בחרו אות, ואז גררו תיבה סביבה.",toast after uploading one template sheet,
@@ -6070,6 +6069,19 @@ fontmaker.panels.upload_mark_below,Upload an image of this mark below.,העלו 
 fontmaker.panels.trace_base_first,Trace the base letter(s) first to preview this form.,המירו תחילה את אותיות הבסיס לקווי מתאר כדי להציג את הצורה הזו.,Precomposed-form stage caption before the base is traced,REVIEW: HE draft
 fontmaker.panels.bb_scale_title,Scale (Shift = uniform),שינוי גודל (Shift = אחיד),bounding-box corner handle title,REVIEW: HE draft
 fontmaker.panels.bb_scale_axis_title,Scale one axis (Shift = uniform),שינוי גודל בציר אחד (Shift = אחיד),bounding-box edge handle title,REVIEW: HE draft
+fontmaker.panels.italic_angle,Italic angle (°),זווית הנטייה (°),input label,
+fontmaker.panels.italic_angle_title,"How far the letters lean. The Italic file tells programs this angle, so the text cursor leans with the letters. Leave it empty to use the angle recorded when you slanted the letters. (Inside the font file a lean to the right is written as a negative angle.)","בכמה האותיות נוטות. קובץ הנטוי מוסר לתוכנות את הזווית הזאת, כך שסמן הטקסט נוטה יחד עם האותיות. השאירו ריק כדי להשתמש בזווית שנרשמה כשהטיתם את האותיות. (בתוך קובץ הגופן נטייה ימינה נכתבת כזווית שלילית.)",input title,
+fontmaker.panels.italic_note_letters_left,"Following your letters: {angle}°, leaning left.","לפי האותיות שלכם: {angle}°, נטייה שמאלה.",panel hint,
+fontmaker.panels.italic_note_letters_right,"Following your letters: {angle}°, leaning right.","לפי האותיות שלכם: {angle}°, נטייה ימינה.",panel hint,
+fontmaker.panels.italic_note_mixed.one,1 of {total} letters leans by a different amount.,אות אחת מתוך {total} נוטה בזווית אחרת.,panel hint,
+fontmaker.panels.italic_note_mixed.other,{count} of {total} letters lean by a different amount.,{count} מתוך {total} אותיות נוטות בזווית אחרת.,panel hint,
+fontmaker.panels.italic_note_own_left,"The file will say {angle}°, leaning left.","הקובץ יציין {angle}°, נטייה שמאלה.",panel hint,
+fontmaker.panels.italic_note_own_right,"The file will say {angle}°, leaning right.","הקובץ יציין {angle}°, נטייה ימינה.",panel hint,
+fontmaker.panels.italic_note_upright,"No slant is recorded for your letters, so the file will say 0°. If they lean (for example because you drew them that way), type the angle here.","לא נרשמה הטיה לאותיות שלכם, ולכן הקובץ יציין 0°. אם הן נוטות (למשל כי כך ציירתם אותן), הקלידו כאן את הזווית.",panel hint,
+fontmaker.panels.italic_note_zero,The file will say 0°: an Italic with an upright text cursor.,הקובץ יציין 0°: נטוי עם סמן טקסט זקוף.,panel hint,
+fontmaker.panels.lean_dir,Lean direction,כיוון הנטייה,radiogroup aria-label,aria-label only
+fontmaker.panels.lean_left,Lean left,נטייה שמאלה,radio label,
+fontmaker.panels.lean_right,Lean right,נטייה ימינה,radio label,
 fontmaker.punct.grp_basic,Basic (ASCII),בסיסי (ASCII),punctuation picker band label,
 fontmaker.punct.grp_currency,Currency & math,מטבע ומתמטיקה,punctuation picker band label,
 fontmaker.punct.grp_hebrew,Hebrew,עברית,punctuation picker band label,
@@ -6330,6 +6342,7 @@ fontmaker.status.upload_no_room,Every letter already has a picture or an outline
 fontmaker.status.upload_all_failed,None of those files could be read as images.,אף אחד מהקבצים האלה לא נקרא כתמונה.,toast,REVIEW: machine-drafted HE — confirm
 fontmaker.status.loaded_photos.one,"Loaded {count} photo — open the letter to align, then trace.","נטענה {count} תמונה — פתחו את האות ליישור, ואז עקבו.",toast,plural; REVIEW: machine-drafted HE — confirm
 fontmaker.status.loaded_photos.other,"Loaded {count} photos — open each letter to align, then trace.","נטענו {count} תמונות — פתחו כל אות ליישור, ואז עקבו.",toast,plural; REVIEW: machine-drafted HE — confirm
+fontmaker.status.style_detected,This font is marked {style} — Style was set to {style} (see Font Details).,הגופן הזה מסומן כ{style} — הסגנון הוגדר כ{style} (ראו פרטי הגופן).,toast,{style} = a style option name
 fontmaker.status.upload_leftover.one,{count} photo had nowhere to go — every other letter already has something on it.,נותרה {count} תמונה בלי מקום — לכל שאר האותיות כבר יש משהו.,toast,plural; REVIEW: machine-drafted HE — confirm
 fontmaker.status.upload_leftover.other,{count} photos had nowhere to go — every other letter already has something on it.,נותרו {count} תמונות בלי מקום — לכל שאר האותיות כבר יש משהו.,toast,plural; REVIEW: machine-drafted HE — confirm
 fontmaker.status.upload_unreadable.one,{count} file could not be read as an image.,{count} קובץ לא נקרא כתמונה.,toast,plural; REVIEW: machine-drafted HE — confirm
@@ -6340,6 +6353,8 @@ fontmaker.undolabel.upload_n_photos,upload {n} photos,העלאת {n} תמונו�
 fontmaker.panels.nexthint_trace,Photos are in. Trace {name} next — {count} waiting.,התמונות נטענו. עקבו אחרי {name} — {count} ממתינות.,next-step hint,REVIEW: machine-drafted HE — confirm
 fontmaker.panels.scaleall_open,Scale all letters…,שינוי גודל לכל האותיות…,button,
 fontmaker.panels.scaleall_open_title,"Make every letter larger or smaller at once — spacing, kerning, nikkud and the guide lines can follow — with a preview before anything changes.","הגדלה או הקטנה של כל האותיות בבת אחת — הריווח, הקרנינג, הניקוד וקווי העזר יכולים להשתנות יחד איתן — עם תצוגה מקדימה לפני שמשהו משתנה.",button title,
+fontmaker.panels.style_bolditalic,Bold Italic,מודגש נטוי,select option,
+fontmaker.panels.style_italic,Italic,נטוי,select option,
 fontmaker.qa.only_problems,Only show problems,הצגת בעיות בלבד,QA grid filter toggle,REVIEW: machine-drafted HE — confirm
 fontmaker.qa.filter_note,Showing {rows} of {rowTotal} letters and {cols} of {colTotal} marks.,מוצגות {rows} מתוך {rowTotal} אותיות ו-{cols} מתוך {colTotal} סימנים.,QA grid filter readout,REVIEW: machine-drafted HE — confirm
 fontmaker.qa.filter_clear,Nothing to fix on this tab — every combination here is clear. Untick to see the whole grid.,אין מה לתקן בלשונית הזו — כל השילובים כאן תקינים. בטלו את הסימון כדי לראות את כל הטבלה.,QA grid filter empty state,REVIEW: machine-drafted HE — confirm

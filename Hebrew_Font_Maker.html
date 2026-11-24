@@ -1173,7 +1173,7 @@ header{--kin-pt:10px;--kin-pb:10px;--kin-gap:14px;}   /* this header's block pad
   .wiz-step .chk { margin: 6px 0; }
   .wiz-step .wiz-sub { margin-inline-start: 22px; }    /* import-scope sub-toggle, indented under its mark-category parent — must out-cascade .wiz-step .chk's margin shorthand */
   .wiz-sub input:disabled + span { opacity: .5; }      /* parent off → grayed but state kept (latent import) */
-  .wiz-seg { display: inline-flex; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; position: relative; }
+  .wiz-seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; position: relative; }
   .wiz-seg input { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; pointer-events: none; }
   .wiz-seg label { padding: 6px 16px; font-size: 0.8rem; cursor: pointer; background: var(--white); }
   .wiz-seg input:checked + label { background: var(--navy); color: #fff; }
@@ -1255,6 +1255,11 @@ header{--kin-pt:10px;--kin-pb:10px;--kin-gap:14px;}   /* this header's block pad
   .sa-set input, .sa-opts input { accent-color: var(--gold); }
   .sa-opts { display: flex; gap: 4px 16px; flex-wrap: wrap; margin-top: 9px; }
   #saScopeTabRow[hidden], #saScopeLetterRow[hidden], #saScopeHint[hidden] { display: none; }
+  .italic-row[hidden] { display: none; }
+  .italic-row .hint { margin-top: 4px; }
+  .lean-seg { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 0.8rem; margin-top: 4px; }
+  .lean-seg label { display: inline-flex; align-items: center; gap: 4px; cursor: pointer; }
+  .lean-seg input { accent-color: var(--gold); }
   .xf-presets { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 6px; }
   .xf-presets .ctl-btn { padding: 4px 4px; font-size: 0.7rem; flex: 1 1 auto; min-width: 0; white-space: nowrap; }
   .xf-wh { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 6px; font-size: 0.76rem; }
@@ -1940,11 +1945,23 @@ html[lang="he"] .tp-label{letter-spacing:normal;text-transform:none;}
           </label>
         </div>
         <label class="fld"><span data-i18n="fontmaker.panels.style">Style</span>
-          <select id="fontStyle" onchange="onMetaChange()" title="Pick Bold to export this project as the Bold style of the same family — install the Regular and Bold files together and the B button switches between them." data-i18n-title="fontmaker.panels.style_title">
+          <select id="fontStyle" onchange="onMetaChange()" title="Pick the member of the family this project exports as: Regular, Bold, Italic or Bold Italic. Install the files together and the B and I buttons switch between them. Use the exact same Family name in each project." data-i18n-title="fontmaker.panels.style_title">
             <option value="regular" selected data-i18n="fontmaker.panels.style_regular">Regular</option>
             <option value="bold" data-i18n="fontmaker.panels.style_bold">Bold</option>
+            <option value="italic" data-i18n="fontmaker.panels.style_italic">Italic</option>
+            <option value="bolditalic" data-i18n="fontmaker.panels.style_bolditalic">Bold Italic</option>
           </select>
         </label>
+        <div id="italicRow" class="italic-row" hidden>
+          <label class="fld"><span data-i18n="fontmaker.panels.italic_angle">Italic angle (°)</span>
+            <input type="number" id="italicAngle" min="0" max="60" step="0.5" inputmode="decimal" oninput="onItalicAngle()" aria-describedby="italicNote" title="How far the letters lean. The Italic file tells programs this angle, so the text cursor leans with the letters. Leave it empty to use the angle recorded when you slanted the letters. (Inside the font file a lean to the right is written as a negative angle.)" data-i18n-title="fontmaker.panels.italic_angle_title">
+          </label>
+          <div class="lean-seg" role="radiogroup" aria-label="Lean direction" data-i18n-aria-label="fontmaker.panels.lean_dir">
+            <label><input type="radio" name="italicDir" value="left" onchange="onItalicAngle()"> <span data-i18n="fontmaker.panels.lean_left">Lean left</span></label>
+            <label><input type="radio" name="italicDir" value="right" onchange="onItalicAngle()"> <span data-i18n="fontmaker.panels.lean_right">Lean right</span></label>
+          </div>
+          <div class="hint" id="italicNote" role="status"></div>
+        </div>
         <div class="ctl-row">
           <button class="ctl-btn" id="boldGenBtn" onclick="boldGenOpen(false)" title="Thicken (or lighten) every traced outline to create a Bold weight — with a live preview before anything changes." data-i18n="fontmaker.panels.boldgen_open" data-i18n-title="fontmaker.panels.boldgen_open_title">Generate Bold…</button>
           <button class="ctl-btn" id="scaleAllBtn" onclick="scaleAllOpen()" title="Make every letter larger or smaller at once — spacing, kerning, nikkud and the guide lines can follow — with a preview before anything changes." data-i18n="fontmaker.panels.scaleall_open" data-i18n-title="fontmaker.panels.scaleall_open_title">Scale all letters…</button>
@@ -2585,8 +2602,12 @@ html[lang="he"] .tp-label{letter-spacing:normal;text-transform:none;}
         <label for="wizStyleRegular" data-i18n="fontmaker.panels.style_regular">Regular</label>
         <input type="radio" id="wizStyleBold" name="wizStyle" value="bold">
         <label for="wizStyleBold" data-i18n="fontmaker.panels.style_bold">Bold</label>
+        <input type="radio" id="wizStyleItalic" name="wizStyle" value="italic">
+        <label for="wizStyleItalic" data-i18n="fontmaker.panels.style_italic">Italic</label>
+        <input type="radio" id="wizStyleBoldItalic" name="wizStyle" value="bolditalic">
+        <label for="wizStyleBoldItalic" data-i18n="fontmaker.panels.style_bolditalic">Bold Italic</label>
       </div>
-      <p class="hint" style="margin-top:6px;" data-i18n="fontmaker.panels.style_title">Pick Bold to export this project as the Bold style of the same family — install the Regular and Bold files together and the B button switches between them.</p>
+      <p class="hint" style="margin-top:6px;" data-i18n="fontmaker.panels.style_title">Pick the member of the family this project exports as: Regular, Bold, Italic or Bold Italic. Install the files together and the B and I buttons switch between them. Use the exact same Family name in each project.</p>
       <div class="wiz-field-label" data-i18n="fontmaker.wizard.marks_label">Marks</div>
       <label class="chk"><input type="checkbox" id="wizNikkud" checked> <span data-i18n="fontmaker.wizard.nikkud_toggle">Nikkud (vowel points)</span></label>
       <label class="chk"><input type="checkbox" id="wizTrop"> <span data-i18n="fontmaker.wizard.trope_toggle">Trope (cantillation marks)</span></label>
@@ -5853,7 +5874,8 @@ function syncMetaToForm() {
   document.getElementById('fontVersion').value = project.font.version;
   document.getElementById('author').value = project.font.author || '';
   document.getElementById('license').value = project.font.license || 'ofl';
-  document.getElementById('fontStyle').value = (project.font.style === 'bold') ? 'bold' : 'regular';
+  document.getElementById('fontStyle').value = fontStyleOf(project.font.style);
+  syncItalicRow();
   syncOsFontLock();
   // Reference-font / input-mode controls now live in the dynamically-rendered workspace
   // (renderControls), driven by project state — nothing to sync here.
@@ -5862,6 +5884,51 @@ function syncMetaToForm() {
    upstream license: the select locks to the hidden os-passthrough option and the upstream
    Reserved Font Names sit read-only in the reserved-name field. The else branch matters just as
    much — loading a normal project after a partner one must re-enable the form. */
+/* The lean direction the slant controls start from: the project's own last choice, else left for
+   Hebrew (forward for right-to-left reading) and right for a Latin-script tab. Remembered per project
+   in project.view — a view preference: dirty + autosave, no undo entry. */
+function slantDirDefault() {
+  const v = project && project.view && project.view.slantDir;
+  if (v === 'left' || v === 'right') return v;
+  const cat = (curKind === 'letter' && curCp) ? _drawCatOf(curCp) : '';
+  return (cat === 'english' || cat === 'cyrillic') ? 'right' : 'left';
+}
+function setSlantDir(d) { if (!project || (d !== 'left' && d !== 'right')) return; if (!project.view) project.view = {}; if (project.view.slantDir !== d) { project.view.slantDir = d; markDirty(); } }
+/* Font Details → Italic angle: shown for the italic styles only. Empty = follow the letters' records
+   (the placeholder shows that number); a typed angle is the teacher's own and wins. Metadata, like
+   the rest of the panel: markDirty, no undo entry. */
+function syncItalicRow() {
+  const row = document.getElementById('italicRow');
+  if (!row || !project) return;
+  const on = fontIsItalic();
+  row.hidden = !on;
+  if (!on) return;
+  const own = fontOwnLean(), info = fontSlantInfo(), lean = own != null ? own : info.lean;
+  const f = document.getElementById('italicAngle');
+  if (document.activeElement !== f) f.value = own != null ? Math.abs(own) : '';
+  f.placeholder = String(Math.abs(info.lean));
+  const dir = lean < 0 ? 'left' : lean > 0 ? 'right' : slantDirDefault();
+  document.querySelectorAll('input[name="italicDir"]').forEach(r => { r.checked = r.value === dir; r.disabled = own == null; });
+  const side = lean < 0 ? 'left' : 'right', angle = Math.abs(lean);
+  const parts = [lean === 0 ? I18n.t(own != null ? 'fontmaker.panels.italic_note_zero' : 'fontmaker.panels.italic_note_upright')
+                            : I18n.t((own != null ? 'fontmaker.panels.italic_note_own_' : 'fontmaker.panels.italic_note_letters_') + side, { angle })];
+  if (info.differ) parts.push(I18n.t(info.differ === 1 ? 'fontmaker.panels.italic_note_mixed.one' : 'fontmaker.panels.italic_note_mixed.other', { count: info.differ, total: info.n }));
+  document.getElementById('italicNote').textContent = parts.join(' ');
+}
+function onItalicAngle() {
+  if (!project) return;
+  const raw = String(document.getElementById('italicAngle').value).trim();
+  if (raw === '') delete project.font.italicLean;
+  else {
+    const v = Math.abs(+raw);
+    if (!Number.isFinite(v)) return;
+    const r = document.querySelector('input[name="italicDir"]:checked'), prev = fontOwnLean();
+    const dir = (prev == null) ? (fontSlantInfo().lean < 0 ? 'left' : fontSlantInfo().lean > 0 ? 'right' : slantDirDefault()) : (r ? r.value : slantDirDefault());
+    project.font.italicLean = Math.round((dir === 'left' ? -1 : 1) * Math.min(60, v) * 10) / 10;
+  }
+  syncItalicRow();
+  markDirty();
+}
 function syncOsFontLock() {
   const locked = !!(project && project.osFont);
   const lic = document.getElementById('license'), res = document.getElementById('reservedName');
@@ -5892,7 +5959,8 @@ function onMetaChange() {
   }
   project.font.version = document.getElementById('fontVersion').value;
   project.font.author = document.getElementById('author').value;
-  project.font.style = document.getElementById('fontStyle').value === 'bold' ? 'bold' : 'regular';
+  project.font.style = fontStyleOf(document.getElementById('fontStyle').value);
+  syncItalicRow();
   markDirty();   // meta edits autosave like every other edit
 }
 /* ════════ Template fonts — ported from torah_trainer.html, same grouping ════════ */
@@ -8966,9 +9034,13 @@ async function uploadSourceFont(file) {
    1000-UPM y-up space. Shared by the Hebrew LETTERS pass and the English/Latin pass in
    applyFontImport so the two can't drift. Blanks the item and returns false when the font has no ink
    for that codepoint — the caller's `return` on false is what skips the anchor step too. */
+function importFontLean(font) {   // the source font's own declared lean, in this app's convention (+ = right); 0 when upright or unreadable
+  try { const a = +(font.tables && font.tables.post && font.tables.post.italicAngle); return (Number.isFinite(a) && Math.abs(a) >= 0.05 && Math.abs(a) <= 60) ? Math.round(-a * 10) / 10 : 0; } catch (e) { return 0; }
+}
 function importLetterOutline(l, font, scale) {
   const glyph = font.charToGlyph(String.fromCodePoint(parseInt(l.codepoint,16)));
   l.source = { kind:'font', dataUrl:null, cropRect:null };
+  const lean = importFontLean(font); if (lean) l.slant = lean; else delete l.slant;   // a new outline from outside: its lean is the source font's, never the old letter's
   const blank = () => { l.contours = null; l.curves = null; l.anchors = null; return false; };
   if (!glyph || glyph.index === 0) return blank();
   const o = pathToOutline(glyph.getPath(0, 0, 1000));
@@ -9417,8 +9489,11 @@ async function applyFontImport(file, font, bytes, opts) {
     if (opts.outlines) {
       try {
         const os2 = font.tables && font.tables.os2, head = font.tables && font.tables.head;
-        project.font.style = ((os2 && (((os2.fsSelection || 0) & 0x20) || (os2.usWeightClass || 0) >= 600))
-                           || (head && ((head.macStyle || 0) & 0x01))) ? 'bold' : 'regular';
+        const srcBold = !!((os2 && (((os2.fsSelection || 0) & 0x20) || (os2.usWeightClass || 0) >= 600)) || (head && ((head.macStyle || 0) & 0x01)));
+        // …and one flagged italic (fsSelection bit 0, macStyle bit 1, or a declared italic angle) its Italic.
+        const srcItalic = !!((os2 && ((os2.fsSelection || 0) & 0x01)) || (head && ((head.macStyle || 0) & 0x02)) || importFontLean(font));
+        project.font.style = fontStyleMake(srcBold, srcItalic);
+        delete project.font.italicLean;   // the angle now comes from the imported letters' own records
       } catch (e) {}
     }
     // Vertical metrics: the source font's own nominal line box + line gap, scaled to 1000 UPM, so the
@@ -9545,8 +9620,8 @@ async function applyFontImport(file, font, bytes, opts) {
     if (nForms) msg += ' ' + pl('fontmaker.status.import_loaded_forms', nForms);
     if (metricsImported) msg += ' ' + I18n.t('fontmaker.status.import_metrics');
     if (nKern) msg += ' ' + pl('fontmaker.status.import_kerning', nKern);
-    if (opts.outlines && project.font.style === 'bold') msg += ' ' + I18n.t('fontmaker.status.style_bold_detected');
-    if (opts.outlines && n && project.font.style !== 'bold' && !opts.boldAfter) msg += ' ' + I18n.t('fontmaker.status.boldgen_hint');
+    if (opts.outlines && fontStyleOf(project.font.style) !== 'regular') msg += ' ' + I18n.t('fontmaker.status.style_detected', { style: I18n.t('fontmaker.panels.style_' + fontStyleOf(project.font.style)) });
+    if (opts.outlines && n && !fontIsBold() && !opts.boldAfter) msg += ' ' + I18n.t('fontmaker.status.boldgen_hint');
     status(msg);
     markDirty();   // applyFontImport mutates project directly (a bulk import is a deliberate udDo exception) and used to leave _projectDirty false, so nothing scheduled an autosave
     if (opts.boldAfter && opts.outlines && n) boldGenOpen(true);   // the no-Hebrew early return above bypasses this
@@ -17032,7 +17107,7 @@ function boldGenApply() {
     if (markCps.some(m => m[0] === 'nikkud')) project.font.nikkud.mode = 'custom';
     if (markCps.some(m => m[0] === 'trop')) project.font.trop.mode = 'custom';
   });
-  if (S > 0) { project.font.style = 'bold'; syncMetaToForm(); }   // meta field — not undo-covered, like all meta edits
+  if (S > 0) { project.font.style = fontStyleMake(true, fontIsItalic()); syncMetaToForm(); }   // meta field — not undo-covered, like all meta edits (an Italic made bolder is the Bold Italic)
   if (workMode === 'nodes') { nodeModel = null; nodeSel.clear(); }
   boldGenClose();
   renderGrids(); renderStage(); renderControls();
@@ -20262,10 +20337,43 @@ function fontSafeBase(fam) {
     .slice(0, 55);                           // room for '-Regular' (or the shorter '-Bold') under the 63-char nameID-6 cap
   return base || 'MyHebrewFont';
 }
-function fontIsBold() { return !!(project && project.font && project.font.style === 'bold'); }
-/* Filename/PostScript stem for downloads: family base + '-Bold' for the bold style, so a
-   Regular and a Bold of the same family never overwrite each other's files. */
-function fontFileStem() { return fontSafeBase(project.font.familyName) + (fontIsBold() ? '-Bold' : ''); }
+/* ── Font style: which member of the family this project exports as. ONE table, and every test,
+   name and file suffix goes through it — a style compared by hand somewhere would export as Regular
+   there (its files and its My Fonts / Recent / account names would then replace the Regular's).
+   name = nameID 2, exactly what Windows and macOS group four files into one family by; sfx = what
+   follows the family in a full name and in every stored name; file = what follows it in a file or
+   PostScript name; map = the UFO's styleMapStyleName. These are font-file words, never translated. */
+const FONT_STYLES = {   // i18n-ignore — style names a font file carries
+  regular:    { name: 'Regular',     bold: false, italic: false, sfx: '',             file: '',            map: 'regular' },
+  bold:       { name: 'Bold',        bold: true,  italic: false, sfx: ' Bold',        file: '-Bold',       map: 'bold' },
+  italic:     { name: 'Italic',      bold: false, italic: true,  sfx: ' Italic',      file: '-Italic',     map: 'italic' },
+  bolditalic: { name: 'Bold Italic', bold: true,  italic: true,  sfx: ' Bold Italic', file: '-BoldItalic', map: 'bold italic' }
+};
+function fontStyleOf(v) { return Object.prototype.hasOwnProperty.call(FONT_STYLES, v) ? v : 'regular'; }   // junk / absent → regular
+function fontStyleInfo(v) { return FONT_STYLES[fontStyleOf(v)]; }
+function fontStyleMake(bold, italic) { return bold ? (italic ? 'bolditalic' : 'bold') : (italic ? 'italic' : 'regular'); }
+function fontStyle() { return fontStyleInfo(project && project.font && project.font.style); }
+function fontIsBold() { return fontStyle().bold; }
+function fontIsItalic() { return fontStyle().italic; }
+/* Filename stem for downloads: family base + the style's suffix, so the Regular, Bold, Italic and
+   Bold Italic of one family never overwrite each other's files. */
+function fontFileStem() { return fontSafeBase(project.font.familyName) + fontStyle().file; }
+/* The lean the exported file declares, in this app's convention: degrees, + = leans right. Only an
+   italic style declares one. project.font.italicLean is the teacher's own number (Font Details);
+   absent, it follows the letters' records — the most common lean among the drawn letters. */
+function letterSlant(l) { const v = l ? +l.slant : 0; return Number.isFinite(v) ? v : 0; }
+function slantTan(deg) { return Math.tan((+deg || 0) * Math.PI / 180); }
+function slantDegOf(t) { const d = Math.round(Math.atan(t) * 1800 / Math.PI) / 10; return d === 0 ? 0 : d; }   // rounded to 0.1°, so "the most common lean" never splits on float noise
+function slantCompose(a, b) { return slantDegOf(slantTan(a) + slantTan(b)); }   // two shears in a row add their tangents, not their angles
+function fontSlantInfo() {   // → { lean, n (drawn letters), differ (how many do not have that lean) }
+  const tally = new Map(); let n = 0;
+  ((project && project.letters) || []).forEach(l => { if (!(l.contours && l.contours.length)) return; n++; const v = letterSlant(l); tally.set(v, (tally.get(v) || 0) + 1); });
+  let lean = 0, best = 0;
+  tally.forEach((c, v) => { if (c > best || (c === best && Math.abs(v) > Math.abs(lean))) { best = c; lean = v; } });
+  return { lean, n, differ: n - best };
+}
+function fontOwnLean() { const v = project && project.font ? project.font.italicLean : null; return (typeof v === 'number' && Number.isFinite(v)) ? Math.max(-60, Math.min(60, v)) : null; }
+function fontItalicLean() { if (!fontIsItalic()) return 0; const own = fontOwnLean(); return own != null ? own : fontSlantInfo().lean; }
 
 /* Build the compact spec handed to Python. */
 /* What of the Samaritan mark family actually ships — the ONLY predicate the spec pass, the FEA, GDEF, the
@@ -20678,17 +20786,18 @@ function buildFontSpec() {
   // FEA
   const fea = buildFEA(baseGlyphNames, built, nikOn, tropOn, builtPerLetter, builtWide, builtShinDagesh, builtYiddishPasekh, builtWideGlyphItems, builtMetegForms, builtSmr);
 
-  // name table — nameID 1 stays the bare family for both styles (that's the RIBBI link);
-  // only nameID 2/3/4/6 carry the Regular/Bold distinction.
+  // name table — nameID 1 stays the bare family for every style (that's the RIBBI link);
+  // only nameID 2/3/4/6 carry the Regular / Bold / Italic / Bold Italic distinction.
   const fam = fnt.familyName || 'My Hebrew Hand';
-  const bold = fnt.style === 'bold';
-  const styleName = bold ? 'Bold' : 'Regular';
+  const st = fontStyleInfo(fnt.style), bold = st.bold;
+  const styleName = st.name, psStyle = st.file ? st.file.slice(1) : 'Regular';   // nameID 6 has no space: Family-BoldItalic
+  const lean = fontItalicLean();   // 0 unless the style is an italic one
   const reserved = fnt.reservedFontName || fam;
   const lic = LICENSES[fnt.license] || LICENSES.ofl;   // 'unset' has a row of its own, so it never reads as OFL
   const names = {
     familyName: fam, styleName: styleName,
-    uniqueFontIdentifier: fam + (bold ? ' Bold' : '') + '-' + fnt.version,
-    fullName: fam + (bold ? ' Bold' : ''), version: 'Version ' + fnt.version, psName: fontSafeBase(fam) + '-' + styleName,
+    uniqueFontIdentifier: fam + st.sfx + '-' + fnt.version,
+    fullName: fam + st.sfx, version: 'Version ' + fnt.version, psName: fontSafeBase(fam).slice(0, 62 - psStyle.length) + '-' + psStyle,   // ≤ 63 in all: only a 53+ character family meets the trim, and only as Bold Italic
     copyright: 'Copyright (c) ' + new Date().getFullYear() + ' ' + ((fnt.author||'').trim() || fam),
     manufacturer: 'IvritSuite Hebrew Font Maker',        // nameID 8  — attribution in the standard field
     designer: 'Made with IvritSuite Hebrew Font Maker',  // nameID 9
@@ -20734,6 +20843,10 @@ function buildFontSpec() {
   const xH   = _inkTop('0078', '006F', '0445', '043E');   // x, o, then Cyrillic х, о
   const spec = {
     unitsPerEm: UPM, glyphOrder, glyphs, cmap, fea, names, bold: bold,
+    // An italic style: the flag, the angle the file declares (OpenType counts counter-clockwise, so a
+    // right lean is NEGATIVE) and the text caret's slope to match. Absent for Regular and Bold, whose
+    // files are byte-for-byte what they were.
+    ...(st.italic ? { italic: true, italicAngle: -lean, caretRise: lean ? UPM : 1, caretRun: lean ? Math.round(slantTan(lean) * UPM) : 0 } : {}),
     ascent: aAsc, descent: aDesc, lineGap: fontSpacing().lineSpacing, version: versionFloat,
     winAscent, winDescent,
     baseGlyphNames, markGlyphNames
@@ -21257,11 +21370,12 @@ function buildUfoFontInfo(spec) {
   const major = Math.floor(vf), minor = Math.round((vf - major) * 1000);
   const lic = LICENSES[project.font.license] || LICENSES.ofl;
   const asc = Math.round(spec.ascent), desc = Math.round(spec.descent), gap = Math.round(spec.lineGap || 0);
-  const bold = !!spec.bold;
+  const bold = !!spec.bold, st = fontStyleInfo(fontStyleMake(bold, !!spec.italic));
   const os = project.osFont;   // partner starting-font: mirror buildFontSpec's provenance branch (fontinfo is read independently)
   const fi = {
-    familyName: n.familyName, styleName: bold ? 'Bold' : 'Regular',
-    styleMapFamilyName: n.familyName, styleMapStyleName: bold ? 'bold' : 'regular',
+    familyName: n.familyName, styleName: st.name,
+    styleMapFamilyName: n.familyName, styleMapStyleName: st.map,
+    ...(spec.italic ? { italicAngle: spec.italicAngle || 0, openTypeHheaCaretSlopeRise: spec.caretRise, openTypeHheaCaretSlopeRun: spec.caretRun } : {}),   // omitted, never null, for an upright style
     versionMajor: major, versionMinor: minor, unitsPerEm: spec.unitsPerEm,
     // capHeight and xHeight are the MEASURED ink of the shipped O/H and o/x, matching the TTF's
     // sCapHeight/sxHeight, and neither is invented: a Hebrew-only font has no honest cap height or
@@ -21292,14 +21406,14 @@ function buildUfoFontInfo(spec) {
 }
 /* Paste-ready @font-face for the TTF + WOFF2 zip. `fam` = display family, `file` = the file stem.
    font-family stays the bare family for both styles so a Regular and a Bold block pair up in CSS. */
-function fontFaceCss(fam, file, bold) {
+function fontFaceCss(fam, file, bold, italic) {
   return `/* Paste into your CSS. Keep ${file}.woff2 (and ${file}.ttf) next to this stylesheet. */
 @font-face {
   font-family: ${JSON.stringify(fam)};
   src: url('${file}.woff2') format('woff2'),
        url('${file}.ttf') format('truetype');
   font-weight: ${bold ? 'bold' : 'normal'};
-  font-style: normal;
+  font-style: ${italic ? 'italic' : 'normal'};
 }
 `;
 }
@@ -21385,7 +21499,14 @@ def hfm_build(spec_json):
     # spacing. winAscent/winDescent fall back to the nominal box for older specs.
     _winAsc = int(spec.get("winAscent", spec["ascent"]))
     _winDesc = int(spec.get("winDescent", abs(int(spec["descent"]))))
-    fb.setupHorizontalHeader(ascent=_winAsc, descent=-_winDesc, lineGap=int(spec.get("lineGap", 0)))
+    _it = bool(spec.get("italic"))
+    _bd = bool(spec.get("bold"))
+    _hh = dict(ascent=_winAsc, descent=-_winDesc, lineGap=int(spec.get("lineGap", 0)))
+    if _it and int(spec.get("caretRun", 0)):
+        # the text caret leans with the letters (rise / run over the em); upright keeps the 1 / 0 default
+        _hh["caretSlopeRise"] = int(spec.get("caretRise", upm))
+        _hh["caretSlopeRun"] = int(spec.get("caretRun", 0))
+    fb.setupHorizontalHeader(**_hh)
     fb.setupNameTable(spec["names"])
     fb.setupOS2(sTypoAscender=int(spec["ascent"]), sTypoDescender=int(spec["descent"]),
                 sTypoLineGap=int(spec.get("lineGap", 0)),
@@ -21426,15 +21547,24 @@ def hfm_build(spec_json):
         _os2.recalcUnicodeRanges(fb.font)
     except Exception:
         pass
-    if spec.get("bold"):
-        # BOLD (bit 5); clear italic (bit 0) + regular (bit 6); keep USE_TYPO_METRICS (bit 7).
-        _os2.fsSelection = (_os2.fsSelection & ~0x41) | 0x20 | 0x80
+    # fsSelection: ITALIC bit 0, BOLD bit 5, REGULAR bit 6 (set only when neither of the others is),
+    # and USE_TYPO_METRICS bit 7 always, so line height follows the stable sTypo metrics (+ the
+    # Line-spacing control) instead of the enlarged clip box. The three style bits are rebuilt from
+    # scratch: Regular 0xC0, Bold 0xA0, Italic 0x81, Bold Italic 0xA1.
+    _sel = (_os2.fsSelection & ~0x61) | 0x80
+    if _bd:
+        _sel |= 0x20
         fb.font["head"].macStyle |= 0x01   # head.macStyle bit 0 must agree with fsSelection bit 5
+    if _it:
+        _sel |= 0x01
+        fb.font["head"].macStyle |= 0x02   # ... and bit 1 with fsSelection bit 0
+    if not _bd and not _it:
+        _sel |= 0x40
+    _os2.fsSelection = _sel
+    if _it:
+        fb.setupPost(italicAngle=float(spec.get("italicAngle", 0) or 0))   # counter-clockwise positive: a right lean is negative
     else:
-        # REGULAR (bit 6); clear italic/bold; set USE_TYPO_METRICS (bit 7) so line height follows the
-        # stable sTypo metrics (+ the Line-spacing control) instead of the enlarged clip box.
-        _os2.fsSelection = (_os2.fsSelection & ~0x21) | 0x40 | 0x80
-    fb.setupPost()
+        fb.setupPost()
     # Underline, strikeout, sub- and superscript. FontBuilder leaves every one of them at 0, which
     # LibreOffice takes literally: underline and strikethrough were drawn with no thickness at all.
     # These are ufo2ft's own fallbacks -- what the UFO export compiles to, x-height falling back to
@@ -22068,7 +22198,7 @@ function fmSubmitPrefill() {
   const f = project.font;
   const licMap = { cc0:'CC0 (Public Domain)', ofl:'OFL (SIL Open Font License 1.1)', mit:'MIT License', arr:'All Rights Reserved' };
   return {
-    name: ((f.familyName || '').trim() + (f.style === 'bold' ? ' Bold' : '')),
+    name: ((f.familyName || '').trim() + fontStyleInfo(f.style).sfx),
     author: (f.author || '').trim(),
     license: project.osFont ? (project.osFont.licenseName || 'Upstream license (locked)') : (licMap[f.license] || f.license || ''),
     version: (f.version || '').trim(),
@@ -22401,7 +22531,7 @@ async function finishDownload(bytes, gateSkipped, fmt) {   // resolves true only
     const entries = [
       { name: fam + '.ttf',   b64: bytesToB64(bytes) },
       { name: fam + '.woff2', b64: wr.woff2_b64 },
-      { name: fam + '.css',   text: fontFaceCss(project.font.familyName || fam, fam, fontIsBold()) },
+      { name: fam + '.css',   text: fontFaceCss(project.font.familyName || fam, fam, fontIsBold(), fontIsItalic()) },
       { name: 'LICENSE.txt',  text: licenseText() }
     ];
     pyodide.globals.set('hfm_zip_json', JSON.stringify(entries));
@@ -22916,7 +23046,7 @@ async function saveCurrentToMyFonts(bytes) {
   if (!project || coreLetterStats().traced === 0) { status(I18n.t('fontmaker.status.trace_first')); return; }
   if (licenseUnsetGate()) return;   // this builds a font too, without passing exportFont
   // The My Fonts store is keyed by name — a bold save must not evict its Regular sibling.
-  const fam = (project.font.familyName || 'My Hebrew Font').trim() + (fontIsBold() ? ' Bold' : '');
+  const fam = (project.font.familyName || 'My Hebrew Font').trim() + fontStyle().sfx;
   try {
     if (!bytes) { status(I18n.t('fontmaker.status.building_font'), true); bytes = await buildFontBytes(); }
     await saveUserFont(fam, bytes, fam);
@@ -22933,7 +23063,7 @@ function offerSaveToMyFonts(licenseSeparate) {   // post-export success screen (
   const dlFile = dl ? new File([dl.blob], dl.name, {type: dl.blob.type}) : null;
   const canShareFile = !!dlFile && fmCanShareFiles([dlFile]);   // Safari/iOS: the share sheet is the file exit ("Save to Files") where the download is invisible
   const canPick = !!dlFile && typeof window.showSaveFilePicker === 'function';   // Chromium desktop: choose where the file goes
-  const fam = (project.font.familyName || 'My Hebrew Font').trim() + (fontIsBold() ? ' Bold' : '');
+  const fam = (project.font.familyName || 'My Hebrew Font').trim() + fontStyle().sfx;
   const canSave = !!(window.indexedDB && window.FontFace);
   const btns = [{ label: I18n.t('fontmaker.modals.exported_done'), cls: 'ghost' },
                 { label: I18n.t('fontmaker.modals.exported_send_btn'), cls: 'ghost', icon: ICON_SEND_SM, onClick: () => fmSendFont('ivrit') },
@@ -23859,7 +23989,7 @@ async function _generatePreviewPDF() {
       ctx.font = HEB(16); ctx.measureText('שלום');   // warm up the font for canvas
       ctx.textBaseline = 'alphabetic'; let y = 66;
       ctx.fillStyle = '#1a2744'; ctx.font = "27px 'Libre Baskerville', serif";
-      ctx.fillText((project.font.familyName || I18n.t('fontmaker.canvas.my_font')) + (fontIsBold() ? ' Bold' : ''), W/2, y); y += 22;
+      ctx.fillText((project.font.familyName || I18n.t('fontmaker.canvas.my_font')) + fontStyle().sfx, W/2, y); y += 22;
       ctx.fillStyle = '#666'; ctx.font = "12px 'Source Sans 3', sans-serif";
       ctx.fillText(I18n.t('fontmaker.canvas.specimen_subtitle', { version: project.font.version || '1' }), W/2, y); y += 18;
       ctx.strokeStyle = '#1a2744'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(64, y); ctx.lineTo(W-64, y); ctx.stroke(); y += 76;
@@ -23976,7 +24106,7 @@ async function _generatePreviewPDF() {
       const chars = punctSpecimenChars();
       if (chars.length) specimenPage(I18n.t('fontmaker.canvas.section_punct'), chars, { rtl: false, cols: 10, glyphPx: 38 });
     }
-    pdf.save(((project.font.familyName||'font') + (fontIsBold() ? ' Bold' : '')).replace(/\s+/g,'_') + '_specimen.pdf');
+    pdf.save(((project.font.familyName||'font') + fontStyle().sfx).replace(/\s+/g,'_') + '_specimen.pdf');
     status(I18n.t('fontmaker.status.preview_pdf_saved'));
   } catch (e) { console.error(e); status(''); askModal(I18n.t('fontmaker.modals.pdf_error_title'), '<span class="warn">'+(e.message||e)+'</span>', [{label:I18n.t('fontmaker.modals.ok')}]); }
 }
@@ -24214,7 +24344,7 @@ async function saveToBrowser() {
    project's identity is its derived family name (see pushRecentProject), so a same-named copy would
    silently evict the original. Switching is done through the shared applyProjectData load path. ── */
 function fmDerivedProjectName(familyName, reservedFontName, style) {   // mirrors pushRecentProject's naming
-  const base = familyName || 'Untitled', fam = base + (style === 'bold' ? ' Bold' : '');
+  const base = familyName || 'Untitled', fam = base + fontStyleInfo(style).sfx;
   const res = reservedFontName || '';
   return (res && res !== base) ? `${fam} - ${res}` : fam;   // a fresh project seeds reservedFontName = familyName — never show "X - X"
 }
@@ -24736,7 +24866,7 @@ function legacyRecentList() {
 // A project's Recent identity is its derived name (see fmDerivedProjectName); the style is part of it, so a Bold
 // project never replaces its Regular sibling. `legacy` is the old doubled "X - X" form a row may still carry.
 function recentNameOf(p) {
-  const base = (p.font && p.font.familyName) || 'Untitled', fam = base + ((p.font && p.font.style) === 'bold' ? ' Bold' : '');
+  const base = (p.font && p.font.familyName) || 'Untitled', fam = base + fontStyleInfo(p.font && p.font.style).sfx;
   const res = (p.font && p.font.reservedFontName) || '';
   return { name: (res && res !== base) ? `${fam} - ${res}` : fam, legacy: res ? `${fam} - ${res}` : null };
 }
@@ -25408,7 +25538,8 @@ function migrateProject(data) {
     } else if (data.font.license === 'os-passthrough') {
       data.font.license = 'ofl';   // orphaned lock key with no provenance — heal to the safest normal default
     }
-    data.font.style = data.font.style === 'bold' ? 'bold' : 'regular';   // Regular/Bold family style — backfills old saves and coerces junk
+    data.font.style = fontStyleOf(data.font.style);   // the family member this project exports as — backfills old saves and coerces junk to Regular
+    if (data.font.italicLean != null) { const _l = +data.font.italicLean; if (Number.isFinite(_l) && Math.abs(_l) <= 60) data.font.italicLean = Math.round(_l * 10) / 10; else delete data.font.italicLean; }   // the teacher's own italic angle — a non-finite one would kill the export in the 16.16 pack
     if (!_isObj(data.font.metrics)) data.font.metrics = { baseline:BASELINE, letterTop:LETTER_TOP, lamedAscender:LAMED_TOP, descender:DESCENDER, defaultLSB:DEF_LSB, defaultRSB:DEF_RSB, capHeight:CAP_HEIGHT, xHeight:X_HEIGHT, ascender:ASCENDER };
     else ['baseline','letterTop','lamedAscender','descender','defaultLSB','defaultRSB','capHeight','xHeight','ascender'].forEach((k,i)=>{ const v = data.font.metrics[k]; if (typeof v !== 'number' || !Number.isFinite(v)) data.font.metrics[k]=[BASELINE,LETTER_TOP,LAMED_TOP,DESCENDER,DEF_LSB,DEF_RSB,CAP_HEIGHT,X_HEIGHT,ASCENDER][i]; });   // a line box is numbers or the default — a string here reaches arithmetic. The three cased-script lines (v5.54) included: effMetrics passes anything non-null through, so a hand-edited capHeight of "tall" reached fy() as NaN and blanked the stage
     { const _m = data.font.metrics, _ok = (v, lo, hi) => Number.isFinite(v) && v >= lo && v <= hi;   // imported line box: an .hfm / autosave blob is untrusted, and a bad value here collapses or explodes every line
@@ -25673,7 +25804,7 @@ function wizardCreate(){
   const name = document.getElementById('wizName').value.trim();
   const author = document.getElementById('wizAuthor').value.trim();
   const license = document.getElementById('wizLicense').value;
-  const style = document.getElementById('wizStyleBold').checked ? 'bold' : 'regular';
+  const style = fontStyleOf((document.querySelector('input[name="wizStyle"]:checked') || {}).value);
   const nikkudOn = document.getElementById('wizNikkud').checked;
   const tropOn = document.getElementById('wizTrop').checked;
   const eng = document.getElementById('wizEnglish').checked;
