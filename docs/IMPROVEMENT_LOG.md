@@ -392,8 +392,6 @@ _(none)_
 
 ## Done
 
-- [x] 2026-11-24 | (pending) | Hebrew_Font_Maker.html, locales, sw.js, docs/reference/font-maker.md, CLAUDE.md | (outside the loop; Font Maker v6.0) **SVG upload, sheet crop and auto-split undo in full** (`withSource` + `withDraw`; the photo, pins, tick and drawing come back), **hidden layers no longer import, stroke-only shapes are skipped and counted** (one reading for every SVG route) | headless: 17 / 17 (the tree before: 8 / 17); paste suites 194 / 194 unchanged; parser output differs from the first baseline by exactly the 3 intended shapes
-
 - [x] 2026-11-24 | (S683 close-out) | branch/deploy note | **S683 = M on `flash_cards.html`: FOUND 1 + a gate 3 (answered), both FIXED; 4 P4; + the S678 P4.** Draft PR #427, `sw.js` v1551 → v1555; nothing live.
 
 - [x] 2026-11-24 | `5353f49d` | tefillah_trainer.html, sw.js | (S683; S678 queue; `pinned-english-without-lang`) **Koren's Hebrew catchwords are marked as Hebrew** (`escEn()`) | 18 / 18 (before 0); pixel-identical; smoke-tefillah 89 / 89

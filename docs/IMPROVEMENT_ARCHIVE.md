@@ -99350,3 +99350,11 @@ _(prior)_ **Next session (S683):** **Branch `claude/zen-goldberg-1lov9k` (S676�
 ### from Done
 
 - [x] 2026-11-24 | `b936867d` | Hebrew_Font_Maker.html, locales, sw.js, docs/reference/font-maker.md, CLAUDE.md | (outside the loop; Font Maker v6.0, phase 1) **Paste SVG artwork into a letter** (Ctrl/⌘+V, canvas drop, *Paste SVG code…*; one dialog, one undo step) **and every SVG import sanitized before it is mounted** (`svgSanitize`; a hostile file ran 2 inline handlers before, 0 after) | headless: 108 + 86 checks (EN/HE, light/dark, 1280/800/390), old vs new parser identical on 9 files, TTF export + HarfBuzz shaping identical to an upload-built font
+
+
+<!-- archived by compact-ledger at the S684 boundary, 2026-11-24 -->
+## Compaction (S684, 2026-11-24) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-11-24 | `ac80e9d0` | Hebrew_Font_Maker.html, locales, sw.js, docs/reference/font-maker.md, CLAUDE.md | (outside the loop; Font Maker v6.0) **SVG upload, sheet crop and auto-split undo in full** (`withSource` + `withDraw`; the photo, pins, tick and drawing come back), **hidden layers no longer import, stroke-only shapes are skipped and counted** (one reading for every SVG route) | headless: 17 / 17 (the tree before: 8 / 17); paste suites 194 / 194 unchanged; parser output differs from the first baseline by exactly the 3 intended shapes
