@@ -5181,7 +5181,7 @@ const HELP_CONTENT = {
     <div class="help-tip">💛 And a very special thank you to my wife, <strong>Emily</strong>, for letting me endlessly rant about kerning, Bézier curves, and software licenses.</div>
     <h4>Changelog</h4>
     <ul>
-      <li><strong>v6.0</strong> &mdash; <strong>Paste artwork straight into a letter.</strong> Copy a shape in Illustrator, Inkscape, Affinity, Figma or another drawing app, open a letter here and press <span class="ui">Ctrl+V</span> (<span class="ui">&#8984;V</span> on a Mac): the shape becomes that letter&rsquo;s outline, ready for <span class="ui">Edit points</span>. You no longer have to switch on SVG uploading first. You can also drop an .svg file onto the canvas, or use the new <span class="ui">Paste SVG code&hellip;</span> button. A small window asks how to size the artwork &mdash; to the letter&rsquo;s height, down to the descender line for &#1511; and the final letters with a tail, to the x-height for Latin letters, or at its original size &mdash; and, when the letter already has an outline, whether to replace it or add to it, so a letter can be built from pieces. One <span class="ui">Ctrl+Z</span> undoes the whole paste. Only filled shapes become outlines; the window tells you how many stroke-only shapes it left out. And every SVG the Font Maker opens, uploaded files and sheets included, is now reduced to plain shapes before the page touches it, so a file from someone else cannot run anything. <span style="color:var(--muted);">(November 2026)</span></li>
+      <li><strong>v6.0</strong> &mdash; <strong>Paste artwork straight into a letter.</strong> Copy a shape in Illustrator, Inkscape, Affinity, Figma or another drawing app, open a letter here and press <span class="ui">Ctrl+V</span> (<span class="ui">&#8984;V</span> on a Mac): the shape becomes that letter&rsquo;s outline, ready for <span class="ui">Edit points</span>. You no longer have to switch on SVG uploading first. You can also drop an .svg file onto the canvas, or use the new <span class="ui">Paste SVG code&hellip;</span> button. A small window asks how to size the artwork &mdash; to the letter&rsquo;s height, down to the descender line for &#1511; and the final letters with a tail, to the x-height for Latin letters, or at its original size &mdash; and, when the letter already has an outline, whether to replace it or add to it, so a letter can be built from pieces. One <span class="ui">Ctrl+Z</span> undoes the whole paste. Only filled shapes become outlines; the window tells you how many stroke-only shapes it left out. <strong>SVG uploads got the same care.</strong> Undoing an SVG upload, a letter boxed on an SVG sheet or an auto-split now brings back everything that was there before, the letter&rsquo;s photo included (it used to bring back only the outline). Shapes on a hidden layer are no longer imported, and a shape that has only a stroke is left out rather than filled in solid &mdash; the message tells you how many. And every SVG the Font Maker opens, uploaded files and sheets included, is now reduced to plain shapes before the page touches it, so a file from someone else cannot run anything. <span style="color:var(--muted);">(November 2026)</span></li>
       <li><strong>v5.60</strong> &mdash; <strong>A new look for the top and bottom bars.</strong> The strip under the workspace is navy now, like the footer on every IvritSuite page, and it is still one slim row. On a wide screen, thin gold lines run through the header in the space between the title and the buttons. Nothing about making a font has changed. <span style="color:var(--muted);">(November 2026)</span></li>
       <li><strong>v5.59</strong> &mdash; <strong>Sheet imports keep every letter&rsquo;s own size, and Trace all does the tracing for you.</strong> When <span class="ui">Auto-detect letters</span> cuts a photographed alphabet sheet into letters, every letter used to be stretched to the full guide height on its own &mdash; so a small yod came out as tall as an alef, and the final letters lost their tails. The sheet now gets one scale for all of its letters, so each keeps the size you drew it at (a new <span class="ui">Sizing</span> choice in the review dialog brings back the old fit-each-letter behaviour, and a letter you box by hand on that sheet afterwards is sized the same way). Fit-each-letter itself now gives a final letter its tail below the baseline instead of squeezing it in above. And under each letter grid a new <span class="ui">Trace all</span> button traces every letter that has a photo but no outline yet, in one step &mdash; one Ctrl+Z undoes them all, and letters you already traced are left alone. <span style="color:var(--muted);">(October 2026)</span></li>
       <li><strong>v5.58</strong> &mdash; <strong>Recent projects can no longer disappear.</strong> Projects you save in this browser now live in the Font Maker's own project storage instead of the small settings space, so the list has no limit of six: nothing leaves <span class="ui">Recent</span> unless you remove it with its trash button. If a save to this browser ever does not fit, the Font Maker says so instead of quietly dropping an older project to make room. Your existing Recent projects move over by themselves the first time you open this version.</li>
@@ -6957,11 +6957,11 @@ async function uploadMarkSheet(cat, file) {
   }
   const url = await readFileAsDataUrl(file);
   project.font[cat].combinedImage.dataUrl = url;
-  if (svgUploadOn()) cacheSvgSheet(url, svgText);
+  const ps = svgUploadOn() ? cacheSvgSheet(url, svgText) : null;
   await loadImg(url);
   renderMarkPanel(cat);
   if (curKind === cat) setWorkMode('align');
-  status(I18n.t('fontmaker.status.mark_sheet_loaded', {label: MARK_FAMILY[cat] ? I18n.t(MARK_FAMILY[cat].labelKey) : cat === 'nikkud' ? 'Nikkud' : 'Trop'}));
+  status(I18n.t('fontmaker.status.mark_sheet_loaded', {label: MARK_FAMILY[cat] ? I18n.t(MARK_FAMILY[cat].labelKey) : cat === 'nikkud' ? 'Nikkud' : 'Trop'}) + (ps && ps.skipped ? ' ' + svgSkippedNote(ps.skipped) : ''));
 }
 
 /* ════════ Custom glyphs (Advanced → "Add custom glyphs") ════════
@@ -7896,6 +7896,7 @@ async function uploadCombined(files) {
   const list = files == null ? [] : (files.length !== undefined ? Array.from(files) : [files]);
   if (!list.length) return;
   const svg = svgUploadOn();
+  let skipped = 0;                                           // stroke-only shapes the SVG sheets left out
   for (const file of list) {
     try {
       let svgText = null;
@@ -7905,7 +7906,7 @@ async function uploadCombined(files) {
       }
       const url = await readFileAsDataUrl(file);
       await loadImg(url);
-      if (svg) cacheSvgSheet(url, svgText);                  // parse once; runtime-only cache (keyed by dataUrl)
+      if (svg) { const ps = cacheSvgSheet(url, svgText); if (ps && ps.skipped) skipped += ps.skipped; }   // parse once; runtime-only cache (keyed by dataUrl)
       project.combinedSheets.push({
         id: 's_' + Date.now().toString(36) + Math.random().toString(36).slice(2,6),
         name: file.name || ('Sheet ' + (project.combinedSheets.length + 1)),
@@ -7917,8 +7918,9 @@ async function uploadCombined(files) {
   project.inputMode = 'combined'; project.letters.forEach(l => { if (!(l.source && l.source.kind === 'svg')) l.source.kind = 'combined'; });
   syncMetaToForm(); setWorkMode('align'); renderLetterGrid(); renderStage(); renderControls();
   if (svg) {
-    const n = autoSplitCombinedSvg();   // auto-assign any named elements; sets its own status
-    if (!n) status(I18n.t('fontmaker.status.svg_sheet_loaded'));
+    const note = svgSkippedNote(skipped);
+    const n = autoSplitCombinedSvg(note);   // auto-assign any named elements; sets its own status
+    if (!n) status(I18n.t('fontmaker.status.svg_sheet_loaded') + (note ? ' ' + note : ''));
     return;
   }
   status(list.length > 1 ? I18n.t('fontmaker.status.sheets_added', {count: list.length})
@@ -9486,7 +9488,8 @@ const SVG_BOX_ATTRS = ['viewBox', 'preserveAspectRatio', 'x', 'y', 'width', 'hei
 const SVG_GROUP_TAGS = { svg: 1, g: 1, a: 1, switch: 1 };                                 // walked; <a> and <switch> are rebuilt as <g>
 const SVG_STYLE_PROPS = ['display', 'visibility', 'fill', 'stroke', 'fill-opacity'];
 const SVG_CSS_XFORM = ['transform', 'transform-origin', 'transform-box'];
-const SVG_PASTE_MAX_CHARS = 2000000, SVG_PASTE_MAX_SHAPES = 3000, SVG_PASTE_MAX_SUBPATHS = 4000;   // pasted artwork only — a cap must never refuse a sheet a saved project already holds
+const SVG_PASTE_MAX_CHARS = 2000000, SVG_PASTE_MAX_SHAPES = 3000, SVG_PASTE_MAX_SUBPATHS = 4000;   // pasted artwork only (opts.paste) — a cap must never refuse a sheet a saved project already holds
+const SVG_IMPORT_FLAGS = ['engSource', 'cyrSource', 'phnSource', 'aramSource', 'smrSource'];   // "this letter came with the imported font", one per glyph set
 function svgInlineDecls(el) {                // style="a:b; c:d" → {a:'b', c:'d'}, by hand: an element of an inert document may have no .style at all
   const out = {}, s = el.getAttribute('style');
   if (s) s.split(';').forEach(part => { const i = part.indexOf(':'); if (i > 0) { const k = part.slice(0, i).trim().toLowerCase(), v = part.slice(i + 1).replace(/!\s*important/i, '').trim(); if (k && v) out[k] = v; } });
@@ -9512,7 +9515,7 @@ function svgOwnStyle(el, rules) {            // the properties this element sets
   SVG_STYLE_PROPS.forEach(p => { if (o[p] && /^inherit$/i.test(o[p])) delete o[p]; });
   return o;
 }
-function svgSanitize(root, opts) {           // inert parsed root → { svg: a geometry-only tree safe to mount, skipped: stroke-only shapes left out (opts.paste) }
+function svgSanitize(root, opts) {           // inert parsed root → { svg: a geometry-only tree safe to mount, skipped: how many stroke-only shapes were left out }
   const o = opts || {}, rules = svgStyleRules(root), stat = { shapes: 0, subpaths: 0, skipped: 0 };
   const copy = (src, out, names) => names.forEach(n => { const v = src.getAttribute(n); if (v != null) out.setAttribute(n, v); });
   const carry = (src, out) => {               // what every kept element takes along: its transform (attribute and CSS) and its names, as data
@@ -9527,10 +9530,7 @@ function svgSanitize(root, opts) {           // inert parsed root → { svg: a g
     const tag = src.localName;
     if (!SVG_GROUP_TAGS[tag] && !SVG_SHAPE_ATTRS[tag]) return;          // everything else, with its whole subtree, is not rebuilt
     const own = svgOwnStyle(src, rules);
-    // display:none hides a shape, and for pasted artwork the whole subtree of a hidden group (a hidden
-    // layer). File and sheet uploads keep what they always did — only a shape's OWN display counted,
-    // so the contents of a hidden group still import — because this pass must not change what a sheet yields.
-    if (/^none$/i.test(own.display || '') && (o.paste || !SVG_GROUP_TAGS[tag])) return;
+    if (/^none$/i.test(own.display || '')) return;                      // display:none hides the whole subtree (a hidden layer); the rest inherit
     const st = { visibility: own.visibility || inh.visibility, fill: own.fill || inh.fill, stroke: own.stroke || inh.stroke, 'fill-opacity': own['fill-opacity'] || inh['fill-opacity'] };
     if (SVG_GROUP_TAGS[tag]) {
       const out = document.createElementNS(SVG_NS, tag === 'svg' ? 'svg' : 'g');
@@ -9546,9 +9546,9 @@ function svgSanitize(root, opts) {           // inert parsed root → { svg: a g
       return out;
     }
     if (/^(hidden|collapse)$/i.test(st.visibility || '')) return;
-    if (o.paste) {
-      const unfilled = tag === 'line' || /^none$/i.test(st.fill || '') || parseFloat(st['fill-opacity']) === 0;   // a <line> encloses nothing whatever its fill says
-      if (unfilled) { if (st.stroke && !/^none$/i.test(st.stroke)) stat.skipped++; return; }   // a stroke with nothing inside it is not an outline; an unpainted shape is nothing at all
+    const unfilled = tag === 'line' || /^none$/i.test(st.fill || '') || parseFloat(st['fill-opacity']) === 0;   // a <line> encloses nothing whatever its fill says
+    if (unfilled) { if (st.stroke && !/^none$/i.test(st.stroke)) stat.skipped++; return; }   // a stroke with nothing inside it is not an outline; an unpainted shape is nothing at all
+    if (o.paste) {                                                      // the caps are for pasted artwork only — they must never refuse a sheet a saved project already holds
       stat.shapes++;
       stat.subpaths += tag === 'path' ? Math.max(1, ((src.getAttribute('d') || '').match(/[Mm]/g) || []).length) : 1;
       if (stat.shapes > SVG_PASTE_MAX_SHAPES || stat.subpaths > SVG_PASTE_MAX_SUBPATHS) throw new Error(I18n.t('fontmaker.modals.svg_too_complex'));
@@ -9663,8 +9663,14 @@ function assignWindingByNesting(rings) {
 }
 /* Fit y-down user-unit loops into the font's y-up em: scale so content height fills [span.bottom, span.top],
    seat the bottom on the baseline (descenders dip below), left at lsb. Returns [{winding,points}] or null. */
+function svgInkLoops(loops) {                // the loops that enclose something. A path that encloses nothing (a straight open line) adds no ink, and left in it would stretch the box every fit measures
+  const box = loopsBBox(loops), floor = 1e-7 * Math.max(1e-9, box.w * box.h);
+  return loops.filter(L => Math.abs(signedArea(L)) > floor);
+}
+function svgSkippedNote(n) { return n ? I18n.t(n === 1 ? 'fontmaker.modals.svgpaste_skipped.one' : 'fontmaker.modals.svgpaste_skipped.other', { count: n }) : ''; }   // "N stroke-only shapes were left out…", or ''
 function svgLoopsToContours(loops, opts) {
   const o = opts || {};
+  loops = svgInkLoops(loops);
   const bb = loopsBBox(loops);
   if (!isFinite(bb.x) || bb.h <= 0) return null;
   const span = o.span || { bottom: 0, top: effMetrics().letterTop };
@@ -9690,13 +9696,23 @@ function svgSpanFor(cp, kind) {             // vertical target band for the fit,
   const ref = b.cased ? em.capHeight : em.letterTop;
   return { bottom: b.desc ? -Math.round(ref * 0.30) : 0, top: b.top };
 }
-function assignSvgContours(it, kind, contours, sheetId, cropRect) {   // commit prebuilt contours onto an item (runs INSIDE udDo)
+/* Commit prebuilt contours onto an item. Runs INSIDE udDo, and that udDo's item scope carries
+   withSource (this replaces it.source, which a plain scope leaves out of the snapshot — the undo would
+   bring the old outline back and leave the letter marked as SVG, its photo gone) and withDraw (a
+   drawing is cleared here). For a letter, everything that described the outline that is gone goes
+   with it; one Ctrl+Z brings all of it back. */
+function assignSvgContours(it, kind, contours, sheetId, cropRect) {
   it.source = { kind: 'svg', dataUrl: null, cropRect: cropRect || null, sheetId: sheetId || null };
   it.contours = contours; it.curves = null; it.transform = [1, 0, 0, 1, 0, 0];
   if (kind === 'letter') {
     const em = effMetrics(); let mx = 0; contours.forEach(c => c.points.forEach(p => { if (p[0] > mx) mx = p[0]; }));
     it.advance = Math.round(mx + em.defaultRSB);
+    it.lsb = null; it.rsb = null;                                 // a margin set by hand measured the old ink
+    delete it.markAnchors;                                        // per-mark pins (the font import drops them with the outline too)
     it.anchors = null; seedAnchors(it);
+    it.placementSaved = false; it.placementInherited = false;     // the "placement confirmed" tick
+    it.draw = null; delete it.drawSig;                            // a drawing — or the Trace step would re-trace its strokes over the new outline
+    SVG_IMPORT_FLAGS.forEach(k => { if (it[k] === 'import') delete it[k]; });   // or a later font import with "keep mine" would overwrite it
   } else { it.advance = 0; it.anchors = null; it.designMode = 'upload'; }
   it.handEdited = false;
   delete it.attachAnchor;   // an SVG upload replaces the shape — any imported attach point no longer matches it
@@ -9706,14 +9722,14 @@ async function uploadSvgForCurrent(file) {  // single-letter / per-mark SVG uplo
   try { text = await file.text(); } catch (e) { return askSvgError(I18n.t('fontmaker.modals.svg_read_failed')); }
   if (!isProbablySvg(file, text)) return askSvgError(I18n.t('fontmaker.modals.svg_only_in_svg_mode'));
   const it = curItem(), kind = curKind;
-  let contours;
-  try { contours = svgLoopsToContours(parseSvgEntries(text).entries.reduce((a, e) => a.concat(e.loops), []), { span: svgSpanFor(it.codepoint, kind) }); }
+  let parsed, contours;
+  try { parsed = parseSvgEntries(text); contours = svgLoopsToContours(parsed.entries.reduce((a, e) => a.concat(e.loops), []), { span: svgSpanFor(it.codepoint, kind) }); }
   catch (e) { return askSvgError(e.message || String(e)); }
-  if (!contours) return askSvgError(I18n.t('fontmaker.modals.svg_no_paths'));
-  udDo([itemScope()], 'import SVG — ' + it.name, () => { assignSvgContours(it, kind, contours, null, null); });
+  if (!contours) return askSvgError(I18n.t(parsed.skipped ? 'fontmaker.modals.svgpaste_only_strokes' : 'fontmaker.modals.svg_no_paths'));
+  udDo([Object.assign(itemScope(), { withSource: true, withDraw: true })], 'import SVG — ' + it.name, () => { assignSvgContours(it, kind, contours, null, null); });
   renderGrids(); renderStage(); renderControls();
   if (kind === 'letter') setWorkMode('anchors');   // land on Nikkud, bypassing Align/Trace
-  status(I18n.t('fontmaker.status.imported_svg', {name: gName(it.name)}));
+  status(I18n.t('fontmaker.status.imported_svg', {name: gName(it.name)}) + (parsed.skipped ? ' ' + svgSkippedNote(parsed.skipped) : ''));
 }
 /* Auto-split a single combined SVG by element id / inkscape:label → glyph. */
 function buildSvgNameMap() {
@@ -9735,7 +9751,7 @@ function matchSvgEntryToCp(entry, nameMap) {
   }
   return null;
 }
-function autoSplitCombinedSvg() {
+function autoSplitCombinedSvg(tail) {         // tail: a sentence the caller wants after this function's own toast (the sheet's skipped-strokes note)
   const parsed = combinedSvgParsed();
   if (!parsed) { status(I18n.t('fontmaker.status.load_svg_first')); return 0; }
   const sh = curCombinedSheet(), nameMap = buildSvgNameMap(), byCp = {};
@@ -9751,11 +9767,11 @@ function autoSplitCombinedSvg() {
     if (contours) built.push({ l, cp, contours });
   });
   if (!built.length) { status(I18n.t('fontmaker.status.no_svg_matched')); return 0; }
-  udDo(built.map(b => ({ t: 'item', kind: 'letter', cp: b.cp })), 'auto-split SVG (' + built.length + ')', () => {
+  udDo(built.map(b => ({ t: 'item', kind: 'letter', cp: b.cp, withSource: true, withDraw: true })), 'auto-split SVG (' + built.length + ')', () => {
     built.forEach(b => assignSvgContours(b.l, 'letter', b.contours, sh && sh.id, null));
   });
   renderGrids(); renderStage(); renderControls();
-  status(I18n.t(built.length === 1 ? 'fontmaker.status.autoassigned_svg.one' : 'fontmaker.status.autoassigned_svg.other', {count: built.length}) + (built.length < 27 ? ' ' + I18n.t('fontmaker.status.box_others') : ''));
+  status(I18n.t(built.length === 1 ? 'fontmaker.status.autoassigned_svg.one' : 'fontmaker.status.autoassigned_svg.other', {count: built.length}) + (built.length < 27 ? ' ' + I18n.t('fontmaker.status.box_others') : '') + (tail ? ' ' + tail : ''));
   return built.length;
 }
 /* Marquee fallback: select the parsed subpaths whose bbox center is inside the dragged box → that glyph. */
@@ -9771,25 +9787,23 @@ function finalizeCropSvg(l, parsed, im, rect, csh) {
   const kind = curKind;
   const contours = loops.length ? svgLoopsToContours(loops, { span: svgSpanFor(l.codepoint, kind) }) : null;
   if (!contours) { status(I18n.t('fontmaker.status.no_vector_in_box')); renderStage(); return; }
-  udDo([itemScope()], 'crop SVG — ' + l.name, () => { assignSvgContours(l, kind, contours, csh && csh.id, rect); });
+  udDo([Object.assign(itemScope(), { withSource: true, withDraw: true })], 'crop SVG — ' + l.name, () => { assignSvgContours(l, kind, contours, csh && csh.id, rect); });
   renderGrids(); renderStage(); renderControls();
   if (kind === 'letter') setWorkMode('anchors');
   status(I18n.t('fontmaker.status.vector_selected', {name: gName(l.name)}));
 }
 
 /* ════════ SVG paste — the clipboard, a file dropped on the canvas, and the "Paste SVG code…" box ════════
-   Three ways in, one way through: each ends in svgPasteParse (the sanitizing parser with its paste
-   option on: caps, and stroke-only shapes left out and counted), then ONE dialog (how to size it,
+   Three ways in, one way through: each ends in svgPasteParse (the sanitizing parser, with the caps
+   only pasted artwork gets; stroke-only shapes left out and counted), then ONE dialog (how to size it,
    and Replace or Add when the letter already has an outline), then ONE udDo. None of it looks at
    project.font.svgUpload — that setting only decides what the upload zones accept.
-   Replace is an SVG upload plus what an upload forgets: the source rides in the undo scope, and the
-   things that described the outline that is gone go with it. Add is a point paste: it goes through
-   the node model, so the windings are settled before anyone sees the result. */
+   Replace is an SVG upload (assignSvgContours) with the ink centred in an advance of its own. Add is
+   a point paste: it goes through the node model, so the windings are settled before anyone sees the result. */
 const SVG_POINTS_MARKER = 'ivritsuite-fontmaker:points';   // what Copy (points) leaves on the system clipboard, so an SVG copied EARLIER cannot beat points copied just now
 const SVG_PASTE_FITS = ['height', 'desc', 'xheight', 'keep'];
 const SVG_PASTE_MAX_COORD = 16000;                          // half the font format's ±32767 (glyphRangeError) — room for an advance and for marks around it
 const SVG_PASTE_LIVE_CHARS = 200000;                        // the code box re-reads as you type up to here; past it, when the box loses focus or Insert is pressed
-const SVG_IMPORT_FLAGS = ['engSource', 'cyrSource', 'phnSource', 'aramSource', 'smrSource'];
 let _svgPaste = null;          // the open dialog's state: { cp, code, parsed:{loops,bb,shapes,skipped}|null, err, built }
 let _svgPasteBusy = false;     // a dropped or pasted file is still being read
 let _ptPasteTimer = 0, _ptPasteFiredAt = 0;
@@ -9829,9 +9843,7 @@ function svgPasteParse(text) {               // → { loops, bb, shapes, skipped
     if (!alt) throw e;
     parsed = parseSvgEntries(alt, { paste: true });
   }
-  const all = parsed.entries.reduce((a, en) => a.concat(en.loops), []), box = loopsBBox(all);
-  const loops = all.filter(L => Math.abs(signedArea(L)) > 1e-7 * Math.max(1e-9, box.w * box.h));   // a path that encloses nothing (a straight open line) would stretch the box the fit measures and add no ink
-  const bb = loopsBBox(loops);
+  const loops = svgInkLoops(parsed.entries.reduce((a, en) => a.concat(en.loops), [])), bb = loopsBBox(loops);
   if (!loops.length || !isFinite(bb.x) || !(bb.h > 0) || !(bb.w > 0))
     throw new Error(I18n.t(parsed.skipped ? 'fontmaker.modals.svgpaste_only_strokes' : 'fontmaker.modals.svg_no_paths'));
   return { loops, bb, shapes: parsed.entries.length, skipped: parsed.skipped || 0 };
@@ -9895,7 +9907,7 @@ function svgPasteRefresh() {                 // the dialog's one re-read: build 
   let sum = '';
   if (st.parsed) {
     sum = I18n.t(st.parsed.shapes === 1 ? 'fontmaker.modals.svgpaste_found.one' : 'fontmaker.modals.svgpaste_found.other', { count: st.parsed.shapes });
-    if (st.parsed.skipped) sum += ' ' + I18n.t(st.parsed.skipped === 1 ? 'fontmaker.modals.svgpaste_skipped.one' : 'fontmaker.modals.svgpaste_skipped.other', { count: st.parsed.skipped });
+    if (st.parsed.skipped) sum += ' ' + svgSkippedNote(st.parsed.skipped);
   }
   info.textContent = sum; info.hidden = !sum;
   note.textContent = err; note.hidden = !err;
@@ -9989,14 +10001,8 @@ function svgPasteCommit() {
 }
 function svgPasteReplace(l, built) {          // ONE undo step that brings back the old outline, its photo or drawing, its anchors and its pins
   udDo([{ t: 'item', kind: 'letter', cp: l.codepoint, withSource: true, withDraw: true }], 'paste SVG — ' + l.name, () => {
-    assignSvgContours(l, 'letter', built.contours, null, null);   // source.kind = 'svg', anchors re-seeded from the new outline — as an SVG upload does
+    assignSvgContours(l, 'letter', built.contours, null, null);   // source.kind = 'svg', anchors re-seeded, and everything that described the old outline cleared — exactly as an SVG upload
     l.advance = Math.round(built.inkL + built.inkR);              // the ink's left gap again on its right: centred
-    l.lsb = null; l.rsb = null;
-    // Each of these described the outline that is gone:
-    delete l.markAnchors;                                         // per-mark pins (the font import drops them with the outline too)
-    l.placementSaved = false; l.placementInherited = false;       // the "placement confirmed" tick
-    l.draw = null; delete l.drawSig;                              // a drawing — or the Trace step would re-trace its strokes over the paste
-    SVG_IMPORT_FLAGS.forEach(k => { if (l[k] === 'import') delete l[k]; });   // "this one came with the imported font" — or a later import with "keep mine" would overwrite it
   });
   _rawTrace = null;
   _setWorkMode('align');                      // Width & margins, with the "Imported from SVG" hint and Next: Nikkud. The unguarded form: there is no placement left to offer to save

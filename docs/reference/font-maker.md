@@ -343,7 +343,8 @@ replace a drawing) — `ITEM_SKIP` holds `source`/`savedAnchors`/`draw` out of s
 without the opt-in `udRestore` keeps the *new* image and rolls back only the geometry around it,
 which is a visible half-undo. The cost is that the entry retains a second copy of that item's
 `dataUrl` for as long as it sits on the stack; `draw letter`, `auto-detect letters` and
-`upload image` all pay it deliberately, full combined sheets never do.
+`upload image` all pay it deliberately, and so does every SVG assignment (*SVG import*, below); full
+combined sheets never do — they live in `project.combinedSheets`, not in the item.
 
 ### Photo upload — one letter or a whole pick
 `prepImageForItem(it, file)` does all the async work (file read, decode, `autoThresholdFor`,
@@ -421,11 +422,24 @@ every route in — a file upload, a sheet, auto-split, a sheet re-read when a pr
   adopted, so nothing is fetched; without constructable sheets the classes are simply not read), then
   the inline `style`. `fill`, `stroke` and `visibility` inherit. The old `getComputedStyle` filter on the
   mounted clone is gone: page CSS could hide a shape through it.
-- **`opts.paste`** switches on three things an upload does not get, so a sheet a saved project already
-  holds can never be refused or read differently: the caps (`SVG_PASTE_MAX_*`), a shape whose fill
-  resolves to `none` (or a `line`) being left out and counted as stroke-only, and `display:none` on a
-  group hiding its whole subtree. Uploads keep their old readings: every shape is filled, and only a
-  shape's own `display` counts (the contents of a hidden group still import).
+- **One reading for every route.** A shape whose fill resolves to `none` (or a `line`, which encloses
+  nothing whatever its fill says) is left out and counted in `skipped` — every caller says how many
+  (`svgSkippedNote`), and an SVG with nothing but strokes gets its own plain error. `display:none` on a
+  group hides its whole subtree, so a hidden layer does not import. `svgInkLoops` drops a loop that
+  encloses nothing before any fit measures its box. A sheet is re-parsed when its project loads
+  (`cacheSvgSheet`), so these readings apply to a saved sheet's next crop or auto-split too — letters
+  already assigned keep the contours they have.
+- **`opts.paste`** switches on only the caps (`SVG_PASTE_MAX_*`): a cap must never refuse a sheet a
+  saved project already holds.
+
+**`assignSvgContours` is the one commit** for an upload, a crop, an auto-split and a paste, and the
+`udDo` around it carries `withSource` and `withDraw` on every item scope: it replaces `it.source`,
+which a plain scope leaves out of the snapshot (the undo then brought the outline back and left the
+letter marked as SVG, its photo gone), and it clears a drawing. For a letter it also clears what
+described the outline that is gone: `lsb` / `rsb`, `markAnchors` (pins), `placementSaved` /
+`placementInherited`, `draw` and `drawSig` (the Trace step would otherwise re-trace old strokes over
+the new outline) and a `*Source: 'import'` flag (`SVG_IMPORT_FLAGS` — a later import with "keep mine"
+would otherwise overwrite the letter). Anchors are re-seeded. One Ctrl+Z restores all of it.
 
 **Paste, drop and the code box** (the *SVG paste* block) put artwork into the open letter whatever
 `project.font.svgUpload` says — that setting only decides what the upload zones accept. Three ways in:
@@ -449,14 +463,10 @@ reaches the descender line itself. The choice is remembered per device in `hebre
 validated against the closed set on read. Validation is inline (the `aria-live` note and
 `aria-disabled` on Insert); nothing is ever raised over the dialog.
 
-- **Replace** (`svgPasteReplace`) is `assignSvgContours` plus what an upload forgets. Its scope carries
-  `withSource` and `withDraw`, so one undo restores the photo or drawing too. The advance is the ink
-  plus both default margins with the ink centred, and `lsb` / `rsb` are cleared. Then everything that
-  described the outline that is gone goes with it: `markAnchors` (pins), `placementSaved` /
-  `placementInherited`, `draw` and `drawSig` (the Trace step would otherwise re-trace old strokes over
-  the paste), and a `*Source: 'import'` flag (`SVG_IMPORT_FLAGS` — a later import with "keep mine"
-  would otherwise overwrite the letter). It lands on Align through `_setWorkMode`, where the
-  *Imported from SVG* hint and *Next: Nikkud* are.
+- **Replace** (`svgPasteReplace`) is `assignSvgContours` with one difference: the advance is the ink
+  plus both default margins with the ink centred (an upload seats the ink at the default left margin).
+  It lands on Align through `_setWorkMode`, where the *Imported from SVG* hint and *Next: Nikkud* are;
+  an upload lands on the placement step.
 - **Add** (`svgPasteAdd`) is a union, and goes through the node model like a point paste. It lands in
   Edit points — the one step that always shows the outline itself. Every stage fills nonzero, so the
   union is every contour keeping its own direction; `svgPasteSettle` protects that from
