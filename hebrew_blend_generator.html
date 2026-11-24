@@ -11694,7 +11694,7 @@ let _realWordsFailed = false;   // a load was ATTEMPTED and failed — distinct 
 function ensureRealWords() {
   if (_realWordsPromise) return _realWordsPromise;
   _realWordsFailed = false;
-  _realWordsPromise = fetch('data/hebrew_words.json?v=8')
+  _realWordsPromise = fetch('data/hebrew_words.json?v=9')
     .then(r => r.json())
     .then(data => {
       REAL_WORDS = Object.entries(data).flatMap(([count, words]) =>
