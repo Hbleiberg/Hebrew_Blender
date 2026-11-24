@@ -954,7 +954,10 @@ corner or tangle a noisy outline.
   look-across per leg, edges binned by height — `gxwBins`), so a hairline is not fattened when
   condensing nor eaten when widening; above `GXW_LOCAL_MAX` points the letter's one value is used.
 - *A notch narrower than the stems grew* (the crotch of a Latin n): an edge whose two ends passed each
-  other closes to a point in the middle instead of leaving the outline crossing itself.
+  other closes to a point in the middle instead of leaving the outline crossing itself; and where a
+  ring still crosses itself that did not before, the small loop at the notch's tip is cut back to
+  where its two sides meet (`gxwUnloop`) and that one contour ships as its polygon (a null curve
+  entry). A large loop is a real overlap of two strokes: left as it is and reported by the gap columns.
 - *The result* is translated so the ink's left edge lands exactly on s × its old place, rounded, and
   returned as the spec's `out`; `TA` maps old ink edges → new ink edges (`boldGenLetter`'s rule) and
   `penK` is 1, so a re-saved drawing keeps its stems. A **photo** cannot: such a letter is stamped
