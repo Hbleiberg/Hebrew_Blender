@@ -99133,6 +99133,8 @@ _(prior)_ **Next session (S679):** **Branch `claude/zen-goldberg-1lov9k` (S676�
 
 _(prior)_ **Next session (S680):** **Branch `claude/zen-goldberg-1lov9k` (S676–S679, draft PR #427): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1539**, FM **5.60**, corpus ?v=**8**, the prayer catalog ?v=**9**. ⚑ drift: main=d2d922c sw=v1539 fm=5.60 migration=0014_saves_tool_tefillah_trainer.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest next: M on the Trope Atlas (S584; pointer: M); then H dictionary (S585), C torah (S586), G torah (S589). ⚑ Unaudited (`9e702ae..a402f72`): the class roster, the hub, the footer and cracks, FM 5.60 — unseen by E, K, I, F, B. ⚑ Queue: the Tefillah Trainer's dead `footer .footer-credits` line (one line); S675's Hebrew catchword outside `lang="he"`. ⚑ Awaiting: S662, S653, S652. ⚑ 51 seeds.
 
+_(prior)_ **Next session (S681):** **Branch `claude/zen-goldberg-1lov9k` (S676–S680, draft PR #427): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1543**, FM **5.60**, corpus ?v=**8**, the prayer catalog ?v=**9**. ⚑ drift: main=d2d922c sw=v1543 fm=5.60 migration=0014_saves_tool_tefillah_trainer.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest next: H on the dictionary (S585; pointer: H); then C torah (S586), M flash (S588), G torah (S589). ⚑ Unaudited (`9e702ae..a402f72`): the class roster, the hub, the footer and cracks, FM 5.60 — unseen by E, K, I, F, B (S680 found `a402f72c`'s stray CSS line by the way; its detector now runs every close-out). ⚑ Queue: the atlas's two P4s (the sign table's sideways scroll at 800–1100px, "CC BY-SA" breaking at its hyphen in Hebrew); S675's Hebrew catchword outside `lang="he"`. ⚑ Awaiting: S662, S653, S652. ⚑ 51 seeds.
+
 
 <!-- archived by compact-ledger at the S679 boundary, 2026-11-23 -->
 ## Compaction (S679, 2026-11-23) — moved verbatim from the live ledger
@@ -99234,3 +99236,31 @@ _(prior)_ **Next session (S680):** **Branch `claude/zen-goldberg-1lov9k` (S676�
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 - M aesthetics & visual design (one surface): 2026-11-24 (**S680 — 47th M, `trope_atlas.html` (its 2nd, S584 → S680, 44 commits to the page): 20 views × EN light / EN dark 1280, HE light / HE dark 800 with the real Google Fonts (78 loads, 0 page errors), beside the Trope Tutor's idioms; a suite-wide census of Hebrew text in LTR boxes; every page's style blocks against the rules kept. FOUND 3 + 1 suite P2 by the way, FIXED 4 incl. 1 from the queue; 2 P4 logged. M-next: flash (S588), chrome (S603), dashboard (S610).**)
+
+
+<!-- archived by compact-ledger at the S682 boundary, 2026-11-24 -->
+## Compaction (S682, 2026-11-24) — moved verbatim from the live ledger
+
+### from Awaiting the maintainer (an action or an answer only the maintainer can give; a session that resolves one moves it to Done)
+
+- [ ] P2 (**NEW S681 H — GATE 2, a corpus content call; logged, not asked**) | data/hebrew_words.json, source-data/hebrew_dictionary_4_19_2026.csv | **3,818 of the corpus's 13,081 words have several senses in the source CSV, whose rows run in alphabetical order of their gloss, and the corpus kept each word's first row**: שָׁלוֹם reads "goodbye", בַּיִת "byte", עֵץ "heads (a coin's side)", סוּס "a strong or muscular man; stud, stallion", סֵפֶר "a writing", מוֹרֶה "rebellious", לַיְלָה "adversity", פֶּרַח "apprentice", חַלָּה "a cake", דּוֹד "(A person's) beloved." — on the card, the flash cards' English side and the generator's definitions; English search misses סוס for "horse", עץ for "tree", מורה for "teacher" (40 classroom words: 24 first, 5 absent). The source marks a curated row (Era set) on 1,278 of them; preferring it changes 366 words, mostly for the better but not all (גּוּר "a cub" → a root, אִלֵּם "a mute" → "to bundle"). Proposed: the maintainer picks the rule (the curated row; the first Wiktionary sense, re-exported; or the senses joined), then one corpus build with the `?v=` bump; the converter script is not in the repo (README → step 2). | found S681
+
+### from Done
+
+- [x] 2026-11-24 | `186a7d21` | tefillah_trainer.html, sw.js | (S673 queue; pattern `text-field-under-16px-zooms-on-ios-focus`) **The Manual backup box is 16px under a finger** | by descriptor (SE, 13, Pixel 7, iPad × EN / HE): 0 / 16 fields under 16px (before 1 / 16); desktop sizes unchanged
+
+- [x] 2026-11-23 | (S676 close-out) | branch/deploy note | **S676 = G on `tefillah_trainer.html` (its first): FOUND 3, FIXED 2 + the S675 pills on two pages; 2 logged.** Branch `claude/zen-goldberg-1lov9k` (fresh; #426 merged), `sw.js` v1527 → v1530; nothing live changed.
+
+- [x] 2026-11-23 | `016e91ef` | tefillah_trainer.html, tefillah-trainer.md, sw.js, probe | (S676 G) **On paper the credits never sit alone on the last sheet in Line by line** | census 26 → 10 of 312, none longer; probe 5 / 5 (before 4 / 5)
+
+- [x] 2026-11-23 | `3f3d6211` | tefillah_trainer.html, tefillah-trainer.md, sw.js, probe | (S676 G) **A stored *Include transliteration* and a restored row get the transliteration module** | probe 20 / 20 (before 10 / 20)
+
+### from Per-session log (one line per session)
+
+- 2026-11-24 | **S681** | iters: 5 | tools: hebrew_dictionary ×2, hebrew_blend_generator, flash_cards, trope_atlas, tefillah_trainer, data/hebrew_words.json, README.md, ops.md, sw ×4, probes ×3 | patterns fixed: text-field-under-16px-zooms-on-ios-focus ×1 | pass run: H (hebrew_dictionary, S585 → S681; FOUND 4: 2 FIXED, 1 P2 to the maintainer, 1 P4 logged; + 2 from the queue) | SW: v1543→v1547
+
+- 2026-11-19 | **S661** | iters: 5 | tools: index, contact, resources ×2, sw ×4, probe S661 | patterns fixed: print-media-leak ×1, print-trailing-padding-adds-a-sheet ×2, fixed-surface-missing-from-the-print-hide-list ×1 | pass run: G (chrome, first since S575; FOUND 5, FIXED 4) | SW: v1427→v1431
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- H teacher walkthrough / paper-cuts (one tool): 2026-11-24 (**S681 — `hebrew_dictionary.html` (S585 → S681, 46 commits to the page: the Last Letter row, the gematria badge's list, the proposed list name, the Word Lists window's save): 5 lessons by real input (final-mem nouns → the generator, a gematria activity + Copy link, six hand-picked words → Flash Cards, a root on paper, the School theme) + the student cell (1366×768, 1024×768 in the page's Full Screen); a 40-word English search census. FOUND 4: 2 FIXED, the corpus's senses a P2 to the maintainer, 1 P4 at the cap; + 2 from the queue. H-next: torah (S599), chrome (S606), generator (S613).**)
