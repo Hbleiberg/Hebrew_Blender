@@ -5741,8 +5741,13 @@ fontmaker.node_editor.scale_presets_aria,Scale to a set size,שינוי גודל
 fontmaker.node_editor.scale_w,Width %,רוחב %,input label,
 fontmaker.node_editor.scale_w_aria,Width percentage — 100 is unchanged,אחוז רוחב — 100 ללא שינוי,input aria-label,aria-label only
 fontmaker.node_editor.segment_type,Segment type,סוג מקטע,group aria-label,
+fontmaker.node_editor.slant_apply_title,"Slant by the angle entered, from the baseline","הטה בזווית שהוזנה, מקו הבסיס",button title,
+fontmaker.node_editor.slant_aria,"Slant angle in degrees, 0 to 30","זווית הטיה במעלות, מ־0 עד 30",input aria-label,aria-label only
+fontmaker.node_editor.slant_label,Slant°,הטיה°,input label,
+fontmaker.node_editor.slant_slider_aria,"Slant angle, from the baseline — previews live, commits on release; the lean buttons below choose left or right","זווית הטיה, מקו הבסיס — תצוגה חיה, נקבעת בשחרור; כפתורי הנטייה שלמטה בוחרים שמאלה או ימינה",slider aria-label,aria-label only
+fontmaker.node_editor.slant_title,"How far to lean, in degrees. The letter leans from the baseline, so it keeps standing on the line. Choose the direction with Lean left or Lean right. (Inside a font file a lean to the right is written as a negative italic angle.)","בכמה להטות, במעלות. האות נוטה מקו הבסיס, ולכן היא ממשיכה לעמוד על השורה. את הכיוון בוחרים ב«נטייה שמאלה» או ב«נטייה ימינה». (בתוך קובץ גופן נטייה ימינה נכתבת כזווית נטייה שלילית.)",input title,
 fontmaker.node_editor.xform_anchor_note_sel,Changing selected points never moves the nikkud and trop points.,שינוי של נקודות נבחרות אינו מזיז את נקודות הניקוד והטעמים.,panel hint,
-fontmaker.node_editor.xform_anchor_note_whole,"Scaling the whole glyph, or flipping it left–right, moves its nikkud and trop points with it. Rotating it or flipping it top–bottom does not.","שינוי גודל של הגליף כולו, או שיקוף שלו שמאל–ימין, מזיז איתו את נקודות הניקוד והטעמים. סיבוב או שיקוף מעלה–מטה אינם מזיזים אותן.",panel hint,
+fontmaker.node_editor.xform_anchor_note_whole,"Scaling or slanting the whole glyph, or flipping it left–right, moves its nikkud and trop points with it. Rotating it or flipping it top–bottom does not.","שינוי גודל או הטיה של הגליף כולו, או שיקוף שלו שמאל–ימין, מזיזים איתו את נקודות הניקוד והטעמים. סיבוב או שיקוף מעלה–מטה אינם מזיזים אותן.",panel hint,
 fontmaker.panels.edit_shape_btn,"Edit shape (square, dots & bars)","עריכת צורה (ריבוע, נקודות ומוטות)",button,svg-icon-in-markup
 fontmaker.panels.tip_finer_move,"Tip: use the arrow keys for finer, exact movement.",טיפ: השתמשו במקשי החִצים לתנועה עדינה ומדויקת יותר.,anchor nudge hint,
 fontmaker.panels.upload_ref_font,⬆ Upload your own reference font…,⬆ העלו גופן ייחוס משלכם…,reference-font selector option,
@@ -6345,6 +6350,7 @@ fontmaker.status.upload_no_room,Every letter already has a picture or an outline
 fontmaker.status.upload_all_failed,None of those files could be read as images.,אף אחד מהקבצים האלה לא נקרא כתמונה.,toast,REVIEW: machine-drafted HE — confirm
 fontmaker.status.loaded_photos.one,"Loaded {count} photo — open the letter to align, then trace.","נטענה {count} תמונה — פתחו את האות ליישור, ואז עקבו.",toast,plural; REVIEW: machine-drafted HE — confirm
 fontmaker.status.loaded_photos.other,"Loaded {count} photos — open each letter to align, then trace.","נטענו {count} תמונות — פתחו כל אות ליישור, ואז עקבו.",toast,plural; REVIEW: machine-drafted HE — confirm
+fontmaker.status.nodes_slanted,Slanted {deg}° {dir}.,בוצעה הטיה של {deg}° {dir}.,toast,{dir} = slantall.dir_left / dir_right
 fontmaker.status.style_detected,This font is marked {style} — Style was set to {style} (see Font Details).,הגופן הזה מסומן כ{style} — הסגנון הוגדר כ{style} (ראו פרטי הגופן).,toast,{style} = a style option name
 fontmaker.status.upload_leftover.one,{count} photo had nowhere to go — every other letter already has something on it.,נותרה {count} תמונה בלי מקום — לכל שאר האותיות כבר יש משהו.,toast,plural; REVIEW: machine-drafted HE — confirm
 fontmaker.status.upload_leftover.other,{count} photos had nowhere to go — every other letter already has something on it.,נותרו {count} תמונות בלי מקום — לכל שאר האותיות כבר יש משהו.,toast,plural; REVIEW: machine-drafted HE — confirm

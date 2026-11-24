@@ -15213,7 +15213,15 @@ let _nodeXformOpen = wsReadPrefs().nodeXformOpen === true;   // Transform disclo
 /* Shared by the live sliders AND xformMatrix, so the Apply button and the slider can never
    disagree about what a legal transform is. Declared above both for that reason. */
 const _XFORM_CLAMP = { rot:   v => Math.max(-180, Math.min(180, +v || 0)),
-                       scale: v => Math.max(25, Math.min(400, +v || 100)) };
+                       scale: v => Math.max(25, Math.min(400, +v || 100)),
+                       slant: v => Math.max(-30, Math.min(30, Math.round((+v || 0) * 10) / 10)) };   // signed: + leans right
+/* The live-slider kinds, in one table (xformLive / xformCommit were written for a rotate / scale pair). */
+const XF_KINDS = {
+  rot:   { neutral: 0,   label: 'rotate — ', readout: 'nodeRotV',   fmt: v => v + '°', done: v => I18n.t('fontmaker.status.nodes_rotated', { deg: v }) },
+  scale: { neutral: 100, label: 'scale — ',  readout: 'nodeScaleV', fmt: v => v + '%',      done: v => I18n.t('fontmaker.status.nodes_scaled', { pct: v }) },
+  slant: { neutral: 0,   label: 'slant — ',  readout: 'nodeSlantV', fmt: v => Math.abs(v) + '°', done: v => I18n.t('fontmaker.status.nodes_slanted', { deg: Math.abs(v), dir: I18n.t(v < 0 ? 'fontmaker.slantall.dir_left' : 'fontmaker.slantall.dir_right') }) }
+};
+function xformSlantSigned(v) { return (slantDirDefault() === 'left' ? -1 : 1) * Math.max(0, Math.min(30, Math.abs(+v || 0))); }   // the field and slider hold a size; the lean toggle holds the direction
 let _nodeScaleLock = wsReadPrefs().nodeScaleLock !== false;   // Width % and Height % move together (the Keep proportions toggle; a view pref)
 function xformMatrix(kind, arg) {                            // → {a,b,c,d,label} or null on no-op / unknown kind
   if (kind === 'fliph') return { a:-1, b:0, c:0, d:1, label:'flip horizontal — ' };
@@ -15232,6 +15240,11 @@ function xformMatrix(kind, arg) {                            // → {a,b,c,d,lab
     if (s === 1) return null;
     return { a:s, b:0, c:0, d:s, label:'scale — ' };
   }
+  if (kind === 'slant') {                                    // a horizontal shear about the BASELINE (py), not the box centre: the letter keeps standing on the line
+    const d = _XFORM_CLAMP.slant(arg);
+    if (!d) return null;
+    return { a:1, b:slantTan(d), c:0, d:1, py: effMetrics().baseline, deg: d, label:'slant — ' };
+  }
   if (kind === 'scale2') {                                   // [width %, height %] — each axis under the same 25–400 clamp
     const sx = _XFORM_CLAMP.scale(+(arg && arg[0]) || 0) / 100, sy = _XFORM_CLAMP.scale(+(arg && arg[1]) || 0) / 100;
     if (sx === 1 && sy === 1) return null;
@@ -15239,13 +15252,13 @@ function xformMatrix(kind, arg) {                            // → {a,b,c,d,lab
   }
   return null;
 }
-function xformPivot(keys) {                                  // → { nds, cx, cy }: the nodes the keys name and the centre of their anchor bbox, or null
+function xformPivot(keys, m) {                               // → { nds, cx, cy }: the nodes the keys name and the centre of their anchor bbox (or the map's own fixed height, m.py), or null
   const nds = [];
   keys.forEach(k => { const [ci, ni] = k.split(':').map(Number); const nd = nodeModel.contours[ci]?.nodes[ni]; if (nd) nds.push(nd); });
   if (!nds.length) return null;
   let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
   nds.forEach(nd => { x0 = Math.min(x0, nd.x); x1 = Math.max(x1, nd.x); y0 = Math.min(y0, nd.y); y1 = Math.max(y1, nd.y); });
-  return { nds, cx: (x0 + x1) / 2, cy: (y0 + y1) / 2 };
+  return { nds, cx: (x0 + x1) / 2, cy: (m && m.py != null) ? m.py : (y0 + y1) / 2 };   // ONE pivot for the nodes, the range check and the anchors
 }
 /* Would this transform put a point (or a curve handle) past what a font file can hold? Predicted on the
    numbers alone, BEFORE anything is written — a refusal has to leave the node model, the letter and the
@@ -15261,7 +15274,33 @@ function xformOutOfRange(piv, m) {
    columns keep their sides (the values swap), and a pin of a side column keeps its mirrored offset from
    that column. Every coordinate is rounded at the source. */
 const XFORM_LR = [['tropAboveL', 'tropAboveR'], ['tropBelowL', 'tropBelowR'], ['smrAboveL', 'smrAboveR']];
-function xformAnchorsFollow(kind) { return (kind === 'scale' || kind === 'scale2' || kind === 'fliph') && !nodeSel.size && !_hiddenContours.size; }
+function xformWhole() { return !nodeSel.size && !_hiddenContours.size; }
+function xformAnchorsFollow(kind) { return (kind === 'scale' || kind === 'scale2' || kind === 'fliph' || kind === 'slant') && xformWhole(); }
+/* A whole-glyph transform also keeps the letter's lean RECORD true (l.slant — what the Italic export
+   declares, and what re-tracing, anchor seeding and wide forms read): a slant adds to it, a flip
+   mirrors it, a Width/Height scale changes its tangent, a rotation turns it. → the new value. */
+function xformSlantAfter(kind, arg, cur) {
+  if (kind === 'slant') return slantCompose(cur, _XFORM_CLAMP.slant(arg));
+  if (!cur) return 0;
+  if (kind === 'fliph' || kind === 'flipv') return -cur;
+  if (kind === 'scale2') { const sx = _XFORM_CLAMP.scale(+(arg && arg[0]) || 0), sy = _XFORM_CLAMP.scale(+(arg && arg[1]) || 0); return slantDegOf(slantTan(cur) * sx / sy); }
+  if (kind === 'rot') return Math.max(-60, Math.min(60, Math.round((cur - (+arg || 0)) * 10) / 10));   // rotation is counter-clockwise positive; a lean to the right is clockwise
+  return cur;
+}
+/* …and a whole-glyph SLANT carries the letter's photo and pen strokes, exactly as the engine does
+   (gxLetterPatch), so a later re-trace or one more stroke agrees with the record. `base` is the letter
+   as it was before the transform. → { transform?, captureBox?, draw?, drawSig?, drawOut } */
+function xformSlantCarry(l, base, deg) {
+  const k = slantTan(deg), b = effMetrics().baseline;
+  const r = gxLetterPatch(Object.assign({}, l, base), { T: [1, k, 0, 1, -k * b, 0], keepLsb: true }, null), out = { drawOut: r.drawOut };
+  ['transform', 'captureBox', 'draw', 'drawSig'].forEach(key => { if (key in r.set) out[key] = r.set[key]; });
+  return out;
+}
+function xformCarryBase(l) { return JSON.parse(JSON.stringify({ transform: l.transform, captureBox: l.captureBox || null, draw: l.draw || null, drawSig: l.drawSig == null ? null : l.drawSig, slant: letterSlant(l) })); }
+function xformPutCarry(l, c) { ['transform', 'captureBox', 'draw', 'drawSig'].forEach(key => { if (key in c) l[key] = c[key]; }); }
+function xformScope(l, kind) {   // a slant that carries pen strokes must snapshot them too (draw is outside a plain item scope)
+  return (kind === 'slant' && xformWhole() && l.draw && l.draw.strokes && l.draw.strokes.length) ? Object.assign(itemScope(), { withDraw: true }) : itemScope();
+}
 function xformMappedAnchors(src, m, piv, flip) {             // src: { anchors, markAnchors } (never mutated) → the mapped pair
   const ok = p => !!p && Number.isFinite(p.x) && Number.isFinite(p.y);
   const mp = p => Object.assign({}, p, { x: Math.round(piv.cx + m.a * (p.x - piv.cx) + m.b * (p.y - piv.cy)), y: Math.round(piv.cy + m.c * (p.x - piv.cx) + m.d * (p.y - piv.cy)) });
@@ -15290,7 +15329,7 @@ function xformAnchorsTooFar(r) {
   return far(r.anchors) || far(r.markAnchors);
 }
 function applyXformToKeys(keys, m) {                         // affine about the keys' anchor-bbox center; → count of nodes mapped
-  const piv = xformPivot(keys);
+  const piv = xformPivot(keys, m);
   if (!piv) return 0;
   const nds = piv.nds, cx = piv.cx, cy = piv.cy;
   const ap = p => p ? [cx + m.a * (p[0] - cx) + m.b * (p[1] - cy), cy + m.c * (p[0] - cx) + m.d * (p[1] - cy)] : null;
@@ -15307,16 +15346,22 @@ function transformSelectedNodes(kind, angleDeg) {            // button / number-
   if (!m) return;
   const keys = nodeSel.size ? [...nodeSel] : _flatNodeKeys();
   if (!keys.length) return;
-  const piv = xformPivot(keys);
+  const piv = xformPivot(keys, m);
   if (!piv) return;
+  const whole = xformWhole();
   const anch = xformAnchorsFollow(kind) ? xformMappedAnchors(l, m, piv, kind === 'fliph') : null;
-  if (xformOutOfRange(piv, m) || (anch && xformAnchorsTooFar(anch))) { status(I18n.t('fontmaker.status.xform_too_big')); return; }   // refused whole: nothing written, no undo entry
-  udDo([itemScope()], m.label + l.name, () => {
+  const carry = (kind === 'slant' && whole) ? xformSlantCarry(l, xformCarryBase(l), m.deg) : null;
+  if (xformOutOfRange(piv, m) || (anch && xformAnchorsTooFar(anch)) || (carry && carry.drawOut)) { status(I18n.t('fontmaker.status.xform_too_big')); return; }   // refused whole: nothing written, no undo entry
+  const lean = whole ? xformSlantAfter(kind, angleDeg, letterSlant(l)) : null;
+  udDo([xformScope(l, kind)], m.label + l.name, () => {
     if (!applyXformToKeys(keys, m)) return;                  // stale keys resolved to nothing — udPush drops the no-op slice
     if (anch) xformPutAnchors(l, anch);
+    if (carry) xformPutCarry(l, carry);
+    if (lean != null) setLetterSlant(l, lean);
     renestNodeModel(); writeThroughRebuild(l);               // flips reverse winding; a transformed subset can change nesting
   });
-  renderGrids(); renderStage(); renderControls();
+  if (kind === 'slant') status(XF_KINDS.slant.done(m.deg));
+  renderGrids(); renderStage(); renderControls(); syncItalicRow();
 }
 function xformScaleField(which, el) {                        // typing in Width % or Height % — with Keep proportions on, the other field follows
   if (!_nodeScaleLock) return;
@@ -15345,8 +15390,9 @@ function xformLive(kind, v) {
   if (!_xformBase) {
     const keys = nodeSel.size ? [...nodeSel] : _flatNodeKeys();
     if (!keys.length) return;                                // blank glyph — nothing to transform
-    udBurstBegin([itemScope()], (kind === 'rot' ? 'rotate — ' : 'scale — ') + l.name);
-    _xformBase = { kind, keys, model: JSON.parse(JSON.stringify(nodeModel)), sel: new Set(nodeSel), val: kind === 'rot' ? 0 : 100,
+    udBurstBegin([xformScope(l, kind)], XF_KINDS[kind].label + l.name);
+    _xformBase = { kind, keys, model: JSON.parse(JSON.stringify(nodeModel)), sel: new Set(nodeSel), val: XF_KINDS[kind].neutral,
+                   whole: xformWhole(), carry: xformCarryBase(l),   // the letter's photo, strokes and lean record as they were — re-derived from these, never compounded
                    // a whole-glyph scale carries the anchors and pins: keep the pre-drag pair, re-map it from scratch each tick
                    anch: xformAnchorsFollow(kind) ? JSON.parse(JSON.stringify({ anchors: l.anchors || null, markAnchors: l.markAnchors || null })) : null };
   }
@@ -15354,7 +15400,7 @@ function xformLive(kind, v) {
   nodeModel = JSON.parse(JSON.stringify(_xformBase.model));  // reset to the pre-drag snapshot, re-apply at the new value
   nodeSel = new Set(_xformBase.sel);
   let m = xformMatrix(kind, val);                            // null at neutral (0° / 100%) → identity preview
-  const piv = xformPivot(_xformBase.keys);
+  const piv = xformPivot(_xformBase.keys, m);
   let anch = (m && piv && _xformBase.anch) ? xformMappedAnchors(_xformBase.anch, m, piv, false) : null;
   if (m && piv && (xformOutOfRange(piv, m) || (anch && xformAnchorsTooFar(anch)))) {   // past what a font can hold — stay at the last good value
     val = _xformBase.val; m = xformMatrix(kind, val);
@@ -15363,15 +15409,22 @@ function xformLive(kind, v) {
   _xformBase.val = val;
   if (m) applyXformToKeys(_xformBase.keys, m);               // same keys every tick ⇒ same bbox pivot every tick
   if (_xformBase.anch) xformPutAnchors(l, anch || JSON.parse(JSON.stringify(_xformBase.anch)));
+  if (kind === 'slant' && _xformBase.whole && Array.isArray(_xformBase.carry.transform)) {   // the photo behind the outline leans live; strokes are settled once, at commit
+    const k = m ? m.b : 0;
+    l.transform = k ? M.mul(gxStageMatrix([1, k, 0, 1, -k * effMetrics().baseline, 0]), _xformBase.carry.transform) : _xformBase.carry.transform.slice();
+  }
   writeThrough(l);                                           // plain write-through — indices/orientation untouched mid-drag
   renderStage();
-  const ro = document.getElementById(kind === 'rot' ? 'nodeRotV' : 'nodeScaleV');
-  if (ro) ro.textContent = kind === 'rot' ? val + '°' : val + '%';
+  const ro = document.getElementById(XF_KINDS[kind].readout);
+  if (ro) ro.textContent = XF_KINDS[kind].fmt(val);
 }
 function xformCommit(kind) {
   if (!_xformBase || _xformBase.kind !== kind) return;
-  const l = curLetter(), val = _xformBase.val;
-  if (kind === 'rot' ? val === 0 : val === 100) {            // released at neutral — leave ZERO undo entries
+  const l = curLetter(), val = _xformBase.val, B = _xformBase;
+  const carry = (kind === 'slant' && B.whole && val !== 0) ? xformSlantCarry(l, B.carry, val) : null;
+  const refused = !!(carry && carry.drawOut);                // the pen strokes would leave the drawing area — nothing is kept
+  if (val === XF_KINDS[kind].neutral || refused) {           // released at neutral — leave ZERO undo entries
+    if (refused) status(I18n.t('fontmaker.status.xform_too_big'));
     udBurstCancel();                                         // exact restore of l (curves, points, handEdited)
     nodeModel = JSON.parse(JSON.stringify(_xformBase.model));
     nodeSel = new Set(_xformBase.sel);
@@ -15379,12 +15432,13 @@ function xformCommit(kind) {
     renderStage(); renderControls();                         // panel re-render snaps the slider back to neutral
     return;
   }
+  if (carry) xformPutCarry(l, carry);
+  if (B.whole) setLetterSlant(l, xformSlantAfter(kind, val, B.carry.slant));   // from the pre-drag record — a whole-glyph slant adds to it, a rotation turns it
   renestNodeModel(); writeThroughRebuild(l);                 // BEFORE udBurstCommit — its `after` snapshot must be the settled,
   udBurstCommit();                                           // renested state (same order as the bbox drag-scale pointerup)
   _xformBase = null;
-  status(I18n.t(kind === 'rot' ? 'fontmaker.status.nodes_rotated' : 'fontmaker.status.nodes_scaled',
-                kind === 'rot' ? { deg: val } : { pct: val }));
-  renderGrids(); renderStage(); renderControls();
+  status(XF_KINDS[kind].done(val));
+  renderGrids(); renderStage(); renderControls(); syncItalicRow();
 }
 function nodeEditPanelHTML(l) {
   const cnt = nodeSel.size, M = modKey();
@@ -15462,6 +15516,17 @@ function nodeEditPanelHTML(l) {
                oninput="xformLive('rot', this.value)" onchange="xformCommit('rot')"></label>
       <input type="number" id="nodeRotAngle" value="0" step="1" style="width:56px;" aria-label="${esc(I18n.t('fontmaker.node_editor.angle_aria'))}">
       <button class="ctl-btn" onclick="transformSelectedNodes('rot', +(document.getElementById('nodeRotAngle')||{}).value || 0)" title="${esc(I18n.t('fontmaker.node_editor.rot_apply_title'))}">${I18n.t('fontmaker.node_editor.apply')}</button>
+    </div>
+    <div class="ctl-row" style="gap:6px;align-items:center;margin-top:6px;flex-wrap:wrap;">
+      <label style="font-size:0.76rem;display:flex;align-items:center;gap:4px;flex:1;">${I18n.t('fontmaker.node_editor.slant_label')} <span id="nodeSlantV" class="readout">0°</span>
+        <input type="range" min="0" max="30" step="0.5" value="0" style="flex:1;min-width:70px;"
+               aria-label="${esc(I18n.t('fontmaker.node_editor.slant_slider_aria'))}"
+               oninput="xformLive('slant', xformSlantSigned(this.value))" onchange="xformCommit('slant')"></label>
+      <input type="number" id="nodeSlantDeg" value="0" min="0" max="30" step="0.5" style="width:56px;" aria-label="${esc(I18n.t('fontmaker.node_editor.slant_aria'))}" title="${esc(I18n.t('fontmaker.node_editor.slant_title'))}">
+      <button class="ctl-btn" onclick="transformSelectedNodes('slant', xformSlantSigned((document.getElementById('nodeSlantDeg')||{}).value))" title="${esc(I18n.t('fontmaker.node_editor.slant_apply_title'))}">${I18n.t('fontmaker.node_editor.apply')}</button>
+    </div>
+    <div class="lean-seg" role="radiogroup" aria-label="${esc(I18n.t('fontmaker.panels.lean_dir'))}" title="${esc(I18n.t('fontmaker.slantall.dir_title'))}">
+      ${['left', 'right'].map(d => `<label><input type="radio" name="nodeLean" value="${d}" ${slantDirDefault() === d ? 'checked' : ''} onchange="setSlantDir(this.value)"> ${I18n.t('fontmaker.panels.lean_' + d)}</label>`).join('')}
     </div>
     <div class="ctl-row" style="gap:6px;align-items:center;margin-top:6px;flex-wrap:wrap;">
       <label style="font-size:0.76rem;display:flex;align-items:center;gap:4px;flex:1;">${I18n.t('fontmaker.node_editor.scale_label')} <span id="nodeScaleV" class="readout">100%</span>
