@@ -99390,3 +99390,11 @@ _(prior)_ **Next session (S683):** **Branch `claude/zen-goldberg-1lov9k` (S676�
 ### from Done
 
 - [x] 2026-11-24 | `f3f3c169` `3b07c3aa` `361f66af` `58dc6386` | Hebrew_Font_Maker.html, locales, sw.js, docs/reference/font-maker.md, CLAUDE.md | (outside the loop; Font Maker v6.0) **Slant letters, and Italic / Bold Italic styles**: `gxSlantOp` (a shear about the baseline) as the engine's second operation, a per-letter lean record (`l.slant`) read by width measurement, anchor seeding and wide forms, marks placed and leaned through `project.font.markLean` in the three shape readers, a Slant row in Edit points; `FONT_STYLES` behind every style test, names, file stems, fsSelection / macStyle / italicAngle / caret slope | headless: 183 new checks (styles 46, slant engine 74, Slant row 27, Italic export + HarfBuzz + re-trace + import 18, hataf-meteg / notes / wizard 18); Regular and Bold exports identical to before; the earlier 505 unchanged; smoke-fontmaker 63 / 63
+
+
+<!-- archived by compact-ledger at the S684 boundary, 2026-11-24 -->
+## Compaction (S684, 2026-11-24) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-11-24 | `42f97e91` `79a1d747` `71a7ec88` | Hebrew_Font_Maker.html, locales, sw.js, docs/reference/font-maker.md, CLAUDE.md | (outside the loop; Font Maker v6.0) **Width — condensed and extended fonts with their stems kept**: `gxWidthOp` as the engine's third operation — an X scale, then every point slides sideways only by how upright the outline runs there (`gxwShape`), so stems, bars, heights and curves are kept; the engine takes an operation's own outline result, an anchor map and a pen factor, and its horizontal factor is split into letter geometry / spacing / pair shift / meteg gap; marks narrowed through `project.font.markWide` in the shape readers; a gap-column warning for counters that close; a Keep stem thickness box in Edit points; width names (`FONT_WIDTHS`, `fontNameParts`) in nameID 1 / 16 / 17, `usWidthClass`, file and project names | headless: 135 new checks (step + engine 57, dialog + Edit points 42, export + naming + HarfBuzz + real fonts 36); the four styles at Normal width identical to before; the earlier 688 unchanged; smoke-fontmaker 63 / 63
