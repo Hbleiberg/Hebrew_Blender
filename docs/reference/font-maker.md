@@ -268,6 +268,14 @@ hands the raw number field straight through — that path clamped only the floor
 scaled an outline 50×. The mark editor's piece fields are bounded the same way (`ME_POS_MAX` /
 `ME_SIZE_MAX`); a dot's radius already reused its slider's 8–200.
 
+**A single clamp is not enough once a transform can be repeated.** One 400% cannot reach the limit;
+four in a row can. So every transform that multiplies coordinates is checked against `GX_COORD_MAX`
+(16000 — half the int16 range, the same room `SVG_PASTE_MAX_COORD` leaves for an advance, marks and
+composed forms around the glyph) *before* anything is written, and refused whole: the point editor's
+`transformSelectedNodes` and `xformLive` predict the mapped bounds with `xformOutOfRange` (handles
+included), and the glyph transform engine's plan carries a `refuse.range` list. A refusal leaves the
+project, the node model and the undo stack exactly as they were — never a clamp that bends the shape.
+
 `glyphRangeError(spec)` is the backstop, called by **both** build paths right after `buildFontSpec()`
 and before Pyodide ever runs: it walks every glyph's contours *and* its curve control points (a
 control point can sit outside a polygon that fits) and returns a translated message naming the
@@ -338,7 +346,9 @@ load, cleared again when a library is missing.
 ### Undo / dirty / autosave contract — the big one
 **Never mutate `project` directly.** Route every mutation through `udDo(scopes, label, fn)`
 (scopes: `{t:'item',kind,cp}`, `'spacing'`, `'kerning'`, `'kernClasses'`, `'metrics'`, `'guides'`,
-`{t:'precomp',target}`). Continuous inputs: slider drags use `udBurstBegin`/`udBurstCommit` (one
+`{t:'precomp',target}`, `'tropTune'` — the font-level mark tuning: spread, pairing, meteg gap, mark
+nudges and the six mark sizes — and `'sheetFit'`, each letter sheet's units-per-pixel scale, which
+only the glyph transform engine writes under undo). Continuous inputs: slider drags use `udBurstBegin`/`udBurstCommit` (one
 undo entry per drag); arrow-key nudges use `udNudgeTick`/`udNudgeCommit`. `udPush` calls
 `markDirty()` automatically (debounced IndexedDB autosave), so going through `udDo`/burst/nudge
 covers undo + dirty + autosave in one. Pure-UI state (panel collapse, toggles) calls `markDirty()`
@@ -740,6 +750,103 @@ On export, `sCapHeight` and `sxHeight` are **measured from the shipped `O`/`H` a
 omitted when the font carries no cased script — a Hebrew-only export is byte-identical to what it was.
 Before v5.54 neither was ever passed to `setupOS2`, so every font this tool produced declared `0` for
 both, which tells a layout engine the font has no case at all.
+
+### Glyph transforms — the `gx` engine, Scale all letters, and the size factor
+One engine applies a geometric change to many glyphs in **one** undo step. A new whole-font tool
+(slant, width…) is a new *operation*, never a new loop over `project.letters`.
+
+**The contract.** An operation is `{ label, affine(letterLike), fontX, fontY, markFactor }`:
+- `affine` returns the per-glyph map in font units, `[a,b,c,d,e,f]` with `x' = a·x + b·y + e`,
+  `y' = c·x + d·y + f` — or `{T, advance, keepRsb}` when the default "advance × a" is wrong, or
+  `null` to skip the glyph. It is also called with a letter-like stand-in for an imported composed
+  outline (`pc.src`), so it may read only `contours` and `advance`.
+- `fontX` / `fontY` are the factors for font-wide horizontal / vertical lengths (`null` = leave them);
+  `markFactor` is the uniform factor for mark size (`null` = leave marks).
+- A map that mirrors (determinant ≤ 0) is refused: it would reverse every contour's direction, and
+  flips belong to the point editor.
+
+A set is `{ scope: 'letter' | 'tab' | 'all', cp, cat }`; `tab` is `tabDrawCps(cat)`, `all` is every
+item in `project.letters` whatever its tab's switch says (a tab turned on later must not be the old
+size — the Generate Bold rule). The font-wide factors and `markFactor` apply only with `all`.
+
+**`gxPlan(op, set)` is pure** — it reads the project and returns every new value plus its findings.
+**`gxCommit(plan)`** refuses a plan with a blocking finding, then makes one `udDo` whose body is only
+assignments of those precomputed values, so a transform cannot stop half-way through a font. Callers
+`udFlushPending()` first (an open slider burst holds a "before" from before the change) and plan
+afresh at commit time, never from a preview's copy.
+
+**The census — what a glyph transform has to carry.** Miss one and the font is quietly inconsistent:
+- *Outline:* `contours[].points` and `curves` through the **same** map, rounded (the
+  `buildWideGlyph` / `translateLetterX` precedent). Curves are kept — an affine maps a Bézier exactly;
+  Generate Bold has to drop them, this does not. A contour that collapses is dropped **with** its
+  `curves[i]` (the export ships curves only while the two arrays are the same length).
+- *Width:* `advance`, `lsb`, `rsb` when stored.
+- *Marks' positions:* `anchors[*]` and the pins in `markAnchors`, rounded at the source. A side trop
+  column still at its default (centre ± `tropSideOffset`) is re-tied to the new centre ± the new
+  spread, because `setTropSideOffset` recognises "still the default" by exact equality.
+- *Photo:* `l.transform` (image px → stage px) left-multiplied by the map conjugated into stage space
+  (`gxStageMatrix`), for every item that has an image — drawn letters too, they carry a frame raster.
+  `lineWeight` is a font-unit length and follows; `epsilon` (the Detail slider) does not.
+- *Pen strokes* (a uniform scale only — a nib has no sheared form, so any other map leaves the
+  drawing, as Bold does): stroke and carve points, `w`, `tl`, `rim`; order and `cg` untouched. The
+  result goes through `sanitizeDraw` **before** `drawSig` is computed: a stored value the loader would
+  change makes `drawNeedsTrace` true after a reload, and entering Trace would then silently redraw
+  the letter. A drawing that was saved stays saved; one that was waiting stays waiting.
+- *Composed forms:* `pc.anchor` (its `auto` flag rides along), `pc.holam`, and `pc.src` /
+  `pc.srcDagesh` rebuilt as **new** objects — the `precomp` undo snapshot shares the old ones by
+  reference, so mutating one in place would corrupt undo.
+- *Font-wide:* the guide lines in `metrics` (not the baseline; the imported typo box is held inside
+  its valid range, since an out-of-range value is deleted on the next load), `spacing`, every
+  `kerning[].value`, `tropSideOffset`, `vowelPair.dx`, a numeric `metegGap`, user guides by axis, and
+  each sheet's `fitScale` (a letter boxed from that sheet later must arrive at the new size).
+- *Untouched on purpose:* `handEdited`, the placement flags, `savedAnchors`, `source`.
+- *Session state the commit resets:* `lastSavedAnchors` (also on undo / redo of the entry —
+  `gxAfterHistory`), `_rawTrace`, `_fidelityLast` (the import report measures against the source
+  font's bytes and its Apply would write the old positions back), `_hiddenContours`, the node model.
+
+**Mark shapes are never transformed.** Every shipped Hebrew and Samaritan mark is drawn and exported
+as *shape × its size setting* about its attach point, so the engine resizes marks by multiplying the
+six settings (`markScale`, `dageshScale`, `cholamScale`, `holamScale`, `tropScale`, `smrMarkScale`)
+and every per-form `pc.markScale` — exact for built-in and custom marks alike, and `markNudge` needs
+no change (it is added before the multiplier). That is why the **stored** mark-size range is wider
+than the sliders': `MARK_SIZE_MIN`–`MARK_SIZE_MAX` (10–400%) in the setters and
+`sanitizeFontNumbers`, while each slider keeps its 40–180 (a form's dot 30–200) and stretches only as
+far as it must to hold the value it finds (`markSizeRange`). Latin accents have no size setting (they
+bake at scale 1), so there the shape *is* scaled: an imported accent in place, a built-in one that
+actually ships through a scaled custom copy created before the undo snapshot (the Generate Bold
+idiom — emptied by undo, it reads as the built-in again).
+
+**Findings.** *Refuse* (nothing changes): a coordinate, anchor, pin, advance, kerning value or guide
+line past `GX_COORD_MAX`; a pen stroke past the loader's −2000…3000; a glyph that would lose every
+contour; a mirror. *Warn* (Apply stays available): contours lost to rounding; a letter with a photo or
+drawing whose ink leaves the window the tracer can rasterize (`GX_TRACE_WIN` — its outline is fine, a
+later re-trace would clip it); settings held at a stored limit. Letter names in a message go through
+`gName`, and through `textContent`.
+
+**The size factor (`metrics.sizeK`, read by `gxK()`).** The anchor seeds (`ANCHOR_Y`, the +40 / 120 /
+380 rules, `TROP_GAP_*`), the mark-on-mark gap, the default holam offset, the Auto meteg limits, the
+default line box's breathing room and QA's overlap tolerance were written for a 600-unit letter. A
+uniform whole-font scale with the guide lines on multiplies `sizeK` by its factor, and those readers
+go through `gxKLen` / `gxKY`, so a letter traced **after** a rescale is seeded like its neighbours.
+At 1 (absent) every one of them is the integer it always was. It lives in `metrics` so the `metrics`
+undo scope carries it and Reset metrics returns it to 1 with the lines. A new constant that means "a
+distance at the standard letter size" goes through the same two helpers.
+
+**Scale all letters** (`gxScaleOp`, `#scaleAllOverlay`, `scaleAll*`) is the first operation: a uniform
+scale from the baseline. With *spacing and guide lines* on, x scales from the glyph origin, so the
+side bearings scale too; off, the ink keeps its left edge and both bearings keep their width. A size
+outside 25–400 is "not a size yet" (no preview, Apply off) rather than clamped. Its before / after
+strips share one viewBox so the change shows, and `reinkPreviews` repaints them on a theme switch.
+A scaled stock punctuation mark becomes an ordinary outline (`isStockOutline` compares by value).
+
+**In the point editor** the Transform section works on the node model, about the centre of the
+affected nodes' box, as before. A whole-glyph **scale or horizontal flip** (nothing selected, no
+contour hidden) also maps `l.anchors` and the pins about that pivot in the same undo step
+(`xformMappedAnchors`; on a flip the left / right columns keep their sides and a side column's pin
+keeps its mirrored offset). A rotation, a vertical flip and any selection leave them alone — an
+"above" point must stay above, and part of a letter is not the letter. The live slider keeps the
+pre-drag anchors in `_xformBase` and re-maps from them each tick, so a release at neutral still
+leaves zero undo entries.
 
 ### Draw step — strokes, holes, and carve generations
 A drawn letter keeps its ink as `l.draw.strokes` (each `{w, pr, pts, st?, …}`, points in font units);
