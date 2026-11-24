@@ -99342,3 +99342,11 @@ _(prior)_ **Next session (S683):** **Branch `claude/zen-goldberg-1lov9k` (S676�
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 - M aesthetics & visual design (one surface): 2026-11-24 (**S683 — 48th M, `flash_cards.html` (S588 → S683, 53 commits to the page): ~30 screens and dialogs × EN light / EN dark 1280, HE light / HE dark 800 with the real Google Fonts, a class seeded; arms: label-to-control alignment (plant 4 / 4), dark parity (plant 2 / 2), font census, the bottom gap suite-wide. FOUND 1 + 1 gate 3, FIXED both (the editor on 4 pages) + 2 from the queue; 4 P4 logged. M-next: chrome (S603), dashboard (S610), parsha_emojis (S616).**)
+
+
+<!-- archived by compact-ledger at the S684 boundary, 2026-11-24 -->
+## Compaction (S684, 2026-11-24) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-11-24 | `b936867d` | Hebrew_Font_Maker.html, locales, sw.js, docs/reference/font-maker.md, CLAUDE.md | (outside the loop; Font Maker v6.0, phase 1) **Paste SVG artwork into a letter** (Ctrl/⌘+V, canvas drop, *Paste SVG code…*; one dialog, one undo step) **and every SVG import sanitized before it is mounted** (`svgSanitize`; a hostile file ran 2 inline handlers before, 0 after) | headless: 108 + 86 checks (EN/HE, light/dark, 1280/800/390), old vs new parser identical on 9 files, TTF export + HarfBuzz shaping identical to an upload-built font

@@ -397,6 +397,86 @@ Center button) now fits the band's *height*, so a final letter's tail lands on t
 instead of being squeezed into 0..600; the numbers are unchanged for every other glyph while the
 baseline is 0.
 
+### SVG import — the sanitizer, and paste / drop / the code box
+
+**Every SVG is untrusted, and the importer has to mount it.** `elementToLoops` measures a shape with
+the browser's own SVG engine (`getScreenCTM`, `getTotalLength`), which only works on a tree attached to
+the page, and the page's CSP allows inline script — so a raw SVG attached there ran its `onload` /
+`onerror` handlers and applied its `<style>` to the page. `parseSvgEntries` therefore never mounts what
+it parsed: `parseSvgText` returns the inert root of a `DOMParser` document, `svgSanitize(root, opts)`
+rebuilds a second tree with `createElementNS`, and only that tree reaches `withSvgHost`. It applies to
+every route in — a file upload, a sheet, auto-split, a sheet re-read when a project loads, a paste.
+- **Kept:** `svg`, `g` (`a` is walked as `g`; of a `switch` only its first usable child, as a browser
+  renders it — Illustrator puts a `foreignObject` first), `path`, `rect`, `circle`, `ellipse`, `line`,
+  `polygon`, `polyline`; each shape's geometry attributes, `transform`, an `<svg>`'s `viewBox` /
+  `preserveAspectRatio` / `x` `y` `width` `height`, and the three CSS transform properties of an inline
+  `style`. Elements are matched by `localName`, so markup pasted without its `xmlns` still imports.
+- **Dropped:** everything else with its subtree (`script`, `style`, `image`, `use`, `text`,
+  `foreignObject`, the non-rendering `defs` / `clipPath` / `mask` / `marker` / `symbol` / `pattern`),
+  every `on*` attribute, every `href`, `class`. An element's `id` and `inkscape:label` ride as
+  `data-fm-id` / `data-fm-label` (what auto-split matches on), so no foreign id is ever live in the page.
+- **What CSS decided is worked out on the inert tree** by `svgOwnStyle`, a cascade for `display`,
+  `visibility`, `fill`, `stroke` and `fill-opacity` only: presentation attribute, then the `<style>`
+  rules in source order (`svgStyleRules` reads them through a constructed `CSSStyleSheet` that is never
+  adopted, so nothing is fetched; without constructable sheets the classes are simply not read), then
+  the inline `style`. `fill`, `stroke` and `visibility` inherit. The old `getComputedStyle` filter on the
+  mounted clone is gone: page CSS could hide a shape through it.
+- **`opts.paste`** switches on three things an upload does not get, so a sheet a saved project already
+  holds can never be refused or read differently: the caps (`SVG_PASTE_MAX_*`), a shape whose fill
+  resolves to `none` (or a `line`) being left out and counted as stroke-only, and `display:none` on a
+  group hiding its whole subtree. Uploads keep their old readings: every shape is filled, and only a
+  shape's own `display` counts (the contents of a hidden group still import).
+
+**Paste, drop and the code box** (the *SVG paste* block) put artwork into the open letter whatever
+`project.font.svgUpload` says — that setting only decides what the upload zones accept. Three ways in:
+the document `paste` listener, `wireStageDrop` on `.stage-wrap` (files only; any other file is told
+where it belongs instead of navigating the browser away), and the *Paste SVG code…* buttons beside
+every *Copy outline…* button and in the point editor's nothing-selected stack (`openSvgPasteCode`).
+`svgFromDataTransfer` reads, in order, `image/svg+xml`, an SVG file item, `text/plain` that
+`isProbablySvg` accepts, and `text/html` holding an `<svg>` (taken out through an inert HTML parse,
+`svgTextFromHtml` — also the second try for markup too loose for XML). `svgPasteStageOk()` is the one
+gate: a project, nothing in `udShortcutBlocked()`, no open overlay, no tour, a letter's stage showing
+(not a `cat-settings` tab, not a combined form's placement), no drag or stroke in flight, no file still
+being read. Letters only; a mark selected gets a toast.
+
+One dialog (`#svgPasteOverlay`, listed in `udShortcutBlocked`), one `udDo`. The target letter is pinned
+when the dialog opens. The size choices are `svgPasteFitChoices(cp)` and their bands `svgPasteSpan`:
+*height* (baseline → `glyphBand(cp).top`), *desc* (the `descender` line → band top, only for a `.desc`
+glyph), *xheight* (only for a cased glyph), *keep* (1 SVG unit = 1 font unit, on the baseline). Note
+the difference from an upload, whose `svgSpanFor` puts a tail at −30 % of the reference height: a paste
+reaches the descender line itself. The choice is remembered per device in `hebrewFontMaker_uiPrefs`
+— `svgPasteFit` for ordinary letters, `svgPasteFitDesc` for letters with a tail, `svgPasteMode` — and
+validated against the closed set on read. Validation is inline (the `aria-live` note and
+`aria-disabled` on Insert); nothing is ever raised over the dialog.
+
+- **Replace** (`svgPasteReplace`) is `assignSvgContours` plus what an upload forgets. Its scope carries
+  `withSource` and `withDraw`, so one undo restores the photo or drawing too. The advance is the ink
+  plus both default margins with the ink centred, and `lsb` / `rsb` are cleared. Then everything that
+  described the outline that is gone goes with it: `markAnchors` (pins), `placementSaved` /
+  `placementInherited`, `draw` and `drawSig` (the Trace step would otherwise re-trace old strokes over
+  the paste), and a `*Source: 'import'` flag (`SVG_IMPORT_FLAGS` — a later import with "keep mine"
+  would otherwise overwrite the letter). It lands on Align through `_setWorkMode`, where the
+  *Imported from SVG* hint and *Next: Nikkud* are.
+- **Add** (`svgPasteAdd`) is a union, and goes through the node model like a point paste. It lands in
+  Edit points — the one step that always shows the outline itself. Every stage fills nonzero, so the
+  union is every contour keeping its own direction; `svgPasteSettle` protects that from
+  `renestNodeModel`, which later re-reads a contour's direction from how many other rings hold its
+  first point. A contour the other group's ink touches is made to start on a point clear of that ink
+  (one of its nodes, else a collinear point put on a straight edge), asked at 4 units and then at 1 so
+  a corner sitting exactly on the other's edge is not chosen; a contour with no such point — a new
+  piece inside the ink, an old counter the new ink covers — is left out, which is what the union means;
+  an old contour the new pieces do not reach is not touched. A piece that changes nothing makes no undo
+  entry. QA's outline scan still reports a piece laid across a counter (an outer/hole crossing): the
+  fill is right under the nonzero rule, the note is about engines that fill by even-odd.
+
+**Points and artwork share Ctrl/⌘+V.** Only the `paste` event can see the clipboard, so it decides:
+SVG there → the dialog (which offers *Paste the copied points instead* when points are waiting), none →
+`pasteNodes()`. The Edit-points `keydown` therefore neither pastes nor calls `preventDefault` — either
+would stop the event from coming — and only arms `svgPointPasteArm`, a fallback for a browser that
+fires no paste event; it waits rather than running on the next tick because on a Mac the event can
+arrive a task later than the keydown. `copySelectedNodes` leaves `SVG_POINTS_MARKER` on the system
+clipboard (best effort), so artwork copied earlier does not beat points copied just now.
+
 ### Workspace model + render pipeline
 State: `curKind` (`letter|nikkud|trop`), `curCp`, `workMode` (`align|trace|anchors|nodes`).
 Guarded vs guard-bypass pairs: `selectItem` → `_selectItem`, `setWorkMode` → `_setWorkMode` (the
