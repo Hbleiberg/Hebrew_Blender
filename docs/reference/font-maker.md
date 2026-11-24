@@ -347,7 +347,8 @@ load, cleared again when a library is missing.
 **Never mutate `project` directly.** Route every mutation through `udDo(scopes, label, fn)`
 (scopes: `{t:'item',kind,cp}`, `'spacing'`, `'kerning'`, `'kernClasses'`, `'metrics'`, `'guides'`,
 `{t:'precomp',target}`, `'tropTune'` — the font-level mark tuning: spread, pairing, meteg gap, mark
-nudges and the six mark sizes — and `'sheetFit'`, each letter sheet's units-per-pixel scale, which
+nudges, the six mark sizes and the marks' placement / lean under a slanted font (`markLean`) — and
+`'sheetFit'`, each letter sheet's units-per-pixel scale, which
 only the glyph transform engine writes under undo). Continuous inputs: slider drags use `udBurstBegin`/`udBurstCommit` (one
 undo entry per drag); arrow-key nudges use `udNudgeTick`/`udNudgeCommit`. `udPush` calls
 `markDirty()` automatically (debounced IndexedDB autosave), so going through `udDo`/burst/nudge
@@ -787,9 +788,14 @@ afresh at commit time, never from a preview's copy.
 - *Photo:* `l.transform` (image px → stage px) left-multiplied by the map conjugated into stage space
   (`gxStageMatrix`), for every item that has an image — drawn letters too, they carry a frame raster.
   `lineWeight` is a font-unit length and follows; `epsilon` (the Detail slider) does not.
-- *Pen strokes* (a uniform scale only — a nib has no sheared form, so any other map leaves the
-  drawing, as Bold does): stroke and carve points, `w`, `tl`, `rim`; order and `cg` untouched. The
-  result goes through `sanitizeDraw` **before** `drawSig` is computed: a stored value the loader would
+- *Pen strokes:* stroke and carve **centre lines** through the map; order and `cg` untouched. Under
+  a uniform scale that is exact (`w`, `tl`, `rim` × the factor). Under any other map a round pen has
+  no exact image, so widths take the map's area factor (× √det — 1 for a lean): re-saved, the
+  drawing keeps the new shape, a little heavier at a large lean, instead of snapping back. A chisel
+  pen *is* exact — its nib edge is a segment, so `na` and `w` are mapped as that segment. A dotted
+  pen re-walks its dots. (A stored raster and one rebuilt from the mapped strokes therefore differ
+  slightly; `drawEnsureRaster` swaps one for the other on a cloud reopen, harmlessly.) The result
+  goes through `sanitizeDraw` **before** `drawSig` is computed: a stored value the loader would
   change makes `drawNeedsTrace` true after a reload, and entering Trace would then silently redraw
   the letter. A drawing that was saved stays saved; one that was waiting stays waiting.
 - *Composed forms:* `pc.anchor` (its `auto` flag rides along), `pc.holam`, and `pc.src` /
@@ -816,6 +822,15 @@ bake at scale 1), so there the shape *is* scaled: an imported accent in place, a
 actually ships through a scaled custom copy created before the undo snapshot (the Generate Bold
 idiom — emptied by undo, it reads as the built-in again).
 
+**An operation may stamp a record and carry a Style.** `op.stamp(letter)` returns fields to set on
+every letter the operation changes (`null` removes a key) — still only assignments and deletes at
+commit. `gxCommit(plan, { style })` sets `project.font.style` with the change and remembers both
+values on the undo entry (`gxMeta`); undo and redo put the other one back **only while Style is still
+what the operation left it at**, so a choice the teacher made since is never overwritten. Style is
+metadata — outside every undo scope — so every non-form writer of it calls `syncMetaToForm()`:
+`onMetaChange` reads the value back from the form, and is called as a flush by Save-as and the cloud
+save.
+
 **Findings.** *Refuse* (nothing changes): a coordinate, anchor, pin, advance, kerning value or guide
 line past `GX_COORD_MAX`; a pen stroke past the loader's −2000…3000; a glyph that would lose every
 contour; a mirror. *Warn* (Apply stays available): contours lost to rounding; a letter with a photo or
@@ -839,6 +854,49 @@ outside 25–400 is "not a size yet" (no preview, Apply off) rather than clamped
 strips share one viewBox so the change shows, and `reinkPreviews` repaints them on a theme switch.
 A scaled stock punctuation mark becomes an ordinary outline (`isStockOutline` compares by value).
 
+**Slant** (`gxSlantOp`, the dialog's second tool — `SA_TOOLS` in `scaleAll*`; one dialog, a row of
+that table per tool) is a horizontal shear about the baseline: `x' = x + tan(angle)·(y − baseline)`,
+angle signed, **+ = leans right** (in the file a right lean is a *negative* `italicAngle`). Width,
+kerning and the guide lines do not change. The lean direction the controls start from is
+`slantDirDefault()`: the project's own last choice (`project.view.slantDir` — a view preference,
+`markDirty()` only), else left for Hebrew and right for a Latin-script tab.
+
+**The lean record (`l.slant`, degrees, rounded to 0.1°; composed by adding tangents —
+`slantCompose`).** Stamped on every letter a slant changes (a photo-only letter too). It is what the
+Italic export declares, and what lets code that assumed an upright letter keep working — each reader
+is the identity at 0:
+- `uprightExtent(l)`: `finalizeFromRaw`, Fit margins and Reset metrics measure a letter's **width**
+  on the un-leaned ink, so a slanted letter traced again keeps its advance instead of gaining its
+  overhang.
+- `seedAnchors`, `ensureNikkudAnchors`, `ensureTropAnchors` and the QA mirror seed on
+  `uprightContours(l)` and then lean the points (`leanAnchorSet`).
+- Wide letterforms and digraphs: an x-scale would turn a lean of k into k·w, so `buildWideGlyph`
+  un-leans, widens and leans again (`wideXY`), and hands every other site the one map, `g.tx(x, y,
+  i)` — the donor's anchors and pins, QA's wide rows. A new site that widens uses `g.tx`, never
+  `wideX` on a leaned coordinate.
+- Latin accents are baked into their letter, so `markContoursFor(letter, 'accent', cp)` leans the
+  accent by that letter's own record.
+The record is **cleared** where an outline is replaced from outside (`importLetterOutline`, which
+then stamps the source font's own lean; `assignSvgContours`; a new photo, crop or auto-split;
+Center image; clearing punctuation) and **copied** where an outline or a picture matrix is copied
+(Copy outline, duplicate glyph, convert wide form, apply alignment). A new path that replaces or
+copies an outline does the same. The photo "skew" nudges in Align leave no record.
+
+**Marks under a leaning font (`project.font.markLean[kind] = { place, shape }`, tangents, per mark
+store, under `tropTune`).** A mark is one glyph for every letter, so following a slant is font-level
+state, changed only by a whole-font slant: `place` is how far the letters lean, `shape` how much of
+that goes into the mark's own shape. In mark-local space the map is `x' = x + shape·y + (place −
+shape)·cy` (cy = the height of the mark's centre). With the box off (`shape` 0) a mark stays upright
+and is only slid to where the lean puts it — a built-in shin dot sits 150 units above its anchor and
+would otherwise be 32 units off at 12°; with it on, `shape = place` and the mark leans. It is applied
+in **one** place: `markGlyphContours`, `markContoursFor` and `markGlyphCurves` wrap `*Raw` twins,
+and every view and the export read mark shapes only through the public three. The `*Raw` readers are
+for measurements that need the upright shape — `hatafSplit`, `_metegInk` (so the Auto meteg gap and
+the pairing do not move), and the hataf-meteg splice, which is assembled upright and leaned once at
+the end — and for the mark editor, which shows the upright shape with a one-line note. Importing a
+kind's shapes resets that kind (`markLeanReset` — the `markScale = 1` rule). `markMkmkAnchor` follows
+the lean; the import-fidelity predictor measures only freshly imported kinds, whose lean is 0.
+
 **In the point editor** the Transform section works on the node model, about the centre of the
 affected nodes' box, as before. A whole-glyph **scale or horizontal flip** (nothing selected, no
 contour hidden) also maps `l.anchors` and the pins about that pivot in the same undo step
@@ -846,7 +904,47 @@ contour hidden) also maps `l.anchors` and the pins about that pivot in the same 
 keeps its mirrored offset). A rotation, a vertical flip and any selection leave them alone — an
 "above" point must stay above, and part of a letter is not the letter. The live slider keeps the
 pre-drag anchors in `_xformBase` and re-maps from them each tick, so a release at neutral still
-leaves zero undo entries.
+leaves zero undo entries. The sliders run from one table of kinds (`XF_KINDS`: neutral value, undo
+label, readout, done-message), and the pivot comes from the map itself (`xformPivot(keys, m)` — a
+slant pivots on the baseline through `m.py`), so the nodes, the range check and the anchors can never
+use different ones. A whole-glyph **slant** also carries the letter's photo and pen strokes
+(`xformSlantCarry`, the engine's own patch) and updates its lean record; the other whole-glyph
+transforms keep the record true (`xformSlantAfter`: a flip mirrors it, a Width/Height scale changes
+its tangent, a rotation turns it). A selection moves only its points.
+
+### Font styles — Regular, Bold, Italic, Bold Italic
+`project.font.style` is one of `regular | bold | italic | bolditalic`, and **`FONT_STYLES` is the only
+place that knows what that means**. Every test, name and suffix goes through it (`fontStyle()`,
+`fontIsBold()`, `fontIsItalic()`, `fontStyleInfo(v)`, `fontStyleOf(v)` to coerce, `fontStyleMake(bold,
+italic)`): a style compared by hand somewhere would behave as Regular there — and since the style is
+part of a project's identity, its files and its My Fonts / Recent / account names would then replace
+the Regular's.
+
+| | nameID 1 | nameID 2 | nameID 4 | nameID 6 | file stem | fsSelection | macStyle | weight |
+|---|---|---|---|---|---|---|---|---|
+| Regular | Family | Regular | Family | Family-Regular | Family | 0xC0 | 0 | 400 |
+| Bold | Family | Bold | Family Bold | Family-Bold | Family-Bold | 0xA0 | 1 | 700 |
+| Italic | Family | Italic | Family Italic | Family-Italic | Family-Italic | 0x81 | 2 | 400 |
+| Bold Italic | Family | Bold Italic | Family Bold Italic | Family-BoldItalic | Family-BoldItalic | 0xA1 | 3 | 700 |
+
+- nameID 1 identical in all four and nameID 2 exactly these words is what makes Windows and macOS
+  group the files as one family whose B and I buttons switch between them; no nameID 16/17 is
+  written (they are for families with more than these four). nameID 6 is cut to 63 characters by
+  trimming the family part only as far as that style needs.
+- The Python block rebuilds the three style bits of `fsSelection` from scratch (it used to clear the
+  italic bit in both branches) and keeps USE_TYPO_METRICS. The spec carries `italic`, `italicAngle`,
+  `caretRise`, `caretRun` **only for an italic style**, so a Regular or Bold file is built exactly as
+  before. The UFO's fontinfo mirrors it (`styleMapStyleName`, `italicAngle`, the caret slope —
+  omitted, never null, for an upright style; `openTypeOS2Selection` stays `[7]`).
+- **The declared angle** is `fontItalicLean()` (+ = right; the file gets its negative): the teacher's
+  own number from Font Details (`project.font.italicLean`) when set, else the most common lean among
+  the drawn letters' records (`fontSlantInfo()`, which also counts how many letters differ — shown
+  in the panel and, when the teacher has not chosen, on the Exported screen). Regular and Bold
+  declare 0 whatever the letters do. The caret slope is `UPM / round(tan(lean) × UPM)`, or 1 / 0.
+- Importing a font flagged italic (fsSelection bit 0, macStyle bit 1 or a declared angle) sets the
+  style and stamps the source's angle on each imported letter (`importFontLean`).
+- An Italic is its own project, as a Bold is: the same Family name in each. A whole-font slant with
+  its Style box ticked turns *this* project into the Italic, its saved copy with it.
 
 ### Draw step — strokes, holes, and carve generations
 A drawn letter keeps its ink as `l.draw.strokes` (each `{w, pr, pts, st?, …}`, points in font units);
