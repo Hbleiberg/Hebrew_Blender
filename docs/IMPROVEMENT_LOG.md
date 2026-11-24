@@ -474,6 +474,8 @@ _(none)_
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
 
+- `stray-text-in-a-style-block` | ACTIVE | owner E | det: scripts/loop/detect-stray-text-in-a-style-block.mjs | last S680 | streak 0 | hits 1
+
 - `viewport-height-fit-without-a-floor` | ACTIVE | owner N | det: recipe | last S667 | streak 0 | hits 1
 
 - `svg-ink-keeps-the-page-theme-in-forced-colors` | ACTIVE | owner C | det: scripts/loop/probes/S666-staff-ink-follows-forced-colours.mjs | last S666 | streak 0

@@ -17,7 +17,15 @@
 >
 > _(history)_ **The per-sweep result rows (S141–S357, 83 rows) moved verbatim to `docs/IMPROVEMENT_ARCHIVE.md` in S361 ("Sweep-status rows moved out of the ledger"); the current state of every pattern lives in Pattern health above.** Grep …[full text: IMPROVEMENT_ARCHIVE.md]
 
-## Active, draft and guard patterns (168; newest first, as the ledger lists them)
+## Active, draft and guard patterns (169; newest first, as the ledger lists them)
+
+## `stray-text-in-a-style-block`
+- **Status:** ACTIVE · **Owner:** E · **Consequence:** normal · **Last:** S680 · **Streak:** 0 · **Hits:** 1 · **Detector:** `scripts/loop/detect-stray-text-in-a-style-block.mjs`
+- **Record (S680, by the way in M on the atlas — NEW):** `a402f72c` (outside the loop) pasted `build-kintsugi.mjs --print`'s whole output into six pages' `<style>`, its status line `kintsugi: wrote 18 files to brand/kintsugi/` included (printed last, right after the phone rules the pages take). On five pages it ended the block and dropped nothing; on the Torah Trainer a comment and the shared holiday-icons block followed, so the browser read the line as the start of `.hol-ico`'s selector and dropped that rule: every parasha icon beside the reading's heading drew 300 × 300 and each holiday reading's icon in the Calendar tab 149–347px (invisible in light, the palette tokens gone; full colour in dark), live from 2026-11-23. FIXED (S680 fix 1): the line deleted on the six, and the builder writes that status line to stderr under `--print`. Detector 6 hits on HEAD, 0 on the fix and on `a402f72c^`; plant 1 / 1.
+- **Shape:** text that is not CSS inside a page's `<style>` — a builder's status line pasted with the block it printed, a stray word, the tail of an unclosed comment. The parser reads it as the start of the next rule's selector, so that whole rule is dropped without a sound (no console message); at the end of a block it drops nothing, but the next rule pasted after it is lost. A shared block's sha identity does not see it when the text sits just outside the block's markers.
+- **Detection:** the detector: every `*.html` at the root and in `parsha/` and `holidays/`, each `<style>`'s text as the markup holds it (scripts and comments set aside), parsed by Chromium in one blank page: the top-level rules the text holds (a brace scanner) against `sheet.cssRules.length`, a style rule whose selector `CSS.supports('selector(…)')` refuses (a list part by part) named, and any text after the last rule. Plant: a block with a stray line before a rule.
+- **Fix shape:** delete the text; a builder whose stdout is meant to be pasted keeps its status lines on stderr.
+- **Carriers:** letter_learner, name_tags, tefillah_trainer, torah_trainer, trope_atlas, trope_tutor — FIXED S680.
 
 ## `viewport-height-fit-without-a-floor`
 - **Status:** ACTIVE · **Owner:** N · **Consequence:** normal · **Last:** S667 · **Streak:** 0 · **Detector:** recipe

@@ -151,4 +151,6 @@ if (args.has('--check')) {
   if (stale) process.exit(1);
   console.log('kintsugi: ' + data.fractures.length + ' files match fractures.json; the gap markup and rules match on ' + pages + ' pages (the phone drawing on ' + phones + '), the footer cracks on ' + feet);
 }
-else console.log('kintsugi: wrote ' + data.fractures.length + ' files to brand/kintsugi/');
+// Under --print the status line goes to stderr: printed last, right after the phone rules, a copy of the whole output
+// once carried it into six pages' <style>, where it swallowed the rule after it (the loop's stray-text-in-a-style-block).
+else (args.has('--print') ? console.error : console.log)('kintsugi: wrote ' + data.fractures.length + ' files to brand/kintsugi/');

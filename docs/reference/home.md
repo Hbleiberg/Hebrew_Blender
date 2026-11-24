@@ -130,7 +130,8 @@ gap between its title and its controls (*The header gap on every other page*, af
   (a crack and its branches), each a list of centre-line points with a stroke width for every run of three segments.
   `node scripts/build-kintsugi.mjs` writes one `brand/kintsugi/<id>.svg` per fracture; `--print` also prints the two
   `<div class="kin" aria-hidden="true">` blocks and the position rules the home page carries, and the gap markup and
-  rules of the other pages; `--check` fails when a file on disk differs from what the JSON builds, or when a root
+  rules of the other pages (on stdout alone: its status line goes to stderr, so a copy of the output carries only
+  markup and rules into a page); `--check` fails when a file on disk differs from what the JSON builds, or when a root
   page's gap markup or the shared gap rules differ from what `--print` prints. Never edit an SVG; after a rebuild,
   bump `sw.js` `VERSION`.
 - **Anchors.** A fracture is placed from the edge it is anchored to (`start`, `center` or `end`; `top` or `bottom`),
