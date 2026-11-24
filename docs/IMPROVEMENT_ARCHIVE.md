@@ -99137,6 +99137,8 @@ _(prior)_ **Next session (S681):** **Branch `claude/zen-goldberg-1lov9k` (S676�
 
 _(prior)_ **Next session (S682):** **Branch `claude/zen-goldberg-1lov9k` (S676–S681, draft PR #427): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1547**, FM **5.60**, corpus ?v=**9**, the prayer catalog ?v=**9**. ⚑ drift: main=d2d922c sw=v1547 fm=5.60 migration=0014_saves_tool_tefillah_trainer.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest next: C on the Torah Trainer (S586; pointer: C); then M flash (S588), G torah (S589), D chrome (S590). ⚑ Unaudited (`9e702ae..a402f72`): the class roster, the hub, the footer and cracks, FM 5.60 — unseen by E, K, I, F, B. ⚑ The corpus's senses (S681, Awaiting P2): the headline for the maintainer — שָׁלוֹם "goodbye", בַּיִת "byte", סוּס "stud"; a content rule, not a loop fix. ⚑ Queue: the atlas's sign-table scroll (P4); the dictionary's Filter by Letter tiles (P4); S675's Hebrew catchword outside `lang="he"`. ⚑ Awaiting: S681, S662, S653, S652. ⚑ 51 seeds.
 
+_(prior)_ **Next session (S683):** **Branch `claude/zen-goldberg-1lov9k` (S676–S682, draft PR #427): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1551**, FM **5.60**, corpus ?v=**9**, the prayer catalog ?v=**9**. ⚑ drift: main=d2d922c sw=v1551 fm=5.60 migration=0014_saves_tool_tefillah_trainer.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest next: M on Flash Cards (S588; pointer: M); then G torah (S589), D chrome (S590), C trope (S591). ⚑ Unaudited (`9e702ae..a402f72`): the class roster, the hub, the footer and cracks, FM 5.60 — unseen by E, K, I, F, B. ⚑ The corpus's senses (S681, Awaiting P2): the headline for the maintainer — שָׁלוֹם "goodbye", בַּיִת "byte", סוּס "stud"; a content rule, not a loop fix. ⚑ Queue: the Torah Trainer's dark copy flash (P4, S682); the dictionary's Filter by Letter tiles (P4); the two trainers' Hebrew words outside `lang="he"` (S678 P4, both pages now). ⚑ Awaiting: S681, S662, S653, S652. ⚑ 51 seeds.
+
 
 <!-- archived by compact-ledger at the S679 boundary, 2026-11-23 -->
 ## Compaction (S679, 2026-11-23) — moved verbatim from the live ledger
@@ -99292,3 +99294,51 @@ _(prior)_ **Next session (S682):** **Branch `claude/zen-goldberg-1lov9k` (S676�
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 - C accessibility (one tool): 2026-11-24 (**S682 — `torah_trainer.html` (S586 → S682, 68 commits to the page): 92 census views × EN light 1280 / HE dark 800 / EN dark 1280 / HE light 800 with Sefaria's real texts + Sefaria down ×2; Tab walks 240 stops a cell; 30 keyboard scenarios. FOUND 2 + 2 P4, FIXED 2 (the first on both trainers) + 2 from the queue; 2 logged. C-next: trope (S591), generator (S594), chrome (S600).**)
+
+<!-- archived by compact-ledger at the S683 boundary, 2026-11-24 -->
+## Compaction (S683, 2026-11-24) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-11-24 | (S682 close-out) | branch/deploy note | **S682 = C on `torah_trainer.html` (S586 → S682, 68 commits to the page): 92 census views + 2 outages, Tab walks (240 stops a cell), 30 keyboard scenarios; FOUND 2 + 2 P4: FIXED 2 (the first on both trainers), 2 logged (the page at its cap); FIXED 2 more from the queue.** Draft PR #427 continues, `sw.js` v1547 → v1551; nothing live changed.
+
+- [x] 2026-11-24 | `928482d0` | tefillah_trainer.html, sw.js, probe | (S674 queue) **A stored favorite's Open title names its prayer from the first paint** (the catalog's arrival redraws the list) | probe 12 / 12 (before 8 / 12: "Open " in all four cells); smoke-tefillah 89 / 89
+
+- [x] 2026-11-23 | `804dd767` | trope_tutor.html, sw.js | (S677 queue) **The print block's dead `footer .footer-credits` rules go** | identity: footer pixels 56 / 56, 32 PDFs (302 sheets) by text and raster, 0 matches
+
+- [x] 2026-11-23 | (S677 close-out) | branch/deploy note | **S677 = N on `jewish-coloring-pages.html` (its first, override 4): FOUND 1, FIXED 1 + 2 from the queue; the Tutor's S597 P4 re-measured, not small.** Draft PR #427 continues, `sw.js` v1530 → v1533; nothing live changed.
+
+- [x] 2026-11-23 | `3fe80435` | jewish-coloring-pages.html, build-coloring-hub.mjs, shared-components.md, sw.js, probe | (S677 N) **Back from a sheet puts the tapped card where it was, in Hebrew too** | probe 23 / 23 (before 13 / 23); Back 0 / 30 off (was 5 / 30)
+
+### from Per-session log (one line per session)
+
+- 2026-11-24 | **S682** | iters: 5 | tools: torah_trainer ×2, tefillah_trainer ×2, trope_atlas, sw ×4, probes ×2 | patterns fixed: contrast-below-AA-on-a-tinted-or-coloured-plate ×1 (both trainers), button-focus-lost-to-its-own-rebuild ×1 | pass run: C (torah_trainer, S586 → S682; FOUND 2 + 2 P4, FIXED 2) + the atlas's S680 and the Tefillah's S674 P4s from the queue | micro-feature: — | gates: none asked
+
+- 2026-11-19 | **S662** | iters: 5 | tools: trope_atlas, torah_trainer, hebrew_blend_generator, resources, sw ×4, probe S662 | patterns fixed: text-field-under-16px-zooms-on-ios-focus ×2 | pass run: N (trope_atlas, first since S577; + torah_trainer, a clean surface buys a second; FOUND 2, FIXED 2) …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- C accessibility (one tool): 2026-11-24 (**S682 — `torah_trainer.html` (S586 → S682, 68 commits to the page): 92 census views × EN light 1280 / HE dark 800 / EN dark 1280 / HE light 800 with Sefaria's real texts + Sefaria down ×2; Tab walks 240 stops a cell; 30 keyboard scenarios. FOUND 2 + 2 P4, FIXED 2 (the first on both trainers) + 2 from the queue; 2 logged. C-next: trope (S591), generator (S594), chrome (S600).**)
+
+
+<!-- archived by compact-ledger at the S684 boundary, 2026-11-24 -->
+## Compaction (S684, 2026-11-24) — moved verbatim from the live ledger
+
+### from Done
+
+
+- [x] 2026-11-24 | `cc378071` | tefillah_trainer.html, sw.js | (S678 queue) **The last dead `footer .footer-credits` screen rule goes** | 0 elements; footer computed styles, pixels and the rule list (less exactly that rule) 12 / 12
+
+- [x] 2026-11-23 | `336f8454` | torah_trainer.html, trope_atlas.html, sw.js | (S678 queue) **The dead `footer .footer-credits` screen rule goes from two pages** (the Tefillah Trainer's at the cap) | `.footer-credits` 0 elements on both trees × 16 cells; footer computed styles 16 / 16 equal; the Torah Trainer's footer pixels 8 / 8
+
+- [x] 2026-11-23 | (S678 close-out) | branch/deploy note | **S678 = D on `tefillah_trainer.html` (its first): FOUND 1 (the Torah Trainer's S570 transliteration freeze here too, not small), FIXED 3 from the queue; 2 logged.** Draft PR #427 continues, `sw.js` v1533 → v1536; nothing live changed.
+
+### from Per-session log (one line per session)
+
+- 2026-11-24 | **S683** | iters: 5 | tools: flash_cards ×2, js/ivrit-classes.js (dashboard, name_tags, reading_assignments ×1), tefillah_trainer ×2, torah_trainer, locales, class-roster.md, sw ×4, probes ×2 | patterns fixed: pinned-english-without-lang ×2 (both trainers) | pass run: M (flash_cards, S588 → S683; FOUND 1 + 1 gate 3, both FIXED; 4 P4) | gate 3 asked → answered (restyle)
+
+- 2026-11-19 | **S663** | iters: 3 | tools: hebrew_blend_generator ×2, smoke-sync, ops.md, sw ×2, probes S663 ×2, a detector | patterns fixed: restore-step-undoes-a-saved-choice ×2 | pass run: P (trope_atlas, first since S578, clean; + hebrew_blend_generator, a clean surface buys a second; FOUND 3, …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- M aesthetics & visual design (one surface): 2026-11-24 (**S683 — 48th M, `flash_cards.html` (S588 → S683, 53 commits to the page): ~30 screens and dialogs × EN light / EN dark 1280, HE light / HE dark 800 with the real Google Fonts, a class seeded; arms: label-to-control alignment (plant 4 / 4), dark parity (plant 2 / 2), font census, the bottom gap suite-wide. FOUND 1 + 1 gate 3, FIXED both (the editor on 4 pages) + 2 from the queue; 4 P4 logged. M-next: chrome (S603), dashboard (S610), parsha_emojis (S616).**)
