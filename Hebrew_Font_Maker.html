@@ -1254,7 +1254,7 @@ header{--kin-pt:10px;--kin-pb:10px;--kin-gap:14px;}   /* this header's block pad
   .sa-set label, .sa-opts label { cursor: pointer; }
   .sa-set input, .sa-opts input { accent-color: var(--gold); }
   .sa-opts { display: flex; gap: 4px 16px; flex-wrap: wrap; margin-top: 9px; }
-  #saScopeTabRow[hidden], #saScopeLetterRow[hidden], #saScopeHint[hidden], #saStyleNote[hidden], #saLean[hidden] { display: none; }
+  #saScopeTabRow[hidden], #saScopeLetterRow[hidden], #saScopeHint[hidden], #saStyleNote[hidden], #saLean[hidden], #saRange[hidden], .sa-opts label[hidden] { display: none; }
   .italic-row[hidden] { display: none; }
   .italic-row .hint { margin-top: 4px; }
   .lean-seg { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 0.8rem; margin-top: 4px; }
@@ -1265,6 +1265,8 @@ header{--kin-pt:10px;--kin-pb:10px;--kin-gap:14px;}   /* this header's block pad
   .xf-wh { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 6px; font-size: 0.76rem; }
   .xf-wh label { display: flex; align-items: center; gap: 4px; }
   .xf-wh input[type=number] { width: 56px; }
+  .xf-stems { flex: 1 1 100%; cursor: pointer; }
+  .xf-stems input { accent-color: var(--gold); }
   .xf-lock[aria-pressed="true"] { background: var(--gold); color: #1a1a1a; border-color: var(--gold); }
   .lf-modal { max-width: 620px; }
   .lf-modal .lf-intro { margin: 0 0 10px; }
@@ -1952,6 +1954,15 @@ html[lang="he"] .tp-label{letter-spacing:normal;text-transform:none;}
             <option value="bolditalic" data-i18n="fontmaker.panels.style_bolditalic">Bold Italic</option>
           </select>
         </label>
+        <label class="fld"><span data-i18n="fontmaker.panels.width_name">Width name</span>
+          <select id="fontWidth" onchange="onMetaChange()" title="Is this font a narrower or a wider version of the family? The word joins the family name inside the font files (“Family Condensed”), so the font installs beside the normal-width one instead of replacing it. This only names the font — to change the letters themselves use Width…" data-i18n-title="fontmaker.panels.width_name_title">
+            <option value="condensed" data-i18n="fontmaker.panels.width_condensed">Condensed</option>
+            <option value="semicondensed" data-i18n="fontmaker.panels.width_semicondensed">Semi-condensed</option>
+            <option value="normal" selected data-i18n="fontmaker.panels.width_normal">Normal</option>
+            <option value="semiextended" data-i18n="fontmaker.panels.width_semiextended">Semi-extended</option>
+            <option value="extended" data-i18n="fontmaker.panels.width_extended">Extended</option>
+          </select>
+        </label>
         <div id="italicRow" class="italic-row" hidden>
           <label class="fld"><span data-i18n="fontmaker.panels.italic_angle">Italic angle (°)</span>
             <input type="number" id="italicAngle" min="0" max="60" step="0.5" inputmode="decimal" oninput="onItalicAngle()" aria-describedby="italicNote" title="How far the letters lean. The Italic file tells programs this angle, so the text cursor leans with the letters. Leave it empty to use the angle recorded when you slanted the letters. (Inside the font file a lean to the right is written as a negative angle.)" data-i18n-title="fontmaker.panels.italic_angle_title">
@@ -1964,6 +1975,7 @@ html[lang="he"] .tp-label{letter-spacing:normal;text-transform:none;}
         </div>
         <div class="ctl-row">
           <button class="ctl-btn" id="boldGenBtn" onclick="boldGenOpen(false)" title="Thicken (or lighten) every traced outline to create a Bold weight — with a live preview before anything changes." data-i18n="fontmaker.panels.boldgen_open" data-i18n-title="fontmaker.panels.boldgen_open_title">Generate Bold…</button>
+          <button class="ctl-btn" id="widthAllBtn" onclick="widthAllOpen()" title="Make every letter narrower or wider — a condensed or an extended version of the font — keeping the strokes as thick as they were, with a preview before anything changes." data-i18n="fontmaker.panels.widthall_open" data-i18n-title="fontmaker.panels.widthall_open_title">Width…</button>
           <button class="ctl-btn" id="scaleAllBtn" onclick="scaleAllOpen()" title="Make every letter larger or smaller at once — spacing, kerning, nikkud and the guide lines can follow — with a preview before anything changes." data-i18n="fontmaker.panels.scaleall_open" data-i18n-title="fontmaker.panels.scaleall_open_title">Scale all letters…</button>
           <button class="ctl-btn" id="slantAllBtn" onclick="slantAllOpen()" title="Lean every letter by an exact angle, from the baseline so the letters stay on the line — nikkud points follow — with a preview before anything changes." data-i18n="fontmaker.panels.slantall_open" data-i18n-title="fontmaker.panels.slantall_open_title">Slant all letters…</button>
         </div>
@@ -2334,6 +2346,7 @@ html[lang="he"] .tp-label{letter-spacing:normal;text-transform:none;}
       <button class="mode-btn" id="meModeUpload" onclick="meSetMode('upload')" aria-pressed="false" data-i18n="fontmaker.modals.markedit_mode_upload">Upload image</button>
     </div>
     <div class="hint" id="meLeanNote" style="margin-bottom:8px;" hidden data-i18n="fontmaker.modals.markedit_lean_note">This font's marks lean with its letters. Draw the mark upright here — the lean is added when the font is built.</div>
+    <div class="hint" id="meWideNote" style="margin-bottom:8px;" hidden data-i18n="fontmaker.modals.markedit_wide_note">This font's marks were narrowed or widened with its letters. Draw the mark at its normal width here — the change is added when the font is built.</div>
     <div id="meEditorSection">
       <div class="ctl-row" style="margin-bottom:8px;">
         <button class="ctl-btn" onclick="meAddPiece('dot')" data-i18n="fontmaker.modals.markedit_add_dot">+ Add dot</button>
@@ -2405,7 +2418,7 @@ html[lang="he"] .tp-label{letter-spacing:normal;text-transform:none;}
   </div>
 </div>
 
-<!-- Scale all letters (the glyph transform engine's first operation) -->
+<!-- Scale / Slant / Width (the glyph transform engine's dialog — one per tool of SA_TOOLS) -->
 <div class="overlay" id="scaleAllOverlay" onclick="if(event.target===this)scaleAllClose()">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="saTitle" style="max-width:560px;">
     <h3 id="saTitle"></h3>
@@ -2416,6 +2429,7 @@ html[lang="he"] .tp-label{letter-spacing:normal;text-transform:none;}
     <svg id="saAfter" class="sa-strip" dir="ltr" aria-hidden="true"></svg>
     <div class="inline" style="margin-top:10px;">
       <label for="saPct" id="saAmtLbl"></label>
+      <input type="range" id="saRange" min="50" max="150" step="1" value="100" style="flex:1;min-width:90px;" oninput="scaleAllSlide(this.value)" aria-describedby="saNote" hidden>
       <input type="number" id="saPct" min="25" max="400" step="1" value="100" inputmode="decimal" style="width:76px;" oninput="scaleAllSet(this.value)" aria-describedby="saNote">
       <div class="lean-seg" id="saLean" role="radiogroup" style="margin-top:0;" aria-label="Lean direction" data-i18n-aria-label="fontmaker.panels.lean_dir" title="Lean right tips the top of each letter to the right, as Latin italics do; lean left tips it to the left, as Hebrew handwriting usually does." data-i18n-title="fontmaker.slantall.dir_title" hidden>
         <label><input type="radio" name="saDir" value="left" onchange="scaleAllOpt()"> <span data-i18n="fontmaker.panels.lean_left">Lean left</span></label>
@@ -2432,6 +2446,8 @@ html[lang="he"] .tp-label{letter-spacing:normal;text-transform:none;}
     <div class="sa-opts">
       <label class="inline"><input type="checkbox" id="saSpacing" checked onchange="scaleAllOpt()"> <span id="saOptALbl"></span></label>
       <label class="inline"><input type="checkbox" id="saMarks" checked onchange="scaleAllOpt()"> <span id="saOptBLbl"></span></label>
+      <label class="inline" hidden><input type="checkbox" id="saOptC" onchange="scaleAllOpt()"> <span></span></label>
+      <label class="inline" hidden><input type="checkbox" id="saOptD" onchange="scaleAllOpt()"> <span></span></label>
     </div>
     <div id="saScopeHint" class="hint" style="margin-top:6px;" hidden></div>
     <div id="saStyleNote" class="hint" style="margin-top:6px;" hidden></div>
@@ -3981,14 +3997,16 @@ function metegPairFor(t) {   // {dv, dm} for below vowel cp / SHEVA_NA_GLYPH, or
   const G = metegGap();
   // Meteg-left: dv shifts the vowel right of center, dm parks the meteg left of it. Rounded at
   // the source — an un-rounded coordinate anywhere near the FEA makes feaLib reject the file.
-  return { dv: Math.round((g.W + G) / 2 - v.cx), dm: Math.round(-(v.W + G) / 2 - g.cx) };
+  const w = markWideK('nikkud');   // the pair is laid out on the upright, unsqueezed shapes and squeezed as one
+  return { dv: Math.round(w * ((g.W + G) / 2 - v.cx)), dm: Math.round(w * (-(v.W + G) / 2 - g.cx)) };
 }
 function metegPairRightFor(t) {   // the CGJ right-side form's mirror of metegPairFor — RECOMPUTED, never sign-flipped (the cx terms don't negate)
   if (t === '05BD') return null;
   const v = _metegInk(t), g = _metegInk('05BD');
   if (!v || !g) return null;
   const G = metegGap();
-  return { dv: Math.round(-(g.W + G) / 2 - v.cx), dm: Math.round((v.W + G) / 2 - g.cx) };
+  const w = markWideK('nikkud');
+  return { dv: Math.round(w * (-(g.W + G) / 2 - v.cx)), dm: Math.round(w * ((v.W + G) / 2 - g.cx)) };
 }
 
 /* ── Punctuation & More: default outlines (font units; baseline 0, letter-top 600).
@@ -4236,7 +4254,8 @@ function udSnap(s) {
     holamScale:  (project.font.holamScale  != null) ? project.font.holamScale  : null,
     tropScale:   (project.font.tropScale   != null) ? project.font.tropScale   : null,
     smrMarkScale: (project.font.smrMarkScale != null) ? project.font.smrMarkScale : null,
-    markLean: project.font.markLean || null }));
+    markLean: project.font.markLean || null,
+    markWide: project.font.markWide || null }));
   return null;
 }
 function udRestore(s, snap) {
@@ -4266,7 +4285,8 @@ function udRestore(s, snap) {
     project.font.markNudge = JSON.parse(JSON.stringify(sn.markNudge || {}));
     ['markScale','dageshScale','cholamScale','holamScale','tropScale','smrMarkScale'].forEach(k => {
       if (sn[k] != null) project.font[k] = sn[k]; else delete project.font[k]; });
-    if (sn.markLean) project.font.markLean = JSON.parse(JSON.stringify(sn.markLean)); else delete project.font.markLean; }
+    if (sn.markLean) project.font.markLean = JSON.parse(JSON.stringify(sn.markLean)); else delete project.font.markLean;
+    if (sn.markWide) project.font.markWide = JSON.parse(JSON.stringify(sn.markWide)); else delete project.font.markWide; }
 }
 function udNavTo(s) {                                    // show the affected item (no side effects — not selectItem)
   if (s.t !== 'item' || s.kind === 'accent') return;   // a Latin accent is a store, not a workspace kind — nothing to show
@@ -4645,14 +4665,26 @@ function markLean(kind) {
   const pl = o ? +o.place : 0, sh = o ? +o.shape : 0;
   return (Number.isFinite(pl) && Number.isFinite(sh) && (pl || sh)) ? { place: pl, shape: sh } : null;
 }
-function markLeanFn(kind, rawPolys) {   // → (x, y) => x' for points of this mark, or null when its kind is neither placed nor leaned
-  const L = markLean(kind); if (!L) return null;
+/* A width change that also squeezes the marks keeps one more number per kind, project.font.markWide[kind]
+   (a factor, 1 when absent; {t:'tropTune'} undo scope): the mark is squeezed sideways about its attach
+   point (x = 0 in mark-local space) BEFORE the lean, in the same readers. Measurements taken on the Raw
+   shapes (the hataf split, the meteg pairing) stay upright and unsqueezed, and what is built from them is
+   squeezed as one finished mark (metegPairFor, the hataf-meteg splice). */
+function markWideK(kind) {
+  const v = project && project.font && project.font.markWide ? +project.font.markWide[kind] : 1;
+  return (Number.isFinite(v) && v > 0) ? v : 1;
+}
+function markLeanFn(kind, rawPolys) {   // → (x, y) => x' for points of this mark, or null when its kind is neither placed, leaned nor squeezed
+  const L = markLean(kind), w = markWideK(kind); if (!L && w === 1) return null;
+  if (!L) return x => w * x;
   let minY = Infinity, maxY = -Infinity;
   (rawPolys || []).forEach(poly => poly.forEach(p => { if (p[1] < minY) minY = p[1]; if (p[1] > maxY) maxY = p[1]; }));
   const shift = (L.place - L.shape) * (Number.isFinite(minY) ? (minY + maxY) / 2 : 0);
-  return (x, y) => x + L.shape * y + shift;
+  return (x, y) => w * x + L.shape * y + shift;
 }
-function markLeanReset(kind) {   // shapes imported from a font are true-shape — they carry their own lean (the markScale = 1 rule at import)
+function markLeanReset(kind) {   // shapes imported from a font are true-shape — they carry their own lean and width (the markScale = 1 rule at import)
+  const mw = project.font.markWide;
+  if (mw && mw[kind] != null) { delete mw[kind]; if (!Object.keys(mw).length) delete project.font.markWide; }
   const ml = project.font.markLean; if (!ml || !ml[kind]) return;
   delete ml[kind]; if (!Object.keys(ml).length) delete project.font.markLean;
 }
@@ -5937,6 +5969,7 @@ function syncMetaToForm() {
   document.getElementById('author').value = project.font.author || '';
   document.getElementById('license').value = project.font.license || 'ofl';
   document.getElementById('fontStyle').value = fontStyleOf(project.font.style);
+  document.getElementById('fontWidth').value = fontWidthOf(project.font.width);
   syncItalicRow();
   syncOsFontLock();
   // Reference-font / input-mode controls now live in the dynamically-rendered workspace
@@ -6022,6 +6055,7 @@ function onMetaChange() {
   project.font.version = document.getElementById('fontVersion').value;
   project.font.author = document.getElementById('author').value;
   project.font.style = fontStyleOf(document.getElementById('fontStyle').value);
+  { const w = fontWidthOf(document.getElementById('fontWidth').value); if (w === 'normal') delete project.font.width; else project.font.width = w; }
   syncItalicRow();
   markDirty();   // meta edits autosave like every other edit
 }
@@ -9556,6 +9590,15 @@ async function applyFontImport(file, font, bytes, opts) {
         const srcItalic = !!((os2 && ((os2.fsSelection || 0) & 0x01)) || (head && ((head.macStyle || 0) & 0x02)) || importFontLean(font));
         project.font.style = fontStyleMake(srcBold, srcItalic);
         delete project.font.italicLean;   // the angle now comes from the imported letters' own records
+        // …and one that declares a width (OS/2 usWidthClass) its Condensed / Extended. The width word joins the
+        // family name on export, so a family name that already ends in it gives the word up here.
+        const wc = os2 ? +os2.usWidthClass : 5, wkey = (!Number.isFinite(wc) || wc === 5 || wc < 1 || wc > 9) ? 'normal' : wc <= 3 ? 'condensed' : wc === 4 ? 'semicondensed' : wc === 6 ? 'semiextended' : 'extended';
+        if (wkey === 'normal') delete project.font.width;
+        else {
+          project.font.width = wkey;
+          const rx = new RegExp('[\\s-]+' + fontWidthInfo(wkey).name.replace(/ /g, '[\\s-]?') + '$', 'i'), was = project.font.familyName || '', bare = was.replace(rx, '').trim();
+          if (rx.test(was) && bare) { project.font.familyName = bare; if (!project.osFont && project.font.reservedFontName === was) project.font.reservedFontName = bare; }
+        }
       } catch (e) {}
     }
     // Vertical metrics: the source font's own nominal line box + line gap, scaled to 1000 UPM, so the
@@ -9683,6 +9726,7 @@ async function applyFontImport(file, font, bytes, opts) {
     if (metricsImported) msg += ' ' + I18n.t('fontmaker.status.import_metrics');
     if (nKern) msg += ' ' + pl('fontmaker.status.import_kerning', nKern);
     if (opts.outlines && fontStyleOf(project.font.style) !== 'regular') msg += ' ' + I18n.t('fontmaker.status.style_detected', { style: I18n.t('fontmaker.panels.style_' + fontStyleOf(project.font.style)) });
+    if (opts.outlines && fontWidthOf(project.font.width) !== 'normal') msg += ' ' + I18n.t('fontmaker.status.width_detected', { width: I18n.t('fontmaker.panels.width_' + fontWidthOf(project.font.width)) });
     if (opts.outlines && n && !fontIsBold() && !opts.boldAfter) msg += ' ' + I18n.t('fontmaker.status.boldgen_hint');
     status(msg);
     markDirty();   // applyFontImport mutates project directly (a bulk import is a deliberate udDo exception) and used to leave _projectDirty false, so nothing scheduled an autosave
@@ -15223,6 +15267,7 @@ const XF_KINDS = {
   slant: { neutral: 0,   label: 'slant — ',  readout: 'nodeSlantV', fmt: v => Math.abs(v) + '°', done: v => I18n.t('fontmaker.status.nodes_slanted', { deg: Math.abs(v), dir: I18n.t(v < 0 ? 'fontmaker.slantall.dir_left' : 'fontmaker.slantall.dir_right') }) }
 };
 function xformSlantSigned(v) { return (slantDirDefault() === 'left' ? -1 : 1) * Math.max(0, Math.min(30, Math.abs(+v || 0))); }   // the field and slider hold a size; the lean toggle holds the direction
+let _nodeScaleStems = wsReadPrefs().nodeScaleStems === true;   // Width % narrows or widens the whole letter with its stems kept (the engine's width operation, for this one letter)
 let _nodeScaleLock = wsReadPrefs().nodeScaleLock !== false;   // Width % and Height % move together (the Keep proportions toggle; a view pref)
 function xformMatrix(kind, arg) {                            // → {a,b,c,d,label} or null on no-op / unknown kind
   if (kind === 'fliph') return { a:-1, b:0, c:0, d:1, label:'flip horizontal — ' };
@@ -15365,7 +15410,7 @@ function transformSelectedNodes(kind, angleDeg) {            // button / number-
   renderGrids(); renderStage(); renderControls(); syncItalicRow();
 }
 function xformScaleField(which, el) {                        // typing in Width % or Height % — with Keep proportions on, the other field follows
-  if (!_nodeScaleLock) return;
+  if (!_nodeScaleLock || xformStemsOn()) return;
   const o = document.getElementById(which === 'w' ? 'nodeScaleH' : 'nodeScaleW');
   if (o) o.value = el.value;
 }
@@ -15375,9 +15420,30 @@ function xformScaleLock(btn) {
   const w = document.getElementById('nodeScaleW'), h = document.getElementById('nodeScaleH');
   if (_nodeScaleLock && w && h) h.value = w.value;
 }
+function xformStemsOn() { return _nodeScaleStems && xformWhole() && !_penMode; }   // a stem cannot be kept on part of a letter, and the pen owns the outline while it draws
+function xformScaleStems(box) {
+  _nodeScaleStems = !!box.checked; wsSavePref('nodeScaleStems', _nodeScaleStems);
+  renderControls();   // Height and Keep proportions are switched off (or back on) with it
+}
 function xformScaleApply() {
   const w = +(document.getElementById('nodeScaleW') || {}).value || 100, h = +(document.getElementById('nodeScaleH') || {}).value || 100;
+  if (xformStemsOn()) { xformWidthStems(w); return; }
   if (w === h) transformSelectedNodes('scale', w); else transformSelectedNodes('scale2', [w, h]);
+}
+/* Width % with Keep stem thickness: the engine's width operation for this one letter — its advance and
+   side spaces follow, its anchors and pins move with the ink, one undo step. Not the point editor's own
+   scale (which turns about the outline's centre and leaves the advance alone). */
+function xformWidthStems(pct) {
+  const l = curLetter(); if (!l) return;
+  pct = Math.round(+pct || 0);
+  if (pct < GXW_MIN || pct > GXW_MAX) { status(I18n.t('fontmaker.widthall.note_range')); return; }
+  if (pct === 100) return;
+  udFlushPending(); _xformBase = null;   // a slider burst still open would write its old model back over the result
+  const res = gxWidthPlan(pct, { scope: 'letter', stems: true, spacing: false, marks: false, name: l.name }, { scope: 'letter', cp: l.codepoint, cat: _drawCatOf(l.codepoint) });
+  if (gxRefused(res.plan) || !res.plan.scopes.length) { status(gxRefusalText(res.plan, 'width', pct) || I18n.t('fontmaker.scaleall.note_nothing')); return; }
+  const warn = res.plan.warn.closed.length > 0;
+  if (!gxCommit(res.plan, null)) return;
+  status(I18n.t(warn ? 'fontmaker.node_editor.scale_stems_warn' : 'fontmaker.widthall.applied_letter', { pct }));
 }
 /* Live transform sliders — the fillet/reduce burst idiom, but for a RELATIVE op: the slider value
    is the total rotation/scale since drag start (reset-from-base each tick), and it snaps back to
@@ -15540,12 +15606,13 @@ function nodeEditPanelHTML(l) {
     </div>
     <div class="xf-wh">
       <label>${I18n.t('fontmaker.node_editor.scale_w')} <input type="number" id="nodeScaleW" value="100" step="1" min="25" max="400" oninput="xformScaleField('w', this)" aria-label="${esc(I18n.t('fontmaker.node_editor.scale_w_aria'))}"></label>
-      <label>${I18n.t('fontmaker.node_editor.scale_h')} <input type="number" id="nodeScaleH" value="100" step="1" min="25" max="400" oninput="xformScaleField('h', this)" aria-label="${esc(I18n.t('fontmaker.node_editor.scale_h_aria'))}"></label>
-      <button type="button" class="ctl-btn xf-lock" aria-pressed="${_nodeScaleLock ? 'true' : 'false'}" onclick="xformScaleLock(this)" title="${esc(I18n.t('fontmaker.node_editor.scale_lock_title'))}">${I18n.t('fontmaker.node_editor.scale_lock')}</button>
-      <button class="ctl-btn" onclick="xformScaleApply()" title="${esc(I18n.t('fontmaker.node_editor.scale_apply_title'))}">${I18n.t('fontmaker.node_editor.apply')}</button>
+      <label>${I18n.t('fontmaker.node_editor.scale_h')} <input type="number" id="nodeScaleH" value="100" step="1" min="25" max="400" oninput="xformScaleField('h', this)" aria-label="${esc(I18n.t('fontmaker.node_editor.scale_h_aria'))}" ${xformStemsOn() ? 'disabled' : ''}></label>
+      <button type="button" class="ctl-btn xf-lock" aria-pressed="${_nodeScaleLock ? 'true' : 'false'}" onclick="xformScaleLock(this)" title="${esc(I18n.t('fontmaker.node_editor.scale_lock_title'))}" ${xformStemsOn() ? 'disabled' : ''}>${I18n.t('fontmaker.node_editor.scale_lock')}</button>
+      <button class="ctl-btn" onclick="xformScaleApply()" title="${esc(I18n.t(xformStemsOn() ? 'fontmaker.node_editor.scale_stems_apply_title' : 'fontmaker.node_editor.scale_apply_title'))}">${I18n.t('fontmaker.node_editor.apply')}</button>
+      <label class="xf-stems" title="${esc(I18n.t('fontmaker.node_editor.scale_stems_title'))}"><input type="checkbox" id="nodeScaleStems" ${_nodeScaleStems ? 'checked' : ''} ${(cnt || _penMode) ? 'disabled' : ''} onchange="xformScaleStems(this)"> ${I18n.t('fontmaker.node_editor.scale_stems')}</label>
     </div>
     <div class="hint" style="font-size:0.68rem;margin-top:6px;">${I18n.t(cnt ? 'fontmaker.node_editor.xform_anchor_note_sel' : 'fontmaker.node_editor.xform_anchor_note_whole')}</div>
-    <div class="ctl-row" style="margin-top:6px;"><button class="ctl-btn" onclick="scaleAllOpen()" title="${esc(I18n.t('fontmaker.panels.scaleall_open_title'))}">${I18n.t('fontmaker.panels.scaleall_open')}</button><button class="ctl-btn" onclick="slantAllOpen()" title="${esc(I18n.t('fontmaker.panels.slantall_open_title'))}">${I18n.t('fontmaker.panels.slantall_open')}</button></div>
+    <div class="ctl-row" style="margin-top:6px;"><button class="ctl-btn" onclick="scaleAllOpen()" title="${esc(I18n.t('fontmaker.panels.scaleall_open_title'))}">${I18n.t('fontmaker.panels.scaleall_open')}</button><button class="ctl-btn" onclick="slantAllOpen()" title="${esc(I18n.t('fontmaker.panels.slantall_open_title'))}">${I18n.t('fontmaker.panels.slantall_open')}</button><button class="ctl-btn" onclick="widthAllOpen()" title="${esc(I18n.t('fontmaker.panels.widthall_open_title'))}">${I18n.t('fontmaker.panels.widthall_open')}</button></div>
   </details>
   <details class="node-xform npnl-disc" ${_filletOpen ? 'open' : ''} ontoggle="_filletOpen = this.open; npnlSaveOpen('nodeFilletOpen', this.open)">
     <summary>${cnt ? I18n.t('fontmaker.node_editor.round_summary_sel', {count: cnt}) : I18n.t('fontmaker.node_editor.round_summary')}</summary>
@@ -16710,7 +16777,7 @@ function openMarkEdit(kind, cp, opts) {
   }
   meUndoReset();
   meRender();
-  { const ln = document.getElementById('meLeanNote'), ml = markLean(kind); if (ln) ln.hidden = !(ml && ml.shape); }   // editing shows the upright shape; say so when the font adds a lean on top
+  { const ln = document.getElementById('meLeanNote'), ml = markLean(kind), wn = document.getElementById('meWideNote'); if (ln) ln.hidden = !(ml && ml.shape); if (wn) wn.hidden = markWideK(kind) === 1; }   // editing shows the upright shape; say so when the font adds a lean on top
   aOpenModal('markEditOverlay', closeMarkEdit);
 }
 function closeMarkEdit() { meActive = false; meItem = null; meDrag = null; meGlobal = false; meUndoReset(); aCloseModal('markEditOverlay'); }
@@ -17299,12 +17366,12 @@ function gxOutlineExtent(o) {   // → { minX, maxX, minY, maxY, worst } over th
 }
 const GX_TROP_SIDES = [['tropAboveL', 'tropAbove', -1], ['tropAboveR', 'tropAbove', 1], ['tropBelowL', 'tropBelow', -1], ['tropBelowR', 'tropBelow', 1]];
 function gxLetterPatch(l, spec, ctx) {   // PURE: one letter's new field values → { set, lost, gone, worst, off, drawOut }
-  const T = spec.T, a = T[0], out = { set: {}, lost: 0, gone: false, worst: 0, off: false, drawOut: false };
+  const T = spec.T, TA = spec.TA || T, a = T[0], out = { set: {}, lost: 0, gone: false, worst: 0, off: false, drawOut: false, closed: false };   // T: the outline, photo and stroke centre lines; TA: anchors and pins (the same map unless the operation says otherwise)
   const see = v => { const m = Math.abs(v); if (m > out.worst) out.worst = m; };
   const hasImage = !!(l.source && l.source.dataUrl), d = l.draw, hasDraw = !!(d && Array.isArray(d.strokes) && d.strokes.length);
   if (l.contours && l.contours.length) {
-    const o = gxOutline(l.contours.map(c => c.points), l.curves, T);
-    out.lost = o.lost;
+    const o = spec.out || gxOutline(l.contours.map(c => c.points), l.curves, T);   // an operation whose outline step is more than the affine map hands in its own result (the width's stem step)
+    out.lost = o.lost; if (o.closed) out.closed = true;
     if (!o.rings.length) out.gone = true;
     else {
       out.set.contours = o.rings.map((pts, j) => Object.assign({}, l.contours[o.keep[j]], { points: pts }));
@@ -17314,10 +17381,10 @@ function gxLetterPatch(l, spec, ctx) {   // PURE: one letter's new field values 
       out.off = (hasImage || hasDraw) && (e.minX < W.x0 || e.maxX > W.x1 || e.minY < W.y0 || e.maxY > W.y1);
     }
   }
-  if (l.advance != null) { const v = Math.max(0, spec.advance != null ? spec.advance : Math.round(l.advance * a)); out.set.advance = v; see(v); }
+  if (l.advance != null || (spec.setAdvance && spec.advance != null)) { const v = Math.max(0, spec.advance != null ? spec.advance : Math.round(l.advance * a)); out.set.advance = v; see(v); }   // setAdvance: a letter still on the default width gets its new one written
   if (l.lsb != null && !spec.keepLsb) out.set.lsb = Math.max(0, Math.round(a * l.lsb + T[4]));
   if (l.rsb != null && !spec.keepRsb) out.set.rsb = Math.max(0, Math.round(l.rsb * a));
-  const mapPt = p => { const q = gxRPt(T, [p.x, p.y]); see(q[0]); see(q[1]); return Object.assign({}, p, { x: q[0], y: q[1] }); };
+  const mapPt = p => { const q = gxRPt(TA, [p.x, p.y]); see(q[0]); see(q[1]); return Object.assign({}, p, { x: q[0], y: q[1] }); };
   const okPt = p => !!p && Number.isFinite(p.x) && Number.isFinite(p.y);
   if (l.anchors) {
     const an = {};
@@ -17352,11 +17419,11 @@ function gxLetterPatch(l, spec, ctx) {   // PURE: one letter's new field values 
   // redraw the letter from its strokes.
   if (hasDraw) {
     let bad = false;
-    const wk = k != null ? k : Math.sqrt(Math.max(0, T[0] * T[3] - T[1] * T[2]));
+    const wk = spec.penK != null ? spec.penK : (k != null ? k : Math.sqrt(Math.max(0, T[0] * T[3] - T[1] * T[2])));   // penK: the operation keeps the pen as it is (stems kept — only the centre lines move)
     const mp = q => { const p = gxMap(T, q[0], q[1]); if (p[0] < GX_DRAW_MIN || p[0] > GX_DRAW_MAX || p[1] < GX_DRAW_MIN || p[1] > GX_DRAW_MAX) bad = true; return p; };
     const strokes = d.strokes.map(s => {
       const o = Object.assign({}, s, { w: Math.round(s.w * wk * 100) / 100, pts: (s.pts || []).map(q => { const p = mp(q); return [p[0], p[1], q[2]]; }) });
-      if (s.st === 'c' && k == null) {          // chisel: map the nib edge (cos na, sin na)·w
+      if (s.st === 'c' && k == null && spec.penK == null) {          // chisel: map the nib edge (cos na, sin na)·w
         const na = ((s.na != null ? s.na : 90) * Math.PI) / 180, ex = T[0] * Math.cos(na) + T[1] * Math.sin(na), ey = T[2] * Math.cos(na) + T[3] * Math.sin(na);
         o.na = ((Math.round(Math.atan2(ey, ex) * 180 / Math.PI) % 180) + 180) % 180;
         o.w = Math.round(s.w * Math.hypot(ex, ey) * 100) / 100;
@@ -17394,26 +17461,39 @@ function gxPlan(op, set) {
   const fX = (all && op.fontX != null && op.fontX !== 1) ? op.fontX : null;
   const fY = (all && op.fontY != null && op.fontY !== 1) ? op.fontY : null;
   const mf = (all && op.markFactor != null && op.markFactor !== 1) ? op.markFactor : null;
-  const plan = { label: op.label, items: [], precomp: [], font: {}, scopes: [], count: 0,
-                 refuse: { range: [], gone: [], draw: [], mirror: false }, warn: { lost: [], off: [], held: [] } };
+  // The horizontal factor has four audiences. fontX is letter geometry (the default side bearings, the trop
+  // side-column spread, vertical user guides); spacing and kerning (spaceX), the vowel–trop pair shift
+  // (pairX) and a typed meteg gap (gapX) follow it unless the operation names them — a width change scales
+  // letter geometry always, the spacing by an option, the pair shift only when it squeezes the marks.
+  const grp = key => { const v = op[key] !== undefined ? op[key] : op.fontX; return (all && v != null && v !== 1) ? v : null; };
+  const fS = grp('spaceX'), fP = grp('pairX'), fG = grp('gapX');
+  const mw = (all && op.markWide != null && op.markWide !== 1) ? op.markWide : null;
+  const plan = { label: op.label, items: [], precomp: [], font: {}, scopes: [], count: 0, adv: { before: 0, after: 0 },
+                 refuse: { range: [], gone: [], draw: [], mirror: false, narrow: op.refuse === 'narrow' }, warn: { lost: [], off: [], held: [], closed: [] } };
   const held = new Set();
   const lim = (v, lo, hi, tag) => { const r = Math.round(v); if (r < lo || r > hi) { held.add(tag); return Math.max(lo, Math.min(hi, r)); } return r; };
   const big = (v, name) => { if (Math.abs(v) > GX_COORD_MAX && !plan.refuse.range.includes(name)) plan.refuse.range.push(name); };
   const ctx = {};
   let tune = null;
   /* ── font-wide lengths ── */
-  if (fX != null) {
-    const prev = F.tropSideOffset != null ? F.tropSideOffset : TROP_POS_SHIFT, raw = Math.round(prev * fX), next = Math.max(0, Math.min(600, raw));
-    tune = { tropSideOffset: next };
-    if (next === raw) ctx.trop = { prev, next }; else held.add('trop_spread');   // clamped → the columns are simply mapped, not re-tied
-    const vp = F.trop && F.trop.vowelPair;
-    if (vp) { const nv = JSON.parse(JSON.stringify(vp)); Object.keys(nv).forEach(c => { if (nv[c] && Number.isFinite(+nv[c].dx)) nv[c].dx = lim(nv[c].dx * fX, -300, 300, 'pair_shift'); }); tune.vowelPair = nv; }
-    if (F.nikkud && typeof F.nikkud.metegGap === 'number' && Number.isFinite(F.nikkud.metegGap)) tune.metegGap = lim(F.nikkud.metegGap * fX, 0, 200, 'meteg_gap');
-    if (Array.isArray(F.kerning) && F.kerning.length) plan.font.kerning = F.kerning.map(kp => {
-      if (!kp || !Number.isFinite(+kp.value)) return kp;
-      const v = Math.round(kp.value * fX); big(v, I18n.t('fontmaker.scaleall.thing_kerning')); return Object.assign({}, kp, { value: v });
-    });
+  { // A side trop column still at its default follows the font's spread: the new one when the spread scales,
+    // the same one when it does not (one letter, one tab) — mapped on its own it would stop following the slider.
+    const prev = F.tropSideOffset != null ? F.tropSideOffset : TROP_POS_SHIFT;
+    if (fX != null) {
+      const raw = Math.round(prev * fX), next = Math.max(0, Math.min(600, raw));
+      tune = { tropSideOffset: next };
+      if (next === raw) ctx.trop = { prev, next }; else held.add('trop_spread');   // clamped → the columns are simply mapped, not re-tied
+    } else ctx.trop = { prev, next: prev };
   }
+  if (fP != null) {
+    const vp = F.trop && F.trop.vowelPair;
+    if (vp) { const nv = JSON.parse(JSON.stringify(vp)); Object.keys(nv).forEach(c => { if (nv[c] && Number.isFinite(+nv[c].dx)) nv[c].dx = lim(nv[c].dx * fP, -300, 300, 'pair_shift'); }); tune = tune || {}; tune.vowelPair = nv; }
+  }
+  if (fG != null && F.nikkud && typeof F.nikkud.metegGap === 'number' && Number.isFinite(F.nikkud.metegGap)) { tune = tune || {}; tune.metegGap = lim(F.nikkud.metegGap * fG, 0, 200, 'meteg_gap'); }
+  if (fS != null && Array.isArray(F.kerning) && F.kerning.length) plan.font.kerning = F.kerning.map(kp => {
+    if (!kp || !Number.isFinite(+kp.value)) return kp;
+    const v = Math.round(kp.value * fS); big(v, I18n.t('fontmaker.scaleall.thing_kerning')); return Object.assign({}, kp, { value: v });
+  });
   if (fX != null || fY != null) {
     const m = Object.assign({}, F.metrics), yv = v => Math.round(b + fY * (v - b));
     if (fY != null) {
@@ -17425,11 +17505,15 @@ function gxPlan(op, set) {
     }
     if (fX != null) ['defaultLSB', 'defaultRSB'].forEach(key => { if (Number.isFinite(em[key])) m[key] = Math.round(em[key] * fX); });
     plan.font.metrics = m;
+  }
+  if (fS != null || fY != null) {
     const sp0 = F.spacing || {}, sp = {};
     const one = (key, f, lo, hi, tag) => { if (f != null && Number.isFinite(+sp0[key])) sp[key] = lim(sp0[key] * f, lo, hi, tag); };
-    one('letterSpacing', fX, -40, 200, 'letter_spacing'); one('wordSpacing', fX, 80, 600, 'word_spacing');
-    one('kernTarget', fX, -40, 160, 'kern_target'); one('lineSpacing', fY, 0, 500, 'line_spacing');
+    one('letterSpacing', fS, -40, 200, 'letter_spacing'); one('wordSpacing', fS, 80, 600, 'word_spacing');
+    one('kernTarget', fS, -40, 160, 'kern_target'); one('lineSpacing', fY, 0, 500, 'line_spacing');
     if (Object.keys(sp).length) plan.font.spacing = sp;
+  }
+  if (fX != null || fY != null) {
     const gi = project.guides && Array.isArray(project.guides.items) ? project.guides.items : [];
     if (gi.length) plan.font.guides = Object.assign({}, project.guides, { items: gi.map(g => {
       if (!g || !Number.isFinite(+g.pos)) return g;
@@ -17449,30 +17533,45 @@ function gxPlan(op, set) {
     plan.markSize = sz;
     // Latin accents have no size setting (they bake at scale 1), so their shape is what gets scaled: an
     // imported accent in place, a built-in one that actually ships through a scaled custom copy.
+    plan.font.accents = gxAccentPatch(mf, mf);
+  }
+  /* ── mark width (a width change that also squeezes the marks): one factor per mark kind, applied by the
+        public mark readers about the attach point — no nikkud or trop outline is edited. Latin accents have
+        no such setting, so their shapes are squeezed in place, as a resize does. ── */
+  if (mw != null) {
+    const wd = {};
+    MARK_STORE_KINDS.forEach(kind => { const r = Math.round(markWideK(kind) * mw * 1e6) / 1e6, c = Math.max(0.25, Math.min(4, r)); if (c !== r) held.add('mark_width'); if (c !== 1) wd[kind] = c; });
+    tune = tune || {}; tune.markWide = wd;
+    const acc = gxAccentPatch(mw, 1);
+    if (acc) plan.font.accents = acc;
+  }
+  function gxAccentPatch(ax, ay) {   // → the accent items a mark resize writes, or undefined
     const acc = [], store = (F.accent && F.accent.custom) || {};
     Object.keys(LATIN_ACCENTS).forEach(cp => {
-      const am = store[cp], rp = p => [Math.round(p[0] * mf), Math.round(p[1] * mf)];
+      const am = store[cp], rp = p => [Math.round(p[0] * ax), Math.round(p[1] * ay)];
       if (am && Array.isArray(am.contours) && am.contours.length) {
         const st = { contours: am.contours.map(c => Object.assign({}, c, { points: c.points.map(rp) })) };
-        if (Array.isArray(am.curves)) st.curves = am.curves.map(cv => cv ? scaleRoundCurve(cv, mf) : cv);
+        if (Array.isArray(am.curves)) st.curves = am.curves.map(cv => cv ? { winding: cv.winding, start: rp(cv.start), segments: cv.segments.map(seg => ({ type: seg.type, pts: seg.pts.map(rp) })) } : cv);
         const aa = am.attachAnchor;
-        if (aa && Number.isFinite(aa.x) && Number.isFinite(aa.y)) st.attachAnchor = { x: Math.round(aa.x * mf), y: Math.round(aa.y * mf) };
+        if (aa && Number.isFinite(aa.x) && Number.isFinite(aa.y)) st.attachAnchor = { x: Math.round(aa.x * ax), y: Math.round(aa.y * ay) };
         acc.push({ cp, create: false, set: st });
       } else if (F.addEnglishLetters && (project.precomposed || []).some(pc => pc.mark === cp && (project.letters.find(x => x.codepoint === pc.base) || {}).contours)) {
         acc.push({ cp, create: true, set: { designMode: 'upload', curves: null, attachAnchor: { x: 0, y: 0 },
           contours: LATIN_ACCENTS[cp].glyph.map(r => { const pts = r.map(rp); return { winding: signedArea(pts) < 0 ? 'cw' : 'ccw', points: pts }; }) } });
       }
     });
-    if (acc.length) plan.font.accents = acc;
+    return acc.length ? acc : undefined;
   }
+  if (plan.font.accents === undefined) delete plan.font.accents;
   /* ── where the marks sit under a leaning font (markLean): every kind follows the letters' lean
         (`place`); the shapes take it too only when asked (`shape`) ── */
-  if (all && op.lean) {
-    const ml = {};
+  const ls = (all && op.leanScale != null && op.leanScale !== 1 && F.markLean) ? op.leanScale : null;   // a width change narrows a lean with the letters (a lean is a tangent)
+  if (all && (op.lean || ls != null)) {
+    const ml = {}, k1 = ls != null ? ls : 1, add = op.lean || 0;
     MARK_STORE_KINDS.forEach(kind => {
       const cur = markLean(kind) || { place: 0, shape: 0 };
       const r6 = v => { const r = Math.round(v * 1e6) / 1e6, c = Math.max(-2, Math.min(2, r)); if (c !== r) held.add('mark_lean'); return c; };
-      const pl = r6(cur.place + op.lean), sh = r6(cur.shape + (op.markShape ? op.lean : 0));
+      const pl = r6(cur.place * k1 + add), sh = r6(cur.shape * k1 + (op.markShape ? add : 0));
       if (pl || sh) ml[kind] = { place: pl, shape: sh };
     });
     tune = tune || {};
@@ -17492,6 +17591,8 @@ function gxPlan(op, set) {
     if (r.drawOut) plan.refuse.draw.push(nm);
     if (r.lost && !r.gone) plan.warn.lost.push(nm);
     if (r.off) plan.warn.off.push(nm);
+    if (r.closed) plan.warn.closed.push(nm);
+    if (r.set.contours && r.set.advance != null) { plan.adv.before += letterAdvance(l); plan.adv.after += r.set.advance; }   // what the text's length becomes
     if (!Object.keys(r.set).length) return;
     const it = { l, set: r.set };
     // An operation may stamp a record on every letter it changes (the slant keeps each letter's lean):
@@ -17507,14 +17608,15 @@ function gxPlan(op, set) {
     if (spec && spec !== 'mirror') {
       ['anchor', 'holam'].forEach(key => {
         const p = pc[key];
-        if (p && Number.isFinite(p.x) && Number.isFinite(p.y)) { const q = gxRPt(spec.T, [p.x, p.y]); big(q[0], nm); big(q[1], nm); w[key] = Object.assign({}, p, { x: q[0], y: q[1] }); }   // other keys (anchor.auto) ride along
+        if (p && Number.isFinite(p.x) && Number.isFinite(p.y)) { const q = gxRPt(spec.TA || spec.T, [p.x, p.y]); big(q[0], nm); big(q[1], nm); w[key] = Object.assign({}, p, { x: q[0], y: q[1] }); }   // other keys (anchor.auto) ride along
       });
       ['src', 'srcDagesh'].forEach(key => {   // an outline the source font drew whole — rebuilt as a NEW object (the precomp undo snapshot shares the old one by reference)
         const s = pc[key];
         if (!s || !Array.isArray(s.contours) || !s.contours.length) return;
-        const sp = gxSpec(op, { contours: s.contours.map(r => ({ points: r })), advance: s.advance, lsb: null, rsb: null });
+        const sp = gxSpec(op, { contours: s.contours.map(r => ({ points: r })), curves: s.curves || null, advance: s.advance, lsb: null, rsb: null, codepoint: precompBaseCp(pc) });
         if (!sp || sp === 'mirror') return;
-        const o = gxOutline(s.contours, s.curves, sp.T);
+        const o = sp.out || gxOutline(s.contours, s.curves, sp.T);
+        if (o.closed && !plan.warn.closed.includes(nm)) plan.warn.closed.push(nm);
         const adv = Math.max(0, sp.advance != null ? sp.advance : Math.round((+s.advance || 0) * sp.T[0]));
         if (!o.rings.length) { plan.refuse.gone.push(nm); return; }
         if (gxOutlineExtent(o).worst > GX_COORD_MAX || adv > GX_SRC_ADV_MAX) big(GX_COORD_MAX + 1, nm);
@@ -17539,20 +17641,28 @@ function gxPlan(op, set) {
   if (plan.font.sheets) plan.scopes.push({ t: 'sheetFit' });
   return plan;
 }
-function gxRefused(plan) { const r = plan.refuse; return r.mirror || !!(r.range.length || r.gone.length || r.draw.length); }
+function gxRefused(plan) { const r = plan.refuse; return r.mirror || r.narrow || !!(r.range.length || r.gone.length || r.draw.length); }
 /* After undo / redo of a gx entry too: a placement carried to the next fresh letter, and the raw-trace
-   cache, belong to the shape they were made at. An operation may also have switched the font's Style
-   (metadata — outside every undo scope, like the rest of Font Details): the entry remembers both
-   values, and undo / redo put the other one back — but only while Style is still what the operation
-   left it at, so a choice the teacher made since is never overwritten. */
+   cache, belong to the shape they were made at. An operation may also have set Font Details fields
+   (the Style, the Width name, a typed Italic angle — metadata, outside every undo scope): the entry
+   remembers each one's two values, and undo / redo put the other one back — but only while the field
+   is still what the operation left it at, so a choice the teacher made since is never overwritten. */
+const GX_META = {   // the Font Details fields an operation may set with its change: how each is read and written (absent = the field's default)
+  style:      { get: F => fontStyleOf(F.style), put: (F, v) => { F.style = v; } },
+  width:      { get: F => fontWidthOf(F.width), put: (F, v) => { if (v === 'normal') delete F.width; else F.width = v; } },
+  italicLean: { get: F => (Number.isFinite(+F.italicLean) && F.italicLean != null) ? +F.italicLean : null, put: (F, v) => { if (v == null) delete F.italicLean; else F.italicLean = v; } }
+};
 function gxAfterHistory(e, isUndo) {
   lastSavedAnchors = null; _rawTrace = null;
-  const m = e && e.gxMeta;
-  if (m) { const from = isUndo ? m.after : m.before, to = isUndo ? m.before : m.after;
-    if (fontStyleOf(project.font.style) === from) { project.font.style = to; syncMetaToForm(); } }
+  let any = false;
+  ((e && e.gxMeta) || []).forEach(m => {
+    const io = GX_META[m.key], from = isUndo ? m.after : m.before, to = isUndo ? m.before : m.after;
+    if (io && io.get(project.font) === from) { io.put(project.font, to); any = true; }   // only while the field is still what the operation left
+  });
+  if (any) syncMetaToForm();
   syncItalicRow();
 }
-function gxCommit(plan, meta) {   // → true when the change was made (one undo entry); meta: { style } to set with it
+function gxCommit(plan, meta) {   // → true when the change was made (one undo entry); meta: the Font Details fields to set with it ({ style, width, italicLean } — GX_META)
   if (!plan || gxRefused(plan) || !plan.scopes.length) return false;
   const F = project.font, f = plan.font;
   (f.accents || []).forEach(a => { if (a.create) customMark('accent', a.cp); });   // create BEFORE the snapshot, so undo has an item to put back (the Generate Bold idiom); empty, it still reads as the built-in accent
@@ -17569,6 +17679,7 @@ function gxCommit(plan, meta) {   // → true when the change was made (one undo
       if (f.tune.metegGap != null && F.nikkud) F.nikkud.metegGap = f.tune.metegGap;
       if (f.tune.sizes) Object.assign(F, f.tune.sizes);
       if (f.tune.markLean) { if (Object.keys(f.tune.markLean).length) F.markLean = f.tune.markLean; else delete F.markLean; }
+      if (f.tune.markWide) { if (Object.keys(f.tune.markWide).length) F.markWide = f.tune.markWide; else delete F.markWide; }
     }
     if (f.guides) project.guides = f.guides;
     if (f.sheets) f.sheets.forEach(([id, v]) => { const sh = (project.combinedSheets || []).find(x => x.id === id); if (sh) sh.fitScale = v; });
@@ -17577,10 +17688,13 @@ function gxCommit(plan, meta) {   // → true when the change was made (one undo
   const top = undoStack[undoStack.length - 1], done = !!top && top !== top0;
   if (!done) return false;
   top.gx = true;                     // undo() / redo() run gxAfterHistory for this entry
-  if (meta && meta.style && fontStyleOf(meta.style) !== fontStyleOf(F.style)) {
-    top.gxMeta = { before: fontStyleOf(F.style), after: fontStyleOf(meta.style) };
-    F.style = top.gxMeta.after; syncMetaToForm();   // every non-form writer of Style syncs the form: onMetaChange reads it back from there
-  }
+  const gm = [];
+  Object.keys(meta || {}).forEach(key => {
+    const io = GX_META[key]; if (!io || meta[key] === undefined) return;
+    const before = io.get(F), after = meta[key];
+    if (before !== after) { io.put(F, after); gm.push({ key, before, after: io.get(F) }); }
+  });
+  if (gm.length) { top.gxMeta = gm; syncMetaToForm(); }   // every non-form writer of a Font Details field syncs the form: onMetaChange reads it back from there
   gxAfterHistory();
   _fidelityLast = null;              // the import report measures against the source font's own bytes — after a transform every row would read "off", and its Apply would write the old positions back
   _hiddenContours.clear();           // contour indices may have shifted
@@ -17621,19 +17735,310 @@ function gxSlantOp(deg, o) {   // o: { scope, marks, name }
     fontX: null, fontY: null, markFactor: null
   };
 }
-let saState = null;   // { tool, pct | deg + dir, scope, spacing | style, marks, canTab, canLetter, cat, cp, name }
+/* ── Width — the engine's third operation: letters made narrower or wider, with their stems kept ──
+   A plain horizontal scale thins every upright stroke when it condenses and fattens it when it
+   widens. "Keep stem thickness" undoes exactly that and nothing else: after the X scale every point
+   of the outline slides SIDEWAYS ONLY, by an amount set by how upright the outline runs there.
+   For a straight stroke of thickness t whose edge runs along the unit direction u AFTER the scale,
+   the one sideways shift per edge that gives the stroke its old thickness back (measured across the
+   stroke, not along the horizontal) is   (t/2)·(1 − s·M)/|u.y|,  M = √(u.x²/s² + u.y²),   outward:
+   t·(1 − s)/2 for an upright edge, 0 for a flat one, in between for a diagonal; negative (the stroke
+   is thinned back) when s > 1. A point takes the mean of its two legs' shifts weighted by u.y² —
+   so a flat edge never drags a corner, an apex stays put, and since no y is ever written the
+   letter's height and every horizontal stroke are unchanged by construction. A curve is first cut
+   where it passes a leftmost / rightmost / top / bottom point (a bowl drawn as one sweep has flat
+   end tangents and would get no correction), then each handle rides with its own end point.
+   t is the letter's own main upright stroke (gxwStem), held near its alphabet tab's median; an edge
+   whose own stroke is THINNER takes that thinner value (gxwShape's localT), so a hairline is not
+   fattened when condensing nor eaten when widening. Which side of a ring is ink is tested on the
+   outline itself (gxwSides) — imported OTF outlines and the built-in punctuation run the other way
+   round from traced letters, so the stored direction label is never trusted here. ── */
+const GXW_MIN = 50, GXW_MAX = 150, GXW_PRESETS = [85, 92, 100, 108, 115];
+const GXW_WIN = 8;            // a polygon's direction at a vertex is read over this much outline, so a noisy tracing does not jitter
+const GXW_LOCAL_MAX = 1500;   // above this many points a letter uses its one stem value for every edge (the per-edge look-across is quadratic)
+function gxwMedian(a) { if (!a.length) return null; const b = a.slice().sort((x, y) => x - y), m = b.length >> 1; return b.length % 2 ? b[m] : (b[m - 1] + b[m]) / 2; }
+function gxwEdges(rings) {   // every non-flat edge: [x1, y1, x2, y2, ring]
+  const E = [];
+  rings.forEach((r, ri) => { const n = r.length; for (let i = 0; i < n; i++) { const a = r[i], b = r[(i + 1) % n]; if (a[1] !== b[1]) E.push([a[0], a[1], b[0], b[1], ri]); } });
+  return E;
+}
+function gxwRuns(E, y) {   // the ink (nonzero winding) along the horizontal line at y: [[x0, x1, edge0, edge1], …]
+  const cr = [];
+  for (let i = 0; i < E.length; i++) { const e = E[i]; if ((e[1] > y) !== (e[3] > y)) cr.push([e[0] + (y - e[1]) * (e[2] - e[0]) / (e[3] - e[1]), e[3] > e[1] ? 1 : -1, e]); }
+  cr.sort((a, b) => a[0] - b[0]);
+  const runs = []; let w = 0, x0 = 0, e0 = null;
+  cr.forEach(c => { const w1 = w + c[1]; if (!w && w1) { x0 = c[0]; e0 = c[2]; } else if (w && !w1) runs.push([x0, c[0], e0, c[2]]); w = w1; });
+  return runs;
+}
+function gxwBins(E) {   // y → the edges that can cross the horizontal line at y (bands of 16 units): the per-edge look-across asks once per point
+  let y0 = Infinity, y1 = -Infinity;
+  E.forEach(e => { y0 = Math.min(y0, e[1], e[3]); y1 = Math.max(y1, e[1], e[3]); });
+  if (!E.length) return () => E;
+  const n = Math.max(1, Math.ceil((y1 - y0) / 16)), bins = Array.from({ length: n }, () => []);
+  E.forEach(e => { const a = Math.max(0, Math.min(n - 1, Math.floor((Math.min(e[1], e[3]) - y0) / 16))), b = Math.max(0, Math.min(n - 1, Math.floor((Math.max(e[1], e[3]) - y0) / 16))); for (let i = a; i <= b; i++) bins[i].push(e); });
+  return y => bins[Math.max(0, Math.min(n - 1, Math.floor((y - y0) / 16)))];
+}
+function gxwInside(E, x, y) { let w = 0; for (let i = 0; i < E.length; i++) { const e = E[i]; if ((e[1] > y) !== (e[3] > y) && e[0] + (y - e[1]) * (e[2] - e[0]) / (e[3] - e[1]) < x) w += e[3] > e[1] ? 1 : -1; } return w !== 0; }
+function gxwSides(rings, E) {   // per ring: +1 when the LEFT normal of its edges points out of the ink, −1 when the right one does
+  return rings.map(r => {
+    const n = r.length, order = r.map((p, i) => { const q = r[(i + 1) % n]; return [Math.hypot(q[0] - p[0], q[1] - p[1]), i]; }).sort((a, b) => b[0] - a[0]).slice(0, 4);
+    for (const [len, i] of order) {
+      if (len < 1) break;
+      const p = r[i], q = r[(i + 1) % n], nx = -(q[1] - p[1]) / len, ny = (q[0] - p[0]) / len, mx = (p[0] + q[0]) / 2, my = (p[1] + q[1]) / 2;
+      const inL = gxwInside(E, mx + 0.6 * nx, my + 0.6 * ny), inR = gxwInside(E, mx - 0.6 * nx, my - 0.6 * ny);
+      if (inL !== inR) return inR ? 1 : -1;
+    }
+    return 1;   // undecidable (a ring lying on another): the traced-letter convention, as Generate Bold assumes
+  });
+}
+/* The main upright stroke's thickness, or null: horizontal slices through the ink, keeping the runs
+   bounded by two steep edges; runs that continue from slice to slice form a column, and only a column
+   TALLER THAN IT IS WIDE counts — a roof bar or a dash is also bounded by steep ends. rings: the
+   polygon rings of the un-leaned letter. */
+function gxwStem(rings) {
+  const E = gxwEdges(rings); if (!E.length) return null;
+  let y0 = Infinity, y1 = -Infinity;
+  rings.forEach(r => r.forEach(p => { if (p[1] < y0) y0 = p[1]; if (p[1] > y1) y1 = p[1]; }));
+  const H = y1 - y0; if (!(H > 4)) return null;
+  const N = 40, step = H / N, up = e => Math.abs(e[3] - e[1]) / Math.hypot(e[2] - e[0], e[3] - e[1]);
+  let open = []; const cols = [];
+  for (let i = 0; i < N; i++) {
+    const next = [], taken = new Set();
+    gxwRuns(E, y0 + (i + 0.5) * step).forEach(r => {
+      const ua = up(r[2]), ub = up(r[3]), w = r[1] - r[0];
+      if (ua < 0.8 || ub < 0.8 || w < 1) return;
+      let c = open.find(o => !taken.has(o) && Math.min(o.x1, r[1]) - Math.max(o.x0, r[0]) >= 0.5 * Math.min(o.x1 - o.x0, w) && Math.abs(o.w - w) <= 0.35 * Math.max(o.w, w));
+      if (c) taken.add(c); else { c = { ws: [] }; cols.push(c); }
+      c.x0 = r[0]; c.x1 = r[1]; c.w = w; c.ws.push(w * (ua + ub) / 2);   // across the stroke, not along the slice
+      next.push(c);
+    });
+    open = next;
+  }
+  const ws = [];
+  cols.forEach(c => { if (c.ws.length * step >= gxwMedian(c.ws)) c.ws.forEach(w => ws.push(w)); });
+  return gxwMedian(ws);
+}
+function gxwCensus() {   // every drawn letter's own stem, each alphabet tab's median and the font's → { by: Map(letter → t | null), med: { tab: t }, all }
+  const by = new Map(), tabs = {}, every = [];
+  project.letters.forEach(l => {
+    if (!(l.contours && l.contours.length)) return;
+    const t = gxwStem(uprightContours(l).map(c => c.points)); by.set(l, t);
+    if (t != null) { const cat = _drawCatOf(l.codepoint) || '?'; (tabs[cat] = tabs[cat] || []).push(t); every.push(t); }
+  });
+  const med = {}; Object.keys(tabs).forEach(k => { med[k] = gxwMedian(tabs[k]); });
+  return { by, med, all: gxwMedian(every) };
+}
+function gxwStemFor(cen, l) {   // the thickness a letter-like is corrected by: its own, held to 0.6–1.6× its tab's; none of its own → the tab's; none at all → null (plain scale)
+  const cat = l.codepoint ? (_drawCatOf(l.codepoint) || '?') : '?', base = cen.med[cat] != null ? cen.med[cat] : cen.all;
+  const t = cen.by.has(l) ? cen.by.get(l) : ((l.contours && l.contours.length) ? gxwStem(l.contours.map(c => c.points)) : null);
+  if (base == null) return t;
+  return t == null ? base : Math.max(0.6 * base, Math.min(1.6 * base, t));
+}
+function gxwSplitCubic(p0, c1, c2, p3) {   // → the cubic cut at its interior x- and y-extrema: [[c1, c2, end], …]
+  const ts = [];
+  for (let k = 0; k < 2; k++) {
+    const A = c1[k] - p0[k], B = c2[k] - c1[k], C = p3[k] - c2[k], a = A - 2 * B + C, b = 2 * (B - A);
+    if (Math.abs(a) < 1e-9) { if (Math.abs(b) > 1e-9) ts.push(-A / b); }
+    else { const D = b * b - 4 * a * A; if (D >= 0) { const q = Math.sqrt(D); ts.push((-b + q) / (2 * a), (-b - q) / (2 * a)); } }
+  }
+  const cut = ts.filter(t => t > 0.04 && t < 0.96).sort((x, y) => x - y).filter((t, i, arr) => !i || t - arr[i - 1] > 0.04);
+  const out = []; let P = [p0, c1, c2, p3], done = 0;
+  const lerp = (a, b, t) => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
+  cut.forEach(t => {
+    const u = (t - done) / (1 - done), ab = lerp(P[0], P[1], u), bc = lerp(P[1], P[2], u), cd = lerp(P[2], P[3], u), abc = lerp(ab, bc, u), bcd = lerp(bc, cd, u), m = lerp(abc, bcd, u);
+    out.push([ab, abc, m]); P = [m, bcd, cd, P[3]]; done = t;
+  });
+  out.push([P[1], P[2], P[3]]);
+  return out;
+}
+function gxwFlatten(cv) {   // a curve entry → its integer polygon, as nodeContourToPoints flattens a node contour (10 samples per cubic)
+  const pts = [cv.start.slice()]; let pen = cv.start;
+  cv.segments.forEach(sg => {
+    if (sg.type === 'cubic') flattenCubic(pen, sg.pts[0], sg.pts[1], sg.pts[2], 10).forEach(p => pts.push(p)); else pts.push(sg.pts[0].slice());
+    pen = sg.pts[sg.pts.length - 1];
+  });
+  return bgDedupe(pts.map(p => [Math.round(p[0]), Math.round(p[1])]));
+}
+/* The outline step. rings: [[x,y]…] per contour (font units, as stored); curves: 1:1 or null; s: the
+   X factor; t: the stem thickness to restore; hand: the polygon is exactly its curves flattened
+   (a hand-edited letter) and is rebuilt that way. → gxOutline's record { keep, rings, curves, lost }
+   plus closed (a counter closes or nearly does, or strokes meet — see the gap columns below), tau (the shift that put the
+   ink's left edge at s × its old place) and b0 / b1 (the polygon's bounds before and after). */
+function gxwShape(rings, curves, s, t, hand) {
+  const hasCv = Array.isArray(curves) && curves.length === rings.length;
+  const E = gxwEdges(rings), sides = gxwSides(rings, E), near = gxwBins(E);
+  const local = rings.reduce((n, r) => n + r.length, 0) <= GXW_LOCAL_MAX;
+  const localT = (px, py, upPre) => {   // the ink's own width across the stroke at a point on its edge (∞ when the point is not on an edge of a run)
+    if (!local || upPre < 0.15) return Infinity;
+    let best = Infinity, w = Infinity;
+    gxwRuns(near(py), py).forEach(r => { const d = Math.min(Math.abs(r[0] - px), Math.abs(r[1] - px)); if (d < best) { best = d; w = r[1] - r[0]; } });
+    return best <= 3 ? w * upPre : Infinity;
+  };
+  const leg = (dx, dy, px, py, sg) => {   // a leg (its direction BEFORE the scale, a point on it) → [weight, signed sideways shift]
+    const L0 = Math.hypot(dx, dy); if (!L0) return [0, 0];
+    const X = dx * s, L = Math.hypot(X, dy), ux = X / L, uy = dy / L, w = uy * uy;
+    if (w < 1e-4) return [0, 0];
+    const tl = Math.min(t, localT(px, py, Math.abs(dy) / L0));
+    return [w, -sg * Math.sign(uy) * (tl / 2) * (1 - s * Math.sqrt(ux * ux / (s * s) + w)) / Math.abs(uy)];
+  };
+  const mix = (a, b) => (a[0] + b[0] > 0) ? (a[0] * a[1] + b[0] * b[1]) / (a[0] + b[0]) : 0;
+  const movePoly = (r, sg) => {
+    const n = r.length;
+    const reach = (i, dir) => { let j = i, acc = 0; for (let k = 0; k < n - 1 && acc < GXW_WIN; k++) { const nj = (j + dir + n) % n; acc += Math.hypot(r[nj][0] - r[j][0], r[nj][1] - r[j][1]); j = nj; } return r[j]; };
+    const P = r.map((V, i) => {
+      const B = reach(i, -1), F = reach(i, 1);
+      const a = leg(V[0] - B[0], V[1] - B[1], (V[0] + B[0]) / 2, (V[1] + B[1]) / 2, sg), b = leg(F[0] - V[0], F[1] - V[1], (V[0] + F[0]) / 2, (V[1] + F[1]) / 2, sg);
+      return [V[0] * s + mix(a, b), V[1]];
+    });
+    // An edge whose ends have passed each other (the floor of a notch narrower than the stems grew): the
+    // two ends meet in the middle — the notch closes to a point there instead of the outline crossing itself.
+    for (let i = 0; i < n; i++) { const j = (i + 1) % n; if ((r[j][0] - r[i][0]) * (P[j][0] - P[i][0]) < 0) { const m = (P[i][0] + P[j][0]) / 2; P[i][0] = m; P[j][0] = m; } }
+    return P;
+  };
+  const moveCurve = (cv, sg) => {
+    const segs = []; let pen = cv.start;   // absolute control polygons, cubics cut at their extrema
+    cv.segments.forEach(g => {
+      if (g.type === 'cubic') gxwSplitCubic(pen, g.pts[0], g.pts[1], g.pts[2]).forEach(q => { segs.push([pen, q[0], q[1], q[2]]); pen = q[2]; });
+      else { segs.push([pen, g.pts[0]]); pen = g.pts[0]; }
+    });
+    const m = segs.length, far = (P, from, to) => { for (let i = from; i !== to; i += (to > from ? 1 : -1)) if (Math.hypot(P[i][0] - P[from][0], P[i][1] - P[from][1]) > 0.01 && i !== from) return P[i]; return P[to]; };
+    const at = (P, u) => { if (P.length === 2) return [P[0][0] + (P[1][0] - P[0][0]) * u, P[0][1] + (P[1][1] - P[0][1]) * u]; const v = 1 - u; return [v*v*v*P[0][0] + 3*v*v*u*P[1][0] + 3*v*u*u*P[2][0] + u*u*u*P[3][0], v*v*v*P[0][1] + 3*v*v*u*P[1][1] + 3*v*u*u*P[2][1] + u*u*u*P[3][1]]; };
+    const dl = segs.map((P, j) => {   // the shift of the node each segment STARTS at: its incoming leg (end of the previous segment) and its outgoing one
+      const Q = segs[(j - 1 + m) % m], V = P[0], pin = far(Q, Q.length - 1, 0), pout = far(P, 0, P.length - 1);
+      const si = at(Q, Q.length === 2 ? 0.5 : 0.8), so = at(P, P.length === 2 ? 0.5 : 0.2);
+      return mix(leg(V[0] - pin[0], V[1] - pin[1], si[0], si[1], sg), leg(pout[0] - V[0], pout[1] - V[1], so[0], so[1], sg));
+    });
+    for (let j = 0; j < m; j++) {   // the same rule for a curve's nodes (movePoly): a segment whose ends passed each other closes to a point
+      const a = segs[j][0], bn = segs[(j + 1) % m][0], i2 = (j + 1) % m, od = (bn[0] - a[0]) * s, nd = od + dl[i2] - dl[j];
+      if (od * nd < 0) { const mid = (a[0] * s + dl[j] + bn[0] * s + dl[i2]) / 2; dl[j] = mid - a[0] * s; dl[i2] = mid - bn[0] * s; }
+    }
+    const mv = (p, d) => [p[0] * s + d, p[1]];
+    return { winding: cv.winding, start: mv(segs[0][0], dl[0]),
+      segments: segs.map((P, j) => { const d0 = dl[j], d1 = dl[(j + 1) % m]; return P.length === 2 ? { type: 'line', pts: [mv(P[1], d1)] } : { type: 'cubic', pts: [mv(P[1], d0), mv(P[2], d1), mv(P[3], d1)] }; }) };
+  };
+  const moved = rings.map((r, i) => (r.length >= 3 ? movePoly(r, sides[i]) : r.map(p => [p[0] * s, p[1]])));
+  const movedCv = hasCv ? curves.map((cv, i) => (cv && cv.segments && cv.segments.length) ? moveCurve(cv, sides[i]) : null) : null;
+  const b0 = polysBounds(rings); let mn = Infinity;
+  moved.forEach(r => r.forEach(p => { if (p[0] < mn) mn = p[0]; }));
+  const tau = Number.isFinite(mn) ? Math.round(b0.minX * s) - mn : 0;   // the ink's left edge lands exactly on s × its old place — the side bearing scales with the letter
+  const rp = p => [Math.round(p[0] + tau), Math.round(p[1])];
+  const out = { keep: [], rings: [], curves: hasCv ? [] : null, lost: 0, closed: false, tau, b0, b1: null };
+  moved.forEach((r, i) => {
+    const cv = movedCv && movedCv[i] ? { winding: movedCv[i].winding, start: rp(movedCv[i].start), segments: movedCv[i].segments.map(g => ({ type: g.type, pts: g.pts.map(rp) })) } : null;
+    const pts = (hand && cv) ? gxwFlatten(cv) : bgDedupe(r.map(rp));
+    const A0 = signedArea(rings[i]), A1 = pts.length >= 3 ? signedArea(pts) : 0;
+    if (pts.length < 3 || Math.abs(A1) < 1 || (A1 > 0) !== (A0 > 0)) { out.lost++; if (A0 * sides[i] > 0) out.closed = true; return; }   // collapsed or turned inside out — and if it was a counter, the counter closed
+    out.keep.push(i); out.rings.push(pts);
+    if (hasCv) out.curves.push(cv);
+  });
+  /* Counters that close and strokes that meet. No height moved, so the same horizontal slice cuts the
+     letter before and after: every GAP between two runs of ink (a counter, or the space between two
+     strokes) is followed slice by slice as a column, and matched to what is left of it afterwards. A
+     column is reported when it was open and is now shut (or all but: under a quarter of the stem) along
+     its whole height. A wedge-shaped notch only gets shorter at its tip — that is not a closure, and it
+     is why this looks at whole columns rather than testing the outline for crossings. */
+  if (!out.closed && out.rings.length) {
+    const E1 = gxwEdges(out.rings), near1 = gxwBins(E1), N = 48, H = b0.maxY - b0.minY, thr = Math.max(4, t / 4), tol = Math.abs(t * (1 - s)) / 2 + 2;
+    const gaps = rs => rs.slice(1).map((r, i) => [rs[i][1], r[0]]);
+    let open = []; const cols = [];
+    for (let i = 0; i < N && H > 4; i++) {
+      const y = b0.minY + (i + 0.5) * H / N, g1 = gaps(gxwRuns(near1(y), y)), next = [], taken = new Set();
+      gaps(gxwRuns(near(y), y)).forEach(g => {
+        const lo = g[0] * s + tau - tol, hi = g[1] * s + tau + tol; let w1 = 0, best = 0;
+        g1.forEach(q => { const ov = Math.min(hi, q[1]) - Math.max(lo, q[0]); if (ov > best) { best = ov; w1 = q[1] - q[0]; } });
+        let c = open.find(o => !taken.has(o) && Math.min(o.x1, g[1]) - Math.max(o.x0, g[0]) >= 0.5 * Math.min(o.x1 - o.x0, g[1] - g[0]));
+        if (c) taken.add(c); else { c = { n: 0, was: 0, now: 0 }; cols.push(c); }
+        c.x0 = g[0]; c.x1 = g[1]; c.n++; c.was = Math.max(c.was, g[1] - g[0]); c.now = Math.max(c.now, w1);
+        next.push(c);
+      });
+      open = next;
+    }
+    out.closed = cols.some(c => c.n >= 2 && ((c.was >= thr && c.now < thr) || (c.was >= 3 && c.now < 1)));
+  }
+  if (out.rings.length) out.b1 = polysBounds(out.rings);
+  return out;
+}
+/* o: { scope, stems, spacing, marks, name, cen (a gxwCensus to reuse), k (the factor the shapes take
+   when stems are kept — gxWidthPlan finds it; absent = the typed one) }. The typed percentage is what
+   the TEXT becomes: with stems kept, restoring them adds width back, so the shapes take a slightly
+   smaller factor k chosen for the whole set. Advance and side bearings always scale with the letter. */
+function gxWidthOp(pct, o) {
+  const s = pct / 100, all = o.scope === 'all', stems = !!o.stems;
+  const cen = stems ? (o.cen || gxwCensus()) : null, k = (stems && o.k != null) ? o.k : s;
+  return {
+    label: o.scope === 'letter' ? 'width ' + pct + '% — ' + o.name : 'letter width ' + pct + '%',
+    refuse: (stems && !(k >= 0.2 && k <= 2)) ? 'narrow' : null,
+    affine(l) {
+      const has = !!(l.contours && l.contours.length), t = (stems && has) ? gxwStemFor(cen, l) : null;
+      if (!has) return [k, 0, 0, 1, 0, 0];
+      const adv0 = letterAdvance(l);
+      if (t == null) return { T: [k, 0, 0, 1, 0, 0], advance: Math.round(adv0 * k), setAdvance: true };   // the plain scale (and a font with no measurable stem)
+      const out = gxwShape(l.contours.map(c => c.points), l.curves, k, t, !!l.handEdited);
+      if (!out.b1) return { T: [k, 0, 0, 1, 0, 0], out };
+      const W0 = out.b0.maxX - out.b0.minX, ka = W0 > 0 ? (out.b1.maxX - out.b1.minX) / W0 : k;
+      return { T: [k, 0, 0, 1, out.tau, 0], out, penK: 1, keepLsb: true, setAdvance: true,
+               TA: [ka, 0, 0, 1, out.b1.minX - ka * out.b0.minX, 0],                       // anchors and pins: old ink edges → new ink edges (boldGenLetter's rule)
+               advance: Math.max(0, out.b1.maxX + Math.round(k * (adv0 - out.b0.maxX))) };   // the right bearing scales with the letter
+    },
+    stamp(l) {
+      const st = { slant: slantDegOf(slantTan(letterSlant(l)) * k) || null };   // a lean is a tangent: it narrows with the letter
+      if (stems && l.contours && l.contours.length && gxwStemFor(cen, l) != null) {
+        if (l.lsb != null) st.lsb = Math.max(0, Math.round(l.lsb * k));           // a stored left margin is a width (the affine carries the stem shift)
+        // A photo cannot keep stems: re-traced, this letter would silently return to the thin squeeze, so it
+        // counts as hand-edited — Trace then asks before it discards the correction.
+        if (l.source && l.source.dataUrl && !(l.draw && Array.isArray(l.draw.strokes) && l.draw.strokes.length)) st.handEdited = true;
+      }
+      return st;
+    },
+    leanScale: all ? k : null,
+    fontX: all ? k : null, spaceX: (all && o.spacing) ? s : null, pairX: (all && o.marks) ? s : null, gapX: null,
+    markWide: (all && o.marks) ? s : null, fontY: null, markFactor: null
+  };
+}
+function gxwFirstK(set, s, cen) {   // the shapes' factor, first estimate: each letter gets about one stem's worth of width back per unit of squeeze
+  let A = 0, G = 0;
+  gxLetterSet(set).forEach(l => { if (!(l.contours && l.contours.length)) return; A += letterAdvance(l); const t = gxwStemFor(cen, l); if (t != null) G += t; });
+  return (A - G > 0) ? (s * A - G) / (A - G) : s;
+}
+/* The plan for a width change. With stems kept the shapes' factor k is not the typed one: restoring
+   stems adds width back, and the typed percentage is what the set's total advance must become. A
+   first value comes from the measured stems ((s·ΣA − Σt)/(ΣA − Σt)); the plan's own outcome then
+   corrects it, at most twice. → { plan, op, k, ratio (total advance after ÷ before, or null) }. */
+function gxWidthPlan(pct, o, set) {
+  const s = pct / 100;
+  if (!o.stems) { const op = gxWidthOp(pct, o), plan = gxPlan(op, set); return { plan, op, k: s, ratio: plan.adv.before > 0 ? plan.adv.after / plan.adv.before : null }; }
+  const cen = o.cen || gxwCensus();
+  let k = gxwFirstK(set, s, cen), res = null;
+  for (let pass = 0; pass < 3; pass++) {
+    const op = gxWidthOp(pct, Object.assign({}, o, { cen, k })), plan = gxPlan(op, set);
+    const ratio = plan.adv.before > 0 ? plan.adv.after / plan.adv.before : null;
+    res = { plan, op, k, ratio };
+    if (op.refuse || ratio == null || Math.abs(ratio - s) <= 0.0007 || pass === 2 || Math.abs(1 - k) < 1e-6) break;
+    const g = (plan.adv.after - k * plan.adv.before) / (1 - k), B = plan.adv.before;   // the width the stems gave back, per unit of squeeze
+    if (!(B - g > 0)) break;
+    k = (s * B - g) / (B - g);
+  }
+  return res;
+}
+let saState = null;   // { tool, val, dir, scope, opt: [bool…], canTab, canLetter, cat, cp, name, cen, wk, raf }
 let _saTimer = 0;
 /* One dialog for every whole-font transform; a tool is a row of this table plus its operation.
-   val is the amount (a percentage / an angle), optA and optB the two boxes (scale: spacing + guide
-   lines, mark size — slant: set Style to Italic, lean the marks), dir the slant's lean direction. */
+   val is the amount (a percentage / an angle), dir the slant's lean direction, and opts the tool's
+   boxes in order (labels opt_a, opt_b, … in its namespace): pref / def = the remembered setting and
+   its first value, all = "whole font only" (the box is disabled for one tab or one letter). */
+const SA_OPT_IDS = ['saSpacing', 'saMarks', 'saOptC', 'saOptD'], SA_OPT_KEYS = ['opt_a', 'opt_b', 'opt_c', 'opt_d'];
 const SA_TOOLS = {
   scale: { ns: 'fontmaker.scaleall', neutral: 100, min: 25, max: 400, step: 1, unit: '%', presets: GX_SCALE_PRESETS,
-           prefA: 'scaleAllSpacing', defA: true, prefB: 'scaleAllMarks', defB: true, narrowA: true },
+           opts: [{ pref: 'scaleAllSpacing', def: true, all: false }, { pref: 'scaleAllMarks', def: true, all: true }] },          // spacing + guide lines · mark size
   slant: { ns: 'fontmaker.slantall', neutral: 0, min: 0, max: 30, step: 0.5, unit: '°', presets: [6, 9, 12, 15],
-           prefA: 'slantAllStyle', defA: true, prefB: 'slantAllMarks', defB: false, narrowA: false }
+           opts: [{ pref: 'slantAllStyle', def: true, all: true }, { pref: 'slantAllMarks', def: false, all: true }] },            // set Style to Italic · lean the marks
+  width: { ns: 'fontmaker.widthall', neutral: 100, min: GXW_MIN, max: GXW_MAX, step: 1, unit: '%', presets: GXW_PRESETS, slider: true, named: true,
+           opts: [{ pref: 'widthAllStems', def: true, all: false }, { pref: 'widthAllSpacing', def: true, all: true },             // keep stem thickness · kerning and word spacing
+                  { pref: 'widthAllMarks', def: false, all: true }, { pref: 'widthAllName', def: true, all: true }] }               // squeeze the marks · name the font Condensed / Extended
 };
 function scaleAllOpen() { saOpen('scale'); }
 function slantAllOpen() { saOpen('slant'); }
+function widthAllOpen() { saOpen('width'); }
 function saOpen(tool) {
   if (!project) return;
   udFlushPending();   // an open slider burst or arrow-nudge holds a "before" from before this change — settle it first
@@ -17641,19 +18046,25 @@ function saOpen(tool) {
   const cfg = SA_TOOLS[tool], pr = wsReadPrefs(), cur = curKind === 'letter' ? curItem() : null;
   const cat = cur ? _drawCatOf(cur.codepoint) : null;
   const tabN = cat ? gxLetterSet({ scope: 'tab', cat }).filter(l => l.contours && l.contours.length).length : 0;
-  const pref = (key, def) => def ? pr[key] !== false : pr[key] === true;
-  saState = { tool, val: cfg.neutral, dir: slantDirDefault(), scope: 'all', optA: pref(cfg.prefA, cfg.defA), optB: pref(cfg.prefB, cfg.defB),
-              canTab: tabN > 0, canLetter: !!(cur && cur.contours && cur.contours.length), cat, cp: cur ? cur.codepoint : null, name: cur ? cur.name : '' };
+  saState = { tool, val: cfg.neutral, dir: slantDirDefault(), scope: 'all', opt: cfg.opts.map(o => o.def ? pr[o.pref] !== false : pr[o.pref] === true),
+              canTab: tabN > 0, canLetter: !!(cur && cur.contours && cur.contours.length), cat, cp: cur ? cur.codepoint : null, name: cur ? cur.name : '',
+              cen: tool === 'width' ? gxwCensus() : null, wk: null, raf: 0 };   // the stems are measured once: nothing in the project can change while the dialog is open
   const $ = id => document.getElementById(id), T = key => I18n.t(cfg.ns + '.' + key);
   $('saTitle').textContent = T('title'); $('saIntro').textContent = T('intro');
-  $('saAmtLbl').textContent = T('size'); $('saOptALbl').textContent = T('opt_a'); $('saOptBLbl').textContent = T('opt_b');
+  $('saAmtLbl').textContent = T('size');
+  SA_OPT_IDS.forEach((id, i) => {
+    const on = i < cfg.opts.length, box = $(id);
+    box.closest('label').hidden = !on;
+    if (on) { box.checked = saState.opt[i]; box.nextElementSibling.textContent = T(SA_OPT_KEYS[i]); }
+  });
   $('saScopeHint').textContent = T('scope_hint');
   const f = $('saPct'); f.min = cfg.min; f.max = cfg.max; f.step = cfg.step; f.value = cfg.neutral;
+  const sl = $('saRange'); sl.hidden = !cfg.slider;
+  if (cfg.slider) { sl.min = cfg.min; sl.max = cfg.max; sl.step = cfg.step; sl.value = cfg.neutral; sl.setAttribute('aria-label', T('size')); }
   $('saPresets').setAttribute('aria-label', T('presets'));
-  $('saPresets').innerHTML = cfg.presets.map(p => '<button type="button" class="ctl-btn" onclick="scaleAllPreset(' + p + ')">' + p + cfg.unit + '</button>').join('');
+  $('saPresets').innerHTML = cfg.presets.map(p => '<button type="button" class="ctl-btn" onclick="scaleAllPreset(' + p + ')">' + esc(cfg.named ? I18n.t(cfg.ns + '.preset_' + p) : p + cfg.unit) + '</button>').join('');
   $('saLean').hidden = tool !== 'slant';
   document.querySelectorAll('input[name="saDir"]').forEach(r => { r.checked = r.value === saState.dir; });
-  $('saSpacing').checked = saState.optA; $('saMarks').checked = saState.optB;
   document.querySelector('input[name="saScope"][value="all"]').checked = true;
   $('saScopeTabRow').hidden = !saState.canTab; $('saScopeLetterRow').hidden = !saState.canLetter;
   if (saState.canTab) $('saScopeTabLbl').textContent = I18n.t('fontmaker.scaleall.scope_tab', { tab: I18n.t('fontmaker.tabs.cat_' + cat) });
@@ -17661,37 +18072,61 @@ function saOpen(tool) {
   aOpenModal('scaleAllOverlay', scaleAllClose);
   scaleAllRender();
 }
-function scaleAllClose() { saState = null; clearTimeout(_saTimer); _saTimer = 0; aCloseModal('scaleAllOverlay'); }
+function scaleAllClose() { if (saState && saState.raf) cancelAnimationFrame(saState.raf); saState = null; clearTimeout(_saTimer); _saTimer = 0; aCloseModal('scaleAllOverlay'); }
 /* The amount as typed → a number, or null for "not an amount yet": a half-typed 9 must not preview as
-   25%. Scale: whole percent, 25–400 (the Transform section's own range, _XFORM_CLAMP). Slant: 0–30°,
-   to one decimal. */
+   25%. Scale and width: whole percent within the tool's range (the Transform section's own for scale,
+   _XFORM_CLAMP). Slant: 0–30°, to one decimal. */
 function saParse(tool, v) {
   const cfg = SA_TOOLS[tool], n = +v;
   if (String(v).trim() === '' || !Number.isFinite(n)) return null;
-  const r = tool === 'scale' ? Math.round(n) : Math.round(n * 10) / 10;
+  const r = tool === 'slant' ? Math.round(n * 10) / 10 : Math.round(n);
   return (r >= cfg.min && r <= cfg.max) ? r : null;
 }
-function scaleAllSet(v) { if (!saState) return; saState.val = saParse(saState.tool, v); scaleAllRender(); }
-function scaleAllPreset(p) { if (!saState) return; saState.val = p; document.getElementById('saPct').value = p; scaleAllRender(); }
+function scaleAllSet(v) {
+  if (!saState) return;
+  saState.val = saParse(saState.tool, v);
+  if (saState.val != null) document.getElementById('saRange').value = saState.val;
+  scaleAllRender();
+}
+function scaleAllSlide(v) {   // the slider: the number field follows at once, the redraw once per frame (boldGenSet's reason)
+  if (!saState) return;
+  saState.val = saParse(saState.tool, v); document.getElementById('saPct').value = v;
+  if (!saState.raf) saState.raf = requestAnimationFrame(() => { if (saState) { saState.raf = 0; scaleAllRender(); } });
+}
+function scaleAllPreset(p) { if (!saState) return; saState.val = p; document.getElementById('saPct').value = p; document.getElementById('saRange').value = p; scaleAllRender(); }
 function scaleAllOpt() {
   if (!saState) return;
   const cfg = SA_TOOLS[saState.tool], r = document.querySelector('input[name="saScope"]:checked'), d = document.querySelector('input[name="saDir"]:checked');
   saState.scope = r ? r.value : 'all';
-  saState.optA = document.getElementById('saSpacing').checked; saState.optB = document.getElementById('saMarks').checked;
-  wsSavePref(cfg.prefA, saState.optA); wsSavePref(cfg.prefB, saState.optB);
+  cfg.opts.forEach((o, i) => { saState.opt[i] = document.getElementById(SA_OPT_IDS[i]).checked; wsSavePref(o.pref, saState.opt[i]); });
   if (d && d.value !== saState.dir) { saState.dir = d.value; setSlantDir(d.value); }   // the lean direction is remembered per project
   scaleAllRender();
 }
 function saSignedDeg() { const st = saState; return (st.dir === 'left' ? -1 : 1) * (st.val != null ? st.val : 0); }
-function saStyleAfter() {   // slant, whole font, the Style box ticked → the Style this project ends up with (Italic while its letters lean), else null
-  const st = saState;
-  if (st.tool !== 'slant' || st.scope !== 'all' || !st.optA) return null;
-  return fontStyleMake(fontIsBold(), slantCompose(fontSlantInfo().lean, saSignedDeg()) !== 0);
+/* The Font Details fields this change sets with it (gxCommit's meta), or null. Slant, whole font, its
+   box ticked → the Style (Italic while the letters lean). Width, whole font → the Width name when its
+   box is ticked (from the percentage and the name the font already has), and a typed Italic angle
+   narrowed with the letters. k: the factor the shapes take. */
+function saMetaAfter(k) {
+  const st = saState; if (st.scope !== 'all') return null;
+  if (st.tool === 'slant') return st.opt[0] ? { style: fontStyleMake(fontIsBold(), slantCompose(fontSlantInfo().lean, saSignedDeg()) !== 0) } : null;
+  if (st.tool !== 'width' || st.val == null) return null;
+  const m = {}, own = fontOwnLean();
+  if (st.opt[3]) m.width = fontWidthAfter(project.font.width, st.val);
+  if (own != null && k != null) m.italicLean = slantDegOf(slantTan(own) * k);
+  return Object.keys(m).length ? m : null;
 }
+function saWidthOpts() { const st = saState; return { scope: st.scope, stems: st.opt[0], spacing: st.opt[1], marks: st.opt[2], name: st.name, cen: st.cen }; }
+function saWidthKey() { const st = saState; return [st.val, st.scope, st.opt[0]].join('|'); }
 function scaleAllArgs() {   // → [op, set] for the dialog's current choices
   const st = saState, set = { scope: st.scope, cp: st.cp, cat: st.cat };
-  if (st.tool === 'slant') return [gxSlantOp(saSignedDeg(), { scope: st.scope, marks: st.optB, name: st.name }), set];
-  return [gxScaleOp(st.val != null ? st.val : 100, { scope: st.scope, spacing: st.optA, marks: st.optB, name: st.name }), set];
+  if (st.tool === 'slant') return [gxSlantOp(saSignedDeg(), { scope: st.scope, marks: st.opt[1], name: st.name }), set];
+  if (st.tool === 'width') {   // the shapes' factor: the one the last full scan found for these choices, else the first estimate (the preview strip never waits)
+    const pct = st.val != null ? st.val : 100, o = saWidthOpts();
+    o.k = (st.wk && st.wk.key === saWidthKey()) ? st.wk.k : (o.stems ? gxwFirstK(set, pct / 100, st.cen) : null);
+    return [gxWidthOp(pct, o), set];
+  }
+  return [gxScaleOp(st.val != null ? st.val : 100, { scope: st.scope, spacing: st.opt[0], marks: st.opt[1], name: st.name }), set];
 }
 function gxRowSVG(row, svgEl, box, lines) {   // one RTL pen-walk row — boldGen's, plus curves and guide lines; `box` is shared by both rows so a change shows
   const pad = box.pad || 24;
@@ -17702,10 +18137,9 @@ function gxRowSVG(row, svgEl, box, lines) {   // one RTL pen-walk row — boldGe
   svgEl.style.color = _previewInkColor();
   svgEl.innerHTML = body;
 }
-function scaleAllRender() {
-  if (!saState) return;
+function saStrips() {   // the Before / After rows for the current choices — reads only
   const st = saState, cfg = SA_TOOLS[st.tool], scale = st.tool === 'scale', valid = st.val != null, val = valid ? st.val : cfg.neutral;
-  const [op, set] = scaleAllArgs(), em = effMetrics(), s = scale ? val / 100 : 1, moved = scale && st.scope === 'all' && st.optA;
+  const [op, set] = scaleAllArgs(), em = effMetrics(), s = scale ? val / 100 : 1, moved = scale && st.scope === 'all' && st.opt[0];
   const pool = gxLetterSet(set).filter(l => l.contours && l.contours.length);
   let pick = pool.filter(l => BG_PREVIEW_CPS.includes(l.codepoint));
   pool.forEach(l => { if (pick.length < 5 && !pick.includes(l) && !bgIsPunct(l.codepoint)) pick.push(l); });
@@ -17713,24 +18147,35 @@ function scaleAllRender() {
   pick = pick.slice(0, 5);
   const before = pick.map(l => ({ contours: l.contours, curves: l.curves, advance: letterAdvance(l) }));
   const after = pick.map((l, i) => {
-    const spec = gxSpec(op, l), r = (valid && spec && spec !== 'mirror') ? gxLetterPatch(l, spec, null).set : {};
+    const spec = (valid && !op.refuse) ? gxSpec(op, l) : null, r = (spec && spec !== 'mirror') ? gxLetterPatch(l, spec, null).set : {};
     const adv = r.advance != null ? r.advance : Math.round(before[i].advance * (moved ? s : 1));   // no stored width → the default, which follows the letter-top line
     return { contours: r.contours || l.contours, curves: r.contours ? (r.curves || null) : l.curves, advance: adv };
   });
   const b = em.baseline, y2 = v => moved ? b + s * (v - b) : v;
   const top = Math.max(em.lamedAscender, y2(em.lamedAscender), s * em.lamedAscender) + 100, bot = Math.min(em.descender, y2(em.descender), s * em.descender) - 50;
   const box = { w: Math.max(before.reduce((t, c) => t + c.advance, 0), after.reduce((t, c) => t + c.advance, 0), 1), top, bot,
-                pad: 24 + (scale ? 0 : Math.ceil(Math.abs(slantTan(val)) * Math.max(top, -bot))) };   // room for a leaning first or last letter
+                pad: 24 + (st.tool === 'slant' ? Math.ceil(Math.abs(slantTan(val)) * Math.max(top, -bot)) : 0) };   // room for a leaning first or last letter
   gxRowSVG(before, document.getElementById('saBefore'), box, [em.baseline, em.letterTop]);
   gxRowSVG(after, document.getElementById('saAfter'), box, [em.baseline, y2(em.letterTop)]);
+}
+function saMetaNote(meta) {   // what the change does to the project's identity, said before it happens ('' when nothing)
+  const F = project.font, fam = F.familyName || '';
+  if (meta && meta.style && meta.style !== fontStyleOf(F.style))
+    return I18n.t(fontStyleInfo(meta.style).italic ? 'fontmaker.slantall.style_note' : 'fontmaker.slantall.style_note_back', { style: I18n.t('fontmaker.panels.style_' + meta.style), family: fam });
+  if (meta && meta.width && meta.width !== fontWidthOf(F.width))
+    return meta.width === 'normal' ? I18n.t('fontmaker.widthall.name_note_back', { family: fam })
+                                   : I18n.t('fontmaker.widthall.name_note', { name: fam + ' ' + fontWidthInfo(meta.width).name, family: fam });
+  return '';
+}
+function scaleAllRender() {
+  if (!saState) return;
+  const st = saState, cfg = SA_TOOLS[st.tool], valid = st.val != null, val = valid ? st.val : cfg.neutral;
+  saStrips();
   const narrow = st.scope !== 'all';
-  document.getElementById('saMarks').disabled = narrow;
-  document.getElementById('saSpacing').disabled = narrow && !cfg.narrowA;   // scaling a letter's own side spaces still makes sense for one letter; a font's Style does not
+  cfg.opts.forEach((o, i) => { document.getElementById(SA_OPT_IDS[i]).disabled = narrow && o.all; });   // a font-wide choice (a Style, the marks, the kerning) means nothing for one letter
   document.getElementById('saScopeHint').hidden = !narrow;
-  const sn = document.getElementById('saStyleNote'), sty = saStyleAfter();
-  const changes = !!sty && sty !== fontStyleOf(project.font.style);
-  sn.hidden = !changes;
-  if (changes) sn.textContent = I18n.t(fontStyleInfo(sty).italic ? 'fontmaker.slantall.style_note' : 'fontmaker.slantall.style_note_back', { style: I18n.t('fontmaker.panels.style_' + sty), family: project.font.familyName || '' });
+  const sn = document.getElementById('saStyleNote'), mnote = saMetaNote(saMetaAfter(null));
+  sn.hidden = !mnote; if (mnote) sn.textContent = mnote;
   const ap = document.getElementById('saApply'), note = document.getElementById('saNote');
   ap.setAttribute('aria-disabled', 'true'); ap.classList.add('ghost');   // until the scan below has cleared this amount
   if (!valid || val === cfg.neutral) { note.className = 'hint'; note.textContent = I18n.t(cfg.ns + (valid ? '.note_neutral' : '.note_range')); clearTimeout(_saTimer); _saTimer = 0; return; }
@@ -17740,23 +18185,37 @@ function gxNames(list) { const u = [...new Set(list)]; return u.length > 12 ? u.
 function gxRefusalText(plan, tool, val) {
   const r = plan.refuse, ns = SA_TOOLS[tool].ns, P = names => ({ pct: val, angle: val, names: gxNames(names) });
   if (r.mirror) return I18n.t('fontmaker.scaleall.refuse_mirror');
+  if (r.narrow) return I18n.t('fontmaker.widthall.refuse_narrow', { pct: val });
   if (r.range.length) return I18n.t(ns + '.refuse_range', P(r.range));
   if (r.gone.length) return I18n.t(ns + '.refuse_gone', P(r.gone));
   if (r.draw.length) return I18n.t(ns + '.refuse_draw', P(r.draw));
   return '';
 }
 function saActive() { return !!saState && saState.val != null && saState.val !== SA_TOOLS[saState.tool].neutral; }
+function saPlan() {   // the full plan for the dialog's current choices → { plan, k, ratio } (k and ratio only for a width change)
+  const st = saState, [op, set] = scaleAllArgs();
+  if (st.tool !== 'width') return { plan: gxPlan(op, set), k: null, ratio: null };
+  const res = gxWidthPlan(st.val, saWidthOpts(), set);
+  return { plan: res.plan, k: res.k, ratio: res.ratio };
+}
 function scaleAllScan() {
   _saTimer = 0;
   if (!saActive()) return;
-  const [op, set] = scaleAllArgs(), plan = gxPlan(op, set);
+  const st = saState, res = saPlan(), plan = res.plan;
+  if (st.tool === 'width') {   // the factor the scan settled on now feeds the preview strip
+    const key = saWidthKey(), was = (st.wk && st.wk.key === key) ? st.wk.k : null;
+    st.wk = { key, k: res.k };
+    if (was == null || Math.abs(was - res.k) > 1e-9) saStrips();
+  }
   const ap = document.getElementById('saApply'), note = document.getElementById('saNote');
   const bad = gxRefused(plan), empty = !plan.scopes.length;
-  note.className = 'hint' + (bad ? ' warn' : '');
-  if (bad) note.textContent = gxRefusalText(plan, saState.tool, saState.val);
+  note.className = 'hint' + ((bad || plan.warn.closed.length) ? ' warn' : '');
+  if (bad) note.textContent = gxRefusalText(plan, st.tool, st.val);
   else if (empty) note.textContent = I18n.t('fontmaker.scaleall.note_nothing');
   else {
     const parts = [I18n.t(plan.count === 1 ? 'fontmaker.scaleall.note_count.one' : 'fontmaker.scaleall.note_count.other', { count: plan.count })];
+    if (res.ratio != null && st.opt[0]) parts.push(I18n.t('fontmaker.widthall.note_ratio', { pct: Math.abs(res.ratio * 100 - Math.round(res.ratio * 100)) < 0.15 ? Math.round(res.ratio * 100) : Math.round(res.ratio * 1000) / 10 }));
+    if (plan.warn.closed.length) parts.push(I18n.t('fontmaker.widthall.warn_closed', { names: gxNames(plan.warn.closed) }));
     if (plan.warn.lost.length) parts.push(I18n.t('fontmaker.scaleall.warn_lost', { names: gxNames(plan.warn.lost) }));
     if (plan.warn.off.length) parts.push(I18n.t('fontmaker.scaleall.warn_off', { names: gxNames(plan.warn.off) }));
     if (plan.warn.held.length) parts.push(I18n.t('fontmaker.scaleall.warn_held', { things: plan.warn.held.map(t => I18n.t('fontmaker.scaleall.held_' + t)).join(', ') }));
@@ -17768,15 +18227,15 @@ function scaleAllScan() {
 function scaleAllApply() {
   if (!saActive()) return;   // aria-disabled guard — the note says why
   udFlushPending();
-  const st = saState, tool = st.tool, val = st.val, scope = st.scope, dir = st.dir, sty = saStyleAfter();
-  const [op, set] = scaleAllArgs(), plan = gxPlan(op, set);   // planned afresh, never from the preview's copy
+  const st = saState, tool = st.tool, val = st.val, scope = st.scope, dir = st.dir;
+  const res = saPlan(), plan = res.plan;   // planned afresh, never from the preview's copy
   if (gxRefused(plan) || !plan.scopes.length) { scaleAllScan(); return; }
-  const n = plan.count;
+  const n = plan.count, meta = saMetaAfter(res.k);
   if (tool === 'slant') setSlantDir(dir);
   scaleAllClose();
-  if (!gxCommit(plan, sty ? { style: sty } : null)) return;
-  if (tool === 'slant') status(I18n.t(scope === 'letter' ? 'fontmaker.slantall.applied_letter' : (n === 1 ? 'fontmaker.slantall.applied.one' : 'fontmaker.slantall.applied.other'), { count: n, angle: val, dir: I18n.t('fontmaker.slantall.dir_' + dir) }));
-  else status(I18n.t(scope === 'letter' ? 'fontmaker.scaleall.applied_letter' : (n === 1 ? 'fontmaker.scaleall.applied.one' : 'fontmaker.scaleall.applied.other'), { count: n, pct: val }));
+  if (!gxCommit(plan, meta)) return;
+  const one = scope === 'letter' ? '.applied_letter' : (n === 1 ? '.applied.one' : '.applied.other');
+  status(I18n.t(SA_TOOLS[tool].ns + one, { count: n, pct: val, angle: val, dir: tool === 'slant' ? I18n.t('fontmaker.slantall.dir_' + dir) : '' }));
 }
 
 /* ════════ Spacing panel + live preview ════════ */
@@ -20589,9 +21048,41 @@ function fontStyleMake(bold, italic) { return bold ? (italic ? 'bolditalic' : 'b
 function fontStyle() { return fontStyleInfo(project && project.font && project.font.style); }
 function fontIsBold() { return fontStyle().bold; }
 function fontIsItalic() { return fontStyle().italic; }
-/* Filename stem for downloads: family base + the style's suffix, so the Regular, Bold, Italic and
-   Bold Italic of one family never overwrite each other's files. */
-function fontFileStem() { return fontSafeBase(project.font.familyName) + fontStyle().file; }
+/* ── Font width name: Condensed … Extended, the second half of which member of which family this project
+   exports as. ONE table, read only through the helpers below, for the same reason as FONT_STYLES. A
+   width word joins the FAMILY (nameID 1 "Family Condensed"), so the four styles of a condensed font
+   group together and beside — never over — the normal-width font; name = the word; cls = OS/2
+   usWidthClass; pct = the width the name stands for (what a width change is compared with); file = the
+   word in a file or PostScript name. Font-file words, never translated. */
+const FONT_WIDTHS = {   // i18n-ignore — width words a font file carries
+  condensed:     { name: 'Condensed',      cls: 3, pct: 85,  file: 'Condensed' },
+  semicondensed: { name: 'Semi Condensed', cls: 4, pct: 92,  file: 'SemiCondensed' },
+  normal:        { name: '',               cls: 5, pct: 100, file: '' },
+  semiextended:  { name: 'Semi Extended',  cls: 6, pct: 108, file: 'SemiExtended' },
+  extended:      { name: 'Extended',       cls: 7, pct: 115, file: 'Extended' }
+};
+function fontWidthOf(v) { return Object.prototype.hasOwnProperty.call(FONT_WIDTHS, v) ? v : 'normal'; }   // junk / absent → normal
+function fontWidthInfo(v) { return FONT_WIDTHS[fontWidthOf(v)]; }
+function fontWidthNear(pct) {   // the name whose width is nearest (by ratio) to a percentage
+  let best = 'normal', bd = Infinity;
+  Object.keys(FONT_WIDTHS).forEach(key => { const d = Math.abs(Math.log(pct / FONT_WIDTHS[key].pct)); if (d < bd) { bd = d; best = key; } });
+  return best;
+}
+function fontWidthAfter(cur, pct) { return fontWidthNear(fontWidthInfo(cur).pct * pct / 100); }   // a font already named, changed again: Condensed widened by 118% is Normal
+/* Every name a font, file, project or list entry carries comes from here: f is a font-like
+   ({ familyName, style, width }). fam1 = nameID 1 (the family the four styles group in), sfx = what
+   follows the bare family in a full or stored name, file = what follows it in a file or PostScript
+   name ('' for a normal-width Regular, as before), sub = the typographic subfamily (nameID 17). */
+function fontNameParts(f) {
+  if (typeof f === 'string') f = { style: f };   // a bare style still names a normal-width font
+  const st = fontStyleInfo(f && f.style), wd = fontWidthInfo(f && f.width), w = wd.name ? ' ' + wd.name : '';
+  return { st, wd, famSfx: w, sfx: w + st.sfx, file: (wd.file || st.file) ? '-' + wd.file + st.file.slice(1) : '',
+           sub: wd.name ? (st.name === 'Regular' ? wd.name : wd.name + ' ' + st.name) : st.name };
+}
+/* Filename stem for downloads: family base + the width word and the style's suffix, so the Regular,
+   Bold, Italic and Bold Italic of one family — and its Condensed or Extended versions — never
+   overwrite each other's files. */
+function fontFileStem() { return fontSafeBase(project.font.familyName) + fontNameParts(project.font).file; }
 /* The lean the exported file declares, in this app's convention: degrees, + = leans right. Only an
    italic style declares one. project.font.italicLean is the teacher's own number (Font Details);
    absent, it follows the letters' records — the most common lean among the drawn letters. */
@@ -21044,18 +21535,21 @@ function buildFontSpec() {
   // FEA
   const fea = buildFEA(baseGlyphNames, built, nikOn, tropOn, builtPerLetter, builtWide, builtShinDagesh, builtYiddishPasekh, builtWideGlyphItems, builtMetegForms, builtSmr);
 
-  // name table — nameID 1 stays the bare family for every style (that's the RIBBI link);
-  // only nameID 2/3/4/6 carry the Regular / Bold / Italic / Bold Italic distinction.
+  // name table — nameID 1 is the family the four styles group in (that's the RIBBI link): the bare family,
+  // plus the width word for a Condensed / Extended font ("Family Condensed" installs beside "Family", with
+  // its own Regular / Bold / Italic). nameID 2/3/4/6 carry the style; a width also adds nameID 16 / 17,
+  // the bare family and "Condensed Bold", for programs that list a family's widths together.
   const fam = fnt.familyName || 'My Hebrew Hand';
-  const st = fontStyleInfo(fnt.style), bold = st.bold;
-  const styleName = st.name, psStyle = st.file ? st.file.slice(1) : 'Regular';   // nameID 6 has no space: Family-BoldItalic
+  const nm = fontNameParts(fnt), st = nm.st, bold = st.bold;
+  const styleName = st.name, psStyle = nm.file ? nm.file.slice(1) : 'Regular';   // nameID 6 has no space: Family-BoldItalic, Family-CondensedBold
   const lean = fontItalicLean();   // 0 unless the style is an italic one
   const reserved = fnt.reservedFontName || fam;
   const lic = LICENSES[fnt.license] || LICENSES.ofl;   // 'unset' has a row of its own, so it never reads as OFL
   const names = {
-    familyName: fam, styleName: styleName,
-    uniqueFontIdentifier: fam + st.sfx + '-' + fnt.version,
-    fullName: fam + st.sfx, version: 'Version ' + fnt.version, psName: fontSafeBase(fam).slice(0, 62 - psStyle.length) + '-' + psStyle,   // ≤ 63 in all: only a 53+ character family meets the trim, and only as Bold Italic
+    familyName: fam + nm.famSfx, styleName: styleName,
+    ...(nm.famSfx ? { typographicFamily: fam, typographicSubfamily: nm.sub } : {}),   // nameID 16 / 17 — only a width needs them
+    uniqueFontIdentifier: fam + nm.sfx + '-' + fnt.version,
+    fullName: fam + nm.sfx, version: 'Version ' + fnt.version, psName: fontSafeBase(fam).slice(0, 62 - psStyle.length) + '-' + psStyle,   // ≤ 63 in all: only a long family meets the trim (53+ characters as a plain Bold Italic)
     copyright: 'Copyright (c) ' + new Date().getFullYear() + ' ' + ((fnt.author||'').trim() || fam),
     manufacturer: 'IvritSuite Hebrew Font Maker',        // nameID 8  — attribution in the standard field
     designer: 'Made with IvritSuite Hebrew Font Maker',  // nameID 9
@@ -21101,6 +21595,7 @@ function buildFontSpec() {
   const xH   = _inkTop('0078', '006F', '0445', '043E');   // x, o, then Cyrillic х, о
   const spec = {
     unitsPerEm: UPM, glyphOrder, glyphs, cmap, fea, names, bold: bold,
+    ...(nm.wd.cls !== 5 ? { widthClass: nm.wd.cls } : {}),   // OS/2 usWidthClass — absent = 5, Normal
     // An italic style: the flag, the angle the file declares (OpenType counts counter-clockwise, so a
     // right lean is NEGATIVE) and the text caret's slope to match. Absent for Regular and Bold, whose
     // files are byte-for-byte what they were.
@@ -21631,8 +22126,9 @@ function buildUfoFontInfo(spec) {
   const bold = !!spec.bold, st = fontStyleInfo(fontStyleMake(bold, !!spec.italic));
   const os = project.osFont;   // partner starting-font: mirror buildFontSpec's provenance branch (fontinfo is read independently)
   const fi = {
-    familyName: n.familyName, styleName: st.name,
-    styleMapFamilyName: n.familyName, styleMapStyleName: st.map,
+    familyName: n.typographicFamily || n.familyName, styleName: n.typographicSubfamily || st.name,   // a UFO's own pair is the typographic one: "Family" + "Condensed Bold"
+    styleMapFamilyName: n.familyName, styleMapStyleName: st.map,                                      // …and the style-map pair is nameID 1 / 2: "Family Condensed" + bold
+    ...(spec.widthClass ? { openTypeOS2WidthClass: spec.widthClass } : {}),
     ...(spec.italic ? { italicAngle: spec.italicAngle || 0, openTypeHheaCaretSlopeRise: spec.caretRise, openTypeHheaCaretSlopeRun: spec.caretRun } : {}),   // omitted, never null, for an upright style
     versionMajor: major, versionMinor: minor, unitsPerEm: spec.unitsPerEm,
     // capHeight and xHeight are the MEASURED ink of the shipped O/H and o/x, matching the TTF's
@@ -21769,7 +22265,7 @@ def hfm_build(spec_json):
     fb.setupOS2(sTypoAscender=int(spec["ascent"]), sTypoDescender=int(spec["descent"]),
                 sTypoLineGap=int(spec.get("lineGap", 0)),
                 usWinAscent=_winAsc, usWinDescent=_winDesc,
-                usWeightClass=(700 if spec.get("bold") else 400),
+                usWeightClass=(700 if spec.get("bold") else 400), usWidthClass=int(spec.get("widthClass", 5)),
                 achVendID="IVST",
                 # OS/2 v4: USE_TYPO_METRICS (fsSelection bit 7, set below) is only DEFINED from
                 # version 4 up. Left at fontTools' default 3, a conforming consumer ignores the bit
@@ -22456,7 +22952,7 @@ function fmSubmitPrefill() {
   const f = project.font;
   const licMap = { cc0:'CC0 (Public Domain)', ofl:'OFL (SIL Open Font License 1.1)', mit:'MIT License', arr:'All Rights Reserved' };
   return {
-    name: ((f.familyName || '').trim() + fontStyleInfo(f.style).sfx),
+    name: ((f.familyName || '').trim() + fontNameParts(f).sfx),
     author: (f.author || '').trim(),
     license: project.osFont ? (project.osFont.licenseName || 'Upstream license (locked)') : (licMap[f.license] || f.license || ''),
     version: (f.version || '').trim(),
@@ -22789,7 +23285,7 @@ async function finishDownload(bytes, gateSkipped, fmt) {   // resolves true only
     const entries = [
       { name: fam + '.ttf',   b64: bytesToB64(bytes) },
       { name: fam + '.woff2', b64: wr.woff2_b64 },
-      { name: fam + '.css',   text: fontFaceCss(project.font.familyName || fam, fam, fontIsBold(), fontIsItalic()) },
+      { name: fam + '.css',   text: fontFaceCss((project.font.familyName || fam) + fontNameParts(project.font).famSfx, fam, fontIsBold(), fontIsItalic()) },
       { name: 'LICENSE.txt',  text: licenseText() }
     ];
     pyodide.globals.set('hfm_zip_json', JSON.stringify(entries));
@@ -23304,7 +23800,7 @@ async function saveCurrentToMyFonts(bytes) {
   if (!project || coreLetterStats().traced === 0) { status(I18n.t('fontmaker.status.trace_first')); return; }
   if (licenseUnsetGate()) return;   // this builds a font too, without passing exportFont
   // The My Fonts store is keyed by name — a bold save must not evict its Regular sibling.
-  const fam = (project.font.familyName || 'My Hebrew Font').trim() + fontStyle().sfx;
+  const fam = (project.font.familyName || 'My Hebrew Font').trim() + fontNameParts(project.font).sfx;
   try {
     if (!bytes) { status(I18n.t('fontmaker.status.building_font'), true); bytes = await buildFontBytes(); }
     await saveUserFont(fam, bytes, fam);
@@ -23321,7 +23817,7 @@ function offerSaveToMyFonts(licenseSeparate) {   // post-export success screen (
   const dlFile = dl ? new File([dl.blob], dl.name, {type: dl.blob.type}) : null;
   const canShareFile = !!dlFile && fmCanShareFiles([dlFile]);   // Safari/iOS: the share sheet is the file exit ("Save to Files") where the download is invisible
   const canPick = !!dlFile && typeof window.showSaveFilePicker === 'function';   // Chromium desktop: choose where the file goes
-  const fam = (project.font.familyName || 'My Hebrew Font').trim() + fontStyle().sfx;
+  const fam = (project.font.familyName || 'My Hebrew Font').trim() + fontNameParts(project.font).sfx;
   const canSave = !!(window.indexedDB && window.FontFace);
   const btns = [{ label: I18n.t('fontmaker.modals.exported_done'), cls: 'ghost' },
                 { label: I18n.t('fontmaker.modals.exported_send_btn'), cls: 'ghost', icon: ICON_SEND_SM, onClick: () => fmSendFont('ivrit') },
@@ -24253,7 +24749,7 @@ async function _generatePreviewPDF() {
       ctx.font = HEB(16); ctx.measureText('שלום');   // warm up the font for canvas
       ctx.textBaseline = 'alphabetic'; let y = 66;
       ctx.fillStyle = '#1a2744'; ctx.font = "27px 'Libre Baskerville', serif";
-      ctx.fillText((project.font.familyName || I18n.t('fontmaker.canvas.my_font')) + fontStyle().sfx, W/2, y); y += 22;
+      ctx.fillText((project.font.familyName || I18n.t('fontmaker.canvas.my_font')) + fontNameParts(project.font).sfx, W/2, y); y += 22;
       ctx.fillStyle = '#666'; ctx.font = "12px 'Source Sans 3', sans-serif";
       ctx.fillText(I18n.t('fontmaker.canvas.specimen_subtitle', { version: project.font.version || '1' }), W/2, y); y += 18;
       ctx.strokeStyle = '#1a2744'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(64, y); ctx.lineTo(W-64, y); ctx.stroke(); y += 76;
@@ -24370,7 +24866,7 @@ async function _generatePreviewPDF() {
       const chars = punctSpecimenChars();
       if (chars.length) specimenPage(I18n.t('fontmaker.canvas.section_punct'), chars, { rtl: false, cols: 10, glyphPx: 38 });
     }
-    pdf.save(((project.font.familyName||'font') + fontStyle().sfx).replace(/\s+/g,'_') + '_specimen.pdf');
+    pdf.save(((project.font.familyName||'font') + fontNameParts(project.font).sfx).replace(/\s+/g,'_') + '_specimen.pdf');
     status(I18n.t('fontmaker.status.preview_pdf_saved'));
   } catch (e) { console.error(e); status(''); askModal(I18n.t('fontmaker.modals.pdf_error_title'), '<span class="warn">'+(e.message||e)+'</span>', [{label:I18n.t('fontmaker.modals.ok')}]); }
 }
@@ -24607,8 +25103,8 @@ async function saveToBrowser() {
    The current font is first saved to Recents (so it's preserved); the copy gets a DISTINCT name — a
    project's identity is its derived family name (see pushRecentProject), so a same-named copy would
    silently evict the original. Switching is done through the shared applyProjectData load path. ── */
-function fmDerivedProjectName(familyName, reservedFontName, style) {   // mirrors pushRecentProject's naming
-  const base = familyName || 'Untitled', fam = base + fontStyleInfo(style).sfx;
+function fmDerivedProjectName(familyName, reservedFontName, f) {   // mirrors pushRecentProject's naming; f: the font ({ style, width }) the name is for
+  const base = familyName || 'Untitled', fam = base + fontNameParts(f).sfx;
   const res = reservedFontName || '';
   return (res && res !== base) ? `${fam} - ${res}` : fam;   // a fresh project seeds reservedFontName = familyName — never show "X - X"
 }
@@ -24622,7 +25118,7 @@ function fmUniqueCopyName(base, style, alsoTaken) {                    // "X cop
 function saveProjectAs() {
   if (!project) return;
   onMetaChange();                                                     // flush pending name/meta edits into project
-  const style = project.font.style;
+  const style = { style: project.font.style, width: project.font.width };   // the copy is the same member of the family, under a new family name
   const suggested = fmUniqueCopyName(project.font.familyName, style);
   askModal(I18n.t('fontmaker.modals.save_as_title'),
     `<p style="margin:0 0 10px;">${I18n.t('fontmaker.modals.save_as_body')}</p>` +
@@ -24645,7 +25141,7 @@ function saveProjectAs() {
       if (rfn) { status(I18n.t('fontmaker.osfont.rfn_saveas_blocked', {rfn})); return; }
     }
     // never let the copy's name collide with (and evict) the original we're about to save
-    const original = fmDerivedProjectName(project.font.familyName, project.font.reservedFontName, project.font.style);
+    const original = fmDerivedProjectName(project.font.familyName, project.font.reservedFontName, project.font);
     if (fmDerivedProjectName(name, project.osFont ? project.font.reservedFontName : name, style) === original) name = name + ' copy';
     // 1) preserve the current font in Recents
     project.savedAt = new Date().toISOString();
@@ -24907,7 +25403,7 @@ function fmCloudSave() {
   if (!fmCloudUser()) { fmCloudSignIn(); return; }
   onMetaChange();
   if (project.cloudId) { fmCloudWrite('explicit'); return; }
-  const name = fmDerivedProjectName(project.font.familyName, project.font.reservedFontName, project.font.style);
+  const name = fmDerivedProjectName(project.font.familyName, project.font.reservedFontName, project.font);
   askModal(_cT('first_title', 'Save to your account'),
     `<p style="margin:0 0 8px;">${_cT('first_body', '{name} will be kept in your account with its photos at full size. Your files and the copies in this browser stay as they are.', { name: '<b>' + esc(name) + '</b>' })}</p>` +
     `<p style="margin:0;color:var(--muted);font-size:0.82rem;">${esc(_cT('first_note', 'From then on, changes keep saving to your account by themselves.'))}</p>`,
@@ -24935,7 +25431,7 @@ async function fmCloudWrite(mode) {
       else if (mode !== 'overwrite' && project.cloudRev && row.updated_at !== project.cloudRev) { if (mode === 'signout') return false; fmCloudConflict(row); return false; }
       else expected = row.updated_at;
     }
-    const name = fmDerivedProjectName(project.font.familyName, project.font.reservedFontName, project.font.style);
+    const name = fmDerivedProjectName(project.font.familyName, project.font.reservedFontName, project.font);
     const packed = await fmCloudPack(project);
     const gz = new Blob([await gzipBlob(packed.json)], { type: 'application/gzip' });   // gzipBlob() returns an untyped Blob
     const meta = { family_name: project.font.familyName || null, style: project.font.style || null, schema_version: project.schemaVersion || null,
@@ -24971,7 +25467,7 @@ async function fmCloudKeepBoth() {   // this copy becomes a new project (the Sav
   // and a taken name refuses the upload (23505) after the copy is already open here.
   let accountNames = null;
   try { accountNames = new Set((await IvritProjects.list({ fresh: true })).map(r => r.name)); } catch (e) {}
-  const style = project.font.style, name = fmUniqueCopyName(project.font.familyName, style, accountNames);
+  const style = { style: project.font.style, width: project.font.width }, name = fmUniqueCopyName(project.font.familyName, style, accountNames);
   project.savedAt = new Date().toISOString();
   pushRecentQuiet(project);
   const copy = JSON.parse(JSON.stringify(project));
@@ -25127,10 +25623,10 @@ function legacyRecentList() {
   try { const v = JSON.parse(localStorage.getItem(RECENT_KEY) || '[]'); return Array.isArray(v) ? v.filter(r => r && typeof r === 'object' && typeof r.name === 'string' && r.data && typeof r.data === 'object') : []; }
   catch (e) { return []; }
 }
-// A project's Recent identity is its derived name (see fmDerivedProjectName); the style is part of it, so a Bold
-// project never replaces its Regular sibling. `legacy` is the old doubled "X - X" form a row may still carry.
+// A project's Recent identity is its derived name (see fmDerivedProjectName); the style and the width name are part of it, so a Bold
+// or a Condensed project never replaces its Regular sibling. `legacy` is the old doubled "X - X" form a row may still carry.
 function recentNameOf(p) {
-  const base = (p.font && p.font.familyName) || 'Untitled', fam = base + fontStyleInfo(p.font && p.font.style).sfx;
+  const base = (p.font && p.font.familyName) || 'Untitled', fam = base + fontNameParts(p.font).sfx;
   const res = (p.font && p.font.reservedFontName) || '';
   return { name: (res && res !== base) ? `${fam} - ${res}` : fam, legacy: res ? `${fam} - ${res}` : null };
 }
@@ -25626,6 +26122,11 @@ function sanitizeFontNumbers(f) {
     });
     if (Object.keys(ml).length) f.markLean = ml; else delete f.markLean;
   }
+  if (f.markWide != null) {   // marks' width factor: junk is dropped — a non-finite or zero one would reach every mark's coordinates
+    const mw = {};
+    if (f.markWide && typeof f.markWide === 'object') MARK_STORE_KINDS.forEach(k => { const v = +f.markWide[k]; if (Number.isFinite(v) && v >= 0.25 && v <= 4 && v !== 1) mw[k] = v; });
+    if (Object.keys(mw).length) f.markWide = mw; else delete f.markWide;
+  }
   if (f.trop && f.trop.vowelPair) for (const cls of Object.keys(f.trop.vowelPair))
     fix(f.trop.vowelPair[cls], 'dx', -300, 300, 70);         // signed: magnitude clamps at the slider's 300
 }
@@ -25812,6 +26313,7 @@ function migrateProject(data) {
       data.font.license = 'ofl';   // orphaned lock key with no provenance — heal to the safest normal default
     }
     data.font.style = fontStyleOf(data.font.style);   // the family member this project exports as — backfills old saves and coerces junk to Regular
+    if (data.font.width != null) { const w = fontWidthOf(data.font.width); if (w === 'normal') delete data.font.width; else data.font.width = w; }   // the width name: junk and Normal are both "absent"
     if (data.font.italicLean != null) { const _l = +data.font.italicLean; if (Number.isFinite(_l) && Math.abs(_l) <= 60) data.font.italicLean = Math.round(_l * 10) / 10; else delete data.font.italicLean; }   // the teacher's own italic angle — a non-finite one would kill the export in the 16.16 pack
     if (!_isObj(data.font.metrics)) data.font.metrics = { baseline:BASELINE, letterTop:LETTER_TOP, lamedAscender:LAMED_TOP, descender:DESCENDER, defaultLSB:DEF_LSB, defaultRSB:DEF_RSB, capHeight:CAP_HEIGHT, xHeight:X_HEIGHT, ascender:ASCENDER };
     else ['baseline','letterTop','lamedAscender','descender','defaultLSB','defaultRSB','capHeight','xHeight','ascender'].forEach((k,i)=>{ const v = data.font.metrics[k]; if (typeof v !== 'number' || !Number.isFinite(v)) data.font.metrics[k]=[BASELINE,LETTER_TOP,LAMED_TOP,DESCENDER,DEF_LSB,DEF_RSB,CAP_HEIGHT,X_HEIGHT,ASCENDER][i]; });   // a line box is numbers or the default — a string here reaches arithmetic. The three cased-script lines (v5.54) included: effMetrics passes anything non-null through, so a hand-edited capHeight of "tall" reached fy() as NaN and blanked the stage

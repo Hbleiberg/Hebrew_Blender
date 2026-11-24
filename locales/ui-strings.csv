@@ -2525,6 +2525,7 @@ fontmaker.modals.template_error_title,Template error,שגיאת תבנית,dialo
 fontmaker.modals.pdf_libs_offline_body,"Couldn't load the PDF builder. Check your internet connection, then reload the page and try again.","לא ניתן היה לטעון את בונה ה-PDF. בדקו את חיבור האינטרנט שלכם, ואז טענו מחדש את הדף ונסו שוב.",dialog body — template sheets + Preview PDF when the page-top cdnjs scripts did not load,
 fontmaker.modals.image_libs_offline_body,"Couldn't load the image builder. Check your internet connection, then reload the page and try again.","לא ניתן היה לטעון את בונה התמונות. בדקו את חיבור האינטרנט שלכם, ואז טענו מחדש את הדף ונסו שוב.",dialog body — template sheets saved as PNG when html2canvas did not load; the PDF sibling above covers jsPDF,
 fontmaker.modals.markedit_lean_note,This font's marks lean with its letters. Draw the mark upright here — the lean is added when the font is built.,הסימנים בגופן הזה נוטים יחד עם האותיות. ציירו כאן את הסימן זקוף — הנטייה מתווספת כשהגופן נבנה.,modal hint,
+fontmaker.modals.markedit_wide_note,This font's marks were narrowed or widened with its letters. Draw the mark at its normal width here — the change is added when the font is built.,הסימנים בגופן הזה הוצרו או הורחבו יחד עם האותיות. ציירו כאן את הסימן ברוחבו הרגיל — השינוי מתווסף כשהגופן נבנה.,modal hint,
 fontmaker.modals.this_letter,this letter,אות זו,default fallback,
 fontmaker.modals.ufo_fail_title,UFO build failed,בניית ה-UFO נכשלה,dialog title,
 fontmaker.modals.woff2_fail_title,WOFF2 failed,WOFF2 נכשל,dialog title,
@@ -5740,6 +5741,10 @@ fontmaker.node_editor.scale_lock,Keep proportions,שמירת פרופורציו�
 fontmaker.node_editor.scale_lock_title,"When on, Width and Height change together","כשמופעל, הרוחב והגובה משתנים יחד",button title,
 fontmaker.node_editor.scale_preset_title,Scale to {pct}% (about the selection's center),שנה גודל ל־{pct}% (סביב מרכז הבחירה),button title,
 fontmaker.node_editor.scale_presets_aria,Scale to a set size,שינוי גודל לגודל קבוע,group aria-label,aria-label only
+fontmaker.node_editor.scale_stems,"Keep stem thickness (whole letter, width only)","לשמור על עובי הקווים (האות כולה, רוחב בלבד)",checkbox,
+fontmaker.node_editor.scale_stems_apply_title,"Set the whole letter to the width entered, keeping its strokes as thick as they were","קביעת רוחב האות כולה לערך שהוזן, תוך שמירה על עובי הקווים",button title,
+fontmaker.node_editor.scale_stems_title,"Narrow or widen the whole letter while its strokes keep their thickness. The letter's side spaces and nikkud points follow. Width only, from 50 to 150%.","הצרה או הרחבה של האות כולה כשהקווים שומרים על עוביים. המרווחים שבצידי האות ונקודות הניקוד שלה משתנים יחד איתה. רוחב בלבד, בין 50 ל־150%.",checkbox title,
+fontmaker.node_editor.scale_stems_warn,"Letter set to {pct}% width — but an opening closed up or strokes now touch. Look it over, or Undo.","רוחב האות שונה ל־{pct}% — אבל פתח נסגר או שקווים נוגעים כעת זה בזה. בדקו אותה, או בטלו.",toast,
 fontmaker.node_editor.scale_w,Width %,רוחב %,input label,
 fontmaker.node_editor.scale_w_aria,Width percentage — 100 is unchanged,אחוז רוחב — 100 ללא שינוי,input aria-label,aria-label only
 fontmaker.node_editor.segment_type,Segment type,סוג מקטע,group aria-label,
@@ -6298,6 +6303,7 @@ fontmaker.undolabel.holam_anchor_y,holam anchor y,עוגן החולם y,undo act
 fontmaker.undolabel.holam_size,holam size,גודל החולם,undo action name,REVIEW: HE authored S243
 fontmaker.undolabel.kern_tightness,kern tightness,הידוק הקרנינג,undo action name,REVIEW: HE authored S243
 fontmaker.undolabel.letter_spacing,letter spacing,ריווח האותיות,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.letter_width_n,letter width {n}%,רוחב האותיות {n}%,undo action name,
 fontmaker.undolabel.line_spacing,line spacing,ריווח השורות,undo action name,REVIEW: HE authored S243
 fontmaker.undolabel.mark_anchor_move,mark anchor move,הזזת עוגן הסימן,undo action name,REVIEW: HE authored S243
 fontmaker.undolabel.mark_anchor_x,mark anchor x,עוגן הסימן x,undo action name,REVIEW: HE authored S243
@@ -6358,9 +6364,11 @@ fontmaker.status.upload_leftover.one,{count} photo had nowhere to go — every o
 fontmaker.status.upload_leftover.other,{count} photos had nowhere to go — every other letter already has something on it.,נותרו {count} תמונות בלי מקום — לכל שאר האותיות כבר יש משהו.,toast,plural; REVIEW: machine-drafted HE — confirm
 fontmaker.status.upload_unreadable.one,{count} file could not be read as an image.,{count} קובץ לא נקרא כתמונה.,toast,plural; REVIEW: machine-drafted HE — confirm
 fontmaker.status.upload_unreadable.other,{count} files could not be read as images.,{count} קבצים לא נקראו כתמונה.,toast,plural; REVIEW: machine-drafted HE — confirm
+fontmaker.status.width_detected,This font is marked {width} — its Width name was set to match (see Font Details).,הגופן הזה מסומן כ{width} — שם הרוחב שלו הוגדר בהתאם (ראו פרטי הגופן).,toast,{width} = a width option name
 fontmaker.status.xform_too_big,"That would push points past what a font file can hold, so nothing was changed.","הפעולה הזאת תדחוף נקודות אל מעבר למה שקובץ גופן יכול להכיל, ולכן שום דבר לא שונה.",toast,
 fontmaker.undolabel.upload_image,upload image,העלאת תמונה,undo action name,REVIEW: machine-drafted HE — confirm
 fontmaker.undolabel.upload_n_photos,upload {n} photos,העלאת {n} תמונות,undo action name,REVIEW: machine-drafted HE — confirm
+fontmaker.undolabel.width_n,width {n}%,רוחב {n}%,undo action name,
 fontmaker.panels.nexthint_trace,Photos are in. Trace {name} next — {count} waiting.,התמונות נטענו. עקבו אחרי {name} — {count} ממתינות.,next-step hint,REVIEW: machine-drafted HE — confirm
 fontmaker.panels.scaleall_open,Scale all letters…,שינוי גודל לכל האותיות…,button,
 fontmaker.panels.scaleall_open_title,"Make every letter larger or smaller at once — spacing, kerning, nikkud and the guide lines can follow — with a preview before anything changes.","הגדלה או הקטנה של כל האותיות בבת אחת — הריווח, הקרנינג, הניקוד וקווי העזר יכולים להשתנות יחד איתן — עם תצוגה מקדימה לפני שמשהו משתנה.",button title,
@@ -6368,6 +6376,15 @@ fontmaker.panels.slantall_open,Slant all letters…,הטיית כל האותיו
 fontmaker.panels.slantall_open_title,"Lean every letter by an exact angle, from the baseline so the letters stay on the line — nikkud points follow — with a preview before anything changes.","הטיית כל האותיות בזווית מדויקת, מקו הבסיס, כך שהאותיות נשארות על השורה — נקודות הניקוד זזות איתן — עם תצוגה מקדימה לפני שמשהו משתנה.",button title,
 fontmaker.panels.style_bolditalic,Bold Italic,מודגש נטוי,select option,
 fontmaker.panels.style_italic,Italic,נטוי,select option,
+fontmaker.panels.width_condensed,Condensed,דחוס,select option,
+fontmaker.panels.width_extended,Extended,רחב,select option,
+fontmaker.panels.width_name,Width name,שם הרוחב,select label,
+fontmaker.panels.width_name_title,"Is this font a narrower or a wider version of the family? The word joins the family name inside the font files (“Family Condensed”), so the font installs beside the normal-width one instead of replacing it. This only names the font — to change the letters themselves use Width…","האם הגופן הזה הוא גרסה צרה או רחבה יותר של המשפחה? המילה מצטרפת לשם המשפחה בתוך קובצי הגופן (‎“Family Condensed”‎), כך שהגופן מותקן לצד הגופן ברוחב הרגיל ואינו מחליף אותו. כאן רק נותנים לגופן שם — כדי לשנות את האותיות עצמן השתמשו ב«רוחב…»",select title,
+fontmaker.panels.width_normal,Normal,רגיל,select option,
+fontmaker.panels.width_semicondensed,Semi-condensed,דחוס למחצה,select option,
+fontmaker.panels.width_semiextended,Semi-extended,רחב למחצה,select option,
+fontmaker.panels.widthall_open,Width…,רוחב…,button,
+fontmaker.panels.widthall_open_title,"Make every letter narrower or wider — a condensed or an extended version of the font — keeping the strokes as thick as they were, with a preview before anything changes.","הצרה או הרחבה של כל האותיות — גרסה דחוסה או רחבה של הגופן — תוך שמירה על עובי הקווים, עם תצוגה מקדימה לפני שמשהו משתנה.",button title,
 fontmaker.qa.only_problems,Only show problems,הצגת בעיות בלבד,QA grid filter toggle,REVIEW: machine-drafted HE — confirm
 fontmaker.qa.filter_note,Showing {rows} of {rowTotal} letters and {cols} of {colTotal} marks.,מוצגות {rows} מתוך {rowTotal} אותיות ו-{cols} מתוך {colTotal} סימנים.,QA grid filter readout,REVIEW: machine-drafted HE — confirm
 fontmaker.qa.filter_clear,Nothing to fix on this tab — every combination here is clear. Untick to see the whole grid.,אין מה לתקן בלשונית הזו — כל השילובים כאן תקינים. בטלו את הסימון כדי לראות את כל הטבלה.,QA grid filter empty state,REVIEW: machine-drafted HE — confirm
@@ -6380,6 +6397,7 @@ fontmaker.scaleall.held_line_box,the imported line height,גובה השורה ה
 fontmaker.scaleall.held_line_spacing,line spacing,ריווח שורות,list item,
 fontmaker.scaleall.held_mark_lean,the lean of nikkud and trop,נטיית הניקוד והטעמים,list item,
 fontmaker.scaleall.held_mark_size,the size of nikkud and trop,גודל הניקוד והטעמים,list item,
+fontmaker.scaleall.held_mark_width,the width of nikkud and trop,רוחב הניקוד והטעמים,list item,
 fontmaker.scaleall.held_meteg_gap,the meteg gap,מרווח המתג,list item,
 fontmaker.scaleall.held_pair_shift,the vowel-and-trop shift,ההזזה של תנועה עם טעם,list item,
 fontmaker.scaleall.held_trop_spread,the trop spread,פיזור הטעמים,list item,
@@ -6429,6 +6447,33 @@ fontmaker.slantall.size,Angle (°),זווית (°),input label,
 fontmaker.slantall.style_note,"This project will become the {style} of “{family}”: its Style changes with the letters, and so does its saved copy. To keep the upright project too, cancel and save a copy first.","הפרויקט הזה יהפוך ל{style} של «{family}»: הסגנון שלו משתנה יחד עם האותיות, וכך גם העותק השמור שלו. כדי לשמור גם את הפרויקט הזקוף, בטלו ושמרו קודם עותק.",modal hint,{style} = a style option name
 fontmaker.slantall.style_note_back,"The letters will stand upright again, so the font's Style goes back to {style}.","האותיות ישובו לעמוד זקוף, ולכן סגנון הגופן יחזור להיות {style}.",modal hint,
 fontmaker.slantall.title,Slant all letters,הטיית כל האותיות,modal title,
+fontmaker.widthall.applied.one,1 letter set to {pct}% width — one Undo reverts it.,רוחבה של אות אחת שונה ל־{pct}% — ביטול אחד מחזיר אותה.,toast,
+fontmaker.widthall.applied.other,{count} letters set to {pct}% width — one Undo reverts everything.,רוחבן של {count} אותיות שונה ל־{pct}% — ביטול אחד מחזיר הכול.,toast,
+fontmaker.widthall.applied_letter,Letter set to {pct}% width — one Undo reverts it.,רוחב האות שונה ל־{pct}% — ביטול אחד מחזיר אותה.,toast,
+fontmaker.widthall.intro,"Makes every letter narrower or wider — a condensed or an extended version of the font. Heights never change. With “Keep stem thickness” on, the strokes stay as thick as they were, and the percentage is how long your text becomes. Nothing changes until you press Apply, and one Undo reverts it all.","מצר או מרחיב את כל האותיות — גרסה דחוסה או רחבה של הגופן. הגבהים אינם משתנים. כשהאפשרות «לשמור על עובי הקווים» מסומנת, הקווים נשארים בעוביים המקורי, והאחוז קובע מה יהיה אורך הטקסט. שום דבר לא משתנה עד שלוחצים «החל», וביטול אחד מחזיר הכול.",modal hint,
+fontmaker.widthall.name_note,"This project will become “{name}”: its Width name changes with the letters, and so does its saved copy. It installs as a family of its own, beside “{family}”. To keep the normal-width project too, cancel and save a copy first.","הפרויקט הזה יהפוך ל«{name}»: שם הרוחב שלו משתנה יחד עם האותיות, וכך גם העותק השמור שלו. הוא מותקן כמשפחה בפני עצמה, לצד «{family}». כדי לשמור גם את הפרויקט ברוחב הרגיל, בטלו ושמרו קודם עותק.",modal hint,{name} = family + width word as the font file carries it
+fontmaker.widthall.name_note_back,"The letters return to their normal width, so the font is named plain “{family}” again.","האותיות חוזרות לרוחבן הרגיל, ולכן הגופן ייקרא שוב «{family}» בלבד.",modal hint,
+fontmaker.widthall.note_neutral,Pick a width — at 100% there is nothing to change.,בחרו רוחב — ב־100% אין מה לשנות.,inline note,
+fontmaker.widthall.note_range,Enter a width from 50 to 150.,הזינו רוחב בין 50 ל־150.,inline note,
+fontmaker.widthall.note_ratio,Text will come out about {pct}% as long.,הטקסט ייצא באורך של כ־{pct}% מאורכו.,inline note,
+fontmaker.widthall.opt_a,Keep stem thickness,לשמור על עובי הקווים,checkbox,
+fontmaker.widthall.opt_b,Also scale kerning and word spacing,לשנות גם את הקרנינג ואת ריווח המילים,checkbox,
+fontmaker.widthall.opt_c,Also adjust nikkud & trop marks,להתאים גם את סימני הניקוד והטעמים,checkbox,
+fontmaker.widthall.opt_d,Name the font Condensed / Extended,לקרוא לגופן «דחוס» / «רחב»,checkbox,
+fontmaker.widthall.preset_100,Normal,רגיל,preset button,
+fontmaker.widthall.preset_108,Semi-extended 108%,רחב למחצה 108%,preset button,
+fontmaker.widthall.preset_115,Extended 115%,רחב 115%,preset button,
+fontmaker.widthall.preset_85,Condensed 85%,דחוס 85%,preset button,
+fontmaker.widthall.preset_92,Semi-condensed 92%,דחוס למחצה 92%,preset button,
+fontmaker.widthall.presets,Width presets,רוחבים מוכנים,group aria-label,aria-label only
+fontmaker.widthall.refuse_draw,At {pct}% the pen strokes of these letters would leave the drawing area: {names}. Choose a narrower setting.,ב־{pct}% משיכות העט של האותיות האלה יחרגו מאזור הציור: {names}. בחרו רוחב קטן יותר.,inline refusal,
+fontmaker.widthall.refuse_gone,At {pct}% these would shrink to nothing: {names}. Choose a wider setting.,ב־{pct}% אלה יתכווצו עד שייעלמו: {names}. בחרו רוחב גדול יותר.,inline refusal,
+fontmaker.widthall.refuse_narrow,"At {pct}% there is no room left for the strokes themselves. Choose a wider setting, or untick “Keep stem thickness”.","ב־{pct}% לא נשאר מקום לקווים עצמם. בחרו רוחב גדול יותר, או בטלו את הסימון של «לשמור על עובי הקווים».",inline refusal,
+fontmaker.widthall.refuse_range,At {pct}% these would reach past what a font file can hold: {names}. Choose a narrower setting.,ב־{pct}% אלה יחרגו ממה שקובץ גופן יכול להכיל: {names}. בחרו רוחב קטן יותר.,inline refusal,
+fontmaker.widthall.scope_hint,"Kerning, word spacing, the marks and the font's name belong to the whole font, so they change only when you change the whole font. A letter's own side spaces always follow its width.","הקרנינג, ריווח המילים, סימני הניקוד והטעמים ושם הגופן שייכים לגופן כולו, ולכן הם משתנים רק כשמשנים את הגופן כולו. המרווחים שבצידי האות משתנים תמיד יחד עם רוחבה.",modal hint,
+fontmaker.widthall.size,Width (%),רוחב (%),input label,
+fontmaker.widthall.title,Letter width,רוחב האותיות,modal title,
+fontmaker.widthall.warn_closed,"Openings would close up, or strokes would touch, in: {names}. Try a setting nearer 100%.","פתחים ייסגרו, או קווים ייגעו זה בזה, באותיות: {names}. נסו ערך קרוב יותר ל־100%.",inline warning,
 shared.account.sign_in,Sign in,כניסה,Header account chip label while signed out,shared; account chip
 shared.account.menu_aria,Account,חשבון,Account popover dialog name,shared; aria-label only
 shared.account.chip_aria,{label} – account,{label} – חשבון,Account chip button name: {label} is the text on the chip (Sign in / the short name / Loading… / Offline) so voice control reaches it (WCAG 2.5.3),shared; aria-label only
