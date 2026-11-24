@@ -1030,6 +1030,10 @@ header{--kin-pt:10px;--kin-pb:10px;--kin-gap:14px;}   /* this header's block pad
   .zoom-val { font-family: ui-monospace, Menlo, monospace; min-width: 44px; text-align: right; }
   .zoom-reset { padding: 3px 9px; font-size: 0.72rem; }
   .legend { display: flex; gap: 16px; padding: 8px 4px 2px; font-size: 0.74rem; color: var(--muted); flex-wrap: wrap; }
+  /* The stage's legend line is interface text inside .ws-center, which is pinned LTR for the drawing math, so in the
+     Hebrew UI its sentence took LTR and began with its final period. Its text lines take the interface's direction;
+     the crop step's sheet navigation (a <div>, not a line) keeps the stage's. */
+  html[dir="rtl"] #stageLegend > span { direction: rtl; }
   .combined-nav { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; }
   .combined-counter { border: 1px solid var(--border); border-radius: 7px; padding: 3px 16px; text-align: center; background: var(--white); line-height: 1.15; }
   .combined-counter .cn-name { font-size: 0.7rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
