@@ -99366,3 +99366,11 @@ _(prior)_ **Next session (S683):** **Branch `claude/zen-goldberg-1lov9k` (S676â€
 ### from Done
 
 - [x] 2026-11-24 | `ba696284` | Hebrew_Font_Maker.html, locales, sw.js, docs/reference/font-maker.md, CLAUDE.md | (outside the loop; Font Maker v6.0, phase 2) **Pick an installed font** (Local Font Access: import through `uploadSourceFont`, reference by name; a license notice, `license: 'unset'` and a gate before export / My Fonts / Send; `.ttc` members rebuilt) | headless: 85 checks with a stub and with the real API (108 installed fonts), picker import = upload import byte for byte, HarfBuzz shaping identical; phase 1 suites 211 / 211 unchanged
+
+
+<!-- archived by compact-ledger at the S684 boundary, 2026-11-24 -->
+## Compaction (S684, 2026-11-24) â€” moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-11-24 | `3dd56245` | Hebrew_Font_Maker.html, locales, sw.js, docs/reference/font-maker.md, CLAUDE.md | (outside the loop; Font Maker v6.0) **A key press that closes a dialog no longer acts on the editor behind it** (Escape cleared the Edit-points selection, a Draw selection or a crop box; Enter could finish a crop or a pen contour): the trap spends its Escape and `udShortcutBlocked()` refuses a key during which a dialog closed | headless: 27 / 27 (the tree before: 14 / 27); the other suites 296 / 296 unchanged
