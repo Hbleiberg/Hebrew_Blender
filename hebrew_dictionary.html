@@ -852,6 +852,18 @@ body.dark .word-card.bulk-selected,body.dark .emoji-card.bulk-selected{backgroun
 body.dict-audio-on .wc-speak{display:flex;}
 .wc-copy:hover,.wc-copy.copied,.wc-search:hover,.wc-speak:hover{border-color:var(--gold);color:var(--gold-text);opacity:1;}
 .wc-heb{font-family:var(--heb-font);font-size:var(--heb-font-size);direction:rtl;text-align:right;line-height:1.2;}
+/* The corner controls float over the headword's first line, so a long word ran beneath the copy and Google buttons
+   (742 of 13,081 cards at 1366px; 1,764 with Hear on) and Bulk Copy Mode's box sat on every word's first letter. A
+   float at each corner the size of the control's reach into the content box (the trio's right edge 58 / 84px from
+   the card's edge and its foot 32px down, the box's 25px and 25px, less the card's 15px of border and padding inline,
+   13px block, plus a 4px gap inline) shortens the first line, so a phrase wraps clear of them, and a single word too
+   long to sit beside them starts below them (the .1em: the font's text box rises ~.05em above a 1.2 line); the lines
+   below keep the card's width. Paper hides the controls. */
+@media screen {
+  .wc-heb::before{content:"";float:left;width:47px;height:calc(19px + .1em);}
+  body.dict-audio-on .wc-heb::before{width:73px;}
+  body.bulk-mode .wc-heb > span::before{content:"";float:right;width:14px;height:calc(12px + .1em);}
+}
 /* Glosses and transliterations are English content inside an RTL page, so they inherited the
    page's direction and pushed their terminal period (and a leading apostrophe on roots like
    'a-b) to the visual START — ".Related to paternity, fatherhood" on 2,296 of the 13,081
