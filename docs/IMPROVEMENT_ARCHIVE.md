@@ -99131,6 +99131,8 @@ _(prior)_ **Next session (S678):** **Branch `claude/zen-goldberg-1lov9k` (S676�
 
 _(prior)_ **Next session (S679):** **Branch `claude/zen-goldberg-1lov9k` (S676–S678, draft PR #427): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1536**, FM **5.60**, corpus ?v=**8**, the prayer catalog ?v=**9**. ⚑ drift: main=d2d922c sw=v1536 fm=5.60 migration=0014_saves_tool_tefillah_trainer.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest next: M on the Tefillah Trainer, never audited (pointer: M); then M atlas (S584), H dictionary (S585), C torah (S586). ⚑ Unaudited (`9e702ae..a402f72`): the class roster, the hub, the footer and cracks, FM 5.60 — unseen by E, K, I, F, B. ⚑ Queue: the dead `footer .footer-credits` screen rule on three pages (one iteration); S675's Hebrew catchword outside `lang="he"`. ⚑ Awaiting: S662, S653, S652. ⚑ 51 seeds.
 
+_(prior)_ **Next session (S680):** **Branch `claude/zen-goldberg-1lov9k` (S676–S679, draft PR #427): open → continue on it; merged → fresh branch off `origin/main`.** `sw.js` **v1539**, FM **5.60**, corpus ?v=**8**, the prayer catalog ?v=**9**. ⚑ drift: main=d2d922c sw=v1539 fm=5.60 migration=0014_saves_tool_tefillah_trainer.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest next: M on the Trope Atlas (S584; pointer: M); then H dictionary (S585), C torah (S586), G torah (S589). ⚑ Unaudited (`9e702ae..a402f72`): the class roster, the hub, the footer and cracks, FM 5.60 — unseen by E, K, I, F, B. ⚑ Queue: the Tefillah Trainer's dead `footer .footer-credits` line (one line); S675's Hebrew catchword outside `lang="he"`. ⚑ Awaiting: S662, S653, S652. ⚑ 51 seeds.
+
 
 <!-- archived by compact-ledger at the S679 boundary, 2026-11-23 -->
 ## Compaction (S679, 2026-11-23) — moved verbatim from the live ledger
@@ -99196,3 +99198,39 @@ _(prior)_ **Next session (S679):** **Branch `claude/zen-goldberg-1lov9k` (S676�
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 - M aesthetics & visual design (one surface): 2026-11-23 (**S679 — 46th M, `tefillah_trainer.html` (its first): 26 views × EN light / EN dark 1280, HE light / HE dark 800 (104 loads, 0 page errors) beside the Torah Trainer, a typed-search reflow arm (18 / 18 queries moved a control), the drawer by tab. FOUND 3, FIXED 2 + 1 from the queue; 1 logged (gate 3). M-next: atlas (S584), flash (S588), chrome (S603).**)
+
+
+<!-- archived by compact-ledger at the S681 boundary, 2026-11-24 -->
+## Compaction (S681, 2026-11-24) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-11-24 | `815069dd` | 6 tool pages, build-kintsugi.mjs, home.md, sw.js, detector | (S680 by the way, P2; NEW pattern `stray-text-in-a-style-block`) **A pasted builder status line swallowed the Torah Trainer's `.hol-ico` rule, so its parasha and holiday icons drew 149–347px (live since `a402f72c`): the line goes from six pages and the builder prints it to stderr** | rules kept 6 / 6 (five unchanged, the Trainer + `.hol-ico`); icons 17–25px 4 / 4 (before 0 / 4); detector 6 → 0 hits, plant 1 / 1
+
+- [x] 2026-11-23 | `590cf879` | tefillah_trainer.html, torah_trainer.html, sw.js, probe | (S675 C, S653 M; pattern `contrast-below-AA-on-a-tinted-or-coloured-plate`) **The fullscreen bar's switched-on Translit / Translation reads 4.8:1** | probe 8 / 8 (before 4 / 8)
+
+- [x] 2026-11-23 | `7565dc4e` | tefillah_trainer.html, torah_trainer.html, 2 docs, sw.js, probe | (S675 C; pattern `pinned-english-without-lang`) **A translation says `en` and a transliteration row `he-Latn`** | probe 12 / 12 (before 0 / 12); pixels 24 / 24 equal
+
+- [x] 2026-11-23 | `a035a3de` | tefillah_trainer.html, sw.js, probe | (S675 C; pattern `selected-state-lost-in-forced-colors`) **In forced colours the chosen pill stands apart, the last carrier** | probe S675 24 / 24 (Tefillah before 2 / 6)
+
+- [x] 2026-11-23 | `01c4aa3e` | torah_trainer.html, classroom_dashboard.html, sw.js, probe | (S675 C queue; pattern `selected-state-lost-in-forced-colors`) **In forced colours the chosen pill of a segmented choice stands apart on two more pages** | probe S675 18 / 18 (before 10 / 18)
+
+- [x] 2026-11-23 | (S675 close-out) | branch/deploy note | **S675 = C on `tefillah_trainer.html` (its first): FOUND 6, FIXED 2 (three pages each) + the Tutor's share of a third + Flash Cards' S645 P4; 4 logged.** Draft PR #426 continues, `sw.js` v1523 → v1527; nothing live changed; after the merge confirm the Pages deploy.
+
+- [x] 2026-11-23 | `a9651f70` | flash_cards.html, sw.js, probe | (S675, the S645 C P4; pattern `button-focus-lost-to-its-own-rebuild`) **A listening answer picked by keyboard leaves the focus on the speaker** | probe S675 4 / 4 (before 0 / 4)
+
+- [x] 2026-11-23 | `7b02e398` | trope_tutor.html, sw.js, probe | (S675 C; pattern `selected-state-lost-in-forced-colors`) **In forced colours the chosen pill of a segmented choice stands apart** | probe S675 6 / 6 (before 2 / 6)
+
+- [x] 2026-11-23 | `16ee9fd4` | tefillah_trainer, torah_trainer, classroom_dashboard, shared-components.md, sw.js, probe | (S675 C; pattern `logical-inset-mirrors-onto-pinned-content`) **In fullscreen the Exit button goes under the open settings drawer** | probe S675 12 / 12 (before 0 / 12)
+
+- [x] 2026-11-23 | `567e3d06` | tefillah_trainer, torah_trainer, classroom_dashboard, shared-components.md, sw.js, probe | (S675 C; NEW pattern `auto-hidden-bar-takes-focus-unseen`) **A fullscreen bar shows when the keyboard's focus enters it and stays while it rests there** | probe S675 6 / 6 (before 0 / 6)
+
+### from Per-session log (one line per session)
+
+- 2026-11-24 | **S680** | iters: 5 | tools: trope_atlas ×2, tefillah_trainer ×2, torah_trainer, letter_learner, name_tags, trope_tutor, hebrew_blend_generator, Hebrew_Font_Maker, build-kintsugi.mjs, home.md, sw ×4, detector, probes ×2 | patterns fixed: stray-text-in-a-style-block ×6 (NEW), translated-text-in-a-pinned-ltr-box ×3 (NEW) | pass run: M (trope_atlas, 2nd, S584 → S680; FOUND 3 + 1 by the way, FIXED 4 incl. 1 from the queue; 2 P4 logged) | SW: v1539→v1543
+
+- 2026-11-18 | **S660** | iters: 3 | tools: hebrew_blend_generator ×2, generator.md, sw ×2, probes S660 ×2 | patterns fixed: fixed-control-positioned-outside-the-viewport ×1, overflow-past-a-scrollers-start-edge ×1 | pass run: M (hebrew_blend_generator, first since S574; FOUND 5, FIXED 1 + 1 from …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- M aesthetics & visual design (one surface): 2026-11-24 (**S680 — 47th M, `trope_atlas.html` (its 2nd, S584 → S680, 44 commits to the page): 20 views × EN light / EN dark 1280, HE light / HE dark 800 with the real Google Fonts (78 loads, 0 page errors), beside the Trope Tutor's idioms; a suite-wide census of Hebrew text in LTR boxes; every page's style blocks against the rules kept. FOUND 3 + 1 suite P2 by the way, FIXED 4 incl. 1 from the queue; 2 P4 logged. M-next: flash (S588), chrome (S603), dashboard (S610).**)
