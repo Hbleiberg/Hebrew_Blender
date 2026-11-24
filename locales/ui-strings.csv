@@ -2604,8 +2604,7 @@ fontmaker.node_editor.rot_slider_aria,"Rotate around the selection's center — 
 fontmaker.node_editor.round_hint,Rounds the points you select on this outline — corners or smooth curve points alike. (The Trace step's Corners slider changes how a re-trace fits instead.),מעגל את הנקודות שבחרת במתאר זה — פינות או נקודות עקומה חלקות כאחד. (מחוון הפינות בשלב המעקב משנה במקום זאת כיצד מעקב מחדש מתאים.),disclosure hint,
 fontmaker.node_editor.round_summary,Round corners,עיגול פינות,disclosure summary,
 fontmaker.node_editor.round_summary_sel,Round corners — {count} selected,עיגול פינות — {count} נבחרו,disclosure summary,
-fontmaker.node_editor.scale_apply_title,Scale by the percentage entered (about the selection's center),שנה גודל לפי האחוז שהוזן (סביב מרכז הבחירה),button title,
-fontmaker.node_editor.scale_aria,Scale percentage about the selection's center — 100 is unchanged,אחוז שינוי גודל סביב מרכז הבחירה — 100 ללא שינוי,input aria-label,aria-label only
+fontmaker.node_editor.scale_apply_title,Scale by the width and height entered (about the selection's center),שנה גודל לפי הרוחב והגובה שהוזנו (סביב מרכז הבחירה),button title,
 fontmaker.node_editor.scale_label,Scale %,גודל %,input label,
 fontmaker.node_editor.scale_slider_aria,"Scale percentage about the selection's center — previews live, commits on release; 100 is unchanged","אחוז שינוי גודל סביב מרכז הבחירה — תצוגה מקדימה חיה, מתבצע בשחרור; 100 ללא שינוי",slider aria-label,aria-label only
 fontmaker.node_editor.seg_curve_title,Curve segment — click to make it a straight line,מקטע מעוקל — לחצו כדי להפוך אותו לקו ישר,segment dot title (SVG),
@@ -5729,7 +5728,22 @@ fontmaker.node_editor.points_selected.other,{count} points selected,{count} נק
 fontmaker.node_editor.no_points_selected,No points selected,לא נבחרו נקודות,selection status,
 fontmaker.node_editor.sel_actions,Selection actions,פעולות בחירה,group aria-label,
 fontmaker.node_editor.point_type,Point type,סוג נקודה,group aria-label,
+fontmaker.node_editor.rot_ccw_n,{deg}° ⟲,{deg}° ⟲,button,
+fontmaker.node_editor.rot_ccw_n_title,Rotate {deg}° counter-clockwise,סובב {deg}° נגד כיוון השעון,button title,
+fontmaker.node_editor.rot_cw_n,{deg}° ⟳,{deg}° ⟳,button,
+fontmaker.node_editor.rot_cw_n_title,Rotate {deg}° clockwise,סובב {deg}° עם כיוון השעון,button title,
+fontmaker.node_editor.rot_presets_aria,Rotate by a set angle,סיבוב בזווית קבועה,group aria-label,aria-label only
+fontmaker.node_editor.scale_h,Height %,גובה %,input label,
+fontmaker.node_editor.scale_h_aria,Height percentage — 100 is unchanged,אחוז גובה — 100 ללא שינוי,input aria-label,aria-label only
+fontmaker.node_editor.scale_lock,Keep proportions,שמירת פרופורציות,toggle button,
+fontmaker.node_editor.scale_lock_title,"When on, Width and Height change together","כשמופעל, הרוחב והגובה משתנים יחד",button title,
+fontmaker.node_editor.scale_preset_title,Scale to {pct}% (about the selection's center),שנה גודל ל־{pct}% (סביב מרכז הבחירה),button title,
+fontmaker.node_editor.scale_presets_aria,Scale to a set size,שינוי גודל לגודל קבוע,group aria-label,aria-label only
+fontmaker.node_editor.scale_w,Width %,רוחב %,input label,
+fontmaker.node_editor.scale_w_aria,Width percentage — 100 is unchanged,אחוז רוחב — 100 ללא שינוי,input aria-label,aria-label only
 fontmaker.node_editor.segment_type,Segment type,סוג מקטע,group aria-label,
+fontmaker.node_editor.xform_anchor_note_sel,Changing selected points never moves the nikkud and trop points.,שינוי של נקודות נבחרות אינו מזיז את נקודות הניקוד והטעמים.,panel hint,
+fontmaker.node_editor.xform_anchor_note_whole,"Scaling the whole glyph, or flipping it left–right, moves its nikkud and trop points with it. Rotating it or flipping it top–bottom does not.","שינוי גודל של הגליף כולו, או שיקוף שלו שמאל–ימין, מזיז איתו את נקודות הניקוד והטעמים. סיבוב או שיקוף מעלה–מטה אינם מזיזים אותן.",panel hint,
 fontmaker.panels.edit_shape_btn,"Edit shape (square, dots & bars)","עריכת צורה (ריבוע, נקודות ומוטות)",button,svg-icon-in-markup
 fontmaker.panels.tip_finer_move,"Tip: use the arrow keys for finer, exact movement.",טיפ: השתמשו במקשי החִצים לתנועה עדינה ומדויקת יותר.,anchor nudge hint,
 fontmaker.panels.upload_ref_font,⬆ Upload your own reference font…,⬆ העלו גופן ייחוס משלכם…,reference-font selector option,
@@ -6282,6 +6296,8 @@ fontmaker.undolabel.nudge_piece,nudge piece,כוונון החלק,undo action na
 fontmaker.undolabel.nudge_strokes,nudge strokes,כוונון המשיכות,undo action name,REVIEW: HE authored S243
 fontmaker.undolabel.place_stamp,place stamp,מיקום החותמת,undo action name,REVIEW: HE authored S243
 fontmaker.undolabel.sample_text,sample text,טקסט לדוגמה,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.scale_letter_to_n,scale letter to {n}%,שינוי גודל האות ל־{n}%,undo action name,
+fontmaker.undolabel.scale_letters_to_n,scale letters to {n}%,שינוי גודל האותיות ל־{n}%,undo action name,
 fontmaker.undolabel.scale_points,scale points,שינוי גודל הנקודות,undo action name,REVIEW: HE authored S243
 fontmaker.undolabel.trace,trace,עקיבה,undo action name,REVIEW: HE authored S243
 fontmaker.undolabel.trace_all_letters_n,trace all letters ({n}),עקיבה אחר כל האותיות ({n}),undo action name; {n} is a count,
@@ -6318,12 +6334,51 @@ fontmaker.status.upload_leftover.one,{count} photo had nowhere to go — every o
 fontmaker.status.upload_leftover.other,{count} photos had nowhere to go — every other letter already has something on it.,נותרו {count} תמונות בלי מקום — לכל שאר האותיות כבר יש משהו.,toast,plural; REVIEW: machine-drafted HE — confirm
 fontmaker.status.upload_unreadable.one,{count} file could not be read as an image.,{count} קובץ לא נקרא כתמונה.,toast,plural; REVIEW: machine-drafted HE — confirm
 fontmaker.status.upload_unreadable.other,{count} files could not be read as images.,{count} קבצים לא נקראו כתמונה.,toast,plural; REVIEW: machine-drafted HE — confirm
+fontmaker.status.xform_too_big,"That would push points past what a font file can hold, so nothing was changed.","הפעולה הזאת תדחוף נקודות אל מעבר למה שקובץ גופן יכול להכיל, ולכן שום דבר לא שונה.",toast,
 fontmaker.undolabel.upload_image,upload image,העלאת תמונה,undo action name,REVIEW: machine-drafted HE — confirm
 fontmaker.undolabel.upload_n_photos,upload {n} photos,העלאת {n} תמונות,undo action name,REVIEW: machine-drafted HE — confirm
 fontmaker.panels.nexthint_trace,Photos are in. Trace {name} next — {count} waiting.,התמונות נטענו. עקבו אחרי {name} — {count} ממתינות.,next-step hint,REVIEW: machine-drafted HE — confirm
+fontmaker.panels.scaleall_open,Scale all letters…,שינוי גודל לכל האותיות…,button,
+fontmaker.panels.scaleall_open_title,"Make every letter larger or smaller at once — spacing, kerning, nikkud and the guide lines can follow — with a preview before anything changes.","הגדלה או הקטנה של כל האותיות בבת אחת — הריווח, הקרנינג, הניקוד וקווי העזר יכולים להשתנות יחד איתן — עם תצוגה מקדימה לפני שמשהו משתנה.",button title,
 fontmaker.qa.only_problems,Only show problems,הצגת בעיות בלבד,QA grid filter toggle,REVIEW: machine-drafted HE — confirm
 fontmaker.qa.filter_note,Showing {rows} of {rowTotal} letters and {cols} of {colTotal} marks.,מוצגות {rows} מתוך {rowTotal} אותיות ו-{cols} מתוך {colTotal} סימנים.,QA grid filter readout,REVIEW: machine-drafted HE — confirm
 fontmaker.qa.filter_clear,Nothing to fix on this tab — every combination here is clear. Untick to see the whole grid.,אין מה לתקן בלשונית הזו — כל השילובים כאן תקינים. בטלו את הסימון כדי לראות את כל הטבלה.,QA grid filter empty state,REVIEW: machine-drafted HE — confirm
+fontmaker.scaleall.applied.one,1 letter scaled to {pct}% — one Undo reverts it.,אות אחת שונתה ל־{pct}% — ביטול אחד מחזיר אותה.,toast,
+fontmaker.scaleall.applied.other,{count} letters scaled to {pct}% — one Undo reverts everything.,{count} אותיות שונו ל־{pct}% — ביטול אחד מחזיר הכול.,toast,
+fontmaker.scaleall.applied_letter,Letter scaled to {pct}% — one Undo reverts it.,האות שונתה ל־{pct}% — ביטול אחד מחזיר אותה.,toast,
+fontmaker.scaleall.held_kern_target,kerning tightness,צפיפות הקרנינג,list item,
+fontmaker.scaleall.held_letter_spacing,letter spacing,ריווח אותיות,list item,
+fontmaker.scaleall.held_line_box,the imported line height,גובה השורה המיובא,list item,
+fontmaker.scaleall.held_line_spacing,line spacing,ריווח שורות,list item,
+fontmaker.scaleall.held_mark_size,the size of nikkud and trop,גודל הניקוד והטעמים,list item,
+fontmaker.scaleall.held_meteg_gap,the meteg gap,מרווח המתג,list item,
+fontmaker.scaleall.held_pair_shift,the vowel-and-trop shift,ההזזה של תנועה עם טעם,list item,
+fontmaker.scaleall.held_trop_spread,the trop spread,פיזור הטעמים,list item,
+fontmaker.scaleall.held_word_spacing,word spacing,ריווח מילים,list item,
+fontmaker.scaleall.intro,"Makes every letter larger or smaller, from the baseline, so letters stay on the line. Nothing changes until you press Apply, and one Undo reverts it all. Sizes are rounded to whole units, so to go back use Undo rather than scaling the other way.","מגדיל או מקטין את כל האותיות, מקו הבסיס, כך שהאותיות נשארות על השורה. שום דבר לא משתנה עד שתלחצו החלה, וביטול אחד מחזיר הכול. הגדלים מעוגלים ליחידות שלמות, ולכן כדי לחזור אחורה השתמשו בביטול ולא בשינוי גודל בכיוון ההפוך.",modal intro,
+fontmaker.scaleall.note_100,Pick a size — at 100% there is nothing to change.,בחרו גודל — ב־100% אין מה לשנות.,inline note,
+fontmaker.scaleall.note_count.one,1 letter will change.,אות אחת תשתנה.,inline note,
+fontmaker.scaleall.note_count.other,{count} letters will change.,{count} אותיות ישתנו.,inline note,
+fontmaker.scaleall.note_nothing,There is nothing here to scale.,אין כאן מה לשנות.,inline note,
+fontmaker.scaleall.opt_marks,Also scale nikkud & trop,לשנות גם את גודל הניקוד והטעמים,checkbox,
+fontmaker.scaleall.opt_spacing,Scale spacing and guide lines too,לשנות גם את הריווח ואת קווי העזר,checkbox,
+fontmaker.scaleall.presets,Size presets,גדלים מוכנים,group aria-label,aria-label only
+fontmaker.scaleall.refuse_draw,At {pct}% the pen strokes of these letters would leave the drawing area: {names}. Choose a smaller size.,ב־{pct}% משיכות העט של האותיות האלה יחרגו מאזור הציור: {names}. בחרו גודל קטן יותר.,inline refusal,
+fontmaker.scaleall.refuse_gone,At {pct}% these would shrink to nothing: {names}. Choose a larger size.,ב־{pct}% אלה יתכווצו עד שייעלמו: {names}. בחרו גודל גדול יותר.,inline refusal,
+fontmaker.scaleall.refuse_mirror,"This change would mirror the letters, which this tool does not do. Use Flip in Edit points.","השינוי הזה ישקף את האותיות, והכלי הזה אינו עושה זאת. השתמשו בשיקוף ב«עריכת נקודות».",inline refusal,
+fontmaker.scaleall.refuse_range,At {pct}% these would reach past what a font file can hold: {names}. Choose a smaller size.,ב־{pct}% אלה יחרגו ממה שקובץ גופן יכול להכיל: {names}. בחרו גודל קטן יותר.,inline refusal,
+fontmaker.scaleall.scope,Apply to,החלה על,fieldset legend,
+fontmaker.scaleall.scope_all,The whole font,הגופן כולו,radio label,
+fontmaker.scaleall.scope_hint,"Kerning, word and line spacing, the guide lines and the size of nikkud and trop belong to the whole font, so they change only when you scale the whole font. A letter's own side spaces still follow the spacing box.","הקרנינג, ריווח המילים והשורות, קווי העזר וגודל הניקוד והטעמים שייכים לגופן כולו, ולכן הם משתנים רק כשמשנים את גודל הגופן כולו. מרווחי הצד של האות עצמה עדיין נקבעים לפי תיבת הריווח.",modal hint,
+fontmaker.scaleall.scope_letter,Only this letter ({name}),רק האות הזאת ({name}),radio label,
+fontmaker.scaleall.scope_tab,Only the {tab} tab,רק הלשונית {tab},radio label,{tab} = a glyph-set tab name
+fontmaker.scaleall.size,Size (%),גודל (%),input label,
+fontmaker.scaleall.thing_kerning,a kerning pair,זוג קרנינג,list item,named in refuse_range
+fontmaker.scaleall.thing_lines,the guide lines,קווי העזר,list item,named in refuse_range
+fontmaker.scaleall.title,Scale all letters,שינוי גודל לכל האותיות,modal title,
+fontmaker.scaleall.warn_held,Stopped at its limit: {things}.,נעצר בגבול שלו: {things}.,inline warning,{things} = a comma list of the held_* names
+fontmaker.scaleall.warn_lost,Fine detail will be lost on: {names}.,פרטים עדינים יאבדו באותיות: {names}.,inline warning,
+fontmaker.scaleall.warn_off,"These letters will reach past the area a photo or drawing can be traced from, so tracing them again later would cut them off (their outlines are fine): {names}.","האותיות האלה יחרגו מהאזור שממנו אפשר לעקוב אחר תמונה או ציור, ולכן עקיבה חוזרת שלהן בעתיד תחתוך אותן (המתארים עצמם תקינים): {names}.",inline warning,
 shared.account.sign_in,Sign in,כניסה,Header account chip label while signed out,shared; account chip
 shared.account.menu_aria,Account,חשבון,Account popover dialog name,shared; aria-label only
 shared.account.chip_aria,{label} – account,{label} – חשבון,Account chip button name: {label} is the text on the chip (Sign in / the short name / Loading… / Offline) so voice control reaches it (WCAG 2.5.3),shared; aria-label only

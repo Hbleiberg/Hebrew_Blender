@@ -1246,6 +1246,21 @@ header{--kin-pt:10px;--kin-pb:10px;--kin-gap:14px;}   /* this header's block pad
   .os-pick-grid { flex: 1 1 auto; min-block-size: 120px; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; padding: 2px; align-content: start; }
   /* "Pick an installed font" (#localFontOverlay): the same sheet, with a one-column listbox as its only scroller.
      Placed after the rule above that pins every other child to its content height. */
+  /* Scale all letters (and the Transform section's scale row) */
+  .sa-cap { font-size: 0.72rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 4px; }
+  .sa-strip { width: 100%; height: 72px; display: block; }
+  .sa-set { border: 1px solid var(--border); border-radius: 8px; margin: 10px 0 0; padding: 6px 10px 8px; display: flex; flex-wrap: wrap; gap: 4px 16px; }
+  .sa-set legend { font-size: 0.74rem; font-weight: 700; color: var(--muted); padding: 0 4px; }
+  .sa-set label, .sa-opts label { cursor: pointer; }
+  .sa-set input, .sa-opts input { accent-color: var(--gold); }
+  .sa-opts { display: flex; gap: 4px 16px; flex-wrap: wrap; margin-top: 9px; }
+  #saScopeTabRow[hidden], #saScopeLetterRow[hidden], #saScopeHint[hidden] { display: none; }
+  .xf-presets { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+  .xf-presets .ctl-btn { padding: 4px 7px; font-size: 0.72rem; }
+  .xf-wh { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 6px; font-size: 0.76rem; }
+  .xf-wh label { display: flex; align-items: center; gap: 4px; }
+  .xf-wh input[type=number] { width: 56px; }
+  .xf-lock[aria-pressed="true"] { background: var(--gold); color: #1a1a1a; border-color: var(--gold); }
   .lf-modal { max-width: 620px; }
   .lf-modal .lf-intro { margin: 0 0 10px; }
   .os-pick-modal > .lf-list { flex: 1 1 auto; }
@@ -1932,6 +1947,7 @@ html[lang="he"] .tp-label{letter-spacing:normal;text-transform:none;}
         </label>
         <div class="ctl-row">
           <button class="ctl-btn" id="boldGenBtn" onclick="boldGenOpen(false)" title="Thicken (or lighten) every traced outline to create a Bold weight — with a live preview before anything changes." data-i18n="fontmaker.panels.boldgen_open" data-i18n-title="fontmaker.panels.boldgen_open_title">Generate Bold…</button>
+          <button class="ctl-btn" id="scaleAllBtn" onclick="scaleAllOpen()" title="Make every letter larger or smaller at once — spacing, kerning, nikkud and the guide lines can follow — with a preview before anything changes." data-i18n="fontmaker.panels.scaleall_open" data-i18n-title="fontmaker.panels.scaleall_open_title">Scale all letters…</button>
         </div>
         <label class="fld"><span data-i18n="fontmaker.panels.author">Author</span>
           <input type="text" id="author" autocapitalize="words" autocorrect="off" spellcheck="false" value="" placeholder="Your name" data-i18n-placeholder="fontmaker.panels.author_ph" oninput="onMetaChange()">
@@ -2366,6 +2382,39 @@ html[lang="he"] .tp-label{letter-spacing:normal;text-transform:none;}
     <div class="mbtns">
       <button class="tbtn ghost" onclick="boldGenClose()" data-i18n="fontmaker.modals.cancel">Cancel</button>
       <button class="tbtn" id="bgApply" onclick="boldGenApply()" data-i18n="fontmaker.boldgen.apply">Apply</button>
+    </div>
+  </div>
+</div>
+
+<!-- Scale all letters (the glyph transform engine's first operation) -->
+<div class="overlay" id="scaleAllOverlay" onclick="if(event.target===this)scaleAllClose()">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="saTitle" style="max-width:560px;">
+    <h3 id="saTitle" data-i18n="fontmaker.scaleall.title">Scale all letters</h3>
+    <p class="hint" style="margin:0 0 10px;" data-i18n="fontmaker.scaleall.intro">Makes every letter larger or smaller, from the baseline, so letters stay on the line. Nothing changes until you press Apply, and one Undo reverts it all. Sizes are rounded to whole units, so to go back use Undo rather than scaling the other way.</p>
+    <div class="sa-cap" data-i18n="fontmaker.boldgen.before">Before</div>
+    <svg id="saBefore" class="sa-strip" dir="ltr" aria-hidden="true"></svg>
+    <div class="sa-cap" data-i18n="fontmaker.boldgen.after">After</div>
+    <svg id="saAfter" class="sa-strip" dir="ltr" aria-hidden="true"></svg>
+    <div class="inline" style="margin-top:10px;">
+      <label for="saPct" data-i18n="fontmaker.scaleall.size">Size (%)</label>
+      <input type="number" id="saPct" min="25" max="400" step="1" value="100" style="width:76px;" oninput="scaleAllSet(this.value)" aria-describedby="saNote">
+    </div>
+    <div class="ctl-row" id="saPresets" role="group" style="margin-top:7px;" aria-label="Size presets" data-i18n-aria-label="fontmaker.scaleall.presets"></div>
+    <fieldset class="sa-set">
+      <legend data-i18n="fontmaker.scaleall.scope">Apply to</legend>
+      <label class="inline"><input type="radio" name="saScope" value="all" checked onchange="scaleAllOpt()"> <span data-i18n="fontmaker.scaleall.scope_all">The whole font</span></label>
+      <label class="inline" id="saScopeTabRow"><input type="radio" name="saScope" value="tab" onchange="scaleAllOpt()"> <span id="saScopeTabLbl"></span></label>
+      <label class="inline" id="saScopeLetterRow"><input type="radio" name="saScope" value="letter" onchange="scaleAllOpt()"> <span id="saScopeLetterLbl"></span></label>
+    </fieldset>
+    <div class="sa-opts">
+      <label class="inline"><input type="checkbox" id="saSpacing" checked onchange="scaleAllOpt()"> <span data-i18n="fontmaker.scaleall.opt_spacing">Scale spacing and guide lines too</span></label>
+      <label class="inline"><input type="checkbox" id="saMarks" checked onchange="scaleAllOpt()"> <span data-i18n="fontmaker.scaleall.opt_marks">Also scale nikkud &amp; trop</span></label>
+    </div>
+    <div id="saScopeHint" class="hint" style="margin-top:6px;" hidden data-i18n="fontmaker.scaleall.scope_hint">Kerning, word and line spacing, the guide lines and the size of nikkud and trop belong to the whole font, so they change only when you scale the whole font. A letter's own side spaces still follow the spacing box.</div>
+    <div id="saNote" class="hint" style="margin-top:8px;" role="status" aria-live="polite"></div>
+    <div class="mbtns">
+      <button class="tbtn ghost" onclick="scaleAllClose()" data-i18n="fontmaker.modals.cancel">Cancel</button>
+      <button class="tbtn" id="saApply" onclick="scaleAllApply()" data-i18n="fontmaker.boldgen.apply">Apply</button>
     </div>
   </div>
 </div>
@@ -3887,7 +3936,7 @@ function metegGap() {   // effective gap: the user's number, else the measured h
   const m = metegGapMeasured();
   // The clamp floor is load-bearing: the BUILT-IN hataf patach measures ~5 units (bar edge 115,
   // dot edge 120) — far too tight for a meteg pair. Don't "fix" the heuristic; the floor is the fix.
-  return Math.max(30, Math.min(150, m == null ? 50 : m));
+  return Math.max(gxKLen(30), Math.min(gxKLen(150), m == null ? gxKLen(50) : m));
 }
 function metegPairFor(t) {   // {dv, dm} for below vowel cp / SHEVA_NA_GLYPH, or null (no pairing)
   if (t === '05BD') return null;
@@ -3976,8 +4025,23 @@ const ANCHOR_Y = { below: -45, above: 640, center: 300 };
 // the classic case — needs the vowel tucked just under THAT body; left at the baseline default its
 // nikkud detaches and drops way down. Mirrors the ink-relative ABOVE anchor (bb.maxY + 40).
 function defaultBelowY(bb) {
-  return (bb && Math.round(bb.minY) > 120) ? Math.round(bb.minY) - 40 : ANCHOR_Y.below;
+  return (bb && Math.round(bb.minY) > gxKY(120)) ? Math.round(bb.minY) - gxKLen(40) : gxKY(ANCHOR_Y.below);
 }
+/* How far "Scale all letters" has moved the guide lines (project.font.metrics.sizeK; absent = 1). The
+   anchor seeds, the trop gaps, the mark-on-mark gap, the Auto meteg limits and QA's overlap tolerance
+   were written for a 600-unit letter, so they are multiplied by it and a letter traced AFTER a rescale
+   is seeded like its neighbours. At 1 each of them is the same integer it always was. It lives in
+   `metrics` so the {t:'metrics'} undo scope carries it and Reset metrics returns it to 1 with the lines. */
+function gxK() { const k = (project && project.font && project.font.metrics) ? +project.font.metrics.sizeK : NaN; return (Number.isFinite(k) && k > 0) ? k : 1; }
+function gxKLen(v) { return Math.round(v * gxK()); }   // a length
+function gxKY(v) { const k = gxK(); if (k === 1) return v; const b = effMetrics().baseline; return Math.round(b + k * (v - b)); }   // a height, kept relative to the baseline
+/* A mark size is stored as a multiplier. The sliders offer 40–180% (a form's own dot 30–200%), but
+   "Scale all letters" resizes the marks by multiplying these same numbers, so the STORED range is wider
+   (a plain 200% of a default font is 2.0) and each slider stretches just far enough to hold the value
+   it finds (markSizeRange) — an ordinary project's sliders are exactly what they were. */
+const MARK_SIZE_MIN = 0.1, MARK_SIZE_MAX = 4;
+function markSizeClamp(v) { return Math.max(MARK_SIZE_MIN, Math.min(MARK_SIZE_MAX, +v || 1)); }
+function markSizeRange(pct, lo, hi) { return 'min="' + Math.min(lo, Math.floor(pct)) + '" max="' + Math.max(hi, Math.ceil(pct)) + '"'; }
 function markScale() { return (project && project.font && project.font.markScale != null) ? project.font.markScale : 1; }
 function tropScale() { return (project && project.font && project.font.tropScale != null) ? project.font.tropScale : 1; }
 function dageshScale() { return (project && project.font && project.font.dageshScale != null) ? project.font.dageshScale : 1; }   // dagesh (center) dot, sized independently of the vowels
@@ -4075,8 +4139,8 @@ function markMkmkAnchor(cp) {
   const polys = markGlyphContours('nikkud', cp); const ms = nikScale(cp);
   let minY=1e9, maxY=-1e9;
   polys.forEach(poly => poly.forEach(([x,y]) => { minY=Math.min(minY,y*ms); maxY=Math.max(maxY,y*ms); }));
-  if (minY>maxY) return { above:{x:0,y:120}, below:{x:0,y:-120} };
-  return { above:{x:0,y:Math.round(maxY)+70}, below:{x:0,y:Math.round(minY)-70} };
+  if (minY>maxY) return { above:{x:0,y:gxKLen(120)}, below:{x:0,y:-gxKLen(120)} };
+  return { above:{x:0,y:Math.round(maxY)+gxKLen(70)}, below:{x:0,y:Math.round(minY)-gxKLen(70)} };
 }
 
 /* ── Project state ── */
@@ -4098,7 +4162,8 @@ let guideDrag  = null;      // active user-guide drag: { id, dragAxis:'x'|'y', g
    Scopes: {t:'item',kind,cp} | {t:'spacing'} | {t:'kerning'} | {t:'kernClasses'} | {t:'metrics'} |
    {t:'guides'} | {t:'precomp',target} | {t:'tropTune'} (font-level mark tuning: side spread +
    per-mark halign + per-mark height nudges + mark/dagesh/holam/cholam/trop sizes + the Samaritan
-   mark size + vowel+trop pairing (stack | slide)). ════════ */
+   mark size + vowel+trop pairing (stack | slide)) | {t:'sheetFit'} (each letter sheet's units-per-pixel
+   scale — only the glyph transform engine writes it under undo). ════════ */
 let undoStack = [], redoStack = [];
 const UNDO_MAX = 100;
 const ITEM_SKIP = { source: 1, savedAnchors: 1, draw: 1 };   // excluded from snapshots; preserved live on restore (draw: stroke sets are big — withDraw opts in)
@@ -4118,6 +4183,7 @@ function udSnap(s) {
   if (s.t === 'metrics') return JSON.parse(JSON.stringify(project.font.metrics));
   if (s.t === 'guides') return JSON.parse(JSON.stringify(project.guides || { show:true, items:[] }));
   if (s.t === 'precomp') { const pc = getPrecomp(s.target); return pc ? { anchor: pc.anchor ? JSON.parse(JSON.stringify(pc.anchor)) : null, holam: pc.holam ? JSON.parse(JSON.stringify(pc.holam)) : null, markScale: (pc.markScale != null ? pc.markScale : null), widthScale: (pc.widthScale != null ? pc.widthScale : null), src: pc.src || null, srcDagesh: pc.srcDagesh || null } : null; }   // src/srcDagesh are written once by an import and never mutated in place, so the references are shared rather than deep-cloned on every anchor drag
+  if (s.t === 'sheetFit') return (project.combinedSheets || []).map(sh => [sh.id, (Number.isFinite(sh.fitScale) && sh.fitScale > 0) ? sh.fitScale : null]);
   if (s.t === 'tropTune') return JSON.parse(JSON.stringify({
     tropSideOffset: (project.font.tropSideOffset != null) ? project.font.tropSideOffset : null,
     halign: (project.font.trop && project.font.trop.halign) || {},
@@ -4149,6 +4215,7 @@ function udRestore(s, snap) {
   }
   else if (s.t === 'guides') project.guides = JSON.parse(JSON.stringify(snap || { show:true, items:[] }));
   else if (s.t === 'precomp') { const pc = getPrecomp(s.target); if (pc) { pc.anchor = (snap && snap.anchor) ? JSON.parse(JSON.stringify(snap.anchor)) : null; pc.holam = (snap && snap.holam) ? JSON.parse(JSON.stringify(snap.holam)) : null; pc.markScale = (snap && snap.markScale != null) ? snap.markScale : null; pc.widthScale = (snap && snap.widthScale != null) ? snap.widthScale : null; if (snap && snap.src) pc.src = snap.src; else delete pc.src; if (snap && snap.srcDagesh) pc.srcDagesh = snap.srcDagesh; else delete pc.srcDagesh; } }
+  else if (s.t === 'sheetFit') (snap || []).forEach(([id, v]) => { const sh = (project.combinedSheets || []).find(x => x.id === id); if (sh) { if (v != null) sh.fitScale = v; else delete sh.fitScale; } });
   else if (s.t === 'tropTune') { const sn = snap || {};
     if (sn.tropSideOffset != null) project.font.tropSideOffset = sn.tropSideOffset; else project.font.tropSideOffset = TROP_POS_SHIFT;
     if (!project.font.trop) project.font.trop = {};
@@ -4160,7 +4227,7 @@ function udRestore(s, snap) {
       if (sn[k] != null) project.font[k] = sn[k]; else delete project.font[k]; }); }
 }
 function udNavTo(s) {                                    // show the affected item (no side effects — not selectItem)
-  if (s.t !== 'item') return;
+  if (s.t !== 'item' || s.kind === 'accent') return;   // a Latin accent is a store, not a workspace kind — nothing to show
   if (curKind === s.kind && curCp === s.cp) return;
   curKind = s.kind; curCp = s.cp; catTab = catTabFor(s.kind, s.cp);   // the same precedence a click uses — an undo on a punctuation glyph stays on that tab
 }
@@ -4231,9 +4298,11 @@ function undoToast(kind, label) {   // kind: 'undone' | 'redone'
 function undo() { udFlushPending(); const e = undoStack.pop(); if (!e) return; udApply(e, false); redoStack.push(e);
   // The report describes the state the fixes produced; undoing them makes it a lie, and the reopen
   // button would still offer its green "0 combos still flagged" over a project that deviates again.
+  if (e.gx) gxAfterHistory();
   if (e.label === 'fidelity fixes') { e._fidStash = _fidelityLast; _fidelityLast = null; }   // stashed on the entry (undo/redo stacks are runtime-only, so the ctx bytes stay off `project`) so redo can hand it back
   afterUndo(undoToast('undone', e.label)); }
 function redo() { udFlushPending(); const e = redoStack.pop(); if (!e) return; udApply(e, true); undoStack.push(e);
+  if (e.gx) gxAfterHistory();
   if (e._fidStash) { _fidelityLast = e._fidStash; e._fidStash = null; }   // the fixes are back, so their report describes the project again
   afterUndo(undoToast('redone', e.label)); }
 function afterUndo(msg) { updateUndoButtons(); if (workMode === 'nodes') { nodeModel = null; nodeSel.clear(); }   /* rebuild node model from restored curves */ _drawSel.clear();   /* undo/redo can restructure the stroke array — indices go stale */ renderGrids(); renderStage(); renderControls(); status(msg); markDirty(); }
@@ -15008,6 +15077,7 @@ let _nodeXformOpen = wsReadPrefs().nodeXformOpen === true;   // Transform disclo
    disagree about what a legal transform is. Declared above both for that reason. */
 const _XFORM_CLAMP = { rot:   v => Math.max(-180, Math.min(180, +v || 0)),
                        scale: v => Math.max(25, Math.min(400, +v || 100)) };
+let _nodeScaleLock = wsReadPrefs().nodeScaleLock !== false;   // Width % and Height % move together (the Keep proportions toggle; a view pref)
 function xformMatrix(kind, arg) {                            // → {a,b,c,d,label} or null on no-op / unknown kind
   if (kind === 'fliph') return { a:-1, b:0, c:0, d:1, label:'flip horizontal — ' };
   if (kind === 'flipv') return { a:1, b:0, c:0, d:-1, label:'flip vertical — ' };
@@ -15025,15 +15095,67 @@ function xformMatrix(kind, arg) {                            // → {a,b,c,d,lab
     if (s === 1) return null;
     return { a:s, b:0, c:0, d:s, label:'scale — ' };
   }
+  if (kind === 'scale2') {                                   // [width %, height %] — each axis under the same 25–400 clamp
+    const sx = _XFORM_CLAMP.scale(+(arg && arg[0]) || 0) / 100, sy = _XFORM_CLAMP.scale(+(arg && arg[1]) || 0) / 100;
+    if (sx === 1 && sy === 1) return null;
+    return { a:sx, b:0, c:0, d:sy, label:'scale — ' };
+  }
   return null;
 }
-function applyXformToKeys(keys, m) {                         // affine about the keys' anchor-bbox center; → count of nodes mapped
+function xformPivot(keys) {                                  // → { nds, cx, cy }: the nodes the keys name and the centre of their anchor bbox, or null
   const nds = [];
   keys.forEach(k => { const [ci, ni] = k.split(':').map(Number); const nd = nodeModel.contours[ci]?.nodes[ni]; if (nd) nds.push(nd); });
-  if (!nds.length) return 0;
+  if (!nds.length) return null;
   let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
   nds.forEach(nd => { x0 = Math.min(x0, nd.x); x1 = Math.max(x1, nd.x); y0 = Math.min(y0, nd.y); y1 = Math.max(y1, nd.y); });
-  const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
+  return { nds, cx: (x0 + x1) / 2, cy: (y0 + y1) / 2 };
+}
+/* Would this transform put a point (or a curve handle) past what a font file can hold? Predicted on the
+   numbers alone, BEFORE anything is written — a refusal has to leave the node model, the letter and the
+   undo stack exactly as they were. One 400% cannot get there; repeated ones can (GX_COORD_MAX). */
+function xformOutOfRange(piv, m) {
+  const far = p => !!p && (Math.abs(piv.cx + m.a * (p[0] - piv.cx) + m.b * (p[1] - piv.cy)) > GX_COORD_MAX || Math.abs(piv.cy + m.c * (p[0] - piv.cx) + m.d * (p[1] - piv.cy)) > GX_COORD_MAX);
+  return piv.nds.some(nd => far([nd.x, nd.y]) || far(nd.in) || far(nd.out));
+}
+/* A whole-glyph SCALE or HORIZONTAL FLIP carries the letter's class anchors and its pins about the same
+   pivot, so nikkud and trop stay where they were relative to the ink. Whole glyph = nothing selected and
+   no contour hidden. A rotation, a vertical flip and any change to a selection leave them alone: an
+   "above" point has to stay above, and a part of a letter is not the letter. On a flip the left / right
+   columns keep their sides (the values swap), and a pin of a side column keeps its mirrored offset from
+   that column. Every coordinate is rounded at the source. */
+const XFORM_LR = [['tropAboveL', 'tropAboveR'], ['tropBelowL', 'tropBelowR'], ['smrAboveL', 'smrAboveR']];
+function xformAnchorsFollow(kind) { return (kind === 'scale' || kind === 'scale2' || kind === 'fliph') && !nodeSel.size && !_hiddenContours.size; }
+function xformMappedAnchors(src, m, piv, flip) {             // src: { anchors, markAnchors } (never mutated) → the mapped pair
+  const ok = p => !!p && Number.isFinite(p.x) && Number.isFinite(p.y);
+  const mp = p => Object.assign({}, p, { x: Math.round(piv.cx + m.a * (p.x - piv.cx) + m.b * (p.y - piv.cy)), y: Math.round(piv.cy + m.c * (p.x - piv.cx) + m.d * (p.y - piv.cy)) });
+  const out = { anchors: null, markAnchors: null }, side = {};
+  if (src.anchors) {
+    const an = {};
+    for (const k in src.anchors) an[k] = ok(src.anchors[k]) ? mp(src.anchors[k]) : src.anchors[k];
+    if (flip) XFORM_LR.forEach(([L, R]) => { if (ok(an[L]) && ok(an[R])) { const t = an[L]; an[L] = an[R]; an[R] = t; side[L] = side[R] = true; } });
+    out.anchors = an;
+  }
+  if (src.markAnchors) {
+    const ma = {};
+    for (const cp in src.markAnchors) {
+      const p = src.markAnchors[cp];
+      if (!ok(p)) { ma[cp] = p; continue; }
+      const a0 = flip && side[p.key] && src.anchors[p.key];
+      ma[cp] = a0 ? Object.assign({}, p, { x: out.anchors[p.key].x - (p.x - a0.x), y: out.anchors[p.key].y + (p.y - a0.y) }) : mp(p);
+    }
+    out.markAnchors = ma;
+  }
+  return out;
+}
+function xformPutAnchors(l, r) { if (r.anchors) l.anchors = r.anchors; if (r.markAnchors) l.markAnchors = r.markAnchors; }
+function xformAnchorsTooFar(r) {
+  const far = o => !!o && Object.keys(o).some(k => o[k] && (Math.abs(o[k].x) > GX_COORD_MAX || Math.abs(o[k].y) > GX_COORD_MAX));
+  return far(r.anchors) || far(r.markAnchors);
+}
+function applyXformToKeys(keys, m) {                         // affine about the keys' anchor-bbox center; → count of nodes mapped
+  const piv = xformPivot(keys);
+  if (!piv) return 0;
+  const nds = piv.nds, cx = piv.cx, cy = piv.cy;
   const ap = p => p ? [cx + m.a * (p[0] - cx) + m.b * (p[1] - cy), cy + m.c * (p[0] - cx) + m.d * (p[1] - cy)] : null;
   nds.forEach(nd => {
     const p = ap([nd.x, nd.y]); nd.x = p[0]; nd.y = p[1];    // linear maps preserve handle collinearity → smooth stays smooth
@@ -15048,11 +15170,31 @@ function transformSelectedNodes(kind, angleDeg) {            // button / number-
   if (!m) return;
   const keys = nodeSel.size ? [...nodeSel] : _flatNodeKeys();
   if (!keys.length) return;
+  const piv = xformPivot(keys);
+  if (!piv) return;
+  const anch = xformAnchorsFollow(kind) ? xformMappedAnchors(l, m, piv, kind === 'fliph') : null;
+  if (xformOutOfRange(piv, m) || (anch && xformAnchorsTooFar(anch))) { status(I18n.t('fontmaker.status.xform_too_big')); return; }   // refused whole: nothing written, no undo entry
   udDo([itemScope()], m.label + l.name, () => {
     if (!applyXformToKeys(keys, m)) return;                  // stale keys resolved to nothing — udPush drops the no-op slice
+    if (anch) xformPutAnchors(l, anch);
     renestNodeModel(); writeThroughRebuild(l);               // flips reverse winding; a transformed subset can change nesting
   });
   renderGrids(); renderStage(); renderControls();
+}
+function xformScaleField(which, el) {                        // typing in Width % or Height % — with Keep proportions on, the other field follows
+  if (!_nodeScaleLock) return;
+  const o = document.getElementById(which === 'w' ? 'nodeScaleH' : 'nodeScaleW');
+  if (o) o.value = el.value;
+}
+function xformScaleLock(btn) {
+  _nodeScaleLock = !_nodeScaleLock; wsSavePref('nodeScaleLock', _nodeScaleLock);
+  btn.setAttribute('aria-pressed', _nodeScaleLock ? 'true' : 'false');
+  const w = document.getElementById('nodeScaleW'), h = document.getElementById('nodeScaleH');
+  if (_nodeScaleLock && w && h) h.value = w.value;
+}
+function xformScaleApply() {
+  const w = +(document.getElementById('nodeScaleW') || {}).value || 100, h = +(document.getElementById('nodeScaleH') || {}).value || 100;
+  if (w === h) transformSelectedNodes('scale', w); else transformSelectedNodes('scale2', [w, h]);
 }
 /* Live transform sliders — the fillet/reduce burst idiom, but for a RELATIVE op: the slider value
    is the total rotation/scale since drag start (reset-from-base each tick), and it snaps back to
@@ -15067,14 +15209,23 @@ function xformLive(kind, v) {
     const keys = nodeSel.size ? [...nodeSel] : _flatNodeKeys();
     if (!keys.length) return;                                // blank glyph — nothing to transform
     udBurstBegin([itemScope()], (kind === 'rot' ? 'rotate — ' : 'scale — ') + l.name);
-    _xformBase = { kind, keys, model: JSON.parse(JSON.stringify(nodeModel)), sel: new Set(nodeSel), val: kind === 'rot' ? 0 : 100 };
+    _xformBase = { kind, keys, model: JSON.parse(JSON.stringify(nodeModel)), sel: new Set(nodeSel), val: kind === 'rot' ? 0 : 100,
+                   // a whole-glyph scale carries the anchors and pins: keep the pre-drag pair, re-map it from scratch each tick
+                   anch: xformAnchorsFollow(kind) ? JSON.parse(JSON.stringify({ anchors: l.anchors || null, markAnchors: l.markAnchors || null })) : null };
   }
-  const val = _XFORM_CLAMP[kind](v);
-  _xformBase.val = val;
+  let val = _XFORM_CLAMP[kind](v);
   nodeModel = JSON.parse(JSON.stringify(_xformBase.model));  // reset to the pre-drag snapshot, re-apply at the new value
   nodeSel = new Set(_xformBase.sel);
-  const m = xformMatrix(kind, val);                          // null at neutral (0° / 100%) → identity preview
+  let m = xformMatrix(kind, val);                            // null at neutral (0° / 100%) → identity preview
+  const piv = xformPivot(_xformBase.keys);
+  let anch = (m && piv && _xformBase.anch) ? xformMappedAnchors(_xformBase.anch, m, piv, false) : null;
+  if (m && piv && (xformOutOfRange(piv, m) || (anch && xformAnchorsTooFar(anch)))) {   // past what a font can hold — stay at the last good value
+    val = _xformBase.val; m = xformMatrix(kind, val);
+    anch = (m && _xformBase.anch) ? xformMappedAnchors(_xformBase.anch, m, piv, false) : null;
+  }
+  _xformBase.val = val;
   if (m) applyXformToKeys(_xformBase.keys, m);               // same keys every tick ⇒ same bbox pivot every tick
+  if (_xformBase.anch) xformPutAnchors(l, anch || JSON.parse(JSON.stringify(_xformBase.anch)));
   writeThrough(l);                                           // plain write-through — indices/orientation untouched mid-drag
   renderStage();
   const ro = document.getElementById(kind === 'rot' ? 'nodeRotV' : 'nodeScaleV');
@@ -15161,6 +15312,9 @@ function nodeEditPanelHTML(l) {
     <div class="ctl-row" style="flex-wrap:wrap;gap:6px;margin-top:6px;">
       <button class="ctl-btn" onclick="transformSelectedNodes('fliph')" title="${esc(I18n.t('fontmaker.node_editor.flip_h_title'))}">${I18n.t('fontmaker.node_editor.flip_h')}</button>
       <button class="ctl-btn" onclick="transformSelectedNodes('flipv')" title="${esc(I18n.t('fontmaker.node_editor.flip_v_title'))}">${I18n.t('fontmaker.node_editor.flip_v')}</button>
+    </div>
+    <div class="xf-presets" role="group" aria-label="${esc(I18n.t('fontmaker.node_editor.rot_presets_aria'))}">
+      ${[30, 45].map(d => `<button class="ctl-btn" onclick="transformSelectedNodes('rot', -${d})" title="${esc(I18n.t('fontmaker.node_editor.rot_cw_n_title', {deg: d}))}">${I18n.t('fontmaker.node_editor.rot_cw_n', {deg: d})}</button><button class="ctl-btn" onclick="transformSelectedNodes('rot', ${d})" title="${esc(I18n.t('fontmaker.node_editor.rot_ccw_n_title', {deg: d}))}">${I18n.t('fontmaker.node_editor.rot_ccw_n', {deg: d})}</button>`).join('')}
       <button class="ctl-btn" onclick="transformSelectedNodes('rot', -90)" title="${esc(I18n.t('fontmaker.node_editor.rot_cw_title'))}">${I18n.t('fontmaker.node_editor.rot_cw')}</button>
       <button class="ctl-btn" onclick="transformSelectedNodes('rot', 90)" title="${esc(I18n.t('fontmaker.node_editor.rot_ccw_title'))}">${I18n.t('fontmaker.node_editor.rot_ccw')}</button>
     </div>
@@ -15177,9 +15331,18 @@ function nodeEditPanelHTML(l) {
         <input type="range" min="25" max="400" step="1" value="100" style="flex:1;min-width:70px;"
                aria-label="${esc(I18n.t('fontmaker.node_editor.scale_slider_aria'))}"
                oninput="xformLive('scale', this.value)" onchange="xformCommit('scale')"></label>
-      <input type="number" id="nodeScalePct" value="100" step="1" min="25" max="400" style="width:56px;" aria-label="${esc(I18n.t('fontmaker.node_editor.scale_aria'))}">
-      <button class="ctl-btn" onclick="transformSelectedNodes('scale', +(document.getElementById('nodeScalePct')||{}).value || 100)" title="${esc(I18n.t('fontmaker.node_editor.scale_apply_title'))}">${I18n.t('fontmaker.node_editor.apply')}</button>
     </div>
+    <div class="xf-presets" role="group" aria-label="${esc(I18n.t('fontmaker.node_editor.scale_presets_aria'))}">
+      ${GX_SCALE_PRESETS.map(p => `<button class="ctl-btn" onclick="transformSelectedNodes('scale', ${p})" title="${esc(I18n.t('fontmaker.node_editor.scale_preset_title', {pct: p}))}">${p}%</button>`).join('')}
+    </div>
+    <div class="xf-wh">
+      <label>${I18n.t('fontmaker.node_editor.scale_w')} <input type="number" id="nodeScaleW" value="100" step="1" min="25" max="400" oninput="xformScaleField('w', this)" aria-label="${esc(I18n.t('fontmaker.node_editor.scale_w_aria'))}"></label>
+      <label>${I18n.t('fontmaker.node_editor.scale_h')} <input type="number" id="nodeScaleH" value="100" step="1" min="25" max="400" oninput="xformScaleField('h', this)" aria-label="${esc(I18n.t('fontmaker.node_editor.scale_h_aria'))}"></label>
+      <button type="button" class="ctl-btn xf-lock" aria-pressed="${_nodeScaleLock ? 'true' : 'false'}" onclick="xformScaleLock(this)" title="${esc(I18n.t('fontmaker.node_editor.scale_lock_title'))}">${I18n.t('fontmaker.node_editor.scale_lock')}</button>
+      <button class="ctl-btn" onclick="xformScaleApply()" title="${esc(I18n.t('fontmaker.node_editor.scale_apply_title'))}">${I18n.t('fontmaker.node_editor.apply')}</button>
+    </div>
+    <div class="hint" style="font-size:0.68rem;margin-top:6px;">${I18n.t(cnt ? 'fontmaker.node_editor.xform_anchor_note_sel' : 'fontmaker.node_editor.xform_anchor_note_whole')}</div>
+    <div class="ctl-row" style="margin-top:6px;"><button class="ctl-btn" onclick="scaleAllOpen()" title="${esc(I18n.t('fontmaker.panels.scaleall_open_title'))}">${I18n.t('fontmaker.panels.scaleall_open')}</button></div>
   </details>
   <details class="node-xform npnl-disc" ${_filletOpen ? 'open' : ''} ontoggle="_filletOpen = this.open; npnlSaveOpen('nodeFilletOpen', this.open)">
     <summary>${cnt ? I18n.t('fontmaker.node_editor.round_summary_sel', {count: cnt}) : I18n.t('fontmaker.node_editor.round_summary')}</summary>
@@ -15418,17 +15581,17 @@ function seedAnchors(l) {
   const meta = letterMeta(l.codepoint);
   // works even before tracing (so nikkud can be previewed on the reference glyph)
   const bb = l.contours ? glyphBBox(l.contours, true, meta)
-    : { midX: Math.round((l.advance != null ? l.advance : Math.round(LETTER_TOP*0.7)) / 2), minY: 0, maxY: LETTER_TOP };
+    : { midX: Math.round((l.advance != null ? l.advance : Math.round(gxKY(LETTER_TOP)*0.7)) / 2), minY: 0, maxY: gxKY(LETTER_TOP) };
   const mid = Math.round(bb.midX);
-  const center = Math.round((bb.minY + bb.maxY)/2 * 0.6 + 150); // body-ish center
-  const aboveY = Math.max(ANCHOR_Y.above, Math.round(bb.maxY)+40);
+  const center = Math.round((bb.minY + bb.maxY)/2 * 0.6 + gxKLen(150)); // body-ish center
+  const aboveY = Math.max(gxKY(ANCHOR_Y.above), Math.round(bb.maxY)+gxKLen(40));
   const belowY = defaultBelowY(bb);
-  const tAboveY = aboveY + TROP_GAP_ABOVE, tBelowY = belowY - TROP_GAP_BELOW;
+  const tAboveY = aboveY + gxKLen(TROP_GAP_ABOVE), tBelowY = belowY - gxKLen(TROP_GAP_BELOW);
   const tOff = (project.font && project.font.tropSideOffset != null) ? project.font.tropSideOffset : TROP_POS_SHIFT;   // Left/Right spread
   l.anchors = {
     below:  { x: mid, y: belowY },
     above:  { x: mid, y: aboveY },
-    center: { x: mid, y: Math.min(Math.max(center, 120), 380) },
+    center: { x: mid, y: Math.min(Math.max(center, gxKY(120)), gxKY(380)) },
     tropAbove: { x: mid, y: tAboveY },                                  // center column (legacy name)
     tropBelow: { x: mid, y: tBelowY },
     tropAboveL: { x: mid - tOff, y: tAboveY }, tropAboveR: { x: mid + tOff, y: tAboveY },
@@ -15438,10 +15601,10 @@ function seedAnchors(l) {
 }
 function ensureTropAnchors(l) {   // back-fill trop anchors on letters seeded before trop / the L/R columns existed
   if (!l.anchors) return;
-  const mid = l.anchors.above ? l.anchors.above.x : Math.round((l.advance != null ? l.advance : Math.round(LETTER_TOP*0.7))/2);
-  const aboveY = l.anchors.above ? l.anchors.above.y : ANCHOR_Y.above;
-  if (!l.anchors.tropAbove) l.anchors.tropAbove = { x: mid, y: aboveY + TROP_GAP_ABOVE };
-  if (!l.anchors.tropBelow) l.anchors.tropBelow = { x: mid, y: ANCHOR_Y.below - TROP_GAP_BELOW };
+  const mid = l.anchors.above ? l.anchors.above.x : Math.round((l.advance != null ? l.advance : Math.round(gxKY(LETTER_TOP)*0.7))/2);
+  const aboveY = l.anchors.above ? l.anchors.above.y : gxKY(ANCHOR_Y.above);
+  if (!l.anchors.tropAbove) l.anchors.tropAbove = { x: mid, y: aboveY + gxKLen(TROP_GAP_ABOVE) };
+  if (!l.anchors.tropBelow) l.anchors.tropBelow = { x: mid, y: gxKY(ANCHOR_Y.below) - gxKLen(TROP_GAP_BELOW) };
   const tOff = (project.font && project.font.tropSideOffset != null) ? project.font.tropSideOffset : TROP_POS_SHIFT, ta = l.anchors.tropAbove, tb = l.anchors.tropBelow;
   if (!l.anchors.tropAboveL) l.anchors.tropAboveL = { x: ta.x - tOff, y: ta.y };
   if (!l.anchors.tropAboveR) l.anchors.tropAboveR = { x: ta.x + tOff, y: ta.y };
@@ -15452,11 +15615,11 @@ function ensureNikkudAnchors(l) {   // back-fill the nikkud triad on a PARTIAL .
   if (!l.anchors || (l.anchors.below && l.anchors.above && l.anchors.center)) return;
   const meta = letterMeta(l.codepoint);
   const bb = l.contours ? glyphBBox(l.contours, true, meta)
-    : { midX: Math.round((l.advance != null ? l.advance : Math.round(LETTER_TOP*0.7)) / 2), minY: 0, maxY: LETTER_TOP };
+    : { midX: Math.round((l.advance != null ? l.advance : Math.round(gxKY(LETTER_TOP)*0.7)) / 2), minY: 0, maxY: gxKY(LETTER_TOP) };
   const mid = Math.round(bb.midX);                                  // same derivations as seedAnchors, so a backfilled key matches a fresh seed
   if (!l.anchors.below)  l.anchors.below  = { x: mid, y: defaultBelowY(bb) };
-  if (!l.anchors.above)  l.anchors.above  = { x: mid, y: Math.max(ANCHOR_Y.above, Math.round(bb.maxY)+40) };
-  if (!l.anchors.center) l.anchors.center = { x: mid, y: Math.min(Math.max(Math.round((bb.minY + bb.maxY)/2 * 0.6 + 150), 120), 380) };
+  if (!l.anchors.above)  l.anchors.above  = { x: mid, y: Math.max(gxKY(ANCHOR_Y.above), Math.round(bb.maxY)+gxKLen(40)) };
+  if (!l.anchors.center) l.anchors.center = { x: mid, y: Math.min(Math.max(Math.round((bb.minY + bb.maxY)/2 * 0.6 + gxKLen(150)), gxKY(120)), gxKY(380)) };
 }
 function seedAnchorsIfNeeded(l) { if (!l.anchors) seedAnchors(l); else { ensureNikkudAnchors(l); ensureTropAnchors(l); ensureSmrAnchors(l); } }
 /* Samaritan marks (MARK_FAMILY.smrmarks): three above-the-letter columns on each of the 22 Samaritan
@@ -15469,10 +15632,10 @@ function seedAnchorsIfNeeded(l) { if (!l.anchors) seedAnchors(l); else { ensureN
 const SMR_SIDE_FRAC = 0.39;
 function smrAnchorSeed(l) {   // pure: the three column points for a Samaritan letter (ensureSmrAnchors and qaAnchors share it)
   const hasInk = !!(l.contours && l.contours.length);
-  const x0 = hasInk ? letterInkLeft(l) : 0, x1 = hasInk ? letterInkRight(l) : (l.advance != null ? l.advance : Math.round(LETTER_TOP * 0.7));
+  const x0 = hasInk ? letterInkLeft(l) : 0, x1 = hasInk ? letterInkRight(l) : (l.advance != null ? l.advance : Math.round(gxKY(LETTER_TOP) * 0.7));
   const mid = Math.round((x0 + x1) / 2), off = Math.round(Math.max(0, x1 - x0) * SMR_SIDE_FRAC);
-  const maxY = hasInk ? glyphBBox(l.contours, true, letterMeta(l.codepoint)).maxY : LETTER_TOP;
-  const y = (l.anchors && l.anchors.above) ? l.anchors.above.y : Math.max(ANCHOR_Y.above, Math.round(maxY) + 40);
+  const maxY = hasInk ? glyphBBox(l.contours, true, letterMeta(l.codepoint)).maxY : gxKY(LETTER_TOP);
+  const y = (l.anchors && l.anchors.above) ? l.anchors.above.y : Math.max(gxKY(ANCHOR_Y.above), Math.round(maxY) + gxKLen(40));
   return { smrAboveR: { x: mid + off, y }, smrAbove: { x: mid, y }, smrAboveL: { x: mid - off, y } };
 }
 function ensureSmrAnchors(l) {   // back-fill the columns on a mark-bearing Samaritan letter (a save from before the family, a fresh seed); idempotent
@@ -15770,7 +15933,7 @@ function precompTakesHolam(pc) { return !!pc && pc.base === '05E9' && (pc.mark =
 function precompHolamAnchor(pc) {
   if (pc.holam && pc.holam.x != null) return pc.holam;   // user override
   const a = precompAnchor(pc);                            // tracks any dot-position override too
-  return { x: a.x - 120, y: a.y + 55 };
+  return { x: a.x - gxKLen(120), y: a.y + gxKLen(55) };
 }
 function precompMarkScale(pc) {
   if (catOfCp(pc.mark) === 'accent') return 1;                           // Latin accents are pre-sized — no per-form scaling
@@ -15843,7 +16006,7 @@ function resetPrecompHolam() {
 function setPrecompMarkScale(v) {
   const pc = getPrecomp(precompTarget); if (!pc) return;
   udBurstBegin([{ t:'precomp', target: precompTarget }], 'mark size');
-  pc.markScale = Math.max(0.3, Math.min(2, (+v)/100));
+  pc.markScale = markSizeClamp((+v)/100);
   const s = document.getElementById('pcScaleV'); if (s) s.textContent = Math.round(pc.markScale*100) + '%';
   renderStage();   // live preview; don't rebuild controls (keep slider focus)
 }
@@ -16099,7 +16262,7 @@ function renderPrecompControls(l) {
     return `<div class="ws-side-title">${I18n.t('fontmaker.panels.place_precomp_title', {glyph: '<span style="font-family:var(--heb-font);direction:rtl;font-size:1.2rem;">'+esc(precompComposed(pc))+'</span>', name: esc(precompName(pc))})}</div>
     <div class="hint" style="font-size:0.68rem;">${I18n.t('fontmaker.panels.dagesh_follows_hint', {glyph: g})}</div>
     <hr class="ctl-divider">
-    <div class="inline">${I18n.t('fontmaker.panels.dagesh_size')} <input type="range" min="40" max="180" step="5" value="${dagPct}" oninput="setDageshScale(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.dagesh_size'))}"> <span id="dageshScaleV" class="readout">${dagPct}%</span></div>
+    <div class="inline">${I18n.t('fontmaker.panels.dagesh_size')} <input type="range" ${markSizeRange(dagPct, 40, 180)} step="5" value="${dagPct}" oninput="setDageshScale(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.dagesh_size'))}"> <span id="dageshScaleV" class="readout">${dagPct}%</span></div>
     <hr class="ctl-divider">
     <button class="ctl-btn hi-btn" style="width:100%;" onclick="openMarkEdit('nikkud','${pc.mark}')">${ICON_PENCIL_SM}${I18n.t('fontmaker.panels.edit_shape_btn')}</button>
     <div class="hint" style="font-size:0.7rem;">${I18n.t('fontmaker.panels.edit_shape_square_hint')}</div>
@@ -16113,10 +16276,10 @@ function renderPrecompControls(l) {
   const isCholamVav = (pc.base === '05D5' && pc.mark === '05B9');   // וֹ size: surfaced here (next to the live preview) using the same control as the Nikkud-step Holam (vav) size
   const cholPct = Math.round(cholamScale() * 100);
   const sizeBlock = isCholamVav
-    ? `<div class="inline">${I18n.t('fontmaker.panels.holam_vav_size')} <input type="range" min="40" max="180" step="5" value="${cholPct}" oninput="setCholamScale(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.holam_vav_size'))}"> <span id="cholamScaleV" class="readout">${cholPct}%</span></div>
+    ? `<div class="inline">${I18n.t('fontmaker.panels.holam_vav_size')} <input type="range" ${markSizeRange(cholPct, 40, 180)} step="5" value="${cholPct}" oninput="setCholamScale(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.holam_vav_size'))}"> <span id="cholamScaleV" class="readout">${cholPct}%</span></div>
     <div class="hint" style="font-size:0.7rem;">${I18n.t('fontmaker.panels.holam_vav_hint')}</div>
     <div class="hint" style="font-size:0.7rem;">${esc(I18n.t('fontmaker.panels.holam_vav_vs_haser'))}</div>`
-    : `<div class="inline">${I18n.t('fontmaker.panels.dot_size')} <input type="range" min="30" max="200" step="1" value="${scPct}" id="pcScale" oninput="setPrecompMarkScale(this.value)" onchange="udSliderCommit('pcScale')" aria-label="${esc(I18n.t('fontmaker.panels.dot_size'))}"> <span id="pcScaleV" class="readout">${scPct}%</span></div>
+    : `<div class="inline">${I18n.t('fontmaker.panels.dot_size')} <input type="range" ${markSizeRange(scPct, 30, 200)} step="1" value="${scPct}" id="pcScale" oninput="setPrecompMarkScale(this.value)" onchange="udSliderCommit('pcScale')" aria-label="${esc(I18n.t('fontmaker.panels.dot_size'))}"> <span id="pcScaleV" class="readout">${scPct}%</span></div>
     <div class="hint" style="font-size:0.7rem;">${I18n.t('fontmaker.panels.dagesh_size_hint')}</div>
     <div class="ctl-row" style="margin-top:6px;justify-content:center;">
       ${isScaleOverride ? `<button class="ctl-btn" onclick="resetPrecompMarkScale()">${I18n.t('fontmaker.panels.reset_auto_size')}</button>` : `<span class="hint" style="font-size:0.7rem;">${I18n.t('fontmaker.panels.auto_size_hint')}</span>`}
@@ -16260,28 +16423,28 @@ function setMarkNudge(cp, dy) {
 function nudgeActiveVowel(delta) { const cp = activeVowelCp(); setMarkNudge(cp, markNudgeDy(cp) + delta); }
 function setMarkScale(v) {
   udBurstBegin([{ t:'tropTune' }], 'nikkud size');   // one undo entry per slider drag
-  project.font.markScale = Math.max(0.3, Math.min(2, (+v)/100));
+  project.font.markScale = markSizeClamp((+v)/100);
   const s = document.getElementById('markScaleV'); if (s) s.textContent = Math.round(project.font.markScale*100) + '%';
   renderStage();   // live preview; don't rebuild controls (keep slider focus)
   markDirty();
 }
 function setDageshScale(v) {
   udBurstBegin([{ t:'tropTune' }], 'dagesh size');   // one undo entry per slider drag
-  project.font.dageshScale = Math.max(0.3, Math.min(2, (+v)/100));
+  project.font.dageshScale = markSizeClamp((+v)/100);
   document.querySelectorAll('#dageshScaleV').forEach(s => s.textContent = Math.round(project.font.dageshScale*100) + '%');
   renderStage();   // live preview; don't rebuild controls (keep slider focus)
   markDirty();
 }
 function setCholamScale(v) {
   udBurstBegin([{ t:'tropTune' }], 'holam (vav) size');   // one undo entry per slider drag
-  project.font.cholamScale = Math.max(0.3, Math.min(2, (+v)/100));
+  project.font.cholamScale = markSizeClamp((+v)/100);
   document.querySelectorAll('#cholamScaleV').forEach(s => s.textContent = Math.round(project.font.cholamScale*100) + '%');
   renderStage();   // live preview; don't rebuild controls (keep slider focus)
   markDirty();
 }
 function setHolamScale(v) {
   udBurstBegin([{ t:'tropTune' }], 'holam size');   // one undo entry per slider drag
-  project.font.holamScale = Math.max(0.3, Math.min(2, (+v)/100));
+  project.font.holamScale = markSizeClamp((+v)/100);
   const s = document.getElementById('holamScaleV'); if (s) s.textContent = Math.round(project.font.holamScale*100) + '%';
   renderStage();   // live preview; don't rebuild controls (keep slider focus)
   markDirty();
@@ -16598,14 +16761,14 @@ function meApply(scope) {
 }
 function setTropScale(v) {
   udBurstBegin([{ t:'tropTune' }], 'trop size');   // one undo entry per slider drag
-  project.font.tropScale = Math.max(0.3, Math.min(2, (+v)/100));
+  project.font.tropScale = markSizeClamp((+v)/100);
   const s = document.getElementById('markScaleV'); if (s) s.textContent = Math.round(project.font.tropScale*100) + '%';
   renderStage();
   markDirty();
 }
 function setSmrMarkScale(v) {   // the Samaritan family's own size — never the nikkud slider
   udBurstBegin([{ t:'tropTune' }], 'Samaritan mark size');   // one undo entry per slider drag
-  project.font.smrMarkScale = Math.max(0.3, Math.min(2, (+v)/100));
+  project.font.smrMarkScale = markSizeClamp((+v)/100);
   const s = document.getElementById('smrMarkScaleV'); if (s) s.textContent = Math.round(project.font.smrMarkScale*100) + '%';
   renderStage();
   markDirty();
@@ -16875,6 +17038,435 @@ function boldGenApply() {
   renderGrids(); renderStage(); renderControls();
   if (typeof renderSpacingPreview === 'function') renderSpacingPreview();
   status(I18n.t('fontmaker.boldgen.applied'));
+}
+
+/* ════════ Glyph transform engine (gx) — one geometric change applied to many glyphs, in ONE undo step ════════
+   An OPERATION is { label, affine(letterLike) → [a,b,c,d,e,f] | {T, advance, keepRsb} | null, fontX, fontY,
+   markFactor }: a per-glyph affine map in font units (x' = a·x + b·y + e, y' = c·x + d·y + f; null skips the
+   glyph), the factors for font-wide horizontal / vertical lengths (null = leave them) and the uniform
+   factor for mark size (null = leave marks). A SET is { scope: 'letter' | 'tab' | 'all', cp, cat }.
+   gxPlan(op, set) is PURE — it reads the project and returns every new value plus its findings — and
+   gxCommit(plan) refuses a plan with a blocking finding, then makes one udDo whose body is nothing but
+   assignments of those precomputed values, so a transform can never stop half-way through a font.
+   What a glyph transform has to carry (the census — docs/reference/font-maker.md → Glyph transforms):
+   the polygon AND its curves through the same map, advance / lsb / rsb, class anchors and pins, the
+   photo's image matrix and the pen strokes (so a later re-trace or one more stroke keeps the new shape),
+   a composed form's anchor / holam point / imported outline, and — font-wide — the guide lines, spacing,
+   kerning, trop spread, user guides and each sheet's scale. Mark SHAPES are never touched: a mark ships as
+   shape × its size setting about its attach point, so a mark is resized by that setting alone. */
+const GX_COORD_MAX = SVG_PASTE_MAX_COORD;                 // half the font format's ±32767: room for marks and composed forms around the glyph
+const GX_SRC_ADV_MAX = 10000;                             // sanitizePrecompSrc drops an imported form wider than this on the next load
+const GX_DRAW_MIN = -2000, GX_DRAW_MAX = 3000;            // sanitizeDraw clamps a stroke point to this on load
+const GX_TRACE_WIN = { x0: -546, x1: 1328, y0: -359, y1: 1390 };   // what the tracer's raster can see (rasterizeCurrent / drawFrame)
+const GX_SCALE_PRESETS = [50, 75, 90, 110, 125, 150, 200];
+function gxMap(T, x, y) { return [T[0] * x + T[1] * y + T[4], T[2] * x + T[3] * y + T[5]]; }
+function gxRPt(T, p) { const q = gxMap(T, p[0], p[1]); return [Math.round(q[0]), Math.round(q[1])]; }   // rounded at the source — feaLib rejects a fractional anchor, and outlines are whole units everywhere
+function gxSimilarity(T) { return (T[1] === 0 && T[2] === 0 && T[0] === T[3] && T[0] > 0) ? T[0] : null; }   // a uniform scale plus a shift → its factor; anything else → null
+function gxStageMatrix(T) {   // the same map in stage px, in M's column layout — left-multiplied onto a photo's image→stage matrix it keeps the photo under its outline
+  return [T[0], -T[2], -T[1], T[3], PADX * (1 - T[0]) + T[1] * BY + SC * T[4], BY * (1 - T[3]) + T[2] * PADX - SC * T[5]];
+}
+function gxMapCurve(cv, T) {   // a fitted-curve entry through the map (an affine maps a Bézier exactly, so curves are kept, not dropped)
+  if (!cv) return cv;          // null entry = "use the polygon"
+  return Object.assign({}, cv, { start: gxRPt(T, cv.start),
+    segments: cv.segments.map(seg => Object.assign({}, seg, { pts: seg.pts.map(p => gxRPt(T, p)) })) });
+}
+function gxOutline(rings, curves, T) {   // rings: [[x,y]…] per contour → { keep:[index…], rings, curves, lost } — a contour that collapses is dropped WITH its curve entry
+  const hasCv = Array.isArray(curves) && curves.length === rings.length;
+  const out = { keep: [], rings: [], curves: hasCv ? [] : null, lost: 0 };
+  rings.forEach((r, i) => {
+    const pts = bgDedupe(r.map(p => gxRPt(T, p)));
+    if (pts.length < 3 || Math.abs(signedArea(pts)) < 1) { out.lost++; return; }
+    out.keep.push(i); out.rings.push(pts);
+    if (hasCv) out.curves.push(gxMapCurve(curves[i], T));
+  });
+  return out;
+}
+function gxOutlineExtent(o) {   // → { minX, maxX, minY, maxY, worst } over the rings and every curve control point
+  const b = { minX: Infinity, maxX: -Infinity, minY: Infinity, maxY: -Infinity, worst: 0 };
+  const ink = p => { if (p[0] < b.minX) b.minX = p[0]; if (p[0] > b.maxX) b.maxX = p[0]; if (p[1] < b.minY) b.minY = p[1]; if (p[1] > b.maxY) b.maxY = p[1]; };
+  const see = p => { b.worst = Math.max(b.worst, Math.abs(p[0]), Math.abs(p[1])); };
+  o.rings.forEach(r => r.forEach(p => { ink(p); see(p); }));
+  (o.curves || []).forEach(cv => { if (!cv) return; see(cv.start); cv.segments.forEach(seg => seg.pts.forEach(see)); });
+  return b;
+}
+const GX_TROP_SIDES = [['tropAboveL', 'tropAbove', -1], ['tropAboveR', 'tropAbove', 1], ['tropBelowL', 'tropBelow', -1], ['tropBelowR', 'tropBelow', 1]];
+function gxLetterPatch(l, spec, ctx) {   // PURE: one letter's new field values → { set, lost, gone, worst, off, drawOut }
+  const T = spec.T, a = T[0], out = { set: {}, lost: 0, gone: false, worst: 0, off: false, drawOut: false };
+  const see = v => { const m = Math.abs(v); if (m > out.worst) out.worst = m; };
+  const hasImage = !!(l.source && l.source.dataUrl), d = l.draw, hasDraw = !!(d && Array.isArray(d.strokes) && d.strokes.length);
+  if (l.contours && l.contours.length) {
+    const o = gxOutline(l.contours.map(c => c.points), l.curves, T);
+    out.lost = o.lost;
+    if (!o.rings.length) out.gone = true;
+    else {
+      out.set.contours = o.rings.map((pts, j) => Object.assign({}, l.contours[o.keep[j]], { points: pts }));
+      if (o.curves) out.set.curves = o.curves;
+      const e = gxOutlineExtent(o); see(e.worst);
+      const W = GX_TRACE_WIN;
+      out.off = (hasImage || hasDraw) && (e.minX < W.x0 || e.maxX > W.x1 || e.minY < W.y0 || e.maxY > W.y1);
+    }
+  }
+  if (l.advance != null) { const v = Math.max(0, spec.advance != null ? spec.advance : Math.round(l.advance * a)); out.set.advance = v; see(v); }
+  if (l.lsb != null) out.set.lsb = Math.max(0, Math.round(a * l.lsb + T[4]));
+  if (l.rsb != null && !spec.keepRsb) out.set.rsb = Math.max(0, Math.round(l.rsb * a));
+  const mapPt = p => { const q = gxRPt(T, [p.x, p.y]); see(q[0]); see(q[1]); return Object.assign({}, p, { x: q[0], y: q[1] }); };
+  const okPt = p => !!p && Number.isFinite(p.x) && Number.isFinite(p.y);
+  if (l.anchors) {
+    const an = {};
+    for (const k in l.anchors) an[k] = okPt(l.anchors[k]) ? mapPt(l.anchors[k]) : l.anchors[k];
+    // A side trop column still sitting at its default (centre ± the spread) stays tied to the new centre ±
+    // the new spread — setTropSideOffset recognises "still the default" by exact equality, which separate
+    // rounding of the two would break by a unit.
+    if (ctx && ctx.trop) GX_TROP_SIDES.forEach(([k, c, sg]) => {
+      const cur = l.anchors[k], cc = l.anchors[c];
+      if (okPt(cur) && okPt(cc) && cur.x === cc.x + sg * ctx.trop.prev && cur.y === cc.y) an[k] = Object.assign({}, cur, { x: an[c].x + sg * ctx.trop.next, y: an[c].y });
+    });
+    out.set.anchors = an;
+  }
+  if (l.markAnchors) { const ma = {}; for (const cp in l.markAnchors) ma[cp] = okPt(l.markAnchors[cp]) ? mapPt(l.markAnchors[cp]) : l.markAnchors[cp]; out.set.markAnchors = ma; }
+  const k = gxSimilarity(T);
+  if (hasImage && Array.isArray(l.transform) && l.transform.length === 6) {
+    out.set.transform = M.mul(gxStageMatrix(T), l.transform);
+    if (k != null && Number.isFinite(+l.lineWeight)) out.set.lineWeight = Math.max(10, Math.min(250, Math.round(l.lineWeight * k)));   // the hollow-trace ring is a font-unit length (liveLineWeight's own range)
+  }
+  const cb = l.captureBox;
+  if (cb && [cb.x0, cb.y0, cb.x1, cb.y1].every(Number.isFinite)) {
+    const ps = [[cb.x0, cb.y0], [cb.x1, cb.y0], [cb.x0, cb.y1], [cb.x1, cb.y1]].map(p => gxMap(T, p[0], p[1]));
+    out.set.captureBox = Object.assign({}, cb, { x0: Math.min(...ps.map(p => p[0])), x1: Math.max(...ps.map(p => p[0])), y0: Math.min(...ps.map(p => p[1])), y1: Math.max(...ps.map(p => p[1])) });
+  }
+  // Pen strokes follow a uniform scale only: a round or chisel nib has no sheared or squeezed form, so any
+  // other map leaves the drawing as it was (what Generate Bold does). The result goes through sanitizeDraw
+  // so the stored drawing — and so its signature — is exactly what a reload would produce: a signature
+  // the loader would change makes drawNeedsTrace true after a reload, and entering Trace would then
+  // silently redraw the letter from its strokes.
+  if (hasDraw && k != null) {
+    let bad = false;
+    const mp = q => { const p = gxMap(T, q[0], q[1]); if (p[0] < GX_DRAW_MIN || p[0] > GX_DRAW_MAX || p[1] < GX_DRAW_MIN || p[1] > GX_DRAW_MAX) bad = true; return p; };
+    const strokes = d.strokes.map(s => {
+      const o = Object.assign({}, s, { w: Math.round(s.w * k * 100) / 100, pts: (s.pts || []).map(q => { const p = mp(q); return [p[0], p[1], q[2]]; }) });
+      if (s.tl != null) o.tl = s.tl * k;        // brush taper length
+      if (s.rim != null) o.rim = s.rim * k;     // hollow pen's wall
+      return o;
+    });
+    const carves = (d.carves || []).map(c => Object.assign({}, c, { w: c.w * k, pts: (c.pts || []).map(mp) }));
+    const nd = sanitizeDraw(Object.assign({}, d, { strokes, carves }));
+    if (bad || !nd) out.drawOut = true;
+    else {
+      out.set.draw = nd;
+      const pending = drawNeedsTrace(l);
+      if (!pending && l.drawSig != null) out.set.drawSig = drawSig(nd);   // saved before → saved after
+      else if (pending && l.drawSig == null) out.set.drawSig = '';        // waiting before → still waiting (its stock outline may stop counting as stock)
+    }
+  }
+  return out;
+}
+function gxLetterSet(set) {
+  if (set.scope === 'letter') { const l = project.letters.find(x => x.codepoint === set.cp); return l ? [l] : []; }
+  if (set.scope === 'tab') { const cps = new Set(tabDrawCps(set.cat)); return project.letters.filter(l => cps.has(l.codepoint)); }
+  return project.letters.slice();   // every glyph set, shown or not — as Generate Bold: a tab turned on later must not be the old size
+}
+function gxSpec(op, l) {   // op.affine normalised → { T, advance, keepRsb } | null | 'mirror'
+  let s = op.affine(l);
+  if (!s) return null;
+  if (Array.isArray(s)) s = { T: s };
+  if (!s.T || s.T.length !== 6 || !s.T.every(Number.isFinite)) return null;
+  return (s.T[0] * s.T[3] - s.T[1] * s.T[2] > 0) ? s : 'mirror';   // a mirror reverses every contour's direction — flips stay in the point editor
+}
+function gxPlan(op, set) {
+  const all = set.scope === 'all', F = project.font, em = effMetrics(), b = em.baseline;
+  const fX = (all && op.fontX != null && op.fontX !== 1) ? op.fontX : null;
+  const fY = (all && op.fontY != null && op.fontY !== 1) ? op.fontY : null;
+  const mf = (all && op.markFactor != null && op.markFactor !== 1) ? op.markFactor : null;
+  const plan = { label: op.label, items: [], precomp: [], font: {}, scopes: [], count: 0,
+                 refuse: { range: [], gone: [], draw: [], mirror: false }, warn: { lost: [], off: [], held: [] } };
+  const held = new Set();
+  const lim = (v, lo, hi, tag) => { const r = Math.round(v); if (r < lo || r > hi) { held.add(tag); return Math.max(lo, Math.min(hi, r)); } return r; };
+  const big = (v, name) => { if (Math.abs(v) > GX_COORD_MAX && !plan.refuse.range.includes(name)) plan.refuse.range.push(name); };
+  const ctx = {};
+  let tune = null;
+  /* ── font-wide lengths ── */
+  if (fX != null) {
+    const prev = F.tropSideOffset != null ? F.tropSideOffset : TROP_POS_SHIFT, raw = Math.round(prev * fX), next = Math.max(0, Math.min(600, raw));
+    tune = { tropSideOffset: next };
+    if (next === raw) ctx.trop = { prev, next }; else held.add('trop_spread');   // clamped → the columns are simply mapped, not re-tied
+    const vp = F.trop && F.trop.vowelPair;
+    if (vp) { const nv = JSON.parse(JSON.stringify(vp)); Object.keys(nv).forEach(c => { if (nv[c] && Number.isFinite(+nv[c].dx)) nv[c].dx = lim(nv[c].dx * fX, -300, 300, 'pair_shift'); }); tune.vowelPair = nv; }
+    if (F.nikkud && typeof F.nikkud.metegGap === 'number' && Number.isFinite(F.nikkud.metegGap)) tune.metegGap = lim(F.nikkud.metegGap * fX, 0, 200, 'meteg_gap');
+    if (Array.isArray(F.kerning) && F.kerning.length) plan.font.kerning = F.kerning.map(kp => {
+      if (!kp || !Number.isFinite(+kp.value)) return kp;
+      const v = Math.round(kp.value * fX); big(v, I18n.t('fontmaker.scaleall.thing_kerning')); return Object.assign({}, kp, { value: v });
+    });
+  }
+  if (fX != null || fY != null) {
+    const m = Object.assign({}, F.metrics), yv = v => Math.round(b + fY * (v - b));
+    if (fY != null) {
+      ['letterTop', 'lamedAscender', 'descender', 'capHeight', 'xHeight', 'ascender'].forEach(key => { if (Number.isFinite(em[key])) { m[key] = yv(em[key]); big(m[key], I18n.t('fontmaker.scaleall.thing_lines')); } });
+      // The imported line box has a valid range: a value outside it is REJECTED by the editor and deleted
+      // (both keys) by the next load, so it is held at the edge here rather than lost later.
+      if (m.typoAscent != null && m.typoDescent != null) { m.typoAscent = lim(b + fY * (m.typoAscent - b), 1, 3000, 'line_box'); m.typoDescent = lim(b + fY * (m.typoDescent - b), -1500, -1, 'line_box'); }
+      if (fX === fY) { const nk = Math.round(gxK() * fY * 1e6) / 1e6; if (nk === 1) delete m.sizeK; else m.sizeK = nk; }
+    }
+    if (fX != null) ['defaultLSB', 'defaultRSB'].forEach(key => { if (Number.isFinite(em[key])) m[key] = Math.round(em[key] * fX); });
+    plan.font.metrics = m;
+    const sp0 = F.spacing || {}, sp = {};
+    const one = (key, f, lo, hi, tag) => { if (f != null && Number.isFinite(+sp0[key])) sp[key] = lim(sp0[key] * f, lo, hi, tag); };
+    one('letterSpacing', fX, -40, 200, 'letter_spacing'); one('wordSpacing', fX, 80, 600, 'word_spacing');
+    one('kernTarget', fX, -40, 160, 'kern_target'); one('lineSpacing', fY, 0, 500, 'line_spacing');
+    if (Object.keys(sp).length) plan.font.spacing = sp;
+    const gi = project.guides && Array.isArray(project.guides.items) ? project.guides.items : [];
+    if (gi.length) plan.font.guides = Object.assign({}, project.guides, { items: gi.map(g => {
+      if (!g || !Number.isFinite(+g.pos)) return g;
+      const f = g.axis === 'v' ? fX : fY; if (f == null) return g;
+      return Object.assign({}, g, { pos: Math.round(g.axis === 'v' ? g.pos * f : b + f * (g.pos - b)) });
+    }) });
+    if (fX != null && fX === fY) {   // a sheet's units-per-pixel: a letter boxed from the same sheet later must arrive at the new size
+      const sh = (project.combinedSheets || []).filter(s => Number.isFinite(s.fitScale) && s.fitScale > 0).map(s => [s.id, s.fitScale * fX]);
+      if (sh.length) plan.font.sheets = sh;
+    }
+  }
+  /* ── mark size ── */
+  if (mf != null) {
+    const sz = v => { const r = Math.round(v * mf * 1e4) / 1e4, c = Math.max(MARK_SIZE_MIN, Math.min(MARK_SIZE_MAX, r)); if (c !== r) held.add('mark_size'); return c; };
+    tune = tune || {};
+    tune.sizes = { markScale: sz(markScale()), dageshScale: sz(dageshScale()), cholamScale: sz(cholamScale()), holamScale: sz(holamScale()), tropScale: sz(tropScale()), smrMarkScale: sz(smrMarkScale()) };
+    plan.markSize = sz;
+    // Latin accents have no size setting (they bake at scale 1), so their shape is what gets scaled: an
+    // imported accent in place, a built-in one that actually ships through a scaled custom copy.
+    const acc = [], store = (F.accent && F.accent.custom) || {};
+    Object.keys(LATIN_ACCENTS).forEach(cp => {
+      const am = store[cp], rp = p => [Math.round(p[0] * mf), Math.round(p[1] * mf)];
+      if (am && Array.isArray(am.contours) && am.contours.length) {
+        const st = { contours: am.contours.map(c => Object.assign({}, c, { points: c.points.map(rp) })) };
+        if (Array.isArray(am.curves)) st.curves = am.curves.map(cv => cv ? scaleRoundCurve(cv, mf) : cv);
+        const aa = am.attachAnchor;
+        if (aa && Number.isFinite(aa.x) && Number.isFinite(aa.y)) st.attachAnchor = { x: Math.round(aa.x * mf), y: Math.round(aa.y * mf) };
+        acc.push({ cp, create: false, set: st });
+      } else if (F.addEnglishLetters && (project.precomposed || []).some(pc => pc.mark === cp && (project.letters.find(x => x.codepoint === pc.base) || {}).contours)) {
+        acc.push({ cp, create: true, set: { designMode: 'upload', curves: null, attachAnchor: { x: 0, y: 0 },
+          contours: LATIN_ACCENTS[cp].glyph.map(r => { const pts = r.map(rp); return { winding: signedArea(pts) < 0 ? 'cw' : 'ccw', points: pts }; }) } });
+      }
+    });
+    if (acc.length) plan.font.accents = acc;
+  }
+  if (tune) plan.font.tune = tune;
+  /* ── letters ── */
+  const specs = {};
+  gxLetterSet(set).forEach(l => {
+    const spec = gxSpec(op, l);
+    if (spec === 'mirror') { plan.refuse.mirror = true; return; }
+    if (!spec) return;
+    specs[l.codepoint] = spec;
+    const r = gxLetterPatch(l, spec, ctx), nm = gName(l.name);
+    if (r.gone) plan.refuse.gone.push(nm);
+    if (r.worst > GX_COORD_MAX) plan.refuse.range.push(nm);
+    if (r.drawOut) plan.refuse.draw.push(nm);
+    if (r.lost && !r.gone) plan.warn.lost.push(nm);
+    if (r.off) plan.warn.off.push(nm);
+    if (!Object.keys(r.set).length) return;
+    plan.items.push({ l, set: r.set });
+    if (r.set.contours) plan.count++;
+  });
+  /* ── composed forms ── */
+  (project.precomposed || []).forEach(pc => {
+    const spec = specs[precompBaseCp(pc)], w = {}, nm = precompName(pc);
+    if (spec && spec !== 'mirror') {
+      ['anchor', 'holam'].forEach(key => {
+        const p = pc[key];
+        if (p && Number.isFinite(p.x) && Number.isFinite(p.y)) { const q = gxRPt(spec.T, [p.x, p.y]); big(q[0], nm); big(q[1], nm); w[key] = Object.assign({}, p, { x: q[0], y: q[1] }); }   // other keys (anchor.auto) ride along
+      });
+      ['src', 'srcDagesh'].forEach(key => {   // an outline the source font drew whole — rebuilt as a NEW object (the precomp undo snapshot shares the old one by reference)
+        const s = pc[key];
+        if (!s || !Array.isArray(s.contours) || !s.contours.length) return;
+        const sp = gxSpec(op, { contours: s.contours.map(r => ({ points: r })), advance: s.advance, lsb: null, rsb: null });
+        if (!sp || sp === 'mirror') return;
+        const o = gxOutline(s.contours, s.curves, sp.T);
+        const adv = Math.max(0, sp.advance != null ? sp.advance : Math.round((+s.advance || 0) * sp.T[0]));
+        if (!o.rings.length) { plan.refuse.gone.push(nm); return; }
+        if (gxOutlineExtent(o).worst > GX_COORD_MAX || adv > GX_SRC_ADV_MAX) big(GX_COORD_MAX + 1, nm);
+        if (o.lost && !plan.warn.lost.includes(nm)) plan.warn.lost.push(nm);
+        w[key] = { contours: o.rings, advance: adv, curves: o.curves };
+      });
+    }
+    if (plan.markSize && pc.markScale != null && Number.isFinite(+pc.markScale)) w.markScale = plan.markSize(pc.markScale);
+    if (Object.keys(w).length) plan.precomp.push({ target: pc.target, set: w });
+  });
+  delete plan.markSize;
+  plan.warn.held = [...held];
+  /* ── scopes ── */
+  plan.scopes = plan.items.map(it => it.set.draw ? { t: 'item', kind: 'letter', cp: it.l.codepoint, withDraw: true } : { t: 'item', kind: 'letter', cp: it.l.codepoint })
+    .concat(plan.precomp.map(p => ({ t: 'precomp', target: p.target })))
+    .concat((plan.font.accents || []).map(a => ({ t: 'item', kind: 'accent', cp: a.cp })));
+  if (plan.font.metrics) plan.scopes.push({ t: 'metrics' });
+  if (plan.font.spacing) plan.scopes.push({ t: 'spacing' });
+  if (plan.font.kerning) plan.scopes.push({ t: 'kerning' });
+  if (plan.font.tune) plan.scopes.push({ t: 'tropTune' });
+  if (plan.font.guides) plan.scopes.push({ t: 'guides' });
+  if (plan.font.sheets) plan.scopes.push({ t: 'sheetFit' });
+  return plan;
+}
+function gxRefused(plan) { const r = plan.refuse; return r.mirror || !!(r.range.length || r.gone.length || r.draw.length); }
+function gxAfterHistory() { lastSavedAnchors = null; _rawTrace = null; }   // also after undo / redo of a gx entry: a placement carried to the next fresh letter, and the raw-trace cache, belong to the size they were made at
+function gxCommit(plan) {   // → true when the change was made (one undo entry)
+  if (!plan || gxRefused(plan) || !plan.scopes.length) return false;
+  const F = project.font, f = plan.font;
+  (f.accents || []).forEach(a => { if (a.create) customMark('accent', a.cp); });   // create BEFORE the snapshot, so undo has an item to put back (the Generate Bold idiom); empty, it still reads as the built-in accent
+  const n0 = undoStack.length, top0 = undoStack[n0 - 1];
+  udDo(plan.scopes, plan.label, () => {   // assignments only — nothing in here can fail half-way
+    plan.items.forEach(it => Object.assign(it.l, it.set));
+    plan.precomp.forEach(p => { const pc = getPrecomp(p.target); if (pc) Object.assign(pc, p.set); });
+    if (f.metrics) { Object.keys(F.metrics).forEach(key => delete F.metrics[key]); Object.assign(F.metrics, f.metrics); }
+    if (f.spacing) Object.assign(F.spacing, f.spacing);
+    if (f.kerning) F.kerning = f.kerning;
+    if (f.tune) {
+      if (f.tune.tropSideOffset != null) F.tropSideOffset = f.tune.tropSideOffset;
+      if (f.tune.vowelPair) { if (!F.trop) F.trop = {}; F.trop.vowelPair = f.tune.vowelPair; }
+      if (f.tune.metegGap != null && F.nikkud) F.nikkud.metegGap = f.tune.metegGap;
+      if (f.tune.sizes) Object.assign(F, f.tune.sizes);
+    }
+    if (f.guides) project.guides = f.guides;
+    if (f.sheets) f.sheets.forEach(([id, v]) => { const sh = (project.combinedSheets || []).find(x => x.id === id); if (sh) sh.fitScale = v; });
+    (f.accents || []).forEach(a => { const m = F.accent && F.accent.custom && F.accent.custom[a.cp]; if (m) Object.assign(m, a.set); });
+  });
+  const top = undoStack[undoStack.length - 1], done = !!top && top !== top0;
+  if (!done) return false;
+  top.gx = true;                     // undo() / redo() run gxAfterHistory for this entry
+  gxAfterHistory();
+  _fidelityLast = null;              // the import report measures against the source font's own bytes — after a transform every row would read "off", and its Apply would write the old positions back
+  _hiddenContours.clear();           // contour indices may have shifted
+  if (workMode === 'nodes') { nodeModel = null; nodeSel.clear(); }
+  _drawSel.clear();
+  renderGrids(); renderStage(); renderControls();
+  renderSpacingPanel(); renderSpacingPreview();
+  return true;
+}
+
+/* ── Scale all letters — the engine's first operation ── */
+function gxInkLeft(l) { let mn = Infinity; (l.contours || []).forEach(c => (c.points || []).forEach(p => { if (p[0] < mn) mn = p[0]; })); return mn; }
+function gxInkRight(l) { let mx = -Infinity; (l.contours || []).forEach(c => (c.points || []).forEach(p => { if (p[0] > mx) mx = p[0]; })); return mx; }
+function gxScaleOp(pct, o) {   // o: { scope, spacing, marks, name }
+  const s = pct / 100, b = effMetrics().baseline, all = o.scope === 'all';
+  return {
+    label: o.scope === 'letter' ? 'scale letter to ' + pct + '% — ' + o.name : 'scale letters to ' + pct + '%',
+    // From the baseline, so letters stay on the line. With spacing: from the glyph origin too, so the side
+    // bearings scale with the ink. Without: the ink keeps its left edge and both bearings keep their width.
+    affine(l) {
+      if (o.spacing) return [s, 0, 0, s, 0, b * (1 - s)];
+      const x0 = gxInkLeft(l), x1 = gxInkRight(l);
+      if (!Number.isFinite(x0)) return { T: [s, 0, 0, s, 0, b * (1 - s)], advance: l.advance, keepRsb: true };
+      return { T: [s, 0, 0, s, x0 * (1 - s), b * (1 - s)], advance: l.advance != null ? Math.round(l.advance + (s - 1) * (x1 - x0)) : null, keepRsb: true };
+    },
+    fontX: (all && o.spacing) ? s : null, fontY: (all && o.spacing) ? s : null, markFactor: (all && o.marks) ? s : null
+  };
+}
+let saState = null;   // { pct, scope, spacing, marks, canTab, canLetter, cat, cp, name }
+let _saTimer = 0;
+function scaleAllOpen() {
+  if (!project) return;
+  udFlushPending();   // an open slider burst or arrow-nudge holds a "before" from before this change — settle it first
+  if (!project.letters.some(l => l.contours && l.contours.length)) { status(I18n.t('fontmaker.status.trace_first')); return; }
+  const pr = wsReadPrefs(), cur = curKind === 'letter' ? curItem() : null;
+  const cat = cur ? _drawCatOf(cur.codepoint) : null;
+  const tabN = cat ? gxLetterSet({ scope: 'tab', cat }).filter(l => l.contours && l.contours.length).length : 0;
+  saState = { pct: 100, scope: 'all', spacing: pr.scaleAllSpacing !== false, marks: pr.scaleAllMarks !== false,
+              canTab: tabN > 0, canLetter: !!(cur && cur.contours && cur.contours.length), cat, cp: cur ? cur.codepoint : null, name: cur ? cur.name : '' };
+  const $ = id => document.getElementById(id);
+  $('saPct').value = 100;
+  $('saPresets').innerHTML = GX_SCALE_PRESETS.map(p => '<button type="button" class="ctl-btn" onclick="scaleAllPreset(' + p + ')">' + p + '%</button>').join('');
+  $('saSpacing').checked = saState.spacing; $('saMarks').checked = saState.marks;
+  document.querySelector('input[name="saScope"][value="all"]').checked = true;
+  $('saScopeTabRow').hidden = !saState.canTab; $('saScopeLetterRow').hidden = !saState.canLetter;
+  if (saState.canTab) $('saScopeTabLbl').textContent = I18n.t('fontmaker.scaleall.scope_tab', { tab: I18n.t('fontmaker.tabs.cat_' + cat) });
+  if (saState.canLetter) $('saScopeLetterLbl').textContent = I18n.t('fontmaker.scaleall.scope_letter', { name: gName(saState.name) });
+  aOpenModal('scaleAllOverlay', scaleAllClose);
+  scaleAllRender();
+}
+function scaleAllClose() { saState = null; clearTimeout(_saTimer); _saTimer = 0; aCloseModal('scaleAllOverlay'); }
+function scaleAllPct(v) { const n = Math.round(+v); return Number.isFinite(n) ? Math.max(25, Math.min(400, n)) : 100; }   // the Transform section's own 25–400 (_XFORM_CLAMP)
+function scaleAllSet(v) { if (!saState) return; saState.pct = scaleAllPct(v); scaleAllRender(); }
+function scaleAllPreset(p) { if (!saState) return; saState.pct = p; document.getElementById('saPct').value = p; scaleAllRender(); }
+function scaleAllOpt() {
+  if (!saState) return;
+  const r = document.querySelector('input[name="saScope"]:checked');
+  saState.scope = r ? r.value : 'all';
+  saState.spacing = document.getElementById('saSpacing').checked; saState.marks = document.getElementById('saMarks').checked;
+  wsSavePref('scaleAllSpacing', saState.spacing); wsSavePref('scaleAllMarks', saState.marks);
+  scaleAllRender();
+}
+function scaleAllArgs() {   // → [op, set] for the dialog's current choices
+  const st = saState;
+  return [gxScaleOp(st.pct, { scope: st.scope, spacing: st.spacing, marks: st.marks, name: st.name }), { scope: st.scope, cp: st.cp, cat: st.cat }];
+}
+function gxRowSVG(row, svgEl, box, lines) {   // one RTL pen-walk row — boldGen's, plus curves and guide lines; `box` is shared by both rows so a size change shows
+  let pen = box.w, body = '';
+  (lines || []).forEach(y => { body += '<line x1="-24" x2="' + (box.w + 24) + '" y1="' + (-y) + '" y2="' + (-y) + '" stroke="currentColor" stroke-width="1" opacity="0.32" vector-effect="non-scaling-stroke"/>'; });
+  row.forEach(c => { pen -= c.advance; body += '<path d="' + glyphPathAt(c.contours, pen, 0, c.curves) + '" fill="currentColor"/>'; });
+  svgEl.setAttribute('viewBox', '-24 ' + (-box.top - 16).toFixed(0) + ' ' + (box.w + 48).toFixed(0) + ' ' + (box.top - box.bot + 32).toFixed(0));
+  svgEl.style.color = _previewInkColor();
+  svgEl.innerHTML = body;
+}
+function scaleAllRender() {
+  if (!saState) return;
+  const st = saState, [op, set] = scaleAllArgs(), em = effMetrics(), s = st.pct / 100, moved = st.scope === 'all' && st.spacing;
+  const pool = gxLetterSet(set).filter(l => l.contours && l.contours.length);
+  let pick = pool.filter(l => BG_PREVIEW_CPS.includes(l.codepoint));
+  pool.forEach(l => { if (pick.length < 5 && !pick.includes(l) && !bgIsPunct(l.codepoint)) pick.push(l); });
+  pool.forEach(l => { if (pick.length < 5 && !pick.includes(l)) pick.push(l); });
+  pick = pick.slice(0, 5);
+  const before = pick.map(l => ({ contours: l.contours, curves: l.curves, advance: letterAdvance(l) }));
+  const after = pick.map((l, i) => {
+    const spec = gxSpec(op, l), r = (spec && spec !== 'mirror') ? gxLetterPatch(l, spec, null).set : {};
+    const adv = r.advance != null ? r.advance : Math.round(before[i].advance * (moved ? s : 1));   // no stored width → the default, which follows the letter-top line
+    return { contours: r.contours || [], curves: r.contours ? (r.curves || null) : null, advance: adv };
+  });
+  const b = em.baseline, y2 = v => moved ? b + s * (v - b) : v;
+  const box = { w: Math.max(before.reduce((t, c) => t + c.advance, 0), after.reduce((t, c) => t + c.advance, 0), 1),
+                top: Math.max(em.lamedAscender, y2(em.lamedAscender), s * em.lamedAscender) + 100, bot: Math.min(em.descender, y2(em.descender), s * em.descender) - 50 };
+  gxRowSVG(before, document.getElementById('saBefore'), box, [em.baseline, em.letterTop]);
+  gxRowSVG(after, document.getElementById('saAfter'), box, [em.baseline, y2(em.letterTop)]);
+  const narrow = st.scope !== 'all';
+  document.getElementById('saMarks').disabled = narrow;
+  document.getElementById('saScopeHint').hidden = !narrow;
+  const ap = document.getElementById('saApply'), note = document.getElementById('saNote');
+  ap.setAttribute('aria-disabled', 'true'); ap.classList.add('ghost');   // until the scan below has cleared this size
+  if (st.pct === 100) { note.className = 'hint'; note.textContent = I18n.t('fontmaker.scaleall.note_100'); clearTimeout(_saTimer); _saTimer = 0; return; }
+  clearTimeout(_saTimer); _saTimer = setTimeout(scaleAllScan, 130);   // the full plan walks every glyph — settle it once typing stops (boldGenScheduleWarn's reason)
+}
+function gxNames(list) { const u = [...new Set(list)]; return u.length > 12 ? u.slice(0, 12).join(', ') + ' …' : u.join(', '); }
+function gxRefusalText(plan, pct) {
+  const r = plan.refuse;
+  if (r.mirror) return I18n.t('fontmaker.scaleall.refuse_mirror');
+  if (r.range.length) return I18n.t('fontmaker.scaleall.refuse_range', { pct, names: gxNames(r.range) });
+  if (r.gone.length) return I18n.t('fontmaker.scaleall.refuse_gone', { pct, names: gxNames(r.gone) });
+  if (r.draw.length) return I18n.t('fontmaker.scaleall.refuse_draw', { pct, names: gxNames(r.draw) });
+  return '';
+}
+function scaleAllScan() {
+  _saTimer = 0;
+  if (!saState) return;
+  const [op, set] = scaleAllArgs(), plan = gxPlan(op, set);
+  const ap = document.getElementById('saApply'), note = document.getElementById('saNote');
+  const bad = gxRefused(plan), empty = !plan.scopes.length;
+  note.className = 'hint' + (bad ? ' warn' : '');
+  if (bad) note.textContent = gxRefusalText(plan, saState.pct);
+  else if (empty) note.textContent = I18n.t('fontmaker.scaleall.note_nothing');
+  else {
+    const parts = [I18n.t(plan.count === 1 ? 'fontmaker.scaleall.note_count.one' : 'fontmaker.scaleall.note_count.other', { count: plan.count })];
+    if (plan.warn.lost.length) parts.push(I18n.t('fontmaker.scaleall.warn_lost', { names: gxNames(plan.warn.lost) }));
+    if (plan.warn.off.length) parts.push(I18n.t('fontmaker.scaleall.warn_off', { names: gxNames(plan.warn.off) }));
+    if (plan.warn.held.length) parts.push(I18n.t('fontmaker.scaleall.warn_held', { things: plan.warn.held.map(t => I18n.t('fontmaker.scaleall.held_' + t)).join(', ') }));
+    note.textContent = parts.join(' ');
+  }
+  const ok = !bad && !empty;
+  ap.setAttribute('aria-disabled', ok ? 'false' : 'true'); ap.classList.toggle('ghost', !ok);
+}
+function scaleAllApply() {
+  if (!saState || saState.pct === 100) return;   // aria-disabled guard — the note says why
+  udFlushPending();
+  const pct = saState.pct, scope = saState.scope, [op, set] = scaleAllArgs(), plan = gxPlan(op, set);   // planned afresh, never from the preview's copy
+  if (gxRefused(plan) || !plan.scopes.length) { scaleAllScan(); return; }
+  const n = plan.count;
+  scaleAllClose();
+  if (gxCommit(plan)) status(I18n.t(scope === 'letter' ? 'fontmaker.scaleall.applied_letter' : (n === 1 ? 'fontmaker.scaleall.applied.one' : 'fontmaker.scaleall.applied.other'), { count: n, pct }));
 }
 
 /* ════════ Spacing panel + live preview ════════ */
@@ -17184,6 +17776,7 @@ function reinkPreviews() {
   renderSpacingPreview();          // drives the waterfall too
   renderKernPreview();
   if (bgState) boldGenRender();    // Generate Bold — only while its modal is open
+  if (saState) scaleAllRender();   // Scale all letters — likewise
   // qaRenderGrid bakes its ink as well, but .overlay covers the header, so the dark toggle cannot be
   // reached while the QA grid is open and openQA() rebuilds it on every open. Nothing to refresh.
 }
@@ -17684,7 +18277,7 @@ function maybeInheritAnchors(l) {
   if (anchorInheritedFrom.get(l) === lastSavedAnchors) return;
   if (!!lastSavedAnchors.smrAboveR !== smrMarkBase(l)) return;   // placement carries within a family only: a Samaritan letter's anchors always hold the columns, a Hebrew letter's never do
   const ibb = l.contours ? glyphBBox(l.contours, true, letterMeta(l.codepoint)) : null;
-  const floatUp = !!(ibb && Math.round(ibb.minY) > 120);   // yod-like: body floats well above the baseline
+  const floatUp = !!(ibb && Math.round(ibb.minY) > gxKY(120));   // yod-like: body floats well above the baseline
   ['below','above','center','tropAbove','tropBelow','tropAboveL','tropAboveR','tropBelowL','tropBelowR','smrAboveR','smrAbove','smrAboveL'].forEach(k => {
     const s = lastSavedAnchors[k];
     if (s && l.anchors[k]) {
@@ -18358,7 +18951,7 @@ function renderAnchorLeft(L, l) {
                         : qaPlace(aboveOnForm ? precompHolamAnchor(gp.pc) : baseAnchorPosFor(l, activeAnchorKey(), acp), 'nikkud', acp, nikScale(acp), l);
       const gAnc = gp || baseAnchorPosFor(l, MARK_CLASS[co], co), gdx = gp ? 0 : coGhostDx() + metegGhostDx(acp, co);   // slide mode: the ghost vowel is checked at its slid position; vowel+meteg pair: at its relative pair offset (matches the stage ghost + the FEA — pair overlap is translation-invariant)
       const pg = qaPlace({ x: gAnc.x + gdx, y: gAnc.y }, 'nikkud', co, gp ? gp.scale : nikScale(co), l);
-      const overlaps = markPolysOverlap(pa, pg, QA_OVERLAP_TOL);
+      const overlaps = markPolysOverlap(pa, pg, qaOverlapTol());
       const holamPair = aboveOnForm && (acp === '05B9' || acp === '05BA');
       if (holamPair && co === '05C2' && overlaps) {
         // שֹׂ merges the sin dot and the holam into ONE dot by convention — overlap here is the design, not a clash.
@@ -18456,7 +19049,7 @@ function renderAnchorStageBelow(SB, l) {
     const smrPct = Math.round(smrMarkScale() * 100);
     SB.innerHTML = `
     <div class="size-slider-col">
-      <div class="size-slider-line"><label>${I18n.t('fontmaker.panels.smrmarks_size')}</label> <input type="range" min="40" max="180" step="5" value="${smrPct}" oninput="setSmrMarkScale(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.smrmarks_size'))}"> <span id="smrMarkScaleV" class="readout">${smrPct}%</span></div>
+      <div class="size-slider-line"><label>${I18n.t('fontmaker.panels.smrmarks_size')}</label> <input type="range" ${markSizeRange(smrPct, 40, 180)} step="5" value="${smrPct}" oninput="setSmrMarkScale(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.smrmarks_size'))}"> <span id="smrMarkScaleV" class="readout">${smrPct}%</span></div>
     </div>
     <div class="anchor-confirm-panel">
       ${placementPill}${saveBtn}
@@ -18469,10 +19062,10 @@ function renderAnchorStageBelow(SB, l) {
   }
   SB.innerHTML = `
     <div class="size-slider-col">
-      <div class="size-slider-line"><label>${isTrop?I18n.t('fontmaker.panels.trop_size'):I18n.t('fontmaker.panels.nikkud_size')}</label> <input type="range" min="40" max="180" step="5" value="${sizePct}" oninput="${sizeFn}(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.nikkud_size'))}"> <span id="markScaleV" class="readout">${sizePct}%</span></div>
+      <div class="size-slider-line"><label>${isTrop?I18n.t('fontmaker.panels.trop_size'):I18n.t('fontmaker.panels.nikkud_size')}</label> <input type="range" ${markSizeRange(sizePct, 40, 180)} step="5" value="${sizePct}" oninput="${sizeFn}(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.nikkud_size'))}"> <span id="markScaleV" class="readout">${sizePct}%</span></div>
       ${isTrop?'':`<div class="size-slider-line"><label>${I18n.t('fontmaker.panels.holam_size')}</label> <input type="range" min="30" max="180" step="5" value="${holPct}" oninput="setHolamScale(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.holam_size'))}"> <span id="holamScaleV" class="readout">${holPct}%</span></div>
-      <div class="size-slider-line"><label>${I18n.t('fontmaker.panels.dagesh_size')}</label> <input type="range" min="40" max="180" step="5" value="${dagPct}" oninput="setDageshScale(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.dagesh_size'))}"> <span id="dageshScaleV" class="readout">${dagPct}%</span></div>
-      ${isVav?`<div class="size-slider-line"><label>${I18n.t('fontmaker.panels.holam_vav_size')}</label> <input type="range" min="40" max="180" step="5" value="${cholPct}" oninput="setCholamScale(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.holam_vav_size'))}"> <span id="cholamScaleV" class="readout">${cholPct}%</span></div>`:''}`}
+      <div class="size-slider-line"><label>${I18n.t('fontmaker.panels.dagesh_size')}</label> <input type="range" ${markSizeRange(dagPct, 40, 180)} step="5" value="${dagPct}" oninput="setDageshScale(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.dagesh_size'))}"> <span id="dageshScaleV" class="readout">${dagPct}%</span></div>
+      ${isVav?`<div class="size-slider-line"><label>${I18n.t('fontmaker.panels.holam_vav_size')}</label> <input type="range" ${markSizeRange(cholPct, 40, 180)} step="5" value="${cholPct}" oninput="setCholamScale(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.holam_vav_size'))}"> <span id="cholamScaleV" class="readout">${cholPct}%</span></div>`:''}`}
       ${isTrop?'':`<div class="hint" style="font-size:0.7rem;">${I18n.t('fontmaker.panels.size_hint')}${isVav?' '+I18n.t('fontmaker.panels.size_hint_vav'):''}</div>`}
     </div>
     <div class="anchor-confirm-panel">
@@ -18578,6 +19171,7 @@ function udShortcutBlocked() {
   if (document.getElementById('helpOverlay')?.classList.contains('open')) return true;
   if (document.getElementById('qaOverlay')?.classList.contains('open')) return true;
   if (document.getElementById('adOverlay')?.classList.contains('open')) return true;
+  if (document.getElementById('scaleAllOverlay')?.classList.contains('open') || document.getElementById('boldGenOverlay')?.classList.contains('open')) return true;   // a whole-font change is being previewed — undo and nudges must not change the letters under the preview
   if (document.getElementById('svgPasteOverlay')?.classList.contains('open')) return true;   // focus on one of its buttons is not typing — undo, nudges and Delete must not reach the letter behind it
   if (document.getElementById('localFontOverlay')?.classList.contains('open')) return true;   // its listbox is a focused div, not a field: arrows, Delete and undo must not reach the editor behind it
   if (document.getElementById('wizardOverlay')?.classList.contains('open')) return true;   // esp. cancellable mode — Ctrl+Z must not mutate the project behind it
@@ -18894,6 +19488,7 @@ let qaTab = 'nikkud';
 let qaOnlyProblems = wsReadPrefs().qaOnlyProblems === true;
 let qaResult = null;
 let qaPairA = '05BC';   // "Two marks" tab: the fixed mark A compared against every other mark (default = dagesh)
+function qaOverlapTol() { return Math.max(1, gxKLen(QA_OVERLAP_TOL)); }   // the tolerance below, following a rescaled font (gxK) — every reader uses this
 const QA_OVERLAP_TOL = 10;   // font units a mark vertex is inset toward its center before counting as "inside" (kissing contacts are fine)
 const QA_SIDE_COLOR  = { below:'var(--below)', above:'var(--above)', center:'var(--center)', tropAbove:'#8b5cf6', tropBelow:'#0ea5e9',
                          smrAboveR: ANCHOR_COL.smrAboveR, smrAbove: ANCHOR_COL.smrAbove, smrAboveL: ANCHOR_COL.smrAboveL };   // the Samaritan columns, in the placement step's colours
@@ -19127,18 +19722,18 @@ function qaAnchors(L) {
   if (a && a.below && a.above && a.center) {
     const mid = a.above.x, aboveY = a.above.y;
     return withCols({ below:a.below, above:a.above, center:a.center,
-             tropAbove: a.tropAbove || { x:mid, y:aboveY + TROP_GAP_ABOVE },
-             tropBelow: a.tropBelow || { x:mid, y:ANCHOR_Y.below - TROP_GAP_BELOW } });
+             tropAbove: a.tropAbove || { x:mid, y:aboveY + gxKLen(TROP_GAP_ABOVE) },
+             tropBelow: a.tropBelow || { x:mid, y:gxKY(ANCHOR_Y.below) - gxKLen(TROP_GAP_BELOW) } });
   }
   const meta = letterMeta(L.codepoint);
-  const bb = L.contours ? glyphBBox(L.contours, true, meta) : { midX: Math.round((L.advance != null ? L.advance : Math.round(LETTER_TOP*0.7))/2), minY:0, maxY:LETTER_TOP };
+  const bb = L.contours ? glyphBBox(L.contours, true, meta) : { midX: Math.round((L.advance != null ? L.advance : Math.round(gxKY(LETTER_TOP)*0.7))/2), minY:0, maxY:gxKY(LETTER_TOP) };
   const mid = Math.round(bb.midX);
-  const center = Math.round((bb.minY + bb.maxY)/2 * 0.6 + 150);
-  const aboveY = Math.max(ANCHOR_Y.above, Math.round(bb.maxY)+40);
+  const center = Math.round((bb.minY + bb.maxY)/2 * 0.6 + gxKLen(150));
+  const aboveY = Math.max(gxKY(ANCHOR_Y.above), Math.round(bb.maxY)+gxKLen(40));
   const belowY = defaultBelowY(bb);
   return withCols({ below:{ x:mid, y:belowY }, above:{ x:mid, y:aboveY },
-           center:{ x:mid, y:Math.min(Math.max(center,120),380) },
-           tropAbove:{ x:mid, y:aboveY + TROP_GAP_ABOVE }, tropBelow:{ x:mid, y:belowY - TROP_GAP_BELOW } });
+           center:{ x:mid, y:Math.min(Math.max(center,gxKY(120)),gxKY(380)) },
+           tropAbove:{ x:mid, y:aboveY + gxKLen(TROP_GAP_ABOVE) }, tropBelow:{ x:mid, y:belowY - gxKLen(TROP_GAP_BELOW) } });
 }
 /* Even-odd point-in-ink across all base contours, so letter counters/holes count as outside (same
    rule as the contour-depth logic at 3174-3177). */
@@ -19171,7 +19766,7 @@ function markPolysOverlap(A, B, tol) {
 /* Reason(s) for a multi-layer cell: any two layers whose placed ink overlaps (mark-vs-mark clash). */
 function qaLayerClash(layers) {
   for (let i = 0; i < layers.length; i++) for (let j = i + 1; j < layers.length; j++)
-    if (markPolysOverlap(layers[i].polys, layers[j].polys, QA_OVERLAP_TOL)) return [I18n.t('fontmaker.qa.reason_marks')];
+    if (markPolysOverlap(layers[i].polys, layers[j].polys, qaOverlapTol())) return [I18n.t('fontmaker.qa.reason_marks')];
   return [];
 }
 /* The collision checks for one cell's placed mark ink (union of all layers). A red cell means the
@@ -19193,7 +19788,7 @@ function qaReasons(L, meta, markPolys, side, positional) {
     // them with pointInPoly was most of the time QA Check took to open.
     const ctBoxes = L.contours.map(c => polysBounds([c.points]));
     for (const poly of markPolys) {
-      const inset = qaInsetToward(poly, qaCentroid(poly), QA_OVERLAP_TOL), pb = polysBounds([poly]);
+      const inset = qaInsetToward(poly, qaCentroid(poly), qaOverlapTol()), pb = polysBounds([poly]);
       if (inset.some(p => pointInInk(p, L.contours, ctBoxes)) || L.contours.some(ct => ct.points.some(p => !qaOutside(p, pb) && pointInPoly(p, poly)))) {
         reasons.push(I18n.t('fontmaker.qa.reason_ink')); break;
       }
@@ -19315,7 +19910,7 @@ function qaCellLayers(L, anc, col) {
     for (const ca of col.a) { const PA = place(col.ka, ca);
       for (let j = 0; j < col.b.length; j++) { const cb = col.b[j], PB = PBs[j];
         const pair = [{ polys: PA, color: QA_SIDE_COLOR[col.ka], cp: ca }, { polys: PB, color: QA_SIDE_COLOR[col.kb], cp: cb }];
-        if (markPolysOverlap(PA, PB, QA_OVERLAP_TOL)) return pair;
+        if (markPolysOverlap(PA, PB, qaOverlapTol())) return pair;
         if (!PA.length || !PB.length) continue;
         const ba = polysBounds(PA), bb = polysBounds(PB);
         const d = Math.max(ba.minX - bb.maxX, bb.minX - ba.maxX, ba.minY - bb.maxY, bb.minY - ba.maxY);   // box separation — smaller = closer
@@ -24615,8 +25210,8 @@ function sanitizeFontNumbers(f) {
     const v = +o[k];
     o[k] = Number.isFinite(v) ? Math.max(lo, Math.min(hi, v)) : dflt;
   };
-  [['markScale', 0.3, 2, 1.0], ['tropScale', 0.3, 2, 1.0], ['dageshScale', 0.3, 2, 1.0],
-   ['cholamScale', 0.3, 2, 1.0], ['holamScale', 0.3, 2, 1.0], ['smrMarkScale', 0.3, 2, 1.0],
+  [['markScale', MARK_SIZE_MIN, MARK_SIZE_MAX, 1.0], ['tropScale', MARK_SIZE_MIN, MARK_SIZE_MAX, 1.0], ['dageshScale', MARK_SIZE_MIN, MARK_SIZE_MAX, 1.0],
+   ['cholamScale', MARK_SIZE_MIN, MARK_SIZE_MAX, 1.0], ['holamScale', MARK_SIZE_MIN, MARK_SIZE_MAX, 1.0], ['smrMarkScale', MARK_SIZE_MIN, MARK_SIZE_MAX, 1.0],
    ['tropSideOffset', 0, 600, TROP_POS_SHIFT]].forEach(a => fix(f, a[0], a[1], a[2], a[3]));
   [['letterSpacing', -40, 200, 0], ['wordSpacing', 80, 600, 260],
    ['lineSpacing', 0, 500, 0], ['kernTarget', -40, 160, 40]].forEach(a => fix(f.spacing, a[0], a[1], a[2], a[3]));
@@ -24818,7 +25413,8 @@ function migrateProject(data) {
     { const _m = data.font.metrics, _ok = (v, lo, hi) => Number.isFinite(v) && v >= lo && v <= hi;   // imported line box: an .hfm / autosave blob is untrusted, and a bad value here collapses or explodes every line
       if (_m.typoAscent  != null) { if (_ok(+_m.typoAscent,  1, 3000))   _m.typoAscent  = Math.round(+_m.typoAscent);  else delete _m.typoAscent; }
       if (_m.typoDescent != null) { if (_ok(+_m.typoDescent, -1500, -1)) _m.typoDescent = Math.round(+_m.typoDescent); else delete _m.typoDescent; }
-      if ((_m.typoAscent == null) !== (_m.typoDescent == null)) { delete _m.typoAscent; delete _m.typoDescent; } }   // half a box is not a box
+      if ((_m.typoAscent == null) !== (_m.typoDescent == null)) { delete _m.typoAscent; delete _m.typoDescent; }   // half a box is not a box
+      if (_m.sizeK != null) { if (_ok(+_m.sizeK, 0.01, 100) && +_m.sizeK !== 1) _m.sizeK = +_m.sizeK; else delete _m.sizeK; } }   // how far Scale all letters moved the lines (gxK) — junk means "not moved"
     if (data.font.tropScale == null) data.font.tropScale = 1.0;
     if (data.font.tropSideOffset == null) data.font.tropSideOffset = TROP_POS_SHIFT;   // default Left/Right trop spread
     if (data.font.dageshScale == null) data.font.dageshScale = (data.font.markScale != null ? data.font.markScale : 1.0);   // seed to the old unified size so existing saves look unchanged
