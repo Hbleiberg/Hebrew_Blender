@@ -7191,6 +7191,30 @@ function syncStaffTradition() {
     }
   }
 }
+// The render replaces every control in the reading, so a press that loads another reading under the keyboard's focus
+// (a verse's Chant or Loop in the full parsha opens its aliyah; Chant all goes from aliyah to aliyah) dropped the focus
+// to the page. Its rebuilt twin takes it back: the same id, or the same verse's same button. Only from a focus that
+// was in the reading and is now gone, and without a scroll (pattern button-focus-lost-to-its-own-rebuild).
+const READING_FOCUS_CLS = ['tt-speak', 'tt-chant', 'tt-loop', 'tt-copy', 'tt-tune'];
+function readingFocusKey() {
+  const ae = document.activeElement, rd = document.getElementById('ttReading');
+  if (!ae || !rd || ae === rd || !rd.contains(ae) || !ae.matches(':focus-visible')) return null;   // a mouse press: as before
+  if (ae.id) return { id: ae.id };
+  const v = ae.closest('[data-vk]'), cls = READING_FOCUS_CLS.find(c => ae.classList.contains(c));
+  return v && cls ? { vk: v.dataset.vk, cls } : null;
+}
+function restoreReadingFocus(k) {
+  if (!k) return;
+  // Two frames on, once the new reading has laid out: a focused verse during that first layout pulls the page's
+  // scroll anchoring with it (the reading shrinks as its verses size themselves) and the page jumped 300px.
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    const ae = document.activeElement;
+    if (ae && ae !== document.body) return;   // the focus went somewhere meanwhile: never take it back
+    const el = k.id ? document.getElementById(k.id)
+      : document.querySelector(`#ttReading [data-vk="${CSS.escape(k.vk)}"] .${k.cls}`);
+    if (el && el.getClientRects().length) el.focus({ preventScroll: true });
+  }));
+}
 async function fetchAndRender() {
   if (clampScopeToCycle()) { saveSettings(); const _ss = document.getElementById('scopeSelect'); if (_ss) _ss.value = settings.scope; }
   const r = resolveRef();
@@ -7294,7 +7318,9 @@ async function fetchAndRender() {
     currentRangeIcons = r.custom ? [] : (r.named || [r.parshahEntry]).filter(Boolean).map(x => x.n - 1);
     netDone = true;   // all network work succeeded; anything that throws below is a render/code fault
     _readingLoading = false;
+    const _focusKey = readingFocusKey();
     renderText();
+    restoreReadingFocus(_focusKey);
     // Warn if translation was requested but Sefaria returned no English for
     // this version + ref. Could mean: version doesn't cover this passage,
     // version title mismatch, or API hiccup.
