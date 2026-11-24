@@ -99358,3 +99358,11 @@ _(prior)_ **Next session (S683):** **Branch `claude/zen-goldberg-1lov9k` (S676â€
 ### from Done
 
 - [x] 2026-11-24 | `ac80e9d0` | Hebrew_Font_Maker.html, locales, sw.js, docs/reference/font-maker.md, CLAUDE.md | (outside the loop; Font Maker v6.0) **SVG upload, sheet crop and auto-split undo in full** (`withSource` + `withDraw`; the photo, pins, tick and drawing come back), **hidden layers no longer import, stroke-only shapes are skipped and counted** (one reading for every SVG route) | headless: 17 / 17 (the tree before: 8 / 17); paste suites 194 / 194 unchanged; parser output differs from the first baseline by exactly the 3 intended shapes
+
+
+<!-- archived by compact-ledger at the S684 boundary, 2026-11-24 -->
+## Compaction (S684, 2026-11-24) â€” moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-11-24 | `ba696284` | Hebrew_Font_Maker.html, locales, sw.js, docs/reference/font-maker.md, CLAUDE.md | (outside the loop; Font Maker v6.0, phase 2) **Pick an installed font** (Local Font Access: import through `uploadSourceFont`, reference by name; a license notice, `license: 'unset'` and a gate before export / My Fonts / Send; `.ttc` members rebuilt) | headless: 85 checks with a stub and with the real API (108 installed fonts), picker import = upload import byte for byte, HarfBuzz shaping identical; phase 1 suites 211 / 211 unchanged

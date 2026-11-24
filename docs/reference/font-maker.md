@@ -487,6 +487,82 @@ fires no paste event; it waits rather than running on the next tick because on a
 arrive a task later than the keydown. `copySelectedNodes` leaves `SVG_POINTS_MARKER` on the system
 clipboard (best effort), so artwork copied earlier does not beat points copied just now.
 
+### Installed fonts — "Pick an installed font…" (Local Font Access)
+
+Chrome and Edge on a desktop expose `window.queryLocalFonts()`; each `FontData` has `family`,
+`fullName`, `postscriptName`, `style` and `blob()`. `LF_OK` is the feature test, and the two buttons
+(`#lfPickImport` in `inputModeBlock`'s font row, `#lfPickRef` in `referencePanelR`'s upload wrap) are
+rendered only when it is true — elsewhere there is no button, by omission, like every other
+capability-gated control in the file. `lfOpen(target)` calls the API straight from the click (the
+browser wants the gesture; a busy flag covers the time its prompt is up). A refusal is one `status()`
+line and nothing else: Chromium answers a denial with an **empty list**, not a rejection, so an empty
+list is checked against `navigator.permissions` before it is read as "no fonts"; a `SecurityError`
+means the page is framed without the `local-fonts` permission (a tool page may be embedded in an LMS).
+No CSP change: nothing is fetched.
+
+**The `lf*` reader** is a small bounds-checked sfnt reader over `lfReader(src)`, one async `view(off,
+len)` for a Blob (slices) or bytes in memory. It exists for two reasons. The list must answer *has
+Hebrew?* for every installed face — hundreds, some of them tens of megabytes — so `lfHasHebrew` reads
+only the directory and the `cmap` (formats 4 and 12, the Unicode subtables), three faces at a time
+(`lfPump`), and remembers the answer per PostScript name for the session (`_lfHebCache`); *has Hebrew*
+means all 22 letters that are not final forms (`LF_HEB`). And the import engine (opentype.js), the
+fidelity check and the exporter's reader all refuse a **collection** (`ttcf` — most Hebrew system fonts
+on a Mac): `lfPickFace` finds the member whose name ID 6 is the listed PostScript name (then ID 4, then
+the first) and `lfStandalone` writes it out as a font of its own — the face's own sfnt version (`OTTO`
+stays `OTTO`), the directory **in tag order** (the fidelity check's reader searches it), tables 4-byte
+aligned, checksums and `head.checkSumAdjustment` recomputed. `lfNames` reads name records (Windows
+English, then any Unicode record, then Mac Roman), capped and stripped of control characters
+(`lfClean`). A face over `LF_MAX_BYTES` is not opened.
+
+**The picker** (`#localFontOverlay`, in `udShortcutBlocked` — its list is a focused `div`, which that
+guard does not read as typing) reuses the Starting Fonts picker's sheet CSS with one difference: its
+scroller is `.lf-list`, a real listbox (`role="listbox"`, `aria-activedescendant`, a `role="group"`
+per family, a `role="option"` per face). `lfKey` on the dialog owns the keys: ↑ ↓ Home End PageUp
+PageDown move the active option, Enter chooses, a printable key pressed in the list moves focus to the
+search box (which then takes the character), and ↑ ↓ Enter in the search box act on the list. **Escape
+and Enter are answered there with `stopPropagation()`**: the dialog closes on them, and a key that
+travelled on to the document would be read by the editor behind it (Escape clears a selection in Edit
+points, Enter places a pen point). With *Has Hebrew* on, a face appears once it is confirmed; the
+`aria-live` count doubles as the progress line (it moves in steps, not per font) and carries a read
+error while the picker is open (`lfNote` — the status line is dimmed behind an overlay). A Hebrew
+face's sample is drawn from the font's **own bytes** under a generated `FontFace` name (`lfPreview`,
+lazily through an IntersectionObserver rooted on the list, with a generation token so a late one is
+dropped) and stays hidden until that face is in — in a fallback font it would pass for the font's
+preview. `lfClose` removes every preview face from `document.fonts`. Every name from the OS goes in
+through `textContent`.
+
+**Import target.** `lfChoose` reads the face (`lfFaceBytes`), closes the picker and shows
+`lfLicenseNotice`: the font's own name IDs 0, 13 and 14 through `esc()` (the link is an `<a>` built
+with `createElement`, and only for an http/https address), the sentence that the teacher is
+responsible for having the right to change and share it, and a line when the font has `fvar` (its
+default style is what imports). *Continue* calls `uploadSourceFont(new File([bytes], …))` — from there
+on it is an uploaded font: the same import-options dialog, the same `applyFontImport`, the same
+fidelity report. The `File` carries `hfmInstalled`, which every question of the import dialog closes
+over.
+
+**Licence: `'unset'`.** `applyFontImport` calls `lfStampInstalled(file)` before its first change to the
+project: for a file that carries `hfmInstalled`, in a project that is not partner-locked, it sets
+`project.font.license = 'unset'` and `project.font.sourceFont = { name, copyright, license,
+licenseUrl }`, then `syncMetaToForm()` — without that the form still says OFL and the next
+`onMetaChange()` (any Font Details keystroke, every save) writes it back. Font metadata is outside
+undo, and so is a font import; this rides with it. `#license` has a hidden `unset` option shown only
+while active (the `os-passthrough` idiom, but the menu stays enabled), and `syncSourceFontNote()`
+(called from `syncOsFontLock`, so `applyI18n` re-runs it) fills `#srcFontNote` with the source font's
+words through `textContent`. Nothing may leave the computer while the licence is unset:
+`licenseUnsetGate()` stops `exportFont()`, `saveCurrentToMyFonts()` (which builds a font without
+passing `exportFont`) and `fmSendFont()`, offering `exportJumpToLicense`. Preview PDF stays available.
+And no fallback can say OFL: `LICENSES.unset` and `licenseText()`'s `'unset'` case exist for that.
+`migrateProject` keeps `'unset'`, and shape-checks and caps `sourceFont` (`lfCleanSource`). An uploaded
+font **file** is unchanged: no notice, licence untouched.
+
+**Reference target: by name, never by bytes.** `lfUseAsReference` registers
+`new FontFace(fam, 'local("<PostScript name>")')` and stores `{ name, fam, family, local }` in
+`project.template.customFonts` — no `dataB64`, so a project file never carries a system font (an
+*uploaded* reference font still stores its bytes, as before). The name must match `LF_PS_RE`; it goes
+inside `local("…")`, and `migrateProject` drops a `local` that does not match. `restoreCustomTemplateFonts`
+has the `local` branch: on a computer without the font the entry stays in the menu, marked *not
+installed here*, its family falls back to the generic font, and one status line says so.
+
 ### Workspace model + render pipeline
 State: `curKind` (`letter|nikkud|trop`), `curCp`, `workMode` (`align|trace|anchors|nodes`).
 Guarded vs guard-bypass pairs: `selectItem` → `_selectItem`, `setWorkMode` → `_setWorkMode` (the
