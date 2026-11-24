@@ -206,6 +206,20 @@ handler goes through the real setters (`setMarkEnabled`, `setAdd*`, `setInputMod
 - **Global keyboard shortcuts**: start the handler with the `udShortcutBlocked()` guard (blocks
   while typing or when ask/help/QA overlays are open), and register the shortcut in BOTH the `?`
   cheat sheet (`shortcutGroups()`) and the triggering button's `title=` tooltip.
+- **A key press that closes a dialog is the dialog's, not a shortcut's.** A dialog closes in the
+  middle of the key's own dispatch — the modal trap on Escape, a dialog's own handler on Enter — and
+  the handlers that run afterwards for that same key find no dialog and focus back on the opener, so
+  nothing told them to stand down: Escape used to clear the points selected in Edit points (or leave
+  the step, cancel a keyboard crop box, drop a stroke selection), and Enter to finish a crop or a
+  pen contour. Two things stop that. The trap calls `stopImmediatePropagation()` on the Escape it
+  spends. And a capture listener on `window` notes the number of open dialogs (`openDialogCount()`:
+  `.overlay.open` plus the account screen) before any handler sees a key; `keyClosedADialog()` is
+  true while that key is being dispatched and the count has gone down, and `udShortcutBlocked()`
+  returns true for it — so every shortcut handler is covered through the guard it already starts
+  with, whatever key closed the dialog and whichever handler closed it. The note is dropped when the
+  dispatch is over (a paste or a drop asks the same guard a moment later and must not be refused by
+  an old key press), and a key that closes nothing is not affected: the guard still lets keys through
+  to an open window that is not on its list, which the Edit-shape window's own undo relies on.
 
 ### The two dots on a שׁ/שׂ placement screen
 `precompTakesHolam(pc)` (base ש + mark ׁ/ׂ) is the **only** form that draws two draggable dots: the
