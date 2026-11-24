@@ -432,6 +432,8 @@ body.dark .at-phrasebar { background:var(--navy-deep); }
 /* ───── Notes and sources ───── */
 .at-notes { max-width:78ch; padding-inline-start:20px; }
 .at-notes li { margin:6px 0; font-size:0.95rem; }
+/* A licence's name is one unit: in the Hebrew notes "CC BY-SA 4.0" broke at its hyphen ("CC BY-" / "SA 4.0"). */
+.at-notes a[href^="https://creativecommons.org/"] { white-space:nowrap; }
 .at-cites { padding-inline-start:1.6em; display:grid; gap:10px; max-width:72ch; font-size:0.92rem; }
 .at-cites li { padding-inline-start:4px; }
 .at-cites li:target { background:rgba(201,146,42,.14); }
