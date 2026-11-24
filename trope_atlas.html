@@ -301,6 +301,16 @@ table.at-signs tbody tr[id] { cursor:pointer; }
 .at-jump { color:var(--text); font-weight:700; text-decoration:underline; text-decoration-color:var(--border); text-underline-offset:3px; }
 .at-jump:hover { color:var(--gold-text); text-decoration-color:currentColor; }
 .at-rank { font-size:0.8rem; font-weight:600; white-space:nowrap; }
+/* The sign table keeps 860px and scrolls sideways in a narrower box; between a phone and a wide window (its box 700–859px:
+   windows of 750–900 and 1000–1140px, the contents rail beside it from 1000) that scroll cut the "What it does" column by
+   10–160px. There the code points and the rank wrap and the cells pad 8px, not 10 (paper's 6), and the table takes the
+   box (its least width 675–693px; a Hebrew name stays on one line); a phone keeps the scroll, a wider box its look. */
+.at-tablewrap { container:atsigns / inline-size; }
+@media screen { @container atsigns (min-width:700px) and (max-width:859.98px) {   /* paper keeps its own rules (print block) */
+  table.at-signs:not(.at-small) { min-width:0; }
+  table.at-signs:not(.at-small) :is(.at-mono, .at-rank) { white-space:normal; }
+  table.at-signs:not(.at-small) :is(td, th) { padding-inline:8px; }
+} }
 .rE { color:var(--rank-E); } .rK { color:var(--rank-K); } .rD { color:var(--rank-D); } .rC { color:var(--rank-C); } .rS { color:var(--rank-S); }
 
 /* ───── Staffs (js/trope-staff.js draws them; notation reads left to right in both interfaces) ───── */
