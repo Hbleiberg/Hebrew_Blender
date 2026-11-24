@@ -347,7 +347,8 @@ load, cleared again when a library is missing.
 **Never mutate `project` directly.** Route every mutation through `udDo(scopes, label, fn)`
 (scopes: `{t:'item',kind,cp}`, `'spacing'`, `'kerning'`, `'kernClasses'`, `'metrics'`, `'guides'`,
 `{t:'precomp',target}`, `'tropTune'` — the font-level mark tuning: spread, pairing, meteg gap, mark
-nudges, the six mark sizes and the marks' placement / lean under a slanted font (`markLean`) — and
+nudges, the six mark sizes, the marks' placement / lean under a slanted font (`markLean`) and their
+width factor (`markWide`) — and
 `'sheetFit'`, each letter sheet's units-per-pixel scale, which
 only the glyph transform engine writes under undo). Continuous inputs: slider drags use `udBurstBegin`/`udBurstCommit` (one
 undo entry per drag); arrow-key nudges use `udNudgeTick`/`udNudgeCommit`. `udPush` calls
@@ -756,13 +757,26 @@ both, which tells a layout engine the font has no case at all.
 One engine applies a geometric change to many glyphs in **one** undo step. A new whole-font tool
 (slant, width…) is a new *operation*, never a new loop over `project.letters`.
 
-**The contract.** An operation is `{ label, affine(letterLike), fontX, fontY, markFactor }`:
+**The contract.** An operation is `{ label, affine(letterLike), fontX, fontY, markFactor, … }`:
 - `affine` returns the per-glyph map in font units, `[a,b,c,d,e,f]` with `x' = a·x + b·y + e`,
-  `y' = c·x + d·y + f` — or `{T, advance, keepRsb}` when the default "advance × a" is wrong, or
-  `null` to skip the glyph. It is also called with a letter-like stand-in for an imported composed
-  outline (`pc.src`), so it may read only `contours` and `advance`.
+  `y' = c·x + d·y + f` — or a spec `{T, advance, keepRsb, keepLsb, …}` when the defaults are wrong,
+  or `null` to skip the glyph. It is also called with a letter-like stand-in for an imported composed
+  outline (`pc.src`: `contours`, `curves`, `advance`, and the base letter's `codepoint`), so it may
+  read only those.
+- A spec may say that the outline step is **more than the affine map**: `out` is a ready outline
+  result (`gxOutline`'s record — `keep`, `rings`, `curves`, `lost` — plus `closed`), used in its
+  place; `TA` is the map for anchors, pins and a composed form's `anchor` / `holam` when it differs
+  from `T` (which stays the map of the photo, the capture box and the stroke centre lines); `penK`
+  fixes the pen-width factor (1 = the pen is left exactly as it is, a chisel's nib included);
+  `setAdvance` writes the new advance on a letter that was still on the default one.
 - `fontX` / `fontY` are the factors for font-wide horizontal / vertical lengths (`null` = leave them);
-  `markFactor` is the uniform factor for mark size (`null` = leave marks).
+  `markFactor` is the uniform factor for mark size (`null` = leave marks). The horizontal factor has
+  four audiences, each following `fontX` unless the operation names it: letter geometry (`fontX`
+  itself — the default side bearings, the trop side-column spread, vertical user guides), spacing and
+  kerning (`spaceX`), the vowel–trop pair shift (`pairX`), a typed meteg gap (`gapX`).
+- `lean` / `markShape` (a slant), `leanScale` (a width change narrows a lean with the letters),
+  `markWide` (the marks' width factor) and `refuse` (the operation cannot be done at all at this
+  amount) are described with the operations that use them.
 - A map that mirrors (determinant ≤ 0) is refused: it would reverse every contour's direction, and
   flips belong to the point editor.
 
@@ -783,8 +797,10 @@ afresh at commit time, never from a preview's copy.
   `curves[i]` (the export ships curves only while the two arrays are the same length).
 - *Width:* `advance`, `lsb`, `rsb` when stored.
 - *Marks' positions:* `anchors[*]` and the pins in `markAnchors`, rounded at the source. A side trop
-  column still at its default (centre ± `tropSideOffset`) is re-tied to the new centre ± the new
-  spread, because `setTropSideOffset` recognises "still the default" by exact equality.
+  column still at its default (centre ± `tropSideOffset`) is re-tied to the new centre ± the spread
+  — the new one when the spread scales, the same one when it does not (one letter, one tab) —
+  because `setTropSideOffset` recognises "still the default" by exact equality: mapped on its own, the
+  column would stop following the slider.
 - *Photo:* `l.transform` (image px → stage px) left-multiplied by the map conjugated into stage space
   (`gxStageMatrix`), for every item that has an image — drawn letters too, they carry a frame raster.
   `lineWeight` is a font-unit length and follows; `epsilon` (the Detail slider) does not.
@@ -805,7 +821,9 @@ afresh at commit time, never from a preview's copy.
   its valid range, since an out-of-range value is deleted on the next load), `spacing`, every
   `kerning[].value`, `tropSideOffset`, `vowelPair.dx`, a numeric `metegGap`, user guides by axis, and
   each sheet's `fitScale` (a letter boxed from that sheet later must arrive at the new size).
-- *Untouched on purpose:* `handEdited`, the placement flags, `savedAnchors`, `source`.
+- *Untouched on purpose:* `handEdited` (one exception: a keep-stems width change marks a **photo**
+  letter hand-edited, below), the placement flags, `savedAnchors`, `source`, `kernClasses` (members,
+  not lengths), a wide form's `widthScale` (a ratio), `markNudge` (vertical only).
 - *Session state the commit resets:* `lastSavedAnchors` (also on undo / redo of the entry —
   `gxAfterHistory`), `_rawTrace`, `_fidelityLast` (the import report measures against the source
   font's bytes and its Apply would write the old positions back), `_hiddenContours`, the node model.
@@ -822,20 +840,23 @@ bake at scale 1), so there the shape *is* scaled: an imported accent in place, a
 actually ships through a scaled custom copy created before the undo snapshot (the Generate Bold
 idiom — emptied by undo, it reads as the built-in again).
 
-**An operation may stamp a record and carry a Style.** `op.stamp(letter)` returns fields to set on
-every letter the operation changes (`null` removes a key) — still only assignments and deletes at
-commit. `gxCommit(plan, { style })` sets `project.font.style` with the change and remembers both
-values on the undo entry (`gxMeta`); undo and redo put the other one back **only while Style is still
-what the operation left it at**, so a choice the teacher made since is never overwritten. Style is
-metadata — outside every undo scope — so every non-form writer of it calls `syncMetaToForm()`:
-`onMetaChange` reads the value back from the form, and is called as a flush by Save-as and the cloud
-save.
+**An operation may stamp a record and carry Font Details fields.** `op.stamp(letter)` returns fields
+to set on every letter the operation changes (`null` removes a key) — still only assignments and
+deletes at commit. `gxCommit(plan, meta)` sets Font Details fields with the change — `style`, `width`
+(the width name), `italicLean` (a typed Italic angle); `GX_META` is the table of how each is read and
+written — and remembers each one's two values on the undo entry (`gxMeta`, a list); undo and redo put
+the other value back **only while the field is still what the operation left it at**, so a choice the
+teacher made since is never overwritten. These fields are metadata — outside every undo scope — so
+every non-form writer of one calls `syncMetaToForm()`: `onMetaChange` reads the values back from the
+form, and is called as a flush by Save-as and the cloud save.
 
 **Findings.** *Refuse* (nothing changes): a coordinate, anchor, pin, advance, kerning value or guide
 line past `GX_COORD_MAX`; a pen stroke past the loader's −2000…3000; a glyph that would lose every
-contour; a mirror. *Warn* (Apply stays available): contours lost to rounding; a letter with a photo or
-drawing whose ink leaves the window the tracer can rasterize (`GX_TRACE_WIN` — its outline is fine, a
-later re-trace would clip it); settings held at a stored limit. Letter names in a message go through
+contour; a mirror; an operation's own `refuse` (`narrow`: a width with no room left for the stems).
+*Warn* (Apply stays available): contours lost to rounding; a letter with a photo or drawing whose ink
+leaves the window the tracer can rasterize (`GX_TRACE_WIN` — its outline is fine, a later re-trace
+would clip it); settings held at a stored limit; `closed` — letters in which a counter closes or
+strokes meet (the width step's finding). Letter names in a message go through
 `gName`, and through `textContent`.
 
 **The size factor (`metrics.sizeK`, read by `gxK()`).** The anchor seeds (`ANCHOR_Y`, the +40 / 120 /
@@ -897,6 +918,76 @@ the end — and for the mark editor, which shows the upright shape with a one-li
 kind's shapes resets that kind (`markLeanReset` — the `markScale = 1` rule). `markMkmkAnchor` follows
 the lean; the import-fidelity predictor measures only freshly imported kinds, whose lean is 0.
 
+**Width** (`gxWidthOp`, `gxWidthPlan`, the dialog's third tool) makes letters narrower or wider:
+advance and side bearings always scale with the letter, heights never change, `fontX` carries the
+letter geometry, the spacing group follows by option (by the typed percentage), and the marks are left
+alone unless asked. With the *Keep stem thickness* box off it is a plain X scale — the affine path.
+
+*Keep stem thickness — `gxwShape`.* A plain X scale by s thins every upright stroke by s. The step
+undoes exactly that and nothing else: after the scale **every point slides sideways only**. For a
+straight stroke of thickness t whose edge runs along the unit direction u *after* the scale, the one
+sideways shift per edge that restores the thickness measured **across** the stroke is
+`(t/2)·(1 − s·M)/|u.y|` outward, with `M = √(u.x²/s² + u.y²)` — t·(1 − s)/2 for an upright edge, 0 for
+a flat one, exact for a diagonal at any angle, negative (thinning back) when s > 1. A point takes the
+mean of its two legs' shifts weighted by `u.y²`, so a flat edge never drags a corner, an apex stays
+put, and — since no y is ever written — every height and every horizontal stroke is unchanged by
+construction. There is deliberately no mitre and no added corner point: nothing that could lift a
+corner or tangle a noisy outline.
+- *Curves are kept.* A cubic is first cut at its interior x- and y-extrema (`gxwSplitCubic` — a bowl
+  drawn as one sweep has flat end tangents and would otherwise get no correction at its sides), then
+  each handle rides with its own end point, so smooth joins stay smooth and every control point keeps
+  its height. The polygon is moved by the same rule on its own points (direction read over
+  `GXW_WIN` units of outline, so a noisy tracing does not jitter); only a `handEdited` letter's
+  polygon is re-flattened from its curves (`gxwFlatten`, `nodeContourToPoints`' rule) — elsewhere the
+  polygon and the fitted curves agree only to the fit tolerance, and re-flattening would move the
+  bounds that the advance and the anchor map are measured on.
+- *Which side is ink* is tested per ring on the outline itself (`gxwSides`: a point just left and just
+  right of a long edge, by winding number) — never read from `winding` or the direction: imported OTF
+  outlines and the built-in punctuation run the other way round from traced letters.
+- *Which thickness.* `gxwStem` slices the **un-leaned** polygon horizontally, keeps the ink runs
+  bounded by two steep edges, follows them from slice to slice as columns and keeps only a column
+  taller than it is wide (a roof bar or a dash is bounded by steep ends too); the median is the
+  letter's stem. `gxwCensus` takes each alphabet tab's median (Hebrew and Latin stems differ);
+  `gxwStemFor` holds a letter's own value to 0.6–1.6× its tab's, falls back to the tab's, and returns
+  null — plain scale — for a font with no measurable stem. Each **edge** then uses
+  `min(the letter's stem, the ink's own width across the stroke at that edge)` (`localT`: one
+  look-across per leg, edges binned by height — `gxwBins`), so a hairline is not fattened when
+  condensing nor eaten when widening; above `GXW_LOCAL_MAX` points the letter's one value is used.
+- *A notch narrower than the stems grew* (the crotch of a Latin n): an edge whose two ends passed each
+  other closes to a point in the middle instead of leaving the outline crossing itself.
+- *The result* is translated so the ink's left edge lands exactly on s × its old place, rounded, and
+  returned as the spec's `out`; `TA` maps old ink edges → new ink edges (`boldGenLetter`'s rule) and
+  `penK` is 1, so a re-saved drawing keeps its stems. A **photo** cannot: such a letter is stamped
+  `handEdited`, so Trace asks before a re-trace would silently bring the thin stems back.
+- *What the percentage means.* Restoring stems gives width back, so the shapes take a smaller factor k
+  than the typed s, one for the whole set, chosen so that the set's total advance comes out at s:
+  first `(s·ΣA − Σt)/(ΣA − Σt)` (`gxwFirstK`), then corrected from the plan's own outcome, at most
+  twice (`gxWidthPlan`; `plan.adv` is the total advance before and after). The dialog's note says
+  what the text becomes. `k` outside 0.2–2 is the `narrow` refusal.
+- *The `closed` finding — gap columns.* No height moved, so the same horizontal slice cuts the letter
+  before and after: every gap between two runs of ink (a counter, or the space between two strokes)
+  is followed slice by slice as a column and matched to what is left of it. A column is reported when
+  it was open and is now shut — or all but: narrower than a quarter of the stem *and* than half its
+  old width — along its **whole** height; a
+  ring that collapses or turns inside out is reported when it was a counter. A wedge-shaped notch only
+  gets shorter at its tip — which is why this follows columns instead of testing the outline for
+  crossings (those fire on every crotch).
+- *Lean.* A lean is a tangent, so it narrows with the letter: the stamp scales `l.slant`, `leanScale`
+  scales `markLean`'s numbers for a whole-font run, and a typed Italic angle rides `gxMeta`.
+
+**Marks under a width change (`project.font.markWide[kind]`, a factor, under `tropTune`).** Only with
+the *also adjust marks* box: one factor per mark store, applied by the same three public readers as
+the lean — a sideways squeeze about the attach point (x = 0 in mark-local space), **before** the lean
+(`markLeanFn` returns the combined map; `markWideK(kind)` reads the factor, 1 when absent). The `*Raw`
+measurements stay unsqueezed and what is built from them is squeezed as one finished mark:
+`metegPairFor` / `metegPairRightFor` multiply the pair's two offsets, the hataf-meteg splice goes
+through the map at the end, and so a meteg gap (typed or Auto) is a distance in unsqueezed mark space
+and is **not** scaled by the engine (`gapX` is null for a width change; the vowel–trop shift, a
+letter-space distance, is — `pairX`). Latin accents have no font-level setting, so their shapes are
+squeezed in place (x only), as a resize does. Importing a kind's shapes resets it with the lean
+(`markLeanReset`); the mark editor shows the unsqueezed shape with its own one-line note. Squeezed
+marks are not stem-corrected.
+
 **In the point editor** the Transform section works on the node model, about the centre of the
 affected nodes' box, as before. A whole-glyph **scale or horizontal flip** (nothing selected, no
 contour hidden) also maps `l.anchors` and the pins about that pivot in the same undo step
@@ -910,9 +1001,14 @@ slant pivots on the baseline through `m.py`), so the nodes, the range check and 
 use different ones. A whole-glyph **slant** also carries the letter's photo and pen strokes
 (`xformSlantCarry`, the engine's own patch) and updates its lean record; the other whole-glyph
 transforms keep the record true (`xformSlantAfter`: a flip mirrors it, a Width/Height scale changes
-its tangent, a rotation turns it). A selection moves only its points.
+its tangent, a rotation turns it). A selection moves only its points. **Width % with *Keep stem
+thickness*** (`xformStemsOn`, `xformWidthStems`) is not a node-model transform at all: it is the
+engine's width operation for this one letter — the advance and side bearings follow, the pivot is the
+glyph origin, one undo step — offered only for the whole glyph with the pen off; Height and Keep
+proportions are switched off while its box is ticked, and it settles any open slider burst first
+(`_xformBase = null` — a stale base would write the old model back over the result).
 
-### Font styles — Regular, Bold, Italic, Bold Italic
+### Font styles — Regular, Bold, Italic, Bold Italic — and width names
 `project.font.style` is one of `regular | bold | italic | bolditalic`, and **`FONT_STYLES` is the only
 place that knows what that means**. Every test, name and suffix goes through it (`fontStyle()`,
 `fontIsBold()`, `fontIsItalic()`, `fontStyleInfo(v)`, `fontStyleOf(v)` to coerce, `fontStyleMake(bold,
@@ -929,8 +1025,8 @@ the Regular's.
 
 - nameID 1 identical in all four and nameID 2 exactly these words is what makes Windows and macOS
   group the files as one family whose B and I buttons switch between them; no nameID 16/17 is
-  written (they are for families with more than these four). nameID 6 is cut to 63 characters by
-  trimming the family part only as far as that style needs.
+  written for a normal-width font (they are for families with more than these four). nameID 6 is cut
+  to 63 characters by trimming the family part only as far as that style needs.
 - The Python block rebuilds the three style bits of `fsSelection` from scratch (it used to clear the
   italic bit in both branches) and keeps USE_TYPO_METRICS. The spec carries `italic`, `italicAngle`,
   `caretRise`, `caretRun` **only for an italic style**, so a Regular or Bold file is built exactly as
@@ -945,6 +1041,37 @@ the Regular's.
   style and stamps the source's angle on each imported letter (`importFontLean`).
 - An Italic is its own project, as a Bold is: the same Family name in each. A whole-font slant with
   its Style box ticked turns *this* project into the Italic, its saved copy with it.
+
+**Width names (`project.font.width`, absent = normal; `FONT_WIDTHS`).** The second half of a
+project's identity, read only through `fontWidthOf` / `fontWidthInfo`, for the same reason as the
+styles. **`fontNameParts(f)` is the one place every name comes from** — `famSfx` (what joins the
+family in nameID 1), `sfx` (after the bare family in a full or stored name), `file` (after it in a
+file or PostScript name), `sub` (nameID 17) — and `buildFontSpec`, `buildUfoFontInfo`, `fontFileStem`,
+the zip's CSS, My Fonts, the specimen, the submit prefill, `fmDerivedProjectName` and `recentNameOf`
+all read it. A site that builds a name from `fontStyleInfo(…).sfx` by hand names a Condensed font as
+the normal one, and it replaces that font's file, list entry or saved project.
+
+| width | word | `usWidthClass` | stands for | nameID 1 | nameID 4 (Bold) | nameID 6 (Bold) | nameID 16 / 17 (Bold) |
+|---|---|---|---|---|---|---|---|
+| condensed | Condensed | 3 | 85% | Family Condensed | Family Condensed Bold | Family-CondensedBold | Family / Condensed Bold |
+| semicondensed | Semi Condensed | 4 | 92% | Family Semi Condensed | … | Family-SemiCondensedBold | Family / Semi Condensed Bold |
+| normal | — | 5 | 100% | Family | Family Bold | Family-Bold | not written |
+| semiextended | Semi Extended | 6 | 108% | Family Semi Extended | … | Family-SemiExtendedBold | Family / Semi Extended Bold |
+| extended | Extended | 7 | 115% | Family Extended | … | Family-ExtendedBold | Family / Extended Bold |
+
+- The width word joins **nameID 1**, so a condensed font is a family of its own with its own Regular /
+  Bold / Italic / Bold Italic (nameID 2 and the style flags are untouched) and installs beside the
+  normal-width font; nameID 16 / 17 carry the bare family and "Condensed Bold" for programs that list
+  a family's widths together. The spec carries `widthClass` and the two typographic names **only when
+  the width is not normal**, so a normal-width font is built exactly as before. In the UFO the pair
+  `familyName` / `styleName` is the typographic one and `styleMapFamilyName` is nameID 1.
+- The account's `style` column is unchanged; the row's **name** carries the word.
+- The Width dialog's box sets the name with the change: `fontWidthAfter(current, pct)` — the nearest
+  name (by ratio) to the width the font already stands for × the percentage, so Condensed widened by
+  118% is normal again. Only five names; other amounts take the nearest.
+- Importing a font reads `usWidthClass`; a family name that already ends in the word gives it up there
+  (the export would otherwise say it twice).
+- A condensed font is its own project, as a Bold or an Italic is.
 
 ### Draw step — strokes, holes, and carve generations
 A drawn letter keeps its ink as `l.draw.strokes` (each `{w, pr, pts, st?, …}`, points in font units);
