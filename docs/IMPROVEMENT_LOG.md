@@ -474,6 +474,8 @@ _(none)_
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
 
+- `translated-text-in-a-pinned-ltr-box` | ACTIVE | owner M | det: recipe | last S680 | streak 0 | hits 2
+
 - `stray-text-in-a-style-block` | ACTIVE | owner E | det: scripts/loop/detect-stray-text-in-a-style-block.mjs | last S680 | streak 0 | hits 1
 
 - `viewport-height-fit-without-a-floor` | ACTIVE | owner N | det: recipe | last S667 | streak 0 | hits 1

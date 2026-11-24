@@ -1323,6 +1323,9 @@ header{--kin-pt:14px;--kin-pb:14px;--kin-gap:16px;}   /* this header's block pad
     color: var(--muted);
     text-align: center;
   }
+  /* The empty state is the interface talking, not the worksheet: it sits inside .worksheet (pinned LTR, the printed
+     sheet's direction), so in the Hebrew UI its sentence took LTR and ended with the period at its start. */
+  html[dir="rtl"] .worksheet .empty-state { direction: rtl; }
   .empty-state .star { font-size: 48px; opacity: 0.4; }
   .empty-state h2 { font-family: 'Libre Baskerville', serif; color: var(--navy); }
   .empty-state p { font-size: 0.88rem; max-width: 320px; }

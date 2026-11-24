@@ -17,7 +17,15 @@
 >
 > _(history)_ **The per-sweep result rows (S141–S357, 83 rows) moved verbatim to `docs/IMPROVEMENT_ARCHIVE.md` in S361 ("Sweep-status rows moved out of the ledger"); the current state of every pattern lives in Pattern health above.** Grep …[full text: IMPROVEMENT_ARCHIVE.md]
 
-## Active, draft and guard patterns (169; newest first, as the ledger lists them)
+## Active, draft and guard patterns (170; newest first, as the ledger lists them)
+
+## `translated-text-in-a-pinned-ltr-box`
+- **Status:** ACTIVE · **Owner:** M · **Consequence:** normal · **Last:** S680 · **Streak:** 0 · **Hits:** 2 · **Detector:** recipe
+- **Record (S680, M on the atlas — NEW):** the Trope Atlas's zarka note "(fonts also use U+0598)" sits in the sign table's Unicode cell, `dir="ltr"` for its code points; in the Hebrew UI the translated sentence took the cell's direction: its "(" left of its first word, "U+0598" before "ב־" in reading order, the maqaf adrift. FIXED (S680 fix 2) with `dir="auto"` on the note. The census over every root page in the HE UI at load found two more boxes: the generator's empty state inside `.worksheet` (pinned LTR, the printed sheet's direction): its sentence's period at its start, its quick-start chips laid out left to right with "(30 כרטיסים)" brackets misplaced and the tour link's ← at the wrong end — FIXED in the same commit (`html[dir="rtl"] .worksheet .empty-state { direction: rtl }`); and the Font Maker's stage legend (`#stageLegend` inside `.ws-center`, pinned LTR as the glyph stage): its words in order, its final period at the start — open, a candidate. Probe `scripts/loop/probes/S680-hebrew-in-a-pinned-ltr-box-reads-in-order.mjs` 8 / 8 (the tree before 4 / 8: every HE cell); EN full pages pixel-identical 8 / 8.
+- **Shape:** a box pinned left-to-right for content that must not mirror (code points, a printed sheet, a glyph stage) also holds interface text that is translated. In the Hebrew UI that text is a Hebrew sentence laid out as an LTR paragraph: a run of Hebrew words keeps its order, but every neutral at its edges (brackets, a final period, an arrow) and every Latin or digit run inside it takes the box's direction, so the bracket opens on the wrong side and the period leads the sentence. The inverse of `pinned-english-prose-in-rtl-paragraph`.
+- **Detection (recipe):** in the HE UI, every text node holding Hebrew letters and a bracket, digit, Latin letter or sentence punctuation whose nearest block computes `direction: ltr`, outside `<svg>`, `<kbd>`, form fields, `[lang="en"]` and hidden boxes (the probe's `__census`); then the x-order of the sentence's first word against its opening bracket and its final period (a Range's client rect). Plant: a `<p dir="ltr">(טקסט ב־U+0001)</p>`.
+- **Fix shape:** the translated part takes its own direction — `dir="auto"` on its element, or the interface's direction on the box's chrome (`html[dir="rtl"] <box> <chrome> { direction: rtl }`) — never the pinned box itself (its content is pinned for a reason).
+- **Carriers:** trope_atlas (zarka note) and hebrew_blend_generator (the empty state) FIXED S680; Hebrew_Font_Maker (`#stageLegend`) open.
 
 ## `stray-text-in-a-style-block`
 - **Status:** ACTIVE · **Owner:** E · **Consequence:** normal · **Last:** S680 · **Streak:** 0 · **Hits:** 1 · **Detector:** `scripts/loop/detect-stray-text-in-a-style-block.mjs`
