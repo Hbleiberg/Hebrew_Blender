@@ -4455,6 +4455,9 @@ async function loadCatalog() {
     catalog = normalizeCatalog(raw);
     prayerByKey = new Map(catalog.prayers.map(p => [p.key, p]));
     _catalogFailed = !catalog.prayers.length;
+    // The Favorites list is first drawn on I18n.ready, usually before the catalog lands, and a favorite's Open title
+    // names its prayer from the catalog ("Open " with no name until a language switch redrew it): draw it again now.
+    if (!_catalogFailed) { try { renderFavorites(); } catch (e) {} }
   } catch (e) {
     console.error('Failed to load the prayer catalog', e);
     _catalogFailed = true;
