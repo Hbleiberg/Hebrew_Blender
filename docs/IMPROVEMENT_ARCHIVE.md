@@ -99382,3 +99382,11 @@ _(prior)_ **Next session (S683):** **Branch `claude/zen-goldberg-1lov9k` (S676�
 ### from Done
 
 - [x] 2026-11-24 | `db38bdb5` `0f576faf` | Hebrew_Font_Maker.html, locales, sw.js, docs/reference/font-maker.md, CLAUDE.md | (outside the loop; Font Maker v6.0) **A glyph transform engine and Scale all letters**: `gxPlan` → `gxCommit` (a pure plan, a range check, one `udDo`) carries outline + curves, advance, anchors and pins, the photo matrix, pen strokes, composed forms and the font-wide lengths; marks are resized through their size settings (stored range widened to 10–400%); `metrics.sizeK` makes the anchor seeds follow a rescaled font. Edit points gains scale presets, Width / Height with a lock, 30° and 45° rotate; a whole-glyph scale or horizontal flip carries anchors and pins; a transform past 16000 is refused whole | headless: 174 new checks (engine 64, Transform 44, re-trace / accents / keyboard / EN + HE 51, export + HarfBuzz 15: every advance and vowel offset 0.9× after a 90% scale); the earlier 331 unchanged; smoke-fontmaker 63 / 63
+
+
+<!-- archived by compact-ledger at the S684 boundary, 2026-11-24 -->
+## Compaction (S684, 2026-11-24) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-11-24 | `f3f3c169` `3b07c3aa` `361f66af` `58dc6386` | Hebrew_Font_Maker.html, locales, sw.js, docs/reference/font-maker.md, CLAUDE.md | (outside the loop; Font Maker v6.0) **Slant letters, and Italic / Bold Italic styles**: `gxSlantOp` (a shear about the baseline) as the engine's second operation, a per-letter lean record (`l.slant`) read by width measurement, anchor seeding and wide forms, marks placed and leaned through `project.font.markLean` in the three shape readers, a Slant row in Edit points; `FONT_STYLES` behind every style test, names, file stems, fsSelection / macStyle / italicAngle / caret slope | headless: 183 new checks (styles 46, slant engine 74, Slant row 27, Italic export + HarfBuzz + re-trace + import 18, hataf-meteg / notes / wizard 18); Regular and Bold exports identical to before; the earlier 505 unchanged; smoke-fontmaker 63 / 63
