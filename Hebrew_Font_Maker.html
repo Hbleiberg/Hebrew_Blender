@@ -1244,6 +1244,31 @@ header{--kin-pt:10px;--kin-pb:10px;--kin-gap:14px;}   /* this header's block pad
   /* min-block-size is a floor, not the content height (132 cards far exceed it), so the grid still
      shrinks and scrolls — it just never collapses to a sliver behind an open keyboard. */
   .os-pick-grid { flex: 1 1 auto; min-block-size: 120px; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; padding: 2px; align-content: start; }
+  /* "Pick an installed font" (#localFontOverlay): the same sheet, with a one-column listbox as its only scroller.
+     Placed after the rule above that pins every other child to its content height. */
+  .lf-modal { max-width: 620px; }
+  .lf-modal .lf-intro { margin: 0 0 10px; }
+  .os-pick-modal > .lf-list { flex: 1 1 auto; }
+  .lf-list { min-block-size: 150px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; padding: 4px; }
+  .lf-list:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+  .lf-fam[hidden], .lf-opt[hidden] { display: none; }
+  .lf-fam-name { font-size: 0.74rem; font-weight: 700; color: var(--muted); padding: 6px 10px 2px; text-align: start; unicode-bidi: plaintext; }
+  .lf-opt { display: flex; align-items: center; gap: 12px; padding: 5px 10px; border-radius: 6px; cursor: pointer; min-block-size: 40px; }
+  .lf-opt:hover { background: rgba(201,146,42,0.10); }
+  .lf-opt.is-active { background: rgba(201,146,42,0.18); outline: 2px solid var(--focus-ring); outline-offset: -2px; }
+  .lf-opt[aria-busy="true"] { opacity: 0.6; cursor: progress; }
+  .lf-style { flex: 1 1 auto; min-inline-size: 0; font-size: 0.86rem; text-align: start; unicode-bidi: plaintext; }
+  .lf-state { flex: 0 0 auto; font-size: 0.72rem; color: var(--muted); }
+  .lf-sample { flex: 0 0 auto; font-size: 1.5rem; line-height: 1.3; visibility: hidden; }   /* a Hebrew sample, right-to-left in both UIs (dir on the element) */
+  .lf-sample.is-ready { visibility: visible; }
+  /* the notice before an installed font is imported: what the font says about itself */
+  .lf-lic, .lf-lic-row, .lf-lic-line { display: block; }
+  .lf-lic-line { margin-block-end: 8px; }
+  .lf-lic-row { margin-block-end: 8px; font-size: 0.8rem; }
+  .lf-lic-val { display: block; max-block-size: 110px; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; margin-block-start: 2px; font-weight: 400; }
+  .lf-lic-val:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 1px; }
+  #srcFontNote[hidden] { display: none; }
+  #srcFontNote div { overflow-wrap: anywhere; }
   .os-pick-card { display: flex; flex-direction: column; gap: 4px; border: 1.5px solid var(--border); border-radius: 8px; padding: 10px 12px; background: var(--white); color: var(--text); text-align: start; font: inherit; cursor: pointer; transition: border-color 0.15s, background 0.15s; }
   .os-pick-card[hidden] { display: none; }
   .os-pick-card:hover { border-color: var(--gold); }
@@ -1917,8 +1942,11 @@ html[lang="he"] .tp-label{letter-spacing:normal;text-transform:none;}
             <option value="mit" data-i18n="fontmaker.panels.license_mit">MIT License</option>
             <option value="arr" data-i18n="fontmaker.panels.license_arr">All Rights Reserved — most strict</option>
             <option value="os-passthrough" hidden disabled data-i18n="fontmaker.osfont.license_option">Same as the original font — locked</option>
+            <option value="unset" hidden disabled data-i18n="fontmaker.panels.license_unset">Not chosen yet</option>
           </select>
         </label>
+        <!-- A project that imported a font installed on the computer: its licence is the teacher's to choose, and the source font's own words are shown. -->
+        <div class="hint" id="srcFontNote" hidden></div>
         <!-- Partner starting-font projects (project.osFont): the license is inherited + locked. -->
         <div class="hint" id="osLicenseNote" style="display:none;"><span id="osLicenseNoteText"></span> <button type="button" class="fld-help" onclick="openHelp('oslock')" title="Why is this locked?" data-i18n-title="fontmaker.osfont.lock_help_title" aria-label="Why is this locked?" data-i18n-aria-label="fontmaker.osfont.lock_help_title">?</button></div>
         <div class="hint" data-i18n-html="fontmaker.panels.license_hint">Pick how others may use your font. Every export's <b>LICENSE.txt</b> lists your name as author and includes a required <b>Made with IvritSuite.com</b> line. The version ticks up each export — edit it anytime.</div>
@@ -2625,6 +2653,26 @@ html[lang="he"] .tp-label{letter-spacing:normal;text-transform:none;}
      SAME partner onboarding as the ?start= deep link (osPickChoose → wizardOpen('osfont')); see CLAUDE.md:
      Starting Fonts. Cards are built in osPickRender (createElement + textContent — manifest strings never
      reach innerHTML). -->
+<!-- Pick an installed font (Local Font Access; the buttons that open it exist only where the browser has queryLocalFonts) -->
+<div class="overlay" id="localFontOverlay" onclick="if(event.target===this)lfClose()">
+  <div class="modal os-pick-modal lf-modal" role="dialog" aria-modal="true" aria-labelledby="lfTitle" onkeydown="lfKey(event)">
+    <h3 id="lfTitle" data-i18n="fontmaker.localfont.title">Pick an installed font</h3>
+    <p class="os-pick-intro lf-intro" id="lfIntro"></p>
+    <div class="os-pick-tools">
+      <label class="os-pick-field os-pick-search"><span data-i18n="fontmaker.localfont.search_label">Search</span>
+        <input type="search" id="lfSearch" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="Font name" data-i18n-placeholder="fontmaker.localfont.search_ph" aria-controls="lfList" oninput="lfFilter()"></label>
+      <div class="os-pick-filters">
+        <label class="chk"><input type="checkbox" id="lfHeb" checked onchange="lfFilter()"> <span data-i18n="fontmaker.localfont.filter_hebrew">Has Hebrew</span></label>
+        <span class="os-pick-count" id="lfCount" role="status" aria-live="polite"></span>
+      </div>
+    </div>
+    <div class="lf-list" id="lfList" role="listbox" tabindex="0" aria-labelledby="lfTitle"></div>
+    <p class="os-pick-empty" id="lfEmpty" hidden></p>
+    <p class="wiz-foot-note" data-i18n="fontmaker.localfont.foot">Arrow keys move through the list, Enter chooses, and typing searches.</p>
+    <div class="mbtns"><button class="tbtn ghost" onclick="lfClose()" data-i18n="fontmaker.modals.cancel">Cancel</button></div>
+  </div>
+</div>
+
 <div class="overlay" id="osPickOverlay" onclick="if(event.target===this)osPickClose()">
   <div class="modal os-pick-modal" role="dialog" aria-modal="true" aria-labelledby="osPickTitle">
     <div class="wiz-head">
@@ -4961,7 +5009,7 @@ const HELP_CONTENT = {
     <ul>
       <li><span class="ui">One letter per image</span> — upload one photo per letter. Simplest if you're scanning or photographing letters one at a time.</li>
       <li><span class="ui">One image with all letters</span> — upload <em>one</em> photo of a whole sheet of letters, then pick a letter and drag a box around it to cut it out.</li>
-      <li><span class="ui">Existing font file</span> — already have a font file? Import it and the letters come in ready-made, so you can skip tracing entirely.</li>
+      <li><span class="ui">Existing font file</span> — already have a font file? Import it and the letters come in ready-made, so you can skip tracing entirely. In Chrome or Edge on a computer, <span class="ui">Pick an installed font…</span> opens a font that is already installed, with no file to look for.</li>
       <li><span class="ui">Draw letters on screen</span> — no scanner needed: draw each letter with a pen, finger, or mouse, right on the canvas over a faint reference letter.</li>
     </ul>
     <p><strong>Allowed files:</strong> any image — PNG, JPG, GIF or WebP. Transparent PNGs and letters drawn on a plain white background also work great. (For the <span class="ui">Existing font file</span> option, a TTF or OTF font file.)</p>
@@ -5750,6 +5798,7 @@ function syncOsFontLock() {
       ? I18n.t('fontmaker.osfont.lock_note', { license: project.osFont.licenseName || project.osFont.licenseId || '', font: project.osFont.displayName || '' })
       : (project.osFont.licenseName || '');
   }
+  syncSourceFontNote();   // the other licence note: a font that came from the computer's installed fonts (Installed fonts block)
 }
 function onMetaChange() {
   project.font.familyName = document.getElementById('familyName').value;
@@ -6279,14 +6328,23 @@ async function uploadTemplateTTF(file) {
 // the R-panel dropdown can re-select them after a reload.
 async function restoreCustomTemplateFonts() {
   customTemplateFonts = [];
-  const list = (project.template && project.template.customFonts) || [];
+  const list = (project.template && project.template.customFonts) || [], missing = [];
   for (const cf of list) {
     try {
-      const ff = new FontFace(cf.fam, b64ToBytes(cf.dataB64));
+      if (!cf.local && !cf.dataB64) continue;
+      // A guide picked from the installed fonts is stored as a NAME: it is drawn from this computer's copy.
+      const ff = cf.local ? new FontFace(cf.fam, 'local("' + cf.local + '")') : new FontFace(cf.fam, b64ToBytes(cf.dataB64));
       await ff.load(); document.fonts.add(ff);
       customTemplateFonts.push({ section:'Custom', name: cf.name, family: cf.family, load:null });
-    } catch (e) { console.warn('reference font restore failed:', cf && cf.name, e); }
+    } catch (e) {
+      console.warn('reference font restore failed:', cf && cf.name, e);
+      if (cf && cf.local) {   // not installed here: it stays in the menu, marked, and its family falls back to the generic font — the project keeps the name for the computer that has it
+        customTemplateFonts.push({ section:'Custom', name: I18n.t('fontmaker.panels.reference_missing', { name: cf.name }), family: cf.family, load:null });
+        missing.push(cf.name);
+      }
+    }
   }
+  if (missing.length) setTimeout(() => status(I18n.t('fontmaker.status.reference_missing', { name: missing.join(', ') })), 1200);   // after the load's own message
 }
 function setInputMode(mode) {
   project.inputMode = mode; syncMetaToForm();
@@ -9075,6 +9133,7 @@ async function applyFontImport(file, font, bytes, opts) {
     // or a font with no GPOS) changes nothing else, so it must not discard still-valid measured work.
     // pc.anchor is nikkud-family (precomposed dagesh/holam/shin forms), so a trop-placement-only
     // import leaves it alone.
+    lfStampInstalled(file);   // a font from the computer's installed fonts: the licence becomes "not chosen yet" before anything of it is written
     if (opts.outlines || (imported && hadGpos && opts.anchorsNikkud)) (project.precomposed || []).forEach(pc => { if (pc.anchor && pc.anchor.auto) pc.anchor = null; });
     const scale = 1000 / font.unitsPerEm;
     let n = 0, nPunct = 0, anchorHits = 0;
@@ -10125,6 +10184,397 @@ function wireStageDrop() {                    // an .svg dropped on the canvas i
     if (curKind !== 'letter' || !curLetter()) { status(I18n.t('fontmaker.status.svgpaste_letters_only')); return; }
     svgPasteStart(got);
   });
+}
+
+/* ════════ Installed fonts — "Pick an installed font…" (Local Font Access) ════════
+   Chrome and Edge on a desktop can list the fonts installed on the computer (queryLocalFonts) and
+   hand over a font's bytes (FontData.blob()). Where the function exists a button sits beside both
+   font uploads; where it does not, nothing is rendered. Two targets:
+   · IMPORT — the bytes become a File and go to uploadSourceFont(), so from the import-options dialog
+     on it is an uploaded font. Two things are added around that path, and only for a font that came
+     from here: the font's own copyright and licence are shown first, and the import leaves the
+     project's licence at 'unset' (lfStampInstalled) — an installed font is usually somebody else's,
+     so the project never claims OFL for it by default.
+   · REFERENCE — the tracing guide. No bytes are read or stored: the face is registered by name
+     (local()), and the project keeps the name. A project file never carries a system font.
+   The lf* reader below is a small sfnt reader of its own because the list has to answer "does this
+   font have Hebrew?" for every installed face without parsing hundreds of fonts whole (it reads
+   Blob slices: the directory and the cmap), and because the import engine, the fidelity check and
+   the exporter's reader all refuse a collection (.ttc — most Hebrew system fonts on a Mac), so the
+   chosen face is rebuilt as a standalone font first. Everything it reads is bounds-checked. */
+const LF_OK = typeof window.queryLocalFonts === 'function';
+const LF_SAMPLE = 'אבגד';   // i18n-ignore: a Hebrew sample, drawn in the listed font itself
+const LF_HEB = [0x5D0,0x5D1,0x5D2,0x5D3,0x5D4,0x5D5,0x5D6,0x5D7,0x5D8,0x5D9,0x5DB,0x5DC,0x5DE,0x5E0,0x5E1,0x5E2,0x5E4,0x5E6,0x5E7,0x5E8,0x5E9,0x5EA];   // the 22 letters; a font may leave the five final forms out and still be a Hebrew font
+const LF_MAX_BYTES = 30000000;                      // a face larger than this is not opened (the import engine parses the whole file in memory)
+const LF_PS_RE = /^[A-Za-z0-9._+\-]{1,63}$/;        // a PostScript name that is safe inside local("…") and worth saving in a project
+let _lf = null;                // the open picker: { target, items, gen, obs, faces, active, openerId, choosing, done }
+let _lfAsking = false;         // the browser's permission prompt is up
+const _lfHebCache = new Map(); // PostScript name → has Hebrew, for the session
+
+function lfReader(src) {                      // one async way to read a Blob (slices) or bytes already in memory
+  const isBlob = typeof Blob !== 'undefined' && src instanceof Blob, size = isBlob ? src.size : src.byteLength;
+  return { size, async view(off, len) {
+    if (!(off >= 0) || !(len >= 0) || off + len > size) throw new Error('font data out of range');
+    return new DataView(isBlob ? await src.slice(off, off + len).arrayBuffer() : src.buffer.slice(src.byteOffset + off, src.byteOffset + off + len));
+  } };
+}
+async function lfFaceOffsets(rd) {            // where each face's table directory starts: [0] for a plain font, the collection's list for a .ttc
+  const h = await rd.view(0, 12);
+  if (h.getUint32(0) !== 0x74746366) return [0];                        // 'ttcf'
+  const n = h.getUint32(8); if (!n || n > 512) throw new Error('bad font collection');
+  const o = await rd.view(12, n * 4), out = [];
+  for (let i = 0; i < n; i++) out.push(o.getUint32(i * 4));
+  return out;
+}
+async function lfDirectory(rd, base) {        // one face's tables → { ver, tables: { tag: { tag, off, len } } }
+  const h = await rd.view(base, 12), ver = h.getUint32(0), n = h.getUint16(4);
+  if ([0x00010000, 0x4F54544F, 0x74727565, 0x74797031].indexOf(ver) < 0 || !n || n > 512) throw new Error('not a font');   // TrueType, 'OTTO' (CFF), 'true', 'typ1'
+  const d = await rd.view(base + 12, n * 16), tables = {};
+  for (let i = 0; i < n; i++) {
+    const tag = String.fromCharCode(d.getUint8(i * 16), d.getUint8(i * 16 + 1), d.getUint8(i * 16 + 2), d.getUint8(i * 16 + 3));
+    const off = d.getUint32(i * 16 + 8), len = d.getUint32(i * 16 + 12);
+    if (off + len > rd.size) throw new Error('font table out of range');
+    tables[tag] = { tag, num: d.getUint32(i * 16), off, len };
+  }
+  return { ver, tables };
+}
+async function lfHasHebrew(rd, dir) {         // does the cmap map all of LF_HEB?
+  const t = dir.tables.cmap; if (!t || t.len < 4) return false;
+  const v = await rd.view(t.off, Math.min(t.len, 4000000)), n = v.getUint16(2), subs = [];
+  for (let i = 0; i < n && 4 + i * 8 + 8 <= v.byteLength; i++) {
+    const pid = v.getUint16(4 + i * 8), eid = v.getUint16(6 + i * 8), off = v.getUint32(8 + i * 8);
+    if (off + 4 > v.byteLength) continue;
+    if (pid === 0 || (pid === 3 && (eid === 1 || eid === 10))) subs.push({ off, fmt: v.getUint16(off) });   // the Unicode subtables only
+  }
+  const has4 = (o, cp) => {
+    const segX2 = v.getUint16(o + 6), ends = o + 14, starts = ends + segX2 + 2, deltas = starts + segX2, ranges = deltas + segX2;
+    for (let s = 0; s < segX2; s += 2) {
+      if (v.getUint16(ends + s) < cp) continue;
+      if (v.getUint16(starts + s) > cp) return false;
+      const ro = v.getUint16(ranges + s);
+      if (!ro) return ((cp + v.getUint16(deltas + s)) & 0xFFFF) !== 0;
+      return v.getUint16(ranges + s + ro + 2 * (cp - v.getUint16(starts + s))) !== 0;
+    }
+    return false;
+  };
+  const has12 = (o, cp) => {
+    const g = v.getUint32(o + 12);
+    for (let i = 0; i < g; i++) { const p = o + 16 + i * 12; if (v.getUint32(p) > cp) return false; if (v.getUint32(p + 4) >= cp) return v.getUint32(p + 8) + (cp - v.getUint32(p)) !== 0; }
+    return false;
+  };
+  for (const s of subs.sort((a, b) => b.fmt - a.fmt)) {                 // a format-12 table first: it is the full one where a font has both
+    if (s.fmt !== 4 && s.fmt !== 12) continue;
+    try { if (LF_HEB.every(cp => (s.fmt === 4 ? has4 : has12)(s.off, cp))) return true; } catch (e) {}   // a read past the table's end is a malformed subtable: not Hebrew by this one
+  }
+  return false;
+}
+function lfClean(s, max) {                    // a string out of a font or a project file, made safe to keep: no control characters, capped
+  return typeof s === 'string' ? s.replace(/[\u0000-\u0008\u000B-\u001F\u007F]/g, ' ').trim().slice(0, max) : '';
+}
+async function lfNames(rd, dir, ids) {        // name-table strings by id → { 0: '…', 13: '…' } — Windows English first, then any Unicode record, then Mac Roman
+  const out = {}, best = {}, t = dir.tables.name; if (!t || t.len < 6) return out;
+  const v = await rd.view(t.off, Math.min(t.len, 2000000)), n = v.getUint16(2), strs = v.getUint16(4);
+  for (let i = 0; i < n && 6 + i * 12 + 12 <= v.byteLength; i++) {
+    const r = 6 + i * 12, pid = v.getUint16(r), lang = v.getUint16(r + 4), id = v.getUint16(r + 6), len = v.getUint16(r + 8), off = strs + v.getUint16(r + 10);
+    if (ids.indexOf(id) < 0 || off + len > v.byteLength) continue;
+    const score = pid === 3 ? (lang === 0x409 ? 4 : 3) : pid === 0 ? 2 : (pid === 1 && lang === 0) ? 1 : 0;
+    if (!score || (best[id] || 0) >= score) continue;
+    let s = ''; const cap = Math.min(len, 4000);
+    if (pid === 1) for (let k = 0; k < cap; k++) s += String.fromCharCode(v.getUint8(off + k));
+    else for (let k = 0; k + 1 < cap; k += 2) s += String.fromCharCode(v.getUint16(off + k));
+    best[id] = score; out[id] = lfClean(s, 1200);
+  }
+  return out;
+}
+async function lfPickFace(rd, offsets, want) {   // the face of a collection that IS the listed font: by PostScript name, then by full name, else the first
+  let byFull = -1;
+  for (let i = 0; i < offsets.length; i++) {
+    try { const nm = await lfNames(rd, await lfDirectory(rd, offsets[i]), [4, 6]);
+      if (want.ps && nm[6] === want.ps) return offsets[i];
+      if (byFull < 0 && want.full && nm[4] === want.full) byFull = i; } catch (e) {}
+  }
+  return offsets[byFull >= 0 ? byFull : 0];
+}
+async function lfStandalone(rd, dir) {        // one face's tables written out as a font of its own (what a collection member needs before anything here can open it)
+  const tabs = Object.values(dir.tables).sort((a, b) => a.num - b.num);   // the directory in tag order: readers that search it expect that
+  const n = tabs.length; let total = 12 + n * 16;
+  tabs.forEach(t => { t.at = total; total += (t.len + 3) & ~3; });
+  if (total > LF_MAX_BYTES) { const e = new Error('too big'); e.tooBig = true; throw e; }
+  const out = new Uint8Array(total), dv = new DataView(out.buffer);
+  const pow = Math.pow(2, Math.floor(Math.log2(n)));
+  dv.setUint32(0, dir.ver); dv.setUint16(4, n); dv.setUint16(6, pow * 16); dv.setUint16(8, Math.log2(pow)); dv.setUint16(10, n * 16 - pow * 16);   // the face's own version: 'OTTO' stays 'OTTO'
+  const sum = (from, len) => { let s = 0; for (let p = from; p < from + ((len + 3) & ~3); p += 4) s = (s + dv.getUint32(p)) >>> 0; return s; };
+  for (let i = 0; i < n; i++) {
+    const t = tabs[i], src = await rd.view(t.off, t.len);
+    out.set(new Uint8Array(src.buffer, src.byteOffset, t.len), t.at);
+    if (t.tag === 'head' && t.len >= 12) dv.setUint32(t.at + 8, 0);     // checkSumAdjustment is computed with itself at zero
+    const r = 12 + i * 16;
+    dv.setUint32(r, t.num); dv.setUint32(r + 4, sum(t.at, t.len)); dv.setUint32(r + 8, t.at); dv.setUint32(r + 12, t.len);
+  }
+  const head = tabs.find(t => t.tag === 'head');
+  if (head && head.len >= 12) dv.setUint32(head.at + 8, (0xB1B0AFBA - sum(0, total)) >>> 0);
+  return out;
+}
+async function lfOpenFace(it) {               // the listed font's blob, the reader on it and the right face's directory
+  const blob = it.blob || (it.blob = await it.fd.blob());
+  const rd = lfReader(blob), offsets = await lfFaceOffsets(rd);
+  const base = offsets.length > 1 ? await lfPickFace(rd, offsets, it) : 0;
+  return { blob, rd, dir: await lfDirectory(rd, base), collection: offsets.length > 1 };
+}
+async function lfFaceBytes(it) {              // the chosen face as a standalone font, whole, in memory
+  const f = await lfOpenFace(it);
+  if (f.collection) return { bytes: await lfStandalone(f.rd, f.dir), face: f };
+  if (f.blob.size > LF_MAX_BYTES) { const e = new Error('too big'); e.tooBig = true; throw e; }
+  return { bytes: new Uint8Array(await f.blob.arrayBuffer()), face: f };
+}
+
+/* ── the picker ── */
+function lfT(k, p) { return I18n.t('fontmaker.localfont.' + k, p); }
+async function lfOpen(target) {               // called straight from the button's click: the browser wants the teacher's own gesture, so nothing is awaited before queryLocalFonts()
+  if (!LF_OK || _lfAsking || _lf) return;
+  _lfAsking = true;
+  let fonts = null, err = null;
+  try { fonts = await window.queryLocalFonts(); } catch (e) { err = e; }
+  _lfAsking = false;
+  if (err || !fonts || !fonts.length) {
+    // Said calmly, on the status line, and nothing else happens. A browser may answer "no" either by
+    // refusing or by handing back an empty list, so an empty list is checked against the permission.
+    let denied = !!err && err.name !== 'SecurityError';
+    if (!err) { try { const p = await navigator.permissions.query({ name: 'local-fonts' }); denied = p.state !== 'granted'; } catch (e) {} }
+    status(I18n.t(err && err.name === 'SecurityError' ? 'fontmaker.status.localfont_blocked' : denied ? 'fontmaker.status.localfont_denied' : 'fontmaker.status.localfont_none'));
+    return;
+  }
+  const items = Array.from(fonts).map(fd => ({ fd, family: lfClean(String(fd.family || ''), 120), style: lfClean(String(fd.style || ''), 80),
+    full: lfClean(String(fd.fullName || fd.family || ''), 160), ps: lfClean(String(fd.postscriptName || ''), 120) }))
+    .filter(it => it.family || it.full);
+  items.forEach(it => { it.family = it.family || it.full; it.search = (it.family + ' ' + it.full + ' ' + it.style + ' ' + it.ps).toLowerCase(); it.heb = _lfHebCache.has(it.ps) ? _lfHebCache.get(it.ps) : undefined; });
+  items.sort((a, b) => a.family.localeCompare(b.family) || a.full.localeCompare(b.full));
+  _lf = { target: target === 'reference' ? 'reference' : 'import', items, gen: Date.now(), obs: null, faces: [], active: null, choosing: false,
+    openerId: target === 'reference' ? 'lfPickRef' : 'lfPickImport', done: items.filter(it => it.heb !== undefined).length, queue: 0 };
+  lfRender();
+  document.getElementById('lfIntro').textContent = I18n.t(_lf.target === 'reference' ? 'fontmaker.localfont.intro_reference' : 'fontmaker.localfont.intro_import');
+  const search = document.getElementById('lfSearch'); search.value = '';
+  document.getElementById('lfHeb').checked = true;
+  aOpenModal('localFontOverlay', lfClose);
+  lfFilter(); lfObserve(); lfPump();
+  setTimeout(() => { if (_lf) search.focus(); }, 30);
+}
+function lfRender() {                         // one group per family, one option per face — every name through textContent
+  const list = document.getElementById('lfList'); list.textContent = '';
+  let grp = null, fam = null, g = 0;
+  _lf.items.forEach((it, i) => {
+    if (it.family !== fam) {
+      fam = it.family; g++;
+      grp = document.createElement('div'); grp.className = 'lf-fam'; grp.setAttribute('role', 'group'); grp.setAttribute('aria-labelledby', 'lfFam' + g);
+      const nm = document.createElement('div'); nm.className = 'lf-fam-name'; nm.id = 'lfFam' + g; nm.textContent = it.family;
+      grp.appendChild(nm); list.appendChild(grp);
+    }
+    const o = document.createElement('div'); o.className = 'lf-opt'; o.id = 'lfOpt' + i; o.setAttribute('role', 'option'); o.setAttribute('aria-selected', 'false'); o.dataset.i = i;
+    const st = document.createElement('span'); st.className = 'lf-style'; st.textContent = it.style || it.full;
+    const state = document.createElement('span'); state.className = 'lf-state';
+    const sample = document.createElement('span'); sample.className = 'lf-sample'; sample.lang = 'he'; sample.dir = 'rtl'; sample.setAttribute('aria-hidden', 'true');
+    o.appendChild(st); o.appendChild(state); o.appendChild(sample);
+    o.addEventListener('click', () => { lfSetActive(o, false); lfChoose(o); });
+    it.el = o; it.stateEl = state; it.sampleEl = sample;
+    lfPaint(it);
+    grp.appendChild(o);
+  });
+}
+function lfPaint(it) {                        // an option's words for what is known about its face so far
+  it.stateEl.textContent = it.heb === undefined ? lfT('row_checking') : (it.heb && it.noPreview) ? lfT('no_preview') : '';
+  it.sampleEl.textContent = (it.heb && !it.noPreview) ? LF_SAMPLE : '';   // shown only once its own face is in (.is-ready) — in a fallback font it would pass for the font's preview
+  it.el.setAttribute('aria-label', it.heb ? lfT('opt_hebrew_aria', { font: it.full }) : it.full);
+}
+function lfVisible(it) { return !it.el.hidden; }
+function lfFilter() {                         // search box + "Has Hebrew": show, hide, count
+  if (!_lf) return;
+  const q = document.getElementById('lfSearch').value.trim().toLowerCase(), heb = document.getElementById('lfHeb').checked;
+  let n = 0;
+  _lf.items.forEach(it => { const show = (!q || it.search.indexOf(q) >= 0) && (!heb || it.heb === true); it.el.hidden = !show; if (show) n++; });
+  document.querySelectorAll('#lfList .lf-fam').forEach(gr => { gr.hidden = !gr.querySelector('.lf-opt:not([hidden])'); });
+  const total = _lf.items.length, checking = _lf.done < total;
+  const count = document.getElementById('lfCount');
+  if (!_lf.note) count.textContent = checking ? lfT('checking', { done: _lf.done, total }) : lfT('count', { n, total });
+  const empty = document.getElementById('lfEmpty');
+  empty.hidden = n > 0 || checking;
+  if (!empty.hidden) empty.textContent = I18n.t(heb ? 'fontmaker.localfont.empty_hebrew' : 'fontmaker.localfont.empty');
+  const act = _lf.active && document.getElementById(_lf.active);
+  if (!act || act.hidden) lfSetActive(document.querySelector('#lfList .lf-opt:not([hidden])'), false);
+}
+function lfSetActive(el, scroll) {            // the one option the keyboard is on: aria-activedescendant for the list and for the search box that drives it
+  const list = document.getElementById('lfList'), search = document.getElementById('lfSearch');
+  const old = _lf && _lf.active && document.getElementById(_lf.active);
+  if (old) { old.classList.remove('is-active'); old.setAttribute('aria-selected', 'false'); }
+  if (_lf) _lf.active = el ? el.id : null;
+  [list, search].forEach(x => { if (el) x.setAttribute('aria-activedescendant', el.id); else x.removeAttribute('aria-activedescendant'); });
+  if (!el) return;
+  el.classList.add('is-active'); el.setAttribute('aria-selected', 'true');
+  if (scroll) el.scrollIntoView({ block: 'nearest' });
+}
+function lfMove(by, toEnd) {                  // by: ±n options among the visible ones; toEnd: 'first' | 'last'
+  const opts = Array.from(document.querySelectorAll('#lfList .lf-opt:not([hidden])')); if (!opts.length) return;
+  let i = opts.findIndex(o => o.id === _lf.active);
+  i = toEnd === 'first' ? 0 : toEnd === 'last' ? opts.length - 1 : Math.max(0, Math.min(opts.length - 1, (i < 0 ? (by > 0 ? -1 : opts.length) : i) + by));
+  lfSetActive(opts[i], true);
+}
+/* Escape and Enter are answered here and go no further: the dialog closes on them, and a key that
+   travelled on to the document would then be read by the editor behind it (Escape clears a selection
+   in Edit points; Enter places a pen point). */
+function lfKey(e) {
+  if (!_lf) return;
+  const id = e.target && e.target.id, inSearch = id === 'lfSearch', inList = id === 'lfList';
+  if (e.key === 'Escape') {
+    e.preventDefault(); e.stopPropagation();
+    const s = document.getElementById('lfSearch');
+    if (s.value) { s.value = ''; lfFilter(); s.focus(); } else lfClose();
+    return;
+  }
+  if (!inSearch && !inList) return;
+  if (e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); if (!e.repeat && _lf.active) lfChoose(document.getElementById(_lf.active)); return; }
+  if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); lfMove(e.key === 'ArrowDown' ? 1 : -1); return; }
+  if (!inList) return;                        // Home, End and the letters keep their own meaning inside the search box
+  if (e.key === 'Home' || e.key === 'End') { e.preventDefault(); lfMove(0, e.key === 'Home' ? 'first' : 'last'); return; }
+  if (e.key === 'PageDown' || e.key === 'PageUp') { e.preventDefault(); lfMove(e.key === 'PageDown' ? 8 : -8); return; }
+  if (e.key.length === 1 && e.key !== ' ' && !e.ctrlKey && !e.metaKey && !e.altKey && !e.isComposing) document.getElementById('lfSearch').focus();   // type-to-filter: the search box takes the letter being typed
+}
+function lfPump() {                           // "does it have Hebrew?" for every face not yet known — three at a time, slices only, remembered for the session
+  if (!_lf) return;
+  const run = _lf, gen = run.gen;
+  while (run.queue < 3) {
+    const it = run.items.find(x => x.heb === undefined && !x.checking); if (!it) break;
+    it.checking = true; run.queue++;
+    (async () => {
+      let heb = false, read = true;
+      try { const f = await lfOpenFace(it); heb = await lfHasHebrew(f.rd, f.dir); } catch (e) { read = false; }
+      if (it.ps && read) _lfHebCache.set(it.ps, heb);   // a font that could not be read is asked again next time
+      if (!_lf || _lf.gen !== gen) return;    // the picker closed (or was reopened) meanwhile
+      it.heb = heb; it.checking = false; run.queue--; run.done++;
+      lfPaint(it);
+      if (heb || run.done === run.items.length || run.done % 25 === 0) lfFilter();   // a new Hebrew face shows at once; the progress line moves in steps so a screen reader is not flooded
+      if (heb && it.near) lfPreview(it);
+      lfPump();
+    })();
+  }
+}
+function lfObserve() {                        // an option's sample is drawn when it scrolls near, as the Starting Fonts cards are
+  if (!_lf || !window.IntersectionObserver) return;
+  _lf.obs = new IntersectionObserver(ents => { if (!_lf) return;
+    ents.forEach(en => { const it = _lf.items[+en.target.dataset.i]; if (!it) return; it.near = en.isIntersecting; if (it.near && it.heb) lfPreview(it); });
+  }, { root: document.getElementById('lfList'), rootMargin: '200px 0px' });
+  _lf.items.forEach(it => _lf.obs.observe(it.el));
+}
+async function lfPreview(it) {                // the sample in the font's OWN bytes, under a name made here — never by family name, which could resolve to another face
+  if (!_lf || it.face || it.previewing || it.noPreview || !window.FontFace) return;
+  it.previewing = true;
+  const gen = _lf.gen, name = 'HFMLocal' + gen + '_' + _lf.items.indexOf(it);
+  let ff = null;
+  try { const got = await lfFaceBytes(it); ff = new FontFace(name, got.bytes.buffer); await ff.load(); } catch (e) { ff = null; }
+  it.previewing = false;
+  if (!_lf || _lf.gen !== gen) return;        // closed meanwhile: the face is simply dropped, never added
+  if (!ff) { it.noPreview = true; lfPaint(it); return; }
+  document.fonts.add(ff); _lf.faces.push(ff); it.face = ff;
+  it.sampleEl.style.fontFamily = "'" + name + "', 'IvritSuite Taamim', serif";
+  it.sampleEl.classList.add('is-ready');
+}
+function lfClose() {
+  if (!_lf) return;
+  const run = _lf; _lf = null;
+  if (run.obs) run.obs.disconnect();
+  run.faces.forEach(ff => { try { document.fonts.delete(ff); } catch (e) {} });   // the previews were for choosing; none of them stays registered
+  document.getElementById('lfList').textContent = '';
+  aCloseModal('localFontOverlay');
+  const b = document.getElementById(run.openerId); if (b) b.focus();    // by id: the panel that holds the button may have been rebuilt meanwhile
+}
+function lfNote(msg) {                        // a message while the picker is open belongs in the picker (the status line is dimmed behind it)
+  if (!_lf) return; _lf.note = !!msg;
+  if (msg) document.getElementById('lfCount').textContent = msg; else lfFilter();
+}
+async function lfChoose(el) {
+  const run = _lf; if (!run || run.choosing || !el) return;
+  const it = run.items[+el.dataset.i]; if (!it) return;
+  if (run.target === 'reference') { lfClose(); lfUseAsReference(it); return; }
+  run.choosing = true; el.setAttribute('aria-busy', 'true'); lfNote('');
+  let got = null, names = {};
+  try { got = await lfFaceBytes(it); names = await lfNames(got.face.rd, got.face.dir, [0, 13, 14]); }
+  catch (e) { if (_lf === run) { run.choosing = false; el.removeAttribute('aria-busy'); lfNote(lfT(e && e.tooBig ? 'too_big' : 'read_fail', { font: it.full })); } return; }
+  if (_lf !== run) return;
+  const info = { name: it.full, copyright: lfClean(names[0], 600), license: lfClean(names[13], 600), licenseUrl: lfClean(names[14], 300) };
+  const otf = got.face.dir.ver === 0x4F54544F, variable = !!got.face.dir.tables.fvar;
+  const file = new File([got.bytes], (it.full.replace(/[\\/:*?"<>|]+/g, ' ').trim().slice(0, 80) || 'Font') + (otf ? '.otf' : '.ttf'), { type: otf ? 'font/otf' : 'font/ttf' });
+  file.hfmInstalled = info;                   // rides to applyFontImport, which every question of the import dialog closes over (lfStampInstalled)
+  lfClose();
+  lfLicenseNotice(info, variable, () => uploadSourceFont(file));
+}
+function lfHttpUrl(s) { try { const u = new URL(s); return (u.protocol === 'https:' || u.protocol === 'http:') ? u.href : ''; } catch (e) { return ''; } }
+function lfLicenseNotice(info, variable, go) {   // what the font says about itself, and whose responsibility it is — before anything is imported
+  const box = (key, val, cls) => val ? '<span class="lf-lic-row"><b>' + esc(lfT(key)) + '</b><span class="lf-lic-val' + (cls || '') + '" dir="auto" tabindex="0" role="group" aria-label="' + esc(lfT(key)) + '">' + esc(val) + '</span></span>' : '';
+  const stated = info.copyright || info.license || info.licenseUrl;
+  askModal(lfT('notice_title'),
+    '<span class="lf-lic">' + '<span class="lf-lic-line">' + esc(lfT(stated ? 'notice_intro' : 'notice_none', { font: info.name })) + '</span>'
+      + box('notice_copyright', info.copyright) + box('notice_license', info.license) + box('notice_url', info.licenseUrl, ' lf-lic-url')
+      + '<span class="lf-lic-line"><b>' + esc(lfT('notice_own')) + '</b></span>'
+      + '<span class="lf-lic-line">' + esc(lfT('notice_after')) + '</span>'
+      + (variable ? '<span class="lf-lic-line">' + esc(lfT('notice_variable')) + '</span>' : '') + '</span>',
+    [{ label: I18n.t('fontmaker.modals.cancel'), cls: 'ghost' }, { label: lfT('notice_continue'), onClick: go }]);
+  const href = lfHttpUrl(info.licenseUrl), slot = document.querySelector('#askBody .lf-lic-url');
+  if (href && slot) {                         // a link only for a real web address, and built as an element — the font's text never becomes an attribute by string
+    const a = document.createElement('a'); a.href = href; a.target = '_blank'; a.rel = 'noopener noreferrer'; a.textContent = info.licenseUrl;
+    slot.textContent = ''; slot.appendChild(a);
+  }
+}
+/* An installed font's import leaves the project's licence "not chosen yet". Called by applyFontImport
+   before its first change to the project, so nothing of the font is ever in a project that still says
+   OFL; syncMetaToForm() right after, or the form's next onMetaChange() would write the old choice back.
+   Font metadata is outside undo (onMetaChange → markDirty), and so is a font import; this rides with it.
+   A partner-locked project (project.osFont) keeps its lock. */
+function lfCleanSource(o) {
+  if (!o || typeof o !== 'object') return null;
+  const s = { name: lfClean(o.name, 160), copyright: lfClean(o.copyright, 600), license: lfClean(o.license, 600), licenseUrl: lfClean(o.licenseUrl, 300) };
+  return s.name ? s : null;
+}
+function lfStampInstalled(file) {
+  const src = lfCleanSource(file && file.hfmInstalled);
+  if (!src || !project || project.osFont) return;
+  project.font.license = 'unset'; project.font.sourceFont = src;
+  syncMetaToForm(); markDirty();
+}
+function syncSourceFontNote() {               // Font Details: the "not chosen yet" option and what the source font says about itself
+  const lic = document.getElementById('license'), note = document.getElementById('srcFontNote'); if (!lic || !note) return;
+  const src = (project && !project.osFont && project.font.sourceFont) || null, unset = !!(project && !project.osFont && project.font.license === 'unset');
+  note.hidden = !src && !unset;
+  note.textContent = '';
+  if (note.hidden) { if (lic.getAttribute('aria-describedby') === 'srcFontNote') lic.removeAttribute('aria-describedby'); return; }
+  const line = (text, strong) => { const d = document.createElement('div'); if (strong) { const b = document.createElement('b'); b.textContent = text; d.appendChild(b); } else d.textContent = text; note.appendChild(d); };
+  if (unset) line(I18n.t('fontmaker.panels.license_unset_note'), true);
+  if (src) {
+    line(I18n.t('fontmaker.panels.source_font_note', { font: src.name }));
+    if (src.copyright) line(I18n.t('fontmaker.panels.source_font_copyright', { text: src.copyright }));
+    if (src.license) line(I18n.t('fontmaker.panels.source_font_license', { text: src.license }));
+    if (src.licenseUrl) line(src.licenseUrl);
+  }
+  lic.setAttribute('aria-describedby', 'srcFontNote');
+}
+function licenseUnsetGate() {                 // true = stop: nothing is exported, saved to My Fonts or sent while no licence was chosen
+  if (!project || project.osFont || project.font.license !== 'unset') return false;
+  const src = project.font.sourceFont;
+  askModal(I18n.t('fontmaker.modals.license_unset_title'),
+    esc(I18n.t(src ? 'fontmaker.modals.license_unset_body' : 'fontmaker.modals.license_unset_body_plain', { font: src ? src.name : '' })),
+    [{ label: I18n.t('fontmaker.modals.license_unset_btn'), onClick: exportJumpToLicense }, { label: I18n.t('fontmaker.modals.cancel'), cls: 'ghost' }]);
+  return true;
+}
+async function lfUseAsReference(it) {         // the tracing guide, by NAME: no bytes are read, none are stored in the project
+  if (!LF_PS_RE.test(it.ps)) { status(I18n.t('fontmaker.status.localfont_noname')); return; }
+  const fam = 'TplLocal_' + it.ps.replace(/[^A-Za-z0-9]+/g, '_') + '_' + (customTemplateFonts.length + 1);
+  try { const ff = new FontFace(fam, 'local("' + it.ps + '")'); await ff.load(); document.fonts.add(ff); }
+  catch (e) { console.error(e); status(I18n.t('fontmaker.status.font_read_fail')); return; }
+  const family = "'" + fam + "', serif", name = it.full;
+  customTemplateFonts.push({ section: 'Custom', name, family, load: null });
+  (project.template.customFonts = project.template.customFonts || []).push({ name, fam, family, local: it.ps });
+  project.template.font = family; project.template.showOverlay = true;
+  markDirty();
+  renderStage(); renderControls(); renderLetterGrid();
+  const sel = document.getElementById('templateFont'); if (sel) sel.value = family;
+  status(I18n.t('fontmaker.status.template_font_loaded', { name }));
 }
 
 /* ════════ Stage rendering ════════ */
@@ -17193,6 +17643,7 @@ function referencePanelR() {
       <button class="ctl-btn hi-btn" style="font-size:0.72rem;width:100%;" onclick="document.getElementById('ttfTemplateFile').click()">${ICON_UPLOAD_SM}${esc(I18n.t('fontmaker.panels.reference_upload'))}</button>
       <div class="allowed">${I18n.t('fontmaker.panels.reference_upload_allowed')}</div>
       <input type="file" id="ttfTemplateFile" accept=".ttf,.otf,font/ttf,font/otf,application/font-sfnt" style="display:none;">
+      ${ LF_OK ? `<button class="ctl-btn" id="lfPickRef" style="font-size:0.72rem;width:100%;margin-top:4px;" onclick="lfOpen('reference')" title="${esc(I18n.t('fontmaker.localfont.pick_title'))}">${esc(I18n.t('fontmaker.localfont.pick'))}</button>` : '' }
     </div>
     <label class="chk"><input type="checkbox" id="showTemplate" ${project.template.showOverlay?'checked':''} onchange="setTemplateShow(this.checked)"> ${I18n.t('fontmaker.panels.reference_show')}</label>`;
 }
@@ -18042,6 +18493,7 @@ function inputModeBlock() {
       <div class="drop" id="fontDrop">${_pT('font_drop', 'Drop a font (TTF/OTF) here, or click to browse.')}</div>
       <div class="allowed">${I18n.t('fontmaker.panels.reference_upload_allowed')}</div>
       <input type="file" id="sourceFontFile" accept=".ttf,.otf,font/ttf,font/otf,application/font-sfnt" style="display:none;">
+      ${ LF_OK ? `<div class="ctl-row" style="margin-top:6px;"><button class="ctl-btn" id="lfPickImport" onclick="lfOpen('import')" title="${esc(I18n.t('fontmaker.localfont.pick_title'))}">${esc(I18n.t('fontmaker.localfont.pick'))}</button></div>` : '' }
     </div>`;
 }
 function wireInputModeBlock() {
@@ -18113,6 +18565,7 @@ function udShortcutBlocked() {
   if (document.getElementById('qaOverlay')?.classList.contains('open')) return true;
   if (document.getElementById('adOverlay')?.classList.contains('open')) return true;
   if (document.getElementById('svgPasteOverlay')?.classList.contains('open')) return true;   // focus on one of its buttons is not typing — undo, nudges and Delete must not reach the letter behind it
+  if (document.getElementById('localFontOverlay')?.classList.contains('open')) return true;   // its listbox is a focused div, not a field: arrows, Delete and undo must not reach the editor behind it
   if (document.getElementById('wizardOverlay')?.classList.contains('open')) return true;   // esp. cancellable mode — Ctrl+Z must not mutate the project behind it
   if (document.getElementById('osPickOverlay')?.classList.contains('open')) return true;   // the starting-font picker sits in the same slot as the wizard
   if (document.getElementById('importProgressOverlay')?.classList.contains('open')) return true;   // an import is mid-flight — no undo/redo into a half-imported project
@@ -19621,7 +20074,7 @@ function buildFontSpec() {
   const bold = fnt.style === 'bold';
   const styleName = bold ? 'Bold' : 'Regular';
   const reserved = fnt.reservedFontName || fam;
-  const lic = LICENSES[fnt.license] || LICENSES.ofl;
+  const lic = LICENSES[fnt.license] || LICENSES.ofl;   // 'unset' has a row of its own, so it never reads as OFL
   const names = {
     familyName: fam, styleName: styleName,
     uniqueFontIdentifier: fam + (bold ? ' Bold' : '') + '-' + fnt.version,
@@ -21122,6 +21575,7 @@ function fmSendLicenseWarn(dest) {
 }
 async function fmSendFont(dest, licenseChecked) {   // Exported ✓ → Send to IvritSuite / to the Open Siddur Project
   if (!project) return;
+  if (licenseUnsetGate()) return;
   const d = fmDest(dest);
   if (d.freeOnly && !licenseChecked && !project.osFont && project.font.license === 'arr') { fmSendLicenseWarn(dest); return; }
   const files = await fmSendFiles();
@@ -21178,6 +21632,7 @@ function exportJumpToFontDetails() {   // land the user on the family-name field
 }
 async function exportFont() {
   if (!project) return;
+  if (licenseUnsetGate()) return;   // a font imported from the computer's installed fonts: the teacher chooses its licence first
   const fmt = (document.getElementById('exportFormat') || {}).value || 'ttf';
   // Partner starting-font: a derivative may not use the upstream's Reserved Font Names — a
   // BLOCKING guard (no export-anyway) ahead of every warning below; the license makes this
@@ -21849,6 +22304,7 @@ async function saveCurrentToMyFonts(bytes) {
   // Same gate as exportFont: the pre-drawn punctuation glyphs carry contours on a brand-new project,
   // so a bare `l.contours` count let an untraced font reach the build (and the engine download).
   if (!project || coreLetterStats().traced === 0) { status(I18n.t('fontmaker.status.trace_first')); return; }
+  if (licenseUnsetGate()) return;   // this builds a font too, without passing exportFont
   // The My Fonts store is keyed by name — a bold save must not evict its Regular sibling.
   const fam = (project.font.familyName || 'My Hebrew Font').trim() + (fontIsBold() ? ' Bold' : '');
   try {
@@ -21918,7 +22374,10 @@ const LICENSES = {
   cc0:  { name: 'Public Domain (CC0 1.0)',          desc: 'This font is dedicated to the public domain under CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/).', url: 'https://creativecommons.org/publicdomain/zero/1.0/' },
   ofl:  { name: 'SIL Open Font License 1.1',        desc: 'This Font Software is licensed under the SIL Open Font License, Version 1.1. This license is available with a FAQ at https://openfontlicense.org', url: 'https://openfontlicense.org' },
   mit:  { name: 'MIT License',                      desc: 'This font is licensed under the MIT License (https://opensource.org/licenses/MIT).', url: 'https://opensource.org/licenses/MIT' },
-  arr:  { name: 'All Rights Reserved',              desc: 'All rights reserved. This font is proprietary and may not be used without permission.', url: '' }
+  arr:  { name: 'All Rights Reserved',              desc: 'All rights reserved. This font is proprietary and may not be used without permission.', url: '' },
+  // Not a licence: the state an installed font's import leaves the project in. Export, My Fonts and Send stop
+  // before reaching this (licenseUnsetGate); it exists so that no fallback can stamp OFL on such a font.
+  unset: { name: 'License not chosen',              desc: 'No license has been chosen for this font.', url: '' }   // i18n-ignore: font name-table text, English like the rows above
 };
 function licenseCtx() {
   const family = project.font.familyName || 'My Hebrew Font';
@@ -21932,6 +22391,7 @@ function licenseText() {            // the LICENSE.txt body for the chosen licen
     case 'cc0':  return cc0Text();
     case 'mit':  return mitText();
     case 'arr':  return arrText();
+    case 'unset': return 'No license has been chosen for this font.\n';   // i18n-ignore: LICENSE.txt text; unreachable through the gates, never OFL by fallback
     default:     return oflText();   // 'ofl'
   }
 }
@@ -24315,7 +24775,8 @@ function migrateProject(data) {
   data.precomposed.forEach(pc => { if (pc.anchor === undefined) pc.anchor = null; if (pc.holam === undefined) pc.holam = null; });   // per-form mark anchor + holam-attach override
   data.precomposed.forEach(sanitizePrecompSrc);   // a form outline taken whole from a source font — shape-checked because it becomes glyph data verbatim
   if (!_isObj(data.template)) data.template = { font:"'Noto Sans Hebrew', sans-serif", opacity:0.35, showOverlay:true };
-  data.template.customFonts = _objs(data.template.customFonts);   // uploaded tracing fonts (bytes) persist here
+  data.template.customFonts = _objs(data.template.customFonts);   // uploaded tracing fonts (bytes) persist here; one picked from the installed fonts persists as a name
+  data.template.customFonts.forEach(cf => { if (cf.local !== undefined && !(typeof cf.local === 'string' && LF_PS_RE.test(cf.local))) delete cf.local; });   // the name goes inside local("…"): only the strict pattern
   if (!_isObj(data.view)) data.view = { imgOpacityAlign:0.92, imgOpacityTrace:0.28, glyphOpacity:1.0 };
   ['imgOpacityAlign','imgOpacityTrace','glyphOpacity'].forEach((k,i)=>{ if(data.view[k]==null) data.view[k]=[0.92,0.28,1.0][i]; });
   if (data.view.snapGuides == null) data.view.snapGuides = true;   // node-drag snapping — absent = ON
@@ -24327,6 +24788,7 @@ function migrateProject(data) {
     if (data.font.author === undefined) data.font.author = data.font.copyright || '';   // Copyright field → Author
     delete data.font.copyright;
     if (!data.font.license) data.font.license = 'ofl';
+    { const src = lfCleanSource(data.font.sourceFont); if (src) data.font.sourceFont = src; else delete data.font.sourceFont; }   // what an installed font said about itself: text from a project file, shape-checked and capped
     if (data.osFont && typeof data.osFont !== 'object') delete data.osFont;   // junk partner block → plain project
     if (data.osFont) {   // partner starting-font (see CLAUDE.md: Starting Fonts): the license lock survives every load
       data.font.license = 'os-passthrough';
