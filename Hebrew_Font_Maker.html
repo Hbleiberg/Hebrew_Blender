@@ -1427,6 +1427,24 @@ header{--kin-pt:10px;--kin-pb:10px;--kin-gap:14px;}   /* this header's block pad
     transition: all 0.15s; font-size: 0.8rem; cursor: pointer;
   }
   .drop.drag { border-color: var(--gold); background: rgba(201,146,42,0.1); }
+  /* ── Paste SVG: the canvas as a drop target, and the dialog ── */
+  .stage-wrap.drag { outline: 2px dashed var(--gold); outline-offset: -5px; }
+  label.fld textarea { border: 1px solid var(--border); border-radius: 5px; padding: 6px 8px; font: 400 0.78rem/1.4 ui-monospace, Menlo, Consolas, monospace;
+    background: var(--white); color: var(--text); resize: vertical; min-height: 96px; width: 100%; box-sizing: border-box; }
+  .modal p.svgp-info { font-size: 0.8rem; color: var(--muted); margin: 6px 0; }
+  .modal p.svgp-note { font-size: 0.82rem; margin: 6px 0; }
+  .svgp-info[hidden], .svgp-note[hidden], .mbtns .tbtn[hidden] { display: none; }
+  .svgp-body { display: flex; gap: 14px; align-items: flex-start; flex-wrap: wrap; margin-block-start: 8px; }
+  .svgp-opts { flex: 1 1 250px; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
+  .svgp-opts .chk { font-size: 0.84rem; }
+  .svgp-legend { font-size: 0.76rem; font-weight: 700; color: var(--muted); margin-block-end: 2px; }
+  .svgp-prev { flex: 0 0 auto; direction: ltr; border: 1px solid var(--border); border-radius: 8px; padding: 6px; background: var(--white); }   /* a glyph stage in small: never mirrored */
+  .svgp-prev svg { display: block; width: 150px; height: 170px; }
+  .svgp-guide { stroke: var(--border); stroke-width: 1; vector-effect: non-scaling-stroke; }
+  .svgp-guide.base { stroke: var(--gold); stroke-width: 1.5; }
+  .svgp-adv { fill: none; stroke: var(--border); stroke-width: 1; stroke-dasharray: 3 3; vector-effect: non-scaling-stroke; }
+  .svgp-old { fill: var(--muted); opacity: 0.4; }
+  .svgp-new { fill: var(--text); }
 
   footer { border-top: 1px solid var(--border); background: var(--white); color: var(--muted); padding: 12px 18px; font-size: 0.74rem; line-height: 1.5; }
   footer a { color: var(--gold-text); text-decoration: none; }
@@ -2702,6 +2720,35 @@ html[lang="he"] .tp-label{letter-spacing:normal;text-transform:none;}
     <label class="chk" style="font-size:0.84rem;"><input type="checkbox" id="copyOutlineWidth"> <span data-i18n="fontmaker.modals.copyoutline_width">Also copy width &amp; side bearings</span></label>
     <div id="copyOutlineList" style="display:grid;grid-template-columns:1fr 1fr;gap:2px 10px;max-height:46vh;overflow:auto;margin-top:8px;"></div>
     <div class="mbtns"><button class="tbtn ghost" onclick="closeCopyOutline()" data-i18n="fontmaker.modals.copyoutline_cancel">Cancel</button><button class="tbtn" onclick="copyOutlineDo()" data-i18n="fontmaker.modals.copyoutline_copy">Copy outline</button></div>
+  </div>
+</div>
+
+<!-- Paste SVG artwork into the current letter (Ctrl/⌘+V, a file dropped on the canvas, or the "Paste SVG code…" buttons) -->
+<div class="overlay" id="svgPasteOverlay" onclick="if(event.target===this)closeSvgPaste()">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="svgPasteTitle" style="max-width:540px;" onkeydown="svgPasteKey(event)">
+    <h3 id="svgPasteTitle"></h3>
+    <div id="svgPasteCodeBox" hidden>
+      <label class="fld"><span data-i18n="fontmaker.modals.svgpaste_code_label">SVG code</span>
+        <textarea id="svgPasteText" rows="6" dir="ltr" lang="en" spellcheck="false" autocomplete="off" autocapitalize="off" aria-describedby="svgPasteCodeHint svgPasteNote" oninput="svgPasteCodeInput(false)" onchange="svgPasteCodeInput(true)"></textarea></label>
+      <p class="svgp-info" id="svgPasteCodeHint" data-i18n="fontmaker.modals.svgpaste_code_hint">Paste the code your drawing app copies or exports. It starts with &lt;svg and ends with &lt;/svg&gt;.</p>
+    </div>
+    <p class="svgp-info" id="svgPasteInfo" hidden></p>
+    <p class="svgp-note warn" id="svgPasteNote" role="status" aria-live="polite" hidden></p>
+    <div class="svgp-body">
+      <div class="svgp-opts">
+        <div role="radiogroup" aria-labelledby="svgPasteFitLbl" onchange="svgPasteRefresh()">
+          <div class="svgp-legend" id="svgPasteFitLbl" data-i18n="fontmaker.modals.svgpaste_size">Size</div>
+          <div id="svgPasteFitList"></div>
+        </div>
+        <div id="svgPasteModeGroup" role="radiogroup" aria-labelledby="svgPasteModeLbl" onchange="svgPasteRefresh()" hidden>
+          <div class="svgp-legend" id="svgPasteModeLbl" data-i18n="fontmaker.modals.svgpaste_has_outline">This letter already has an outline</div>
+          <label class="chk"><input type="radio" name="svgPasteMode" value="replace"> <span data-i18n="fontmaker.modals.svgpaste_replace">Replace it</span></label>
+          <label class="chk"><input type="radio" name="svgPasteMode" value="add"> <span data-i18n="fontmaker.modals.svgpaste_add">Add to it (build the letter from pieces)</span></label>
+        </div>
+      </div>
+      <div class="svgp-prev" dir="ltr" aria-hidden="true"><svg id="svgPastePrev" viewBox="0 0 10 10" preserveAspectRatio="xMidYMid meet" focusable="false"></svg></div>
+    </div>
+    <div class="mbtns"><button class="tbtn ghost" id="svgPastePtsBtn" onclick="svgPastePointsInstead()" data-i18n="fontmaker.modals.svgpaste_points_instead" hidden>Paste the copied points instead</button><button class="tbtn ghost" onclick="closeSvgPaste()" data-i18n="fontmaker.modals.cancel">Cancel</button><button class="tbtn" id="svgPasteGo" onclick="svgPasteCommit()" data-i18n="fontmaker.modals.svgpaste_insert">Insert</button></div>
   </div>
 </div>
 
@@ -5560,6 +5607,7 @@ function shortcutGroups() {
       ['?', t('sc_open_sheet')],
       [`${M} + Z`, t('sc_undo')],
       [`${M} + Shift + Z  or  ${M} + Y`, t('sc_redo')],
+      [`${M} + V`, t('sc_paste_svg')],
       ['Esc', t('sc_esc')],
       ['Shift + R', t('sc_rulers')],
       ['Shift + G', t('sc_grid')],
@@ -9413,12 +9461,103 @@ function withSvgHost(svgEl, fn) {           // render an off-screen clone so get
   host.appendChild(svg); document.body.appendChild(host);
   try { return fn(svg); } finally { host.remove(); }
 }
-function parseSvgText(text) {
+function parseSvgText(text) {               // → the INERT root of a DOMParser document; nothing of it ever reaches the page (svgSanitize rebuilds what does)
   const doc = new DOMParser().parseFromString(text || '', 'image/svg+xml');
-  if (doc.getElementsByTagName('parsererror').length) throw new Error('That file is not valid SVG.');
+  if (doc.getElementsByTagName('parsererror').length) { const e = new Error(I18n.t('fontmaker.modals.svg_invalid')); e.svgSyntax = true; throw e; }
   const root = doc.documentElement;
-  if (!root || root.localName !== 'svg') throw new Error('No <svg> root element found in that file.');
+  if (!root || root.localName !== 'svg') { const e = new Error(I18n.t('fontmaker.modals.svg_no_root')); e.svgSyntax = true; throw e; }
   return root;
+}
+/* ── SVG sanitizer ── An SVG is untrusted (a file from anyone, a clipboard, a sheet inside a shared
+   project) and the importer has to MOUNT it to measure it (withSvgHost), which on the raw tree ran
+   its inline handlers and applied its <style> to the page. So the parsed tree stays inert and this
+   rebuilds, with createElementNS, a second tree holding nothing but geometry: the shapes below,
+   their geometry attributes and transforms. No script, style, image, use, text or foreignObject, no
+   on* attribute, no href, no class, and no id (ids ride as data-fm-id so a foreign id is never live
+   in this document). Matching is by localName, so markup pasted without its xmlns still imports.
+   What CSS decided on the original — is this shape shown, is it filled — is worked out here on the
+   inert tree by a four-property cascade (svgOwnStyle), because the stylesheet itself never mounts. */
+const SVG_INK_NS = 'http://www.inkscape.org/namespaces/inkscape';
+const SVG_SHAPE_ATTRS = { path: ['d'], rect: ['x', 'y', 'width', 'height'], circle: ['cx', 'cy', 'r'], ellipse: ['cx', 'cy', 'rx', 'ry'],
+  line: ['x1', 'y1', 'x2', 'y2'], polygon: ['points'], polyline: ['points'] };
+const SVG_BOX_ATTRS = ['viewBox', 'preserveAspectRatio', 'x', 'y', 'width', 'height'];   // an <svg>, root or nested: they set its own coordinate system
+const SVG_GROUP_TAGS = { svg: 1, g: 1, a: 1, switch: 1 };                                 // walked; <a> and <switch> are rebuilt as <g>
+const SVG_STYLE_PROPS = ['display', 'visibility', 'fill', 'stroke', 'fill-opacity'];
+const SVG_CSS_XFORM = ['transform', 'transform-origin', 'transform-box'];
+const SVG_PASTE_MAX_CHARS = 2000000, SVG_PASTE_MAX_SHAPES = 3000, SVG_PASTE_MAX_SUBPATHS = 4000;   // pasted artwork only — a cap must never refuse a sheet a saved project already holds
+function svgInlineDecls(el) {                // style="a:b; c:d" → {a:'b', c:'d'}, by hand: an element of an inert document may have no .style at all
+  const out = {}, s = el.getAttribute('style');
+  if (s) s.split(';').forEach(part => { const i = part.indexOf(':'); if (i > 0) { const k = part.slice(0, i).trim().toLowerCase(), v = part.slice(i + 1).replace(/!\s*important/i, '').trim(); if (k && v) out[k] = v; } });
+  return out;
+}
+function svgStyleRules(root) {               // every <style> rule in source order. The sheets are constructed, read and dropped — never adopted — so no @import, url() or font is fetched
+  const rules = [];
+  if (typeof CSSStyleSheet !== 'function') return rules;   // no constructable sheets (an older Safari): classes are not read, attributes and inline styles still are
+  Array.from(root.getElementsByTagName('*')).forEach(el => {
+    if (el.localName !== 'style') return;
+    try { const sh = new CSSStyleSheet(); sh.replaceSync(el.textContent || '');
+      Array.from(sh.cssRules).forEach(r => { if (r.selectorText && r.style) rules.push(r); }); } catch (e) {}
+  });
+  return rules;
+}
+function svgOwnStyle(el, rules) {            // the properties this element sets itself: presentation attribute < stylesheet rule (source order) < inline style
+  const o = {};
+  SVG_STYLE_PROPS.forEach(p => { const a = el.getAttribute(p); if (a != null && a.trim() !== '') o[p] = a.trim(); });
+  rules.forEach(r => { let hit = false; try { hit = el.matches(r.selectorText); } catch (e) {}   // a namespaced or unknown selector throws — it simply does not match
+    if (hit) SVG_STYLE_PROPS.forEach(p => { const v = r.style.getPropertyValue(p); if (v) o[p] = v.trim(); }); });
+  const inl = svgInlineDecls(el);
+  SVG_STYLE_PROPS.forEach(p => { if (inl[p]) o[p] = inl[p]; });
+  SVG_STYLE_PROPS.forEach(p => { if (o[p] && /^inherit$/i.test(o[p])) delete o[p]; });
+  return o;
+}
+function svgSanitize(root, opts) {           // inert parsed root → { svg: a geometry-only tree safe to mount, skipped: stroke-only shapes left out (opts.paste) }
+  const o = opts || {}, rules = svgStyleRules(root), stat = { shapes: 0, subpaths: 0, skipped: 0 };
+  const copy = (src, out, names) => names.forEach(n => { const v = src.getAttribute(n); if (v != null) out.setAttribute(n, v); });
+  const carry = (src, out) => {               // what every kept element takes along: its transform (attribute and CSS) and its names, as data
+    copy(src, out, ['transform']);
+    const inl = svgInlineDecls(src);
+    SVG_CSS_XFORM.forEach(p => { if (inl[p]) { try { out.style.setProperty(p, inl[p]); } catch (e) {} } });
+    const id = src.getAttribute('id'), label = src.getAttributeNS(SVG_INK_NS, 'label') || src.getAttribute('inkscape:label');
+    if (id) out.setAttribute('data-fm-id', id);
+    if (label) out.setAttribute('data-fm-label', label);
+  };
+  const walk = (src, parentOut, inh) => {
+    const tag = src.localName;
+    if (!SVG_GROUP_TAGS[tag] && !SVG_SHAPE_ATTRS[tag]) return;          // everything else, with its whole subtree, is not rebuilt
+    const own = svgOwnStyle(src, rules);
+    // display:none hides a shape, and for pasted artwork the whole subtree of a hidden group (a hidden
+    // layer). File and sheet uploads keep what they always did — only a shape's OWN display counted,
+    // so the contents of a hidden group still import — because this pass must not change what a sheet yields.
+    if (/^none$/i.test(own.display || '') && (o.paste || !SVG_GROUP_TAGS[tag])) return;
+    const st = { visibility: own.visibility || inh.visibility, fill: own.fill || inh.fill, stroke: own.stroke || inh.stroke, 'fill-opacity': own['fill-opacity'] || inh['fill-opacity'] };
+    if (SVG_GROUP_TAGS[tag]) {
+      const out = document.createElementNS(SVG_NS, tag === 'svg' ? 'svg' : 'g');
+      if (tag === 'svg') copy(src, out, SVG_BOX_ATTRS);
+      carry(src, out);
+      if (parentOut) parentOut.appendChild(out);
+      let kids = Array.from(src.children);
+      if (tag === 'switch') {                                           // a browser renders only the first child whose conditions hold — in practice the plain <g> after Illustrator's foreignObject
+        const pick = kids.find(k => (SVG_GROUP_TAGS[k.localName] || SVG_SHAPE_ATTRS[k.localName]) && !k.hasAttribute('requiredExtensions') && !k.hasAttribute('systemLanguage'));
+        kids = pick ? [pick] : [];
+      }
+      kids.forEach(k => walk(k, out, st));
+      return out;
+    }
+    if (/^(hidden|collapse)$/i.test(st.visibility || '')) return;
+    if (o.paste) {
+      const unfilled = tag === 'line' || /^none$/i.test(st.fill || '') || parseFloat(st['fill-opacity']) === 0;   // a <line> encloses nothing whatever its fill says
+      if (unfilled) { if (st.stroke && !/^none$/i.test(st.stroke)) stat.skipped++; return; }   // a stroke with nothing inside it is not an outline; an unpainted shape is nothing at all
+      stat.shapes++;
+      stat.subpaths += tag === 'path' ? Math.max(1, ((src.getAttribute('d') || '').match(/[Mm]/g) || []).length) : 1;
+      if (stat.shapes > SVG_PASTE_MAX_SHAPES || stat.subpaths > SVG_PASTE_MAX_SUBPATHS) throw new Error(I18n.t('fontmaker.modals.svg_too_complex'));
+    }
+    const out = document.createElementNS(SVG_NS, tag);
+    copy(src, out, SVG_SHAPE_ATTRS[tag]);
+    carry(src, out);
+    parentOut.appendChild(out);
+  };
+  const svg = walk(root, null, {}) || document.createElementNS(SVG_NS, 'svg');   // a root that is display:none imports as nothing
+  return { svg, skipped: stat.skipped };
 }
 function splitSubpaths(d) {                 // split a path's d at each M/m so holes stay separate closed contours
   if (!d) return [];
@@ -9482,25 +9621,19 @@ function loopsBBox(loops) {
   loops.forEach(L => L.forEach(([x, y]) => { if (x < minX) minX = x; if (y < minY) minY = y; if (x > maxX) maxX = x; if (y > maxY) maxY = y; }));
   return { x: minX, y: minY, w: maxX - minX, h: maxY - minY };
 }
-function parseSvgEntries(text) {            // { entries:[{id,label,loops,bbox}], viewBox } — the source of truth for import
-  const root = parseSvgText(text);
-  return withSvgHost(root, svg => {
+function parseSvgEntries(text, opts) {      // { entries:[{id,label,loops,bbox}], viewBox, skipped } — the source of truth for import
+  const clean = svgSanitize(parseSvgText(text), opts);   // only the rebuilt, geometry-only tree is mounted; hidden shapes and non-rendering definitions are already gone from it
+  return withSvgHost(clean.svg, svg => {
     const rootCTM = svg.getScreenCTM() || svg.getCTM();
     const entries = [];
     svg.querySelectorAll('path,rect,circle,ellipse,line,polygon,polyline').forEach(el => {
-      if (el.closest('defs,clipPath,mask,marker,symbol,pattern')) return;        // non-rendering definitions
-      let cs = null; try { cs = getComputedStyle(el); } catch (e) {}
-      if (cs && (cs.display === 'none' || cs.visibility === 'hidden')) return;
       const loops = elementToLoops(el, rootCTM);
       if (!loops.length) return;
-      entries.push({
-        id: el.id || '',
-        label: el.getAttributeNS('http://www.inkscape.org/namespaces/inkscape', 'label') || el.id || '',
-        loops, bbox: loopsBBox(loops)
-      });
+      const id = el.getAttribute('data-fm-id') || '';
+      entries.push({ id, label: el.getAttribute('data-fm-label') || id, loops, bbox: loopsBBox(loops) });
     });
     const vb = numList(svg.getAttribute('viewBox'));
-    return { entries, viewBox: vb.length === 4 ? { x: vb[0], y: vb[1], w: vb[2], h: vb[3] } : null };
+    return { entries, viewBox: vb.length === 4 ? { x: vb[0], y: vb[1], w: vb[2], h: vb[3] } : null, skipped: clean.skipped };
   });
 }
 function cacheSvgSheet(dataUrl, text) {     // parse + cache a combined SVG sheet (runtime only)
@@ -9640,6 +9773,350 @@ function finalizeCropSvg(l, parsed, im, rect, csh) {
   renderGrids(); renderStage(); renderControls();
   if (kind === 'letter') setWorkMode('anchors');
   status(I18n.t('fontmaker.status.vector_selected', {name: gName(l.name)}));
+}
+
+/* ════════ SVG paste — the clipboard, a file dropped on the canvas, and the "Paste SVG code…" box ════════
+   Three ways in, one way through: each ends in svgPasteParse (the sanitizing parser with its paste
+   option on: caps, and stroke-only shapes left out and counted), then ONE dialog (how to size it,
+   and Replace or Add when the letter already has an outline), then ONE udDo. None of it looks at
+   project.font.svgUpload — that setting only decides what the upload zones accept.
+   Replace is an SVG upload plus what an upload forgets: the source rides in the undo scope, and the
+   things that described the outline that is gone go with it. Add is a point paste: it goes through
+   the node model, so the windings are settled before anyone sees the result. */
+const SVG_POINTS_MARKER = 'ivritsuite-fontmaker:points';   // what Copy (points) leaves on the system clipboard, so an SVG copied EARLIER cannot beat points copied just now
+const SVG_PASTE_FITS = ['height', 'desc', 'xheight', 'keep'];
+const SVG_PASTE_MAX_COORD = 16000;                          // half the font format's ±32767 (glyphRangeError) — room for an advance and for marks around it
+const SVG_PASTE_LIVE_CHARS = 200000;                        // the code box re-reads as you type up to here; past it, when the box loses focus or Insert is pressed
+const SVG_IMPORT_FLAGS = ['engSource', 'cyrSource', 'phnSource', 'aramSource', 'smrSource'];
+let _svgPaste = null;          // the open dialog's state: { cp, code, parsed:{loops,bb,shapes,skipped}|null, err, built }
+let _svgPasteBusy = false;     // a dropped or pasted file is still being read
+let _ptPasteTimer = 0, _ptPasteFiredAt = 0;
+
+function svgTextFromHtml(html) {             // HTML that wraps an <svg> (a Figma or browser copy; markup too loose for XML) → that svg as XML. Parsed inert: nothing loads, nothing runs
+  try { const doc = new DOMParser().parseFromString(String(html || ''), 'text/html'), el = doc.querySelector('svg');
+    return el ? new XMLSerializer().serializeToString(el) : ''; } catch (e) { return ''; }
+}
+function svgFromDataTransfer(dt) {           // what a clipboard or a drop holds, decided at once: {text} | {html} | {file} | {image:true} | null
+  if (!dt) return null;
+  const get = type => { try { return dt.getData(type) || ''; } catch (e) { return ''; } };
+  let s = get('image/svg+xml');
+  if (/<svg[\s>]/i.test(s)) return { text: s };
+  const files = Array.from(dt.files || []);
+  const f = files.find(x => isProbablySvg(x, ''));
+  if (f) return { file: f };
+  s = get('text/plain');
+  if (isProbablySvg(null, s)) return { text: s };
+  s = get('text/html');
+  if (/<svg[\s>]/i.test(s)) return { html: s };
+  return files.some(x => /^image\//i.test(x.type || '')) ? { image: true } : null;
+}
+function svgPasteStageOk() {                 // is a letter's stage what the teacher is looking at, with nothing in flight?
+  if (!project || udShortcutBlocked() || _svgPasteBusy || _tourActive) return false;
+  if (document.querySelector('.overlay.open')) return false;
+  if (document.body.classList.contains('cat-settings') || precompTarget) return false;   // Font details / Spacing / Advanced, or a combined form on the placement stage: the letter is not what is showing
+  return !(tDrag || eDrag || metricDrag || guideDrag || nodeDrag || drawGesture);
+}
+function svgPasteHasOutline(l) { return !!(l && l.contours && l.contours.length && !isStockOutline(l)); }   // a shipped punctuation default is a placeholder, not the teacher's outline
+function svgPasteParse(text) {               // → { loops, bb, shapes, skipped }, or throws an Error whose message is ready to show
+  let t = String(text || '').replace(/^﻿/, '').trim();
+  if (t.length > SVG_PASTE_MAX_CHARS) throw new Error(I18n.t('fontmaker.modals.svg_too_big'));
+  let parsed;
+  try { parsed = parseSvgEntries(t, { paste: true }); }
+  catch (e) {                                // not well-formed XML: an HTML wrapper, or loose markup. One more try through the HTML parser
+    const alt = e && e.svgSyntax ? svgTextFromHtml(t) : '';
+    if (!alt) throw e;
+    parsed = parseSvgEntries(alt, { paste: true });
+  }
+  const all = parsed.entries.reduce((a, en) => a.concat(en.loops), []), box = loopsBBox(all);
+  const loops = all.filter(L => Math.abs(signedArea(L)) > 1e-7 * Math.max(1e-9, box.w * box.h));   // a path that encloses nothing (a straight open line) would stretch the box the fit measures and add no ink
+  const bb = loopsBBox(loops);
+  if (!loops.length || !isFinite(bb.x) || !(bb.h > 0) || !(bb.w > 0))
+    throw new Error(I18n.t(parsed.skipped ? 'fontmaker.modals.svgpaste_only_strokes' : 'fontmaker.modals.svg_no_paths'));
+  return { loops, bb, shapes: parsed.entries.length, skipped: parsed.skipped || 0 };
+}
+function svgPasteFitChoices(cp) {            // the size choices that mean something for this glyph
+  const b = glyphBand(cp);
+  return SVG_PASTE_FITS.filter(f => f === 'desc' ? b.desc : f === 'xheight' ? !!b.cased : true);
+}
+function svgPasteSpan(cp, fit, bb) {         // the vertical band the artwork's ink is scaled into
+  const m = effMetrics(), b = glyphBand(cp);
+  if (fit === 'desc')    return { bottom: m.descender, top: b.top };       // the tail reaches the descender line, the head the letter's top line
+  if (fit === 'xheight') return { bottom: m.baseline, top: m.xHeight };
+  if (fit === 'keep')    return { bottom: m.baseline, top: m.baseline + bb.h };   // 1 SVG unit = 1 font unit, sitting on the baseline
+  return { bottom: m.baseline, top: b.top };
+}
+function svgPasteBuild(st, fit, mode) {      // → { contours, inkL, inkR, tooBig } in font units, or null when nothing usable survives the fit
+  const l = project.letters.find(x => x.codepoint === st.cp); if (!l || !st.parsed) return null;
+  const m = effMetrics(), bb = st.parsed.bb, span = svgPasteSpan(st.cp, fit, bb);
+  const inkW = bb.w * (span.top - span.bottom) / bb.h;
+  // Centred: a replacement gets an advance of its own (ink + both default margins, the ink in the
+  // middle); an added piece goes to the middle of the advance the letter already has.
+  const lsb = mode === 'add' ? Math.round((letterAdvance(l) - inkW) / 2) : Math.round((m.defaultLSB + m.defaultRSB) / 2);
+  const contours = svgLoopsToContours(st.parsed.loops, { span, lsb });
+  if (!contours) return null;
+  let inkL = Infinity, inkR = -Infinity, far = 0;
+  contours.forEach(c => c.points.forEach(p => { if (p[0] < inkL) inkL = p[0]; if (p[0] > inkR) inkR = p[0]; far = Math.max(far, Math.abs(p[0]), Math.abs(p[1])); }));
+  return { contours, inkL, inkR, tooBig: far > SVG_PASTE_MAX_COORD };
+}
+function svgPasteFit() { const r = document.querySelector('#svgPasteFitList input:checked'); return r ? r.value : 'height'; }
+function svgPasteMode() {
+  const g = document.getElementById('svgPasteModeGroup'); if (!g || g.hidden) return 'replace';
+  const r = g.querySelector('input:checked'); return r && r.value === 'add' ? 'add' : 'replace';
+}
+function svgPasteDrawPreview(st) {           // a small picture of the result. Every number in it is ours (font units after the fit) — nothing of the pasted markup is drawn
+  const el = document.getElementById('svgPastePrev'); if (!el) return;
+  const l = project.letters.find(x => x.codepoint === st.cp); if (!l) { el.innerHTML = ''; return; }
+  const m = effMetrics(), band = glyphBand(st.cp), mode = svgPasteMode(), b = st.built;
+  const old = (mode === 'add' && l.contours) ? l.contours : null;
+  const adv = (b && mode !== 'add') ? Math.round(b.inkL + b.inkR) : letterAdvance(l);
+  let x0 = 0, x1 = adv, y0 = Math.min(m.descender, m.baseline), y1 = Math.max(band.top, m.letterTop);
+  const grow = cs => cs.forEach(c => c.points.forEach(p => { if (p[0] < x0) x0 = p[0]; if (p[0] > x1) x1 = p[0]; if (p[1] < y0) y0 = p[1]; if (p[1] > y1) y1 = p[1]; }));
+  if (b) grow(b.contours); if (old) grow(old);
+  const pad = Math.max(20, Math.round((y1 - y0) * 0.06)); x0 -= pad; x1 += pad; y0 -= pad; y1 += pad;
+  const d = cs => cs.map(c => 'M' + c.points.map(p => Math.round(p[0]) + ' ' + (-Math.round(p[1]))).join('L') + 'Z').join('');
+  const line = (y, cls) => `<line class="svgp-guide${cls}" x1="${x0}" x2="${x1}" y1="${-y}" y2="${-y}"/>`;
+  el.setAttribute('viewBox', `${x0} ${-y1} ${x1 - x0} ${y1 - y0}`);
+  el.innerHTML = `<rect class="svgp-adv" x="0" y="${-y1}" width="${Math.max(1, adv)}" height="${y1 - y0}"/>`
+    + band.lines.map(ln => line(Math.round(ln[0]), '')).join('') + line(Math.round(m.baseline), ' base')
+    + (old ? `<path class="svgp-old" d="${d(old)}"/>` : '') + (b ? `<path class="svgp-new" d="${d(b.contours)}"/>` : '');
+}
+function svgPasteRefresh() {                 // the dialog's one re-read: build for the chosen size and mode, then the summary, the note, the button and the picture
+  const st = _svgPaste; if (!st) return;
+  let err = st.err || '', built = null;
+  if (st.parsed) {
+    built = svgPasteBuild(st, svgPasteFit(), svgPasteMode());
+    if (!built) err = I18n.t('fontmaker.modals.svg_no_paths');
+    else if (built.tooBig) err = I18n.t('fontmaker.modals.svgpaste_too_large');
+  }
+  st.built = (built && !err) ? built : null;
+  const info = document.getElementById('svgPasteInfo'), note = document.getElementById('svgPasteNote');
+  let sum = '';
+  if (st.parsed) {
+    sum = I18n.t(st.parsed.shapes === 1 ? 'fontmaker.modals.svgpaste_found.one' : 'fontmaker.modals.svgpaste_found.other', { count: st.parsed.shapes });
+    if (st.parsed.skipped) sum += ' ' + I18n.t(st.parsed.skipped === 1 ? 'fontmaker.modals.svgpaste_skipped.one' : 'fontmaker.modals.svgpaste_skipped.other', { count: st.parsed.skipped });
+  }
+  info.textContent = sum; info.hidden = !sum;
+  note.textContent = err; note.hidden = !err;
+  document.getElementById('svgPasteGo').setAttribute('aria-disabled', st.built ? 'false' : 'true');
+  svgPasteDrawPreview(st);
+}
+function svgPasteReadCode() {                // the code box → st.parsed or st.err
+  const st = _svgPaste; if (!st) return;
+  const t = document.getElementById('svgPasteText').value;
+  st.parsed = null; st.err = ''; st.stale = false;
+  if (t.trim()) {
+    if (!isProbablySvg(null, t)) st.err = I18n.t('fontmaker.modals.svgpaste_not_svg');
+    else { try { st.parsed = svgPasteParse(t); } catch (e) { st.err = (e && e.message) || String(e); } }
+  }
+  svgPasteRefresh();
+}
+function svgPasteCodeInput(settled) {        // oninput (settled false) and onchange (true)
+  const st = _svgPaste; if (!st || !st.code) return;
+  const big = document.getElementById('svgPasteText').value.length > SVG_PASTE_LIVE_CHARS;
+  if (big && !settled) { st.parsed = null; st.err = ''; st.stale = true; svgPasteRefresh(); document.getElementById('svgPasteGo').setAttribute('aria-disabled', 'false'); return; }   // a very long paste is read once, on Insert or when the box loses focus — not on every keystroke
+  svgPasteReadCode();
+}
+function svgPasteOpenDialog(st) {
+  const l = project.letters.find(x => x.codepoint === st.cp); if (!l) return;
+  _svgPaste = st;
+  const prefs = wsReadPrefs(), desc = glyphBand(st.cp).desc, choices = svgPasteFitChoices(st.cp);
+  let fit = desc ? prefs.svgPasteFitDesc : prefs.svgPasteFit;                 // remembered per device, and separately for letters with a tail
+  if (choices.indexOf(fit) < 0) fit = desc ? 'desc' : 'height';
+  document.getElementById('svgPasteTitle').textContent = I18n.t('fontmaker.modals.svgpaste_title', { name: gName(l.name) });
+  document.getElementById('svgPasteFitList').innerHTML = choices.map(f =>
+    `<label class="chk"><input type="radio" name="svgPasteFit" value="${f}"${f === fit ? ' checked' : ''}> <span>${esc(I18n.t('fontmaker.modals.svgpaste_fit_' + f))}</span></label>`).join('');
+  const mg = document.getElementById('svgPasteModeGroup'), has = svgPasteHasOutline(l);
+  mg.hidden = !has;
+  const mode = prefs.svgPasteMode === 'add' ? 'add' : 'replace';
+  mg.querySelectorAll('input').forEach(r => { r.checked = r.value === mode; });
+  document.getElementById('svgPasteCodeBox').hidden = !st.code;
+  const ta = document.getElementById('svgPasteText'); ta.value = '';
+  document.getElementById('svgPastePtsBtn').hidden = !(workMode === 'nodes' && nodeClipboard && curCp === st.cp);
+  svgPasteRefresh();
+  aOpenModal('svgPasteOverlay', closeSvgPaste);
+  setTimeout(() => {                          // after aOpenModal's own focus: the box to type in, or the choice already made (the first radio in the row may be an unchecked one)
+    const tgt = st.code ? ta : document.querySelector('#svgPasteFitList input:checked');
+    if (tgt && _svgPaste === st) tgt.focus();
+  }, 0);
+}
+function closeSvgPaste() { _svgPaste = null; aCloseModal('svgPasteOverlay'); }
+function svgPasteKey(e) {                     // Enter confirms from a radio (a button keeps its own Enter, the code box its line break)
+  if (e.key !== 'Enter' || e.isComposing) return;
+  const tg = e.target && e.target.tagName;
+  if (tg === 'TEXTAREA' || tg === 'BUTTON') return;
+  e.preventDefault(); svgPasteCommit();
+}
+function openSvgPasteCode() {                 // the "Paste SVG code…" buttons
+  if (!project || curKind !== 'letter' || !curLetter()) { status(I18n.t('fontmaker.status.svgpaste_letters_only')); return; }
+  udFlushPending();
+  svgPasteOpenDialog({ cp: curCp, code: true, parsed: null, err: '', built: null });
+}
+async function svgPasteStart(got) {           // the clipboard or a drop handed over SVG: read it, parse it, open the dialog
+  if (_svgPasteBusy || !project) return;
+  const cp = curCp;
+  _svgPasteBusy = true;
+  try {
+    let text = got.text || '';
+    if (got.html) text = svgTextFromHtml(got.html);
+    if (got.file) {
+      if (got.file.size > SVG_PASTE_MAX_CHARS * 4) return askSvgError(I18n.t('fontmaker.modals.svg_too_big'));
+      try { text = await got.file.text(); } catch (e) { return askSvgError(I18n.t('fontmaker.modals.svg_read_failed')); }
+      if (!project || curKind !== 'letter' || curCp !== cp || document.querySelector('.overlay.open')) return;   // the teacher moved on while the file was read
+    }
+    let parsed;
+    try { parsed = svgPasteParse(text); } catch (e) { return askSvgError((e && e.message) || String(e)); }
+    udFlushPending();                         // an open nudge or slider burst is settled before the dialog, so its undo entry cannot swallow the paste
+    svgPasteOpenDialog({ cp, code: false, parsed, err: '', built: null });
+  } finally { _svgPasteBusy = false; }
+}
+function svgPasteCommit() {
+  const st = _svgPaste; if (!st) return;
+  if (st.code && st.stale) svgPasteReadCode();
+  if (!st.built) {                            // aria-disabled, not disabled: say why in the note instead of going quiet
+    if (st.code && !st.parsed && !st.err) { const note = document.getElementById('svgPasteNote'); note.textContent = I18n.t('fontmaker.modals.svgpaste_empty'); note.hidden = false; document.getElementById('svgPasteText').focus(); }
+    return;
+  }
+  const l = project.letters.find(x => x.codepoint === st.cp), fit = svgPasteFit(), mode = svgPasteMode(), built = st.built;
+  if (!l) { closeSvgPaste(); return; }
+  wsSavePref(glyphBand(st.cp).desc ? 'svgPasteFitDesc' : 'svgPasteFit', fit);
+  if (!document.getElementById('svgPasteModeGroup').hidden) wsSavePref('svgPasteMode', mode);
+  closeSvgPaste();
+  udFlushPending();
+  if (curKind !== 'letter' || curCp !== st.cp) { curKind = 'letter'; curCp = st.cp; catTab = catTabFor('letter', st.cp); }   // (cannot differ while the dialog is open — the target was pinned when it opened)
+  if (mode === 'add' && svgPasteHasOutline(l)) svgPasteAdd(l, built); else svgPasteReplace(l, built);
+}
+function svgPasteReplace(l, built) {          // ONE undo step that brings back the old outline, its photo or drawing, its anchors and its pins
+  udDo([{ t: 'item', kind: 'letter', cp: l.codepoint, withSource: true, withDraw: true }], 'paste SVG — ' + l.name, () => {
+    assignSvgContours(l, 'letter', built.contours, null, null);   // source.kind = 'svg', anchors re-seeded from the new outline — as an SVG upload does
+    l.advance = Math.round(built.inkL + built.inkR);              // the ink's left gap again on its right: centred
+    l.lsb = null; l.rsb = null;
+    // Each of these described the outline that is gone:
+    delete l.markAnchors;                                         // per-mark pins (the font import drops them with the outline too)
+    l.placementSaved = false; l.placementInherited = false;       // the "placement confirmed" tick
+    l.draw = null; delete l.drawSig;                              // a drawing — or the Trace step would re-trace its strokes over the paste
+    SVG_IMPORT_FLAGS.forEach(k => { if (l[k] === 'import') delete l[k]; });   // "this one came with the imported font" — or a later import with "keep mine" would overwrite it
+  });
+  _rawTrace = null;
+  _setWorkMode('align');                      // Width & margins, with the "Imported from SVG" hint and Next: Nikkud. The unguarded form: there is no placement left to offer to save
+  renderGrids();
+  status(I18n.t('fontmaker.status.svgpaste_done', { name: gName(l.name) }));
+}
+/* Adding is a UNION: ink is only ever added. Fonts, and every stage here, fill by the nonzero rule,
+   so the union is simply every contour keeping its own direction — the old ones theirs, the new
+   piece's outers clockwise and its counters counter-clockwise. Two things would spoil that:
+   · a contour lying wholly where the other group's ink already is. A new piece inside the letter adds
+     nothing; an old counter the new ink covers would still punch its hole through that ink. Both are
+     left out — that IS the union.
+   · renestNodeModel, which the point editor runs after a rotate, a delete, a paste. It re-reads each
+     contour's direction from how many other rings hold its FIRST point, so a bar laid across a letter
+     (first corner inside the ink) would turn into a hole — a bite out of the letter — at the first
+     such edit. So a contour the other group touches is made to START on a point that is clear of the
+     other group's ink: one of its own points, else a point put on one of its straight edges (a
+     collinear point moves where a contour starts, not its shape).
+   "Clear" is asked of the point and of four points around it, first 4 units out, then 1: both pieces
+   fitted to the same band touch the same top and bottom lines, so corners sitting exactly ON the
+   other's edge are the common case, and there the next rounding would flip the answer.
+   An old contour the new pieces do not reach is not touched at all. Works on the node model only;
+   returns how many of the new contours remain and whether the outline changed at all. */
+function svgPasteSettle(first) {
+  const cts = nodeModel.contours, rings = cts.map(nodeContourToPoints);
+  const isNew = i => i >= first;
+  const parity = (x, y, i, sameGroup) => {     // how many rings of i's own group (or of the other one) hold this point, mod 2 — i itself never counted
+    let d = 0; const pt = [Math.round(x), Math.round(y)];
+    for (let j = 0; j < rings.length; j++) if (j !== i && (isNew(j) === isNew(i)) === sameGroup && rings[j].length >= 3 && pointInPoly(pt, rings[j])) d++;
+    return d % 2;
+  };
+  const base = cts.map((ct, i) => !ct.nodes.length ? 0 : isNew(i) ? (ct.winding === 'ccw' ? 1 : 0) : parity(ct.nodes[0].x, ct.nodes[0].y, i, true));   // an old contour keeps whatever nesting it has today
+  const clear = (x, y, i) => parity(x, y, i, false) === 0 && parity(x, y, i, true) === base[i];
+  const sure = (x, y, i, r) => clear(x, y, i) && clear(x - r, y, i) && clear(x + r, y, i) && clear(x, y - r, i) && clear(x, y + r, i);
+  const seat = (ct, i, r) => {                 // index of a node that is sure at radius r — put in on a straight edge when no existing node is — or -1
+    const nodes = ct.nodes; let k = nodes.findIndex(nd => sure(nd.x, nd.y, i, r));
+    if (k >= 0) return k;
+    for (let a = 0; a < nodes.length; a++) {
+      const A = nodes[a], B = nodes[(a + 1) % nodes.length]; if (A.out || B.in) continue;   // a curved segment is left whole
+      const steps = Math.min(64, Math.max(2, Math.ceil(Math.hypot(B.x - A.x, B.y - A.y) / 8)));
+      for (let q = 1; q < steps; q++) {
+        const x = Math.round(A.x + (B.x - A.x) * q / steps), y = Math.round(A.y + (B.y - A.y) * q / steps);
+        if ((x === Math.round(A.x) && y === Math.round(A.y)) || (x === Math.round(B.x) && y === Math.round(B.y)) || !sure(x, y, i, r)) continue;
+        nodes.splice(a + 1, 0, { x, y, in: null, out: null, type: 'corner' }); return a + 1;
+      }
+    }
+    return -1;
+  };
+  const gone = [];
+  cts.forEach((ct, i) => {
+    if (ct.nodes.length < 3) return;
+    const s0 = ct.nodes[0];
+    if (isNew(i) ? sure(s0.x, s0.y, i, 4)                                                    // already starts somewhere safe
+                 : [[0, 0], [-4, 0], [4, 0], [0, -4], [0, 4]].every(o => parity(s0.x + o[0], s0.y + o[1], i, false) === 0)) return;   // the new pieces are nowhere near this old contour's start
+    let k = seat(ct, i, 4); if (k < 0) k = seat(ct, i, 1);
+    if (k < 0) { gone.push(i); return; }
+    if (k > 0) ct.nodes = ct.nodes.slice(k).concat(ct.nodes.slice(0, k));
+  });
+  let kept = cts.length - first, oldGone = 0;
+  gone.sort((p, q) => q - p).forEach(i => { cts.splice(i, 1); if (i >= first) kept--; else oldGone++; });
+  return { kept, changed: kept > 0 || oldGone > 0 };   // a piece that only fills a counter leaves no contour of its own behind, and still changed the letter
+}
+function svgPasteAdd(l, built) {              // the pieces join the outline that is there — through the node model, like pasted points
+  _setWorkMode('nodes');                      // Edit points is the one step that always shows the outline itself (Align shows a photo or the strokes)
+  buildNodeModel(l); nodeSel.clear(); _hiddenContours.clear();
+  const first = nodeModel.contours.length;
+  built.contours.forEach(c => nodeModel.contours.push({ winding: c.winding, nodes: c.points.map(p => ({ x: p[0], y: p[1], in: null, out: null, type: 'corner' })) }));
+  const { kept, changed } = svgPasteSettle(first);   // on the model only — nothing of the project has changed yet
+  if (!changed) {                             // every new piece lies inside ink that is already there: no change, so no undo step either
+    buildNodeModel(l); renderStage(); renderControls();
+    status(I18n.t('fontmaker.status.svgpaste_adds_nothing', { name: gName(l.name) }));
+    return;
+  }
+  const from = nodeModel.contours.length - kept;
+  udDo([{ t: 'item', kind: 'letter', cp: l.codepoint }], 'add SVG — ' + l.name, () => { writeThroughRebuild(l); });   // every contour keeps its direction (no renest here: the union above is the nonzero fill of exactly these)
+  for (let ci = from; ci < nodeModel.contours.length; ci++) nodeModel.contours[ci].nodes.forEach((nd, ni) => nodeSel.add(nodeKey(ci, ni)));
+  renderGrids(); renderStage(); renderControls();
+  status(I18n.t('fontmaker.status.svgpaste_added', { name: gName(l.name) }));
+}
+function svgPastePointsInstead() { closeSvgPaste(); pasteNodes(); }
+/* Points copied in Edit points and artwork on the system clipboard share Ctrl/⌘+V. The paste EVENT is
+   the one place that can see the clipboard, so it decides: SVG there → the dialog; none → the points.
+   The keydown only arms a fallback (svgPointPasteArm) for a browser that fires no paste event — it must
+   not paste or preventDefault itself, or the event never comes; and on a Mac the event can arrive a
+   task later than the keydown, which is why the fallback waits instead of running on the next tick. */
+function svgPointPasteArm() {
+  clearTimeout(_ptPasteTimer);
+  _ptPasteTimer = setTimeout(() => { _ptPasteTimer = 0; if (pasteNodes()) _ptPasteFiredAt = Date.now(); }, 350);
+}
+function svgMarkPointsCopied() {              // best effort, inside the Copy gesture: the newest copy is the one a paste finds
+  try { const p = navigator.clipboard && navigator.clipboard.writeText && navigator.clipboard.writeText(SVG_POINTS_MARKER); if (p && p.catch) p.catch(() => {}); } catch (e) {}
+}
+document.addEventListener('paste', e => {
+  const late = Date.now() - _ptPasteFiredAt < 1500;        // the fallback already pasted the points for this keypress
+  clearTimeout(_ptPasteTimer); _ptPasteTimer = 0;
+  const ae = document.activeElement;
+  if (ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA' || ae.isContentEditable)) return;   // typing somewhere — the paste is the field's
+  if (late || !svgPasteStageOk()) return;
+  const got = svgFromDataTransfer(e.clipboardData);
+  if (got && !got.image) {
+    e.preventDefault();
+    if (curKind !== 'letter' || !curLetter()) { status(I18n.t('fontmaker.status.svgpaste_letters_only')); return; }
+    svgPasteStart(got);
+    return;
+  }
+  if (workMode === 'nodes' && nodeClipboard) { if (pasteNodes()) e.preventDefault(); return; }
+  if (got && got.image) status(I18n.t('fontmaker.status.svgpaste_picture'));
+});
+function wireStageDrop() {                    // an .svg dropped on the canvas is a paste; any other file is told where it belongs (and no longer navigates the browser away from the project)
+  const el = document.querySelector('.ws-center .stage-wrap') || document.querySelector('.stage-wrap'); if (!el) return;
+  const hasFiles = e => !!(e.dataTransfer && Array.from(e.dataTransfer.types || []).indexOf('Files') >= 0);
+  el.addEventListener('dragover', e => { if (!hasFiles(e)) return; e.preventDefault(); el.classList.add('drag'); });
+  el.addEventListener('dragleave', () => el.classList.remove('drag'));
+  el.addEventListener('drop', e => {
+    if (!hasFiles(e)) return;
+    e.preventDefault(); el.classList.remove('drag');
+    if (!svgPasteStageOk()) return;
+    const got = svgFromDataTransfer(e.dataTransfer);
+    if (!got || !got.file) { status(I18n.t('fontmaker.status.svgpaste_drop_not_svg')); return; }
+    if (curKind !== 'letter' || !curLetter()) { status(I18n.t('fontmaker.status.svgpaste_letters_only')); return; }
+    svgPasteStart(got);
+  });
 }
 
 /* ════════ Stage rendering ════════ */
@@ -14027,6 +14504,7 @@ function copySelectedNodes() {
   });
   if (!contours.length) { status(I18n.t('fontmaker.status.copy_min_points')); return false; }
   nodeClipboard = { sourceCp: curCp, pastes: 0, contours };
+  svgMarkPointsCopied();                                     // the system clipboard now says "points", so artwork copied earlier does not win the next paste
   status(I18n.t(contours.length === 1 ? 'fontmaker.status.copied_contours.one' : 'fontmaker.status.copied_contours.other', {count: contours.length, mod: modKey()}));
   renderControls();                                          // enable the Paste button
   return true;
@@ -14176,6 +14654,7 @@ function nodeEditPanelHTML(l) {
     <div class="npnl-stack">
       <button class="ctl-btn" onclick="selectAllNodes()" title="${esc(I18n.t('fontmaker.node_editor.select_all_title', {mod: M}))}">${I18n.t('fontmaker.node_editor.select_all')}</button>
       <button class="ctl-btn" onclick="pasteNodes()" title="${esc(I18n.t('fontmaker.node_editor.paste_title', {mod: M}))}" ${nodeClipboard ? '' : 'disabled'}>${I18n.t('fontmaker.node_editor.paste')}</button>
+      <button class="ctl-btn" onclick="openSvgPasteCode()" title="${esc(I18n.t('fontmaker.panels.paste_svg_code_title', {mod: M}))}">${I18n.t('fontmaker.panels.paste_svg_code')}</button>
       <button class="ctl-btn" onclick="doRemoveSpecks()" title="${esc(I18n.t('fontmaker.node_editor.remove_specks_title'))}">${I18n.t('fontmaker.node_editor.remove_specks')}</button>
     </div>
   </div>`
@@ -16804,6 +17283,7 @@ function renderAlignLeft(L, l) {
     html += `<hr class="ctl-divider">
     <div class="ctl-row" style="flex-wrap:wrap;">
       <button class="ctl-btn hi-btn" onclick="openCopyOutline()" title="${esc(I18n.t('fontmaker.panels.copy_outline_title'))}">${ICON_COPY_SM}${I18n.t('fontmaker.panels.copy_outline')}</button>
+      <button class="ctl-btn" onclick="openSvgPasteCode()" title="${esc(I18n.t('fontmaker.panels.paste_svg_code_title', {mod: modKey()}))}">${I18n.t('fontmaker.panels.paste_svg_code')}</button>
       ${ l.contours ? `<button class="ctl-btn" onclick="clearTrace()">${I18n.t('fontmaker.panels.clear_outline')}</button>` : '' }
     </div>`;
   }
@@ -16890,6 +17370,7 @@ function renderTraceLeft(L, l) {
         ${ l.contours ? '' : `<button class="ctl-btn primary hi-btn" onclick="drawWithPen()" title="${esc(I18n.t('fontmaker.panels.draw_pen_title'))}">${ICON_PENCIL_SM}${I18n.t('fontmaker.panels.draw_pen')}</button>` }
         <button class="ctl-btn" onclick="clearTrace()">${I18n.t('fontmaker.panels.clear')}</button>
         <button class="ctl-btn hi-btn" onclick="openCopyOutline()" title="${esc(I18n.t('fontmaker.panels.copy_outline_title'))}">${ICON_COPY_SM}${I18n.t('fontmaker.panels.copy_outline')}</button>
+      <button class="ctl-btn" onclick="openSvgPasteCode()" title="${esc(I18n.t('fontmaker.panels.paste_svg_code_title', {mod: modKey()}))}">${I18n.t('fontmaker.panels.paste_svg_code')}</button>
         <span id="traceInfo" class="readout">${ l.contours ? _pT('trace_info', `${l.contours.length} contour(s) · adv ${l.advance}`, {count: l.contours.length, adv: l.advance}) : _pT('trace_info_no_ink', 'no ink detected') }</span>
       </div>`;
     return;
@@ -16915,6 +17396,7 @@ function renderTraceLeft(L, l) {
       <button class="ctl-btn" onclick="clearTrace()">${I18n.t('fontmaker.panels.clear')}</button>
       ${ l.contours ? '' : `<button class="ctl-btn hi-btn" onclick="drawWithPen()" title="${esc(I18n.t('fontmaker.panels.draw_pen_title2'))}">${ICON_PENCIL_SM}${I18n.t('fontmaker.panels.draw_pen')}</button>` }
       <button class="ctl-btn hi-btn" onclick="openCopyOutline()" title="${esc(I18n.t('fontmaker.panels.copy_outline_title'))}">${ICON_COPY_SM}${I18n.t('fontmaker.panels.copy_outline')}</button>
+      <button class="ctl-btn" onclick="openSvgPasteCode()" title="${esc(I18n.t('fontmaker.panels.paste_svg_code_title', {mod: modKey()}))}">${I18n.t('fontmaker.panels.paste_svg_code')}</button>
       <span id="traceInfo" class="readout">${ l.contours ? _pT('trace_info', `${l.contours.length} contour(s) · adv ${l.advance}`, {count: l.contours.length, adv: l.advance}) : _pT('trace_info_no_ink', 'no ink detected') }</span>
     </div>
     <div class="hint">${_pT('trace_hint', 'Lower <b>threshold</b> captures lighter ink; higher <b>detail</b> hugs the ink more closely (more nodes). <b>Corners</b> sets how sharp a turn must be to stay a crisp corner — slide right to round more of them into smooth curves. Counters (ס, ם, ע) punch out automatically. Turn on <b>Outline only</b> for hollow “bubble” letters — <b>line weight</b> sets the ring thickness.')}</div>`;
@@ -17128,6 +17610,7 @@ function renderDrawLeft(L, l) {
       <button class="ctl-btn" id="drawTidyBtn" onclick="drawTidyStrokes()" title="${esc(_drawT('tidy_title', 'Straighten strokes that are nearly straight and snap loose ends onto a guide — one press, one undo'))}" ${nStrokes?'':'disabled'}>${_drawT('tidy', 'Tidy strokes')}</button>
       <button class="ctl-btn" onclick="drawClearCurrent()" ${nStrokes?'':'disabled'}>${_drawT('clear', 'Clear letter')}</button>
       <button class="ctl-btn hi-btn" onclick="openCopyOutline()" title="${esc(I18n.t('fontmaker.panels.copy_outline_title'))}">${ICON_COPY_SM}${I18n.t('fontmaker.panels.copy_outline')}</button>
+      <button class="ctl-btn" onclick="openSvgPasteCode()" title="${esc(I18n.t('fontmaker.panels.paste_svg_code_title', {mod: modKey()}))}">${I18n.t('fontmaker.panels.paste_svg_code')}</button>
       <span class="readout">${nStrokes ? _drawT(nStrokes === 1 ? 'stroke_count.one' : 'stroke_count.other', nStrokes + (nStrokes === 1 ? ' stroke' : ' strokes'), { count: nStrokes }) : ''}</span>
     </div>
     <div class="hint">${_drawT('hint', 'Draw over the gray reference with a pen, finger, or mouse. Each stroke can be undone with Ctrl+Z. Save runs the tracer — fine-tune Detail and Corners in step 2.')}</div>`;
@@ -17621,6 +18104,7 @@ function udShortcutBlocked() {
   if (document.getElementById('helpOverlay')?.classList.contains('open')) return true;
   if (document.getElementById('qaOverlay')?.classList.contains('open')) return true;
   if (document.getElementById('adOverlay')?.classList.contains('open')) return true;
+  if (document.getElementById('svgPasteOverlay')?.classList.contains('open')) return true;   // focus on one of its buttons is not typing — undo, nudges and Delete must not reach the letter behind it
   if (document.getElementById('wizardOverlay')?.classList.contains('open')) return true;   // esp. cancellable mode — Ctrl+Z must not mutate the project behind it
   if (document.getElementById('osPickOverlay')?.classList.contains('open')) return true;   // the starting-font picker sits in the same slot as the wizard
   if (document.getElementById('importProgressOverlay')?.classList.contains('open')) return true;   // an import is mid-flight — no undo/redo into a half-imported project
@@ -17761,7 +18245,7 @@ document.addEventListener('keydown', e => {
   if ((e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey && !e.repeat) {   // copy/paste points between letters + select all
     const k = e.key.toLowerCase();
     if (k === 'c' && nodeSel.size)  { if (copySelectedNodes()) e.preventDefault(); return; }
-    if (k === 'v' && nodeClipboard) { if (pasteNodes())        e.preventDefault(); return; }
+    if (k === 'v' && nodeClipboard) { svgPointPasteArm(); return; }   // no paste and no preventDefault here: the paste event decides between these points and artwork on the clipboard (SVG paste block)
     if (k === 'a' && !_penMode)     { e.preventDefault(); selectAllNodes(); return; }
   }
   if (e.ctrlKey || e.metaKey) return;                    // let Ctrl/Cmd+Z (undo/redo) fall through
@@ -24722,6 +25206,7 @@ function init() {
   maybeShowMobileWarn();   // small-screen "best on desktop" splash (once, unless dismissed)
   // stage drag move/up live once on the persistent <svg> (handles transform drag)
   const sv = stage();
+  wireStageDrop();   // an .svg dropped on the canvas goes into the current letter (SVG paste block)
   sv.addEventListener('pointerdown', onStageBgPointerDown);   // node-mode marquee / Alt-insert (early-returns in other modes)
   sv.addEventListener('pointermove', onStagePointerMove);
   sv.addEventListener('pointerup', onStagePointerUp);
