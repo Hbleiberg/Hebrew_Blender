@@ -99374,3 +99374,11 @@ _(prior)_ **Next session (S683):** **Branch `claude/zen-goldberg-1lov9k` (S676�
 ### from Done
 
 - [x] 2026-11-24 | `3dd56245` | Hebrew_Font_Maker.html, locales, sw.js, docs/reference/font-maker.md, CLAUDE.md | (outside the loop; Font Maker v6.0) **A key press that closes a dialog no longer acts on the editor behind it** (Escape cleared the Edit-points selection, a Draw selection or a crop box; Enter could finish a crop or a pen contour): the trap spends its Escape and `udShortcutBlocked()` refuses a key during which a dialog closed | headless: 27 / 27 (the tree before: 14 / 27); the other suites 296 / 296 unchanged
+
+
+<!-- archived by compact-ledger at the S684 boundary, 2026-11-24 -->
+## Compaction (S684, 2026-11-24) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-11-24 | `db38bdb5` `0f576faf` | Hebrew_Font_Maker.html, locales, sw.js, docs/reference/font-maker.md, CLAUDE.md | (outside the loop; Font Maker v6.0) **A glyph transform engine and Scale all letters**: `gxPlan` → `gxCommit` (a pure plan, a range check, one `udDo`) carries outline + curves, advance, anchors and pins, the photo matrix, pen strokes, composed forms and the font-wide lengths; marks are resized through their size settings (stored range widened to 10–400%); `metrics.sizeK` makes the anchor seeds follow a rescaled font. Edit points gains scale presets, Width / Height with a lock, 30° and 45° rotate; a whole-glyph scale or horizontal flip carries anchors and pins; a transform past 16000 is refused whole | headless: 174 new checks (engine 64, Transform 44, re-trace / accents / keyboard / EN + HE 51, export + HarfBuzz 15: every advance and vowel offset 0.9× after a 90% scale); the earlier 331 unchanged; smoke-fontmaker 63 / 63
