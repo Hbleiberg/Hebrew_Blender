@@ -1214,6 +1214,11 @@ body.translit-under.trope-underline-fallback .tt-wtl { margin-block-start:calc(0
   text-decoration-line:underline; text-decoration-thickness:4px;
   text-underline-offset:0.68em; text-decoration-skip-ink:none; text-decoration-color:var(--tt-tl);
 }
+/* Color-code the trope tints every word (a .35 wash of its family's or its mark's colour), and the muted Latin under a
+   word read 3.0–4.1:1 on it in light mode, 2.5–3.0:1 in dark: on a tinted word it takes the word's ink, as the karaoke
+   word's Latin does. The selectors are the tint's own, so an untinted word keeps the muted grey. */
+body.translit-under.trope-on:not(.trope-underline-fallback):not(.trope-by-mark) .tt-word:where(.trope-sofpasuk, .trope-etnachta, .trope-katon, .trope-segol, .trope-revia, .trope-geresh, .trope-rare) > .tt-wtl,
+body.translit-under.trope-on.trope-by-mark:not(.trope-underline-fallback) .tt-word:where(.tm) > .tt-wtl { color:inherit; }
 
 /* ───── Nikkud vowel color coding ─────
    colorizeHebrew wraps each vowel-bearing syllable in <span class="nik nik-<key>">.
