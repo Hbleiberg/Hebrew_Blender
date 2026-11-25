@@ -595,11 +595,17 @@ validated against the closed set on read. Validation is inline (the `aria-live` 
     its outer +1, its own counters back to zero, and the shapes together are their union — a ring
     with a bar across it is a ring with a bar, a T of two rectangles a T with no notch. Within one
     shape the nesting stands, with one exception: a loop read as the hole of a loop it sticks out of
-    (`svgSticksOut` — a corner or the middle of an edge strictly outside it, or a proper crossing;
-    touching it, a shared corner or a shared stretch of edge does not count) is no counter of it and
-    is read as a solid, so a T drawn as one path of two rectangles is a T too. The dialog's preview
-    draws these same contours, so what it shows for Add is what Go makes; switching to Replace
-    redraws it with the plain reading.
+    (`svgSticksOut` — some point of its outline more than `SVG_STICK_TOL`, 4 units, outside it) is
+    no counter of it and is read as a solid, so a T drawn as one path of two rectangles is a T too.
+    The margin is the flattening's: both rings are simplified and rounded, so a counter behind a
+    wall thinner than about 3 units crosses its outer by a fraction of a unit, and it still cuts.
+    The cost: a loop that pokes out of its outer on purpose (an even-odd notch, a hole cut through
+    a wall) is read as a solid in Add, so the part of it inside the outer is filled where the SVG
+    and Replace show a hole. The test asks a strip index of the outer's edges (`svgRingIndex`), so
+    heavy one-path artwork redraws the dialog about as fast in Add as in Replace. The dialog's
+    preview draws these same contours over the letter, so for Add it shows what Go makes — except
+    in the limits below where the artwork winds below zero over the letter's ink: the preview paints
+    the two apart, Go adds them. Switching to Replace redraws it with the plain reading.
   - Everything else is decided by asking points "is this ink?" (`svgWinder`, a signed winding
     number), never by a rule about where a contour starts. **The artwork adds nothing** — asked of
     the artwork as a whole (`svgPasteAddsInk`): nowhere does it have ink where the letter has none,
@@ -622,7 +628,9 @@ validated against the closed set on read. Validation is inline (the `aria-live` 
     both before the add. Within one SVG shape, two loops that lie inside the same outer and cross
     each other (a θ drawn as a single path, its bar inside the ring) are both read as holes: where
     they overlap the shape winds below zero, and over the letter's ink it cancels that ink there.
-    Drawn as separate shapes (a ring and a bar) they join exactly. And **Replace**, the upload, a
+    Drawn as separate shapes (a ring and a bar) they join exactly. A single loop that crosses itself
+    (a bow tie, a figure eight) is a limit too: one lobe runs against the other, the SVG paints both,
+    and over the letter's ink the counter-running lobe cancels it. And **Replace**, the upload, a
     sheet's crop and auto-split, the code box's Replace and a drop keep the plain import's reading
     across shapes: a shape lying inside another, separate shape is still read as its hole, so a T
     drawn as two overlapping rectangles imports with a notch where they overlap.

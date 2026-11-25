@@ -10135,36 +10135,65 @@ function svgLoopsToContours(loops, opts) {     // opts.shapeOf (beside loops: th
    stands, with one exception: a loop read as the hole of a loop it STICKS OUT OF is no counter of
    it — wound as a hole, the part outside would cancel the letter's ink beneath — so it is wound as
    a solid (a T drawn as one path of two rectangles is then a T, as a path's subpaths drawn the
-   same way round paint it). A counter lies inside its outer, touching it at most, and is never
-   changed. The shape index lives only here: nothing of it reaches the project. */
+   same way round paint it). A counter lying inside its outer is never changed — touching it, or
+   crossing it by less than SVG_STICK_TOL, which is all the flattening of a thin wall can do. The
+   cost: a loop that pokes out of its outer on purpose (an even-odd notch, a hole cut through a
+   wall) is read as a solid in Add. The shape index lives only here: nothing of it reaches the
+   project. */
 function svgWindByShape(rings, shapeOf) {
   const out = new Array(rings.length), by = new Map();
   shapeOf.forEach((s, i) => { if (!by.has(s)) by.set(s, []); by.get(s).push(i); });
   by.forEach(ix => {
-    const own = ix.map(i => rings[i]), cs = assignWindingByNesting(own);
+    const own = ix.map(i => rings[i]), cs = assignWindingByNesting(own), idx = [];
     cs.forEach((c, h) => {                    // a hole of a loop it sticks out of (the loops holding its first point are the ones the nesting counted)
       if (c.winding !== 'ccw') return;
-      for (let j = 0; j < own.length; j++) if (j !== h && pointInPoly(own[h][0], own[j]) && svgSticksOut(c.points, cs[j].points)) { c.points.reverse(); c.winding = 'cw'; return; }
+      for (let j = 0; j < own.length; j++) if (j !== h && pointInPoly(own[h][0], own[j]) && svgSticksOut(c.points, cs[j].points, idx[j] || (idx[j] = svgRingIndex(cs[j].points)))) { c.points.reverse(); c.winding = 'cw'; return; }
     });
     ix.forEach((i, k) => { out[i] = cs[k]; });
   });
   return out;
 }
-function svgSticksOut(A, B) {                  // does ring A reach outside ring B — a corner or the middle of an edge strictly outside it, or an edge crossing one of B's properly? Touching B, a shared corner or a shared stretch of edge does not count (a counter drawn against its outer's edge still cuts it). Whole-number points, so every test is exact
-  const ba = polysBounds([A]), bb = polysBounds([B]);
-  if (ba.minX < bb.minX || ba.maxX > bb.maxX || ba.minY < bb.minY || ba.maxY > bb.maxY) return true;
-  const o = (a, b, c) => (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0]);
-  const onB = p => { for (let j = 0; j < B.length; j++) { const b1 = B[j], b2 = B[(j + 1) % B.length]; if (!o(b1, b2, p) && p[0] >= Math.min(b1[0], b2[0]) && p[0] <= Math.max(b1[0], b2[0]) && p[1] >= Math.min(b1[1], b2[1]) && p[1] <= Math.max(b1[1], b2[1])) return true; } return false; };
-  const out = p => !onB(p) && !pointInPoly(p, B);
-  for (let i = 0; i < A.length; i++) {
-    const a1 = A[i], a2 = A[(i + 1) % A.length];
-    if (out(a1) || out([(a1[0] + a2[0]) / 2, (a1[1] + a2[1]) / 2])) return true;
-    for (let j = 0; j < B.length; j++) {
-      const b1 = B[j], b2 = B[(j + 1) % B.length], d1 = o(b1, b2, a1), d2 = o(b1, b2, a2);
-      if (!((d1 > 0 && d2 < 0) || (d1 < 0 && d2 > 0))) continue;
-      const d3 = o(a1, a2, b1), d4 = o(a1, a2, b2);
-      if ((d3 > 0 && d4 < 0) || (d3 < 0 && d4 > 0)) return true;
+/* How far outside its outer (font units) a loop must reach before Add reads it as sticking out.
+   Both rings are flattened (rdpClosed, 1.2 units) and rounded, so a counter drawn inside its outer
+   behind a wall thinner than that can cross it by up to about 3.4 units with nothing of the
+   artwork outside: that crossing is the flattening, never the drawing. */
+const SVG_STICK_TOL = 4;
+function svgRingIndex(B) {                     // ring B's edges bucketed into horizontal strips, so "is this point in B, and how near its edge?" visits only the edges near the point (svgSticksOut asks it every few units along every hole; a full pass over a heavy outer for each question took seconds per redraw of the dialog)
+  let y0 = Infinity, y1 = -Infinity;
+  for (const p of B) { if (p[1] < y0) y0 = p[1]; if (p[1] > y1) y1 = p[1]; }
+  const n = Math.max(1, Math.min(256, Math.ceil(Math.sqrt(B.length)))), h = Math.max(1e-9, (y1 - y0) / n);
+  const strips = Array.from({ length: n }, () => []), at = y => Math.max(0, Math.min(n - 1, Math.floor((y - y0) / h)));
+  for (let j = 0; j < B.length; j++) {
+    const a = B[j], b = B[(j + 1) % B.length], s1 = at(Math.max(a[1], b[1]));
+    for (let s = at(Math.min(a[1], b[1])); s <= s1; s++) strips[s].push(j);
+  }
+  return { B, y0, y1, at, strips };
+}
+function svgRingFar(ix, x, y, t) {             // is (x, y) outside ring B (pointInPoly's even-odd crossing rule) AND more than t from every edge of it? Only edges whose height range meets [y − t, y + t] can be within t, and only those spanning y can cross the ray, so the strips around y answer both
+  const B = ix.B, S = ix.strips;
+  if (y >= ix.y0 && y <= ix.y1) {
+    let inside = false;
+    for (const j of S[ix.at(y)]) {
+      const [xi, yi] = B[(j + 1) % B.length], [xj, yj] = B[j];
+      if (((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / ((yj - yi) || 1e-9) + xi)) inside = !inside;
     }
+    if (inside) return false;
+  }
+  const t2 = t * t, lo = ix.at(y - t), hi = ix.at(y + t);
+  for (let s = lo; s <= hi; s++) for (const j of S[s]) {
+    const a = B[j], b = B[(j + 1) % B.length], dx = b[0] - a[0], dy = b[1] - a[1], L = dx * dx + dy * dy;
+    const u = L ? Math.max(0, Math.min(1, ((x - a[0]) * dx + (y - a[1]) * dy) / L)) : 0, ex = a[0] + dx * u - x, ey = a[1] + dy * u - y;
+    if (ex * ex + ey * ey <= t2) return false;
+  }
+  return true;
+}
+function svgSticksOut(A, B, ix) {              // does ring A reach CLEARLY outside ring B — a point of its outline (each corner, and every 8 units along each edge) outside B by more than SVG_STICK_TOL? Touching B, or crossing it by less (two flattened rings behind a thin wall), does not count: a counter drawn against or close to its outer's edge still cuts it
+  const t = SVG_STICK_TOL, ba = polysBounds([A]), bb = polysBounds([B]);
+  if (ba.minX < bb.minX - t || ba.maxX > bb.maxX + t || ba.minY < bb.minY - t || ba.maxY > bb.maxY + t) return true;   // a point beyond B's box by more than t is at least that far from B
+  ix = ix || svgRingIndex(B);
+  for (let i = 0; i < A.length; i++) {
+    const a = A[i], b = A[(i + 1) % A.length], dx = b[0] - a[0], dy = b[1] - a[1], n = Math.max(1, Math.ceil(Math.hypot(dx, dy) / 8));
+    for (let q = 0; q < n; q++) if (svgRingFar(ix, a[0] + dx * q / n, a[1] + dy * q / n, t)) return true;
   }
   return false;
 }
