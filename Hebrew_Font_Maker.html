@@ -5960,10 +5960,21 @@ function khSyncStatic() {
   document.querySelectorAll('[data-kh]').forEach(el => {
     const id = el.dataset.kh; if (!KH[id]) return;
     el.setAttribute('aria-keyshortcuts', khAria(id));
-    if (el.dataset.khTitle && window.I18n) { const t = I18n.t(el.dataset.khTitle, { keys: khTitle(id) }); if (t !== el.dataset.khTitle) el.title = t; }
     const host = el.tagName === 'INPUT' ? el.parentElement : el;
+    if (el.dataset.khTitle && host) {
+      const k = el.dataset.khTitle, t = window.I18n ? I18n.t(k, { keys: khTitle(id) }) : k;
+      // Before the locale has loaded (or if it never does) the string is its own key: the title is then the control's own
+      // label with its keys — so an icon-only Undo never loses its tooltip, and the key is still this computer's.
+      host.title = t !== k ? t : khLabel(el) + ' (' + khTitle(id) + ')';
+    }
     if (host && !host.querySelector(':scope > .kh')) host.insertAdjacentHTML('beforeend', khHtml(id, el.hasAttribute('data-kh-pop')));
   });
+}
+function khLabel(el) {   // a control's own words without its caps or icon glyphs — the page's authored English until a locale lands
+  if (el.tagName !== 'INPUT' && el.getAttribute('aria-label')) return el.getAttribute('aria-label');
+  const host = el.tagName === 'INPUT' ? el.parentElement : el; let s = '';
+  host.childNodes.forEach(n => { if (n.nodeType === 3) s += n.textContent; else if (n.nodeType === 1 && n !== el && !n.classList.contains('kh') && n.getAttribute('aria-hidden') !== 'true') s += n.textContent; });
+  return s.replace(/\s+/g, ' ').trim();
 }
 // Each row is [keySpec, description]. In keySpec, whitespace-separated tokens render as <kbd> caps,
 // except the literal separators '+', '/', and 'or', which render muted — a tiny readable mini-syntax.

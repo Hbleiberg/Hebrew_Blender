@@ -248,8 +248,12 @@ by CSS on `:hover` and `:focus-visible` after a short delay. The host carries `d
 **Static and built buttons.** A button in the page's markup carries `data-kh="<id>"` (plus
 `data-kh-pop`, and `data-kh-title="<string key>"` in place of a fixed `title`); `khSyncStatic()`
 — run at start and from `applyI18n` — sets `aria-keyshortcuts`, the title, and adds the caps once
-(a checkbox's caps go after its label). A button built in a template calls the three readers
-itself. `khSyncStatic` writes attributes and the caps only; it is safe to run at any time.
+(a checkbox's caps go after its label). Before the locale has loaded, or if it never does, the
+string is its own key, and the title is built from the control's own label (`khLabel`: its
+`aria-label`, else its words without the caps and icon glyphs — the page's authored English then)
+and `khTitle(id)`: `Undo (Ctrl+Z)`, `Undo (⌘+Z)` on a Mac. A button built in a template calls the
+three readers itself. `khSyncStatic` writes attributes and the caps only; it is safe to run at any
+time.
 
 **Rules that are easy to break:**
 - The caps are `display: none` unless `(pointer: fine)` — the suite's rule for key hints; the
