@@ -26909,6 +26909,27 @@ function sanitizeItemNumbers(it, noAdvance) {
   if (it.pieces != null) it.pieces = Array.isArray(it.pieces)                              // the mark editor's dots and bars; ensureMarkPieces rebuilds a missing list
     ? it.pieces.filter(p => isObj(p) && (p.type === 'dot' ? ['cx', 'cy', 'r'] : ['x0', 'y0', 'x1', 'y1']).every(k => fin(p[k]))) : null;
 }
+/* The same rule for a combined form's own numbers (project.precomposed): where its dot sits (`anchor`),
+   where a holam after שׁ / שׂ attaches (`holam`), its dot size and a wide form's width. The X / Y fields
+   and the Dot size and Width sliders of "Special & precomposed forms" are built from them as markup, and
+   the export bakes them. A placement is two finite numbers, rounded (every anchor coordinate is rounded
+   at the source), else null — the form follows its letter again; a size is a finite number kept in its
+   slider's range, else "not set" (null; a defWidth that is not a number goes, and the wide tab seeds it). */
+function sanitizePrecompNumbers(pc) {
+  const fin = v => typeof v === 'number' && Number.isFinite(v);
+  ['anchor', 'holam'].forEach(k => {
+    const a = pc[k]; if (a == null) return;
+    if (!(typeof a === 'object' && fin(a.x) && fin(a.y))) { pc[k] = null; return; }
+    const out = { x: Math.round(a.x), y: Math.round(a.y) };
+    if (k === 'anchor' && a.auto === true) out.auto = true;   // the placement check's own fix, which a font import may take back
+    pc[k] = out;
+  });
+  [['markScale', MARK_SIZE_MIN, MARK_SIZE_MAX], ['widthScale', 1, 2.5], ['defWidth', 1, 2.5]].forEach(([k, lo, hi]) => {
+    if (pc[k] == null) return;
+    if (fin(pc[k])) pc[k] = Math.max(lo, Math.min(hi, pc[k]));
+    else if (k === 'defWidth') delete pc[k]; else pc[k] = null;
+  });
+}
 function migrateProject(data) {
   // An .hfm / autosave / recents blob is untrusted: a collection of the wrong shape (a string where an
   // array belongs, a null entry, a number for a sub-block) used to throw out of the load with no status,
@@ -27055,7 +27076,7 @@ function migrateProject(data) {
   // gave that letter a NaN transform — a scale that is not a finite positive number goes, and the letter fits as before.
   data.combinedSheets.forEach(s => { if (!(Number.isFinite(s.fitScale) && s.fitScale > 0)) delete s.fitScale; });
   data.precomposed =Array.isArray(data.precomposed) ? data.precomposed.filter(_isObj) : PRECOMPOSED.map(p => ({...p}));
-  data.precomposed.forEach(pc => { if (pc.anchor === undefined) pc.anchor = null; if (pc.holam === undefined) pc.holam = null; });   // per-form mark anchor + holam-attach override
+  data.precomposed.forEach(pc => { if (pc.anchor === undefined) pc.anchor = null; if (pc.holam === undefined) pc.holam = null; sanitizePrecompNumbers(pc); });   // per-form mark anchor + holam-attach override — and its numbers are numbers (a string here reached the form's X / Y fields as markup)
   data.precomposed.forEach(sanitizePrecompSrc);   // a form outline taken whole from a source font — shape-checked because it becomes glyph data verbatim
   if (!_isObj(data.template)) data.template = { font:"'Noto Sans Hebrew', sans-serif", opacity:0.35, showOverlay:true };
   data.template.customFonts = _objs(data.template.customFonts);   // uploaded tracing fonts (bytes) persist here; one picked from the installed fonts persists as a name

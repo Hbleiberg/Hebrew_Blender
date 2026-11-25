@@ -570,8 +570,13 @@ default; `transform` six finite numbers or the identity; `captureBox` and `sourc
 `null`; an outline whose points — or whose curves' points — are not pairs of finite numbers is
 dropped, as a malformed contour always was; an anchor entry or an `attachAnchor` that is not two
 numbers is removed (`seedAnchorsIfNeeded` back-fills a partial set before anything reads it); a mark
-piece without its numbers is left out. A field that is absent stays absent, and a number that is
-already good is not touched, so a normal project loads exactly as it was saved. The paste dialog's
+piece without its numbers is left out. A combined form (`project.precomposed`) goes through
+`sanitizePrecompNumbers`, for the X / Y fields and the Dot size and Width sliders of *Special &
+precomposed forms*: its `anchor` and `holam` are two finite numbers, rounded (the placement check's
+`auto` mark kept), or `null` — the form follows its letter again; `markScale`, `widthScale` and
+`defWidth` a finite number inside their slider's range, or "not set". A field that is absent stays
+absent, and a number that is already good is not touched, so a normal project loads exactly as it was
+saved. The paste dialog's
 preview (`svgPasteDrawPreview`, the one `innerHTML` this feature adds) writes every value through
 `Math.round(+v) || 0`: nothing but a number can reach its markup, whatever the project holds.
 
