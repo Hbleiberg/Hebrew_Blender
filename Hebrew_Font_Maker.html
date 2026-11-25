@@ -4909,6 +4909,19 @@ function gxLandD(T, cc) {
   const dx = z(T[0] * c.x + T[1] * c.y - c2.x), dy = z(T[2] * c.x + T[3] * c.y - c2.y);
   return (dx || dy) ? [dx, dy] : null;
 }
+/* A seed is a landing point: the stored anchor is the seed minus where the mark lands inside itself
+   (c = c2 here), rounded at the source. It runs on the FINISHED seed — after leanAnchorSet — because the
+   seed is a point of the (leaning) letter and c is the mark as it is drawn: a mark does not lean with one
+   letter's record (its lean, if any, is font-level markLean and already in c), so leaning the offset with
+   the letter would move an upright mark sideways by the lean times its height (127 units for a Culmus holam
+   at 12°). bare: the font import's own seeds, made while the marks are still the ones it is replacing. */
+function markLandSeed(l, a, bare) {
+  if (bare || !a) return a;
+  const t = markLandTable(null); if (!t) return a;
+  const ks = t.keys(l);
+  for (const k in a) { const p = a[k], cc = ks[k]; if (cc && p && Number.isFinite(p.x) && Number.isFinite(p.y)) { p.x = Math.round(p.x - cc[0].x); p.y = Math.round(p.y - cc[0].y); } }
+  return a;
+}
 function markGlyphContoursRaw(kind, cp) {
   if (kind === 'accent') {
     const am = project.font.accent && project.font.accent.custom && project.font.accent.custom[cp];
@@ -9382,7 +9395,7 @@ const SEED_ANCHOR_KEYS = { nikkud: ['below','above','center'], trop: ['tropAbove
 function applyImportedAnchors(l, imp, kinds) {
   seedAnchorsIfNeeded(l);   // guarantee a complete base to merge into (backfill only, never clobber)
   const t = { codepoint: l.codepoint, contours: l.contours, advance: l.advance, anchors: null, smr: l.smr };   // .smr: a Samaritan letter's seed carries its columns
-  seedAnchors(t);           // fresh per-kind base — the same derivation the old full reseed used
+  seedAnchors(t, true);     // fresh per-kind base — the same derivation the old full reseed used (bare: the marks may be about to be replaced)
   ['nikkud', 'trop', 'smrmarks'].forEach(kind => {
     if (!kinds[kind]) return;
     SEED_ANCHOR_KEYS[kind].forEach(k => { l.anchors[k] = t.anchors[k]; });
@@ -9731,7 +9744,7 @@ async function applyFontImport(file, font, bytes, opts) {
       if (opts.outlines) {
         if (!importLetterOutline(l, font, scale)) return;   // no ink for this codepoint — blanked, and the anchor step below is skipped with it
         if (L.cat === 'punct') nPunct++; else n++;   // digits/punctuation counted separately (the toast said "N/27 letters" while counting them)
-        l.anchors = null; seedAnchors(l);   // fresh ink → every kind re-bases; a kind excluded below stays on seeds ("I'll place them myself")
+        l.anchors = null; seedAnchors(l, true);   // fresh ink → every kind re-bases; a kind excluded below stays on seeds ("I'll place them myself") — bare: the marks this import brings come in after the letters
       }
       if (imp) { applyImportedAnchors(l, imp, kinds); anchorHits++; }
     });
@@ -9830,7 +9843,7 @@ async function applyFontImport(file, font, bytes, opts) {
         if (importLetterOutline(l, font, scale)) {
           l.smrSource = 'import'; nSmr++;
           if (smrMarkBase(l)) {   // fresh ink → fresh columns (pins gone, like the Hebrew pass); the font's own column points land on top when the family's read found them
-            l.anchors = null; seedAnchors(l); delete l.markAnchors;
+            l.anchors = null; seedAnchors(l, true); delete l.markAnchors;
             const imp = (anchorsSmr && impSmr) ? impSmr[C.cp] : null;
             if (imp) applyImportedAnchors(l, imp, { smrmarks: true });
           }
@@ -16992,7 +17005,7 @@ function glyphBBox(contours, topBandOnly, meta) {
   }
   return { midX:(minX+maxX)/2, minY, maxY };
 }
-function seedAnchors(l) {
+function seedAnchors(l, bare) {   // bare: the font import's own seed (markLandSeed)
   const meta = letterMeta(l.codepoint);
   const lk = letterLeanK(l);   // a slanted letter is seeded on its upright shape, then the points are leaned with it
   // works even before tracing (so nikkud can be previewed on the reference glyph)
@@ -17014,7 +17027,8 @@ function seedAnchors(l) {
     tropBelowL: { x: mid - tOff, y: tBelowY }, tropBelowR: { x: mid + tOff, y: tBelowY }
   };
   leanAnchorSet(l.anchors, lk);
-  if (l.smr) ensureSmrAnchors(l);   // the Samaritan columns ride every fresh seed (reset, import) — a no-op for every other letter
+  markLandSeed(l, l.anchors, bare);   // each point above is where a mark should LAND; the anchor is that less the offset inside the mark — after the lean (markLandSeed says why)
+  if (l.smr) ensureSmrAnchors(l, bare);   // the Samaritan columns ride every fresh seed (reset, import) — a no-op for every other letter
 }
 function ensureTropAnchors(l) {   // back-fill trop anchors on letters seeded before trop / the L/R columns existed
   if (!l.anchors) return;
@@ -17039,7 +17053,7 @@ function ensureNikkudAnchors(l) {   // back-fill the nikkud triad on a PARTIAL .
   if (!l.anchors.below)  fill.below  = { x: mid, y: defaultBelowY(bb) };
   if (!l.anchors.above)  fill.above  = { x: mid, y: Math.max(gxKY(ANCHOR_Y.above), Math.round(bb.maxY)+gxKLen(40)) };
   if (!l.anchors.center) fill.center = { x: mid, y: Math.min(Math.max(Math.round((bb.minY + bb.maxY)/2 * 0.6 + gxKLen(150)), gxKY(120)), gxKY(380)) };
-  Object.assign(l.anchors, leanAnchorSet(fill, letterLeanK(l)));
+  Object.assign(l.anchors, markLandSeed(l, leanAnchorSet(fill, letterLeanK(l))));
 }
 function seedAnchorsIfNeeded(l) { if (!l.anchors) seedAnchors(l); else { ensureNikkudAnchors(l); ensureTropAnchors(l); ensureSmrAnchors(l); } }
 /* Samaritan marks (MARK_FAMILY.smrmarks): three above-the-letter columns on each of the 22 Samaritan
@@ -17050,18 +17064,18 @@ function seedAnchorsIfNeeded(l) { if (!l.anchors) seedAnchors(l); else { ensureN
    mid ± 0.39·width. A seed only — the editor and an import overwrite it. Every coordinate is rounded at
    the source (feaLib rejects a fraction). */
 const SMR_SIDE_FRAC = 0.39;
-function smrAnchorSeed(l) {   // pure: the three column points for a Samaritan letter (ensureSmrAnchors and qaAnchors share it)
+function smrAnchorSeed(l, bare) {   // pure: the three column points for a Samaritan letter (ensureSmrAnchors and qaAnchors share it) — landing points, less the offset inside the marks (markLandSeed)
   const hasInk = !!(l.contours && l.contours.length), ue = hasInk ? uprightExtent(l) : null;   // a slanted letter is seeded on its upright shape, then the points are leaned with it (seedAnchors' rule)
   const x0 = hasInk ? Math.round(ue.minX) : 0, x1 = hasInk ? Math.round(ue.maxX) : (l.advance != null ? l.advance : Math.round(gxKY(LETTER_TOP) * 0.7));
   const mid = Math.round((x0 + x1) / 2), off = Math.round(Math.max(0, x1 - x0) * SMR_SIDE_FRAC);
   const maxY = hasInk ? glyphBBox(uprightContours(l), true, letterMeta(l.codepoint)).maxY : gxKY(LETTER_TOP);
   const y = (l.anchors && l.anchors.above) ? l.anchors.above.y : Math.max(gxKY(ANCHOR_Y.above), Math.round(maxY) + gxKLen(40));
-  return leanAnchorSet({ smrAboveR: { x: mid + off, y }, smrAbove: { x: mid, y }, smrAboveL: { x: mid - off, y } }, letterLeanK(l));
+  return markLandSeed(l, leanAnchorSet({ smrAboveR: { x: mid + off, y }, smrAbove: { x: mid, y }, smrAboveL: { x: mid - off, y } }, letterLeanK(l)), bare);
 }
-function ensureSmrAnchors(l) {   // back-fill the columns on a mark-bearing Samaritan letter (a save from before the family, a fresh seed); idempotent
+function ensureSmrAnchors(l, bare) {   // back-fill the columns on a mark-bearing Samaritan letter (a save from before the family, a fresh seed); idempotent
   if (!smrMarkBase(l) || !l.anchors) return;
   if (l.anchors.smrAboveR && l.anchors.smrAbove && l.anchors.smrAboveL) return;
-  const s = smrAnchorSeed(l);
+  const s = smrAnchorSeed(l, bare);
   SMR_ANCHOR_KEYS.forEach(k => { if (!l.anchors[k]) l.anchors[k] = s[k]; });
 }
 
@@ -22323,9 +22337,9 @@ function qaAnchors(L) {
   const center = Math.round((bb.minY + bb.maxY)/2 * 0.6 + gxKLen(150));
   const aboveY = Math.max(gxKY(ANCHOR_Y.above), Math.round(bb.maxY)+gxKLen(40));
   const belowY = defaultBelowY(bb);
-  return withCols(leanAnchorSet({ below:{ x:mid, y:belowY }, above:{ x:mid, y:aboveY },
+  return withCols(markLandSeed(L, leanAnchorSet({ below:{ x:mid, y:belowY }, above:{ x:mid, y:aboveY },
            center:{ x:mid, y:Math.min(Math.max(center,gxKY(120)),gxKY(380)) },
-           tropAbove:{ x:mid, y:aboveY + gxKLen(TROP_GAP_ABOVE) }, tropBelow:{ x:mid, y:belowY - gxKLen(TROP_GAP_BELOW) } }, letterLeanK(L)));   // the seedAnchors mirror: seeded upright, then leaned with the letter
+           tropAbove:{ x:mid, y:aboveY + gxKLen(TROP_GAP_ABOVE) }, tropBelow:{ x:mid, y:belowY - gxKLen(TROP_GAP_BELOW) } }, letterLeanK(L))));   // the seedAnchors mirror: seeded upright, leaned with the letter, then less where the marks land inside themselves
 }
 /* Even-odd point-in-ink across all base contours, so letter counters/holes count as outside (same
    rule as the contour-depth logic at 3174-3177). */

@@ -1256,6 +1256,18 @@ undo scope carries it and Reset metrics returns it to 1 with the lines; an impor
 outlines removes it too (the letters it described are gone). A new constant that means "a
 distance at the standard letter size" goes through the same two helpers.
 
+**A seed is a landing point (`markLandSeed`).** Every seed rule above names where a mark should sit
+on the letter, so the stored anchor is the seed less each key's landing offset `c` (*Where a mark
+lands*), rounded at the source: an SVG replace (`assignSvgContours`), Reset anchors, the first trace or
+drawing of a letter, and the back-fills (`ensureNikkudAnchors`, `smrAnchorSeed`, and QA's mirror
+`qaAnchors`) put a font's own imported marks where a drawn font's would sit. With every `c` at 0
+nothing changes. It runs on the finished seed, **after** `leanAnchorSet`: the seed is a point of the
+leaning letter and `c` is the mark as it is drawn — a mark does not lean with one letter's record (its
+lean, if any, is font-level `markLean`, already in `c`), so leaning the offset too would move an upright
+mark sideways by the lean times its height. The font import's own seeds stay bare
+(`seedAnchors(l, true)`): its letters are seeded before the marks it brings come in, so the offsets
+then on hand belong to the marks it is replacing.
+
 **Scale all letters** (`gxScaleOp`, `#scaleAllOverlay`, `scaleAll*`) is the first operation: a uniform
 scale from the baseline. With *spacing and guide lines* on, x scales from the glyph origin, so the
 side bearings scale too; off, the ink keeps its left edge and both bearings keep their width. A size
@@ -1282,7 +1294,8 @@ is the identity at 0:
   on the un-leaned ink, so a slanted letter traced again keeps its advance instead of gaining its
   overhang.
 - `seedAnchors`, `ensureNikkudAnchors`, `ensureTropAnchors` and the QA mirror seed on
-  `uprightContours(l)` and then lean the points (`leanAnchorSet`) — the Samaritan columns too
+  `uprightContours(l)` and then lean the points (`leanAnchorSet`), and only then take the marks'
+  landing offsets off them (`markLandSeed`) — the Samaritan columns too
   (`smrAnchorSeed`, from the upright extent, so Reset anchors and the QA grid agree with the engine),
   and the default holam slot after שׁ / שׂ leans its 55 units of height by the base letter's record
   (`precompHolamAnchor`).
