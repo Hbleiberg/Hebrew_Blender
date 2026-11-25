@@ -686,7 +686,10 @@ font **file** is unchanged: no notice, licence untouched.
 *uploaded* reference font still stores its bytes, as before). The name must match `LF_PS_RE`; it goes
 inside `local("…")`, and `migrateProject` drops a `local` that does not match. `restoreCustomTemplateFonts`
 has the `local` branch: on a computer without the font the entry stays in the menu, marked *not
-installed here*, its family falls back to the generic font, and one status line says so.
+installed here*, its family falls back to the generic font, and one status line says so. A face that
+already has an entry (the same `local`) is never added twice: picking it again re-registers that
+entry's family, drops its *not installed here* mark and selects it. The rebuilt panel no longer shows
+the picker's button, so the focus goes to the reference-font menu (`#templateFont`), not to `<body>`.
 
 ### Workspace model + render pipeline
 State: `curKind` (`letter|nikkud|trop`), `curCp`, `workMode` (`align|trace|anchors|nodes`).

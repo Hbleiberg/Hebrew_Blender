@@ -11006,16 +11006,22 @@ function licenseUnsetGate() {                 // true = stop: no font is exporte
 }
 async function lfUseAsReference(it) {         // the tracing guide, by NAME: no bytes are read, none are stored in the project
   if (!LF_PS_RE.test(it.ps)) { status(I18n.t('fontmaker.status.localfont_noname')); return; }
-  const fam = 'TplLocal_' + it.ps.replace(/[^A-Za-z0-9]+/g, '_') + '_' + (customTemplateFonts.length + 1);
-  try { const ff = new FontFace(fam, 'local("' + it.ps + '")'); await ff.load(); document.fonts.add(ff); }
+  const list = project.template.customFonts || [];
+  const had = list.find(c => c && c.local === it.ps);   // the same installed face picked again: its entry is selected again, never added a second time
+  const fam = had ? had.fam : 'TplLocal_' + it.ps.replace(/[^A-Za-z0-9]+/g, '_') + '_' + (customTemplateFonts.length + 1);
+  try { const ff = new FontFace(fam, 'local("' + it.ps + '")'); await ff.load(); document.fonts.add(ff); }   // registered again for an entry that was "not installed here" when the project opened
   catch (e) { console.error(e); status(I18n.t('fontmaker.status.font_read_fail')); return; }
-  const family = "'" + fam + "', serif", name = it.full;
-  customTemplateFonts.push({ section: 'Custom', name, family, load: null });
-  (project.template.customFonts = project.template.customFonts || []).push({ name, fam, family, local: it.ps });
+  const family = had ? had.family : "'" + fam + "', serif", name = had ? had.name : it.full;
+  const mem = customTemplateFonts.find(f => f.family === family);
+  if (mem) mem.name = name; else customTemplateFonts.push({ section: 'Custom', name, family, load: null });   // (a "not installed here" mark goes: it is installed now)
+  if (!had) (project.template.customFonts = list).push({ name, fam, family, local: it.ps });
   project.template.font = family; project.template.showOverlay = true;
   markDirty();
   renderStage(); renderControls(); renderLetterGrid();
   const sel = document.getElementById('templateFont'); if (sel) sel.value = family;
+  // The picker handed the focus back to its button, which the rebuilt panel no longer shows (the menu
+  // left "Upload…"): it goes to the menu that now names the font, not to <body>.
+  if (sel && (!document.activeElement || document.activeElement === document.body)) { try { sel.focus(); } catch (e) {} }
   status(I18n.t('fontmaker.status.template_font_loaded', { name }));
 }
 
