@@ -27912,9 +27912,11 @@ function copyOutlineDo(){
   udDo([Object.assign(itemScope(), carryDraw ? { withSource: true, withDraw: true } : {})], 'copy outline from ' + src.name, () => {
     t.contours = clone(src.contours);
     t.curves   = clone(src.curves);
-    setLetterSlant(t, letterSlant(src));           // the copied outline brings its lean record
+    if (carryDraw) setLetterSlant(t, letterSlant(src));   // the copied outline brings its lean record
+    else setOutlineSlant(t, letterSlant(src));     // …and a picture of the target's own keeps its lean for its next trace
     t.handEdited = false;                          // a fresh copy → node-edit/re-trace warnings reset
     if (carryDraw) {
+      delete t.photoSlant;                         // the drawing replaces the picture and its placement
       t.draw = clone(src.draw);
       t.source.kind = src.source.kind; t.source.dataUrl = src.source.dataUrl; t.source.cropRect = null; t.source.sheetId = null;
       t.transform = src.transform.slice();
