@@ -1065,8 +1065,10 @@ corner or tangle a noisy outline.
   — parts within a unit of each other joined (two contours that only touch are one piece), and two
   contours joined only by a real overlap (a joint that merely touches is one a rounding can open; a
   contour's own ink counts as one piece wherever it pinches) — on the polygons and, where curves
-  ship, on the flattened curves. A letter with more pieces after than before is **not given the
-  step**: its spec is the plain scale by the shapes' factor with `stretched: true` (advance,
+  ship, on the flattened curves. A piece smaller than `GXW_SPECK` units² is not counted either way:
+  as the step thins it back, the tip of a hairline serif can shed a sliver a unit high (a
+  high-contrast face does at every foot), and that is not a part of the letter coming away. A letter
+  with more pieces after than before is **not given the step**: its spec is the plain scale by the shapes' factor with `stretched: true` (advance,
   anchors, pen and photo as with the box off; no `handEdited` stamp), and the plan lists it in
   `warn.stretched`. The dialog names those letters in their own warn-styled sentence; Edit points
   says it in the status line. The "before" counts ride on the census (`cen.pieces`), which the

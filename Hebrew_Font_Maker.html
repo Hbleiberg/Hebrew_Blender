@@ -18309,20 +18309,23 @@ function gxwUnloop(pts) {   // cut out a small loop where a ring crosses itself 
    lets parts within a unit of each other count as joined (two contours that only touch are one piece);
    firm asks two CONTOURS for a real overlap — a joint that holds only by touching is one a rounding can
    open — and takes a contour's own ink as one piece wherever it pinches (a run of ink belongs to the
-   contours that bound it). No height moves under a width change, so the same slices cut the letter
+   contours that bound it). A piece smaller than GXW_SPECK units² is not counted either way: the tip
+   of a hairline serif can shed a sliver a unit high as the step thins it back, and that is not a part
+   of the letter coming away. No height moves under a width change, so the same slices cut the letter
    before and after: the two results are only ever compared (gxwApart), never read on their own. */
+const GXW_SPECK = 60;
 function gxwPieces(rings) {
   const E = gxwEdges(rings); if (!E.length) return [0, 0];
   let y0 = Infinity, y1 = -Infinity;
   E.forEach(e => { y0 = Math.min(y0, e[1], e[3]); y1 = Math.max(y1, e[1], e[3]); });
-  const R = rings.length, near = gxwBins(E), loose = [], firm = rings.map((r, i) => i);   // firm: one node per contour, then one per run
+  const R = rings.length, near = gxwBins(E), loose = [], wide = [], firm = rings.map((r, i) => i);   // firm: one node per contour, then one per run
   const find = (p, a) => { while (p[a] !== a) { p[a] = p[p[a]]; a = p[a]; } return a; }, join = (p, a, b) => { a = find(p, a); b = find(p, b); if (a !== b) p[a] = b; };
   let prev = [];
   for (let y = Math.floor(y0) + 0.5; y < y1; y += 1) {
     const cur = [];
     gxwRuns(near(y), y).forEach(q => {
       if (!(q[1] - q[0] > 0.01)) return;
-      const id = loose.length; cur.push([q[0], q[1], id]); loose.push(id); firm.push(R + id);
+      const id = loose.length; cur.push([q[0], q[1], id]); loose.push(id); wide.push(q[1] - q[0]); firm.push(R + id);
       join(firm, R + id, q[2][4]); join(firm, R + id, q[3][4]);
     });
     cur.forEach(c => prev.forEach(p => {
@@ -18332,9 +18335,13 @@ function gxwPieces(rings) {
     }));
     prev = cur;
   }
-  let n = 0; const roots = new Set();
-  for (let i = 0; i < loose.length; i++) { if (find(loose, i) === i) n++; roots.add(find(firm, R + i)); }
-  return [n, roots.size];
+  const count = (p, off) => {   // the parts of some size: slices are a unit apart, so a run's width is its area
+    const area = new Map(); let n = 0;
+    for (let i = 0; i < loose.length; i++) { const r = find(p, off + i); area.set(r, (area.get(r) || 0) + wide[i]); }
+    area.forEach(a => { if (a >= GXW_SPECK) n++; });
+    return n;
+  };
+  return [count(loose, 0), count(firm, R)];
 }
 /* Did the stem step pull a letter's ink apart? rings / curves: the letter before; out: gxwShape's result;
    memo: a (Weak)Map that keeps the "before" counts per letter (the dialog plans the same font many times).
