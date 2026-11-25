@@ -10314,8 +10314,13 @@ function svgFromDataTransfer(dt) {           // what a clipboard or a drop holds
   if (/<svg[\s>]/i.test(s)) return { html: s };
   return files.some(x => /^image\//i.test(x.type || '')) ? { image: true } : null;
 }
-function svgPasteStageOk() {                 // is a letter's stage what the teacher is looking at, with nothing in flight?
-  if (!project || udShortcutBlocked() || _svgPasteBusy || _tourActive) return false;
+function svgFieldTakesPaste(el) {            // would a paste go INTO this element? A text area, an editable region, an input one types in — not a slider, a checkbox, a radio, a button, a colour or a file picker, which keep the focus after the mouse has used them and can take no paste
+  if (!el) return false;
+  if (el.tagName === 'TEXTAREA' || el.isContentEditable) return true;
+  return el.tagName === 'INPUT' && !/^(range|checkbox|radio|button|submit|reset|color|file|image|hidden)$/i.test(el.type || '');
+}
+function svgPasteStageOk() {                 // is a letter's stage what the teacher is looking at, with nothing in flight? (Where the focus sits is not asked here: the paste listener asks it of the field itself, and a drop is aimed with the pointer)
+  if (!project || udShortcutBlocked(true) || _svgPasteBusy || _tourActive) return false;
   if (document.querySelector('.overlay.open')) return false;
   if (document.body.classList.contains('cat-settings') || precompTarget) return false;   // Font details / Spacing / Advanced, or a combined form on the placement stage: the letter is not what is showing
   return !(tDrag || eDrag || metricDrag || guideDrag || nodeDrag || drawGesture);
@@ -10601,8 +10606,7 @@ function svgMarkPointsCopied() {              // best effort, inside the Copy ge
 document.addEventListener('paste', e => {
   const late = Date.now() - _ptPasteFiredAt < 1500;        // the fallback already pasted the points for this keypress
   clearTimeout(_ptPasteTimer); _ptPasteTimer = 0;
-  const ae = document.activeElement;
-  if (ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA' || ae.isContentEditable)) return;   // typing somewhere — the paste is the field's
+  if (svgFieldTakesPaste(document.activeElement)) return;   // typing somewhere — the paste is the field's. A slider or a checkbox that still has the focus is not "typing": the paste used to vanish there without a word
   if (late || !svgPasteStageOk()) return;
   const got = svgFromDataTransfer(e.clipboardData);
   if (got && !got.image) {
@@ -20617,12 +20621,14 @@ function wireDrop(id, cb, multi) {
     const f = fs[0]; if (f) cb(f); });
 }
 
-/* shared guard for global shortcuts: ignore while typing, a modal is open, or no project */
-function udShortcutBlocked() {
+/* shared guard for global shortcuts: ignore while typing, a modal is open, or no project.
+   `ownFocusRule`: the caller decides about the focused field itself (the SVG paste: only a field that
+   takes text keeps a paste — svgFieldTakesPaste — where a key shortcut must also stay off a slider). */
+function udShortcutBlocked(ownFocusRule) {
   if (!project) return true;
   if (keyClosedADialog()) return true;   // this very key press just closed a dialog: it was the dialog's, not a shortcut's
   const ae = document.activeElement;
-  if (ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA' || ae.isContentEditable)) return true;
+  if (!ownFocusRule && ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA' || ae.isContentEditable)) return true;
   if (document.getElementById('askOverlay')?.classList.contains('open')) return true;
   if (document.querySelector('.ivsav-overlay')) return true;   // the account screen (js/ivrit-saves.js) is open over the editor
   if (document.getElementById('helpOverlay')?.classList.contains('open')) return true;

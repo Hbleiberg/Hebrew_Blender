@@ -592,9 +592,14 @@ every *Copy outline…* button and in the point editor's nothing-selected stack 
 `svgFromDataTransfer` reads, in order, `image/svg+xml`, an SVG file item, `text/plain` that
 `isProbablySvg` accepts, and `text/html` holding an `<svg>` (taken out through an inert HTML parse,
 `svgTextFromHtml` — also the second try for markup too loose for XML). `svgPasteStageOk()` is the one
-gate: a project, nothing in `udShortcutBlocked()`, no open overlay, no tour, a letter's stage showing
+gate: a project, nothing in `udShortcutBlocked(true)`, no open overlay, no tour, a letter's stage showing
 (not a `cat-settings` tab, not a combined form's placement), no drag or stroke in flight, no file still
-being read. Letters only; a mark selected gets a toast.
+being read. Letters only; a mark selected gets a toast. Where the focus sits is not part of that gate
+(the `true` skips the shortcut guard's "typing somewhere" rule, which for key shortcuts rightly covers
+every input): the paste listener asks the focused field itself, `svgFieldTakesPaste` — a text area, an
+editable region or an input one types in keeps the paste; a slider, a checkbox, a radio or a button,
+which keep the focus after the mouse has used them, do not — and a drop, aimed with the pointer, does
+not ask at all.
 
 One dialog (`#svgPasteOverlay`, listed in `udShortcutBlocked`), one `udDo`. The target letter is pinned
 when the dialog opens. The size choices are `svgPasteFitChoices(cp)` and their bands `svgPasteSpan`:
