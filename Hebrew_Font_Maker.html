@@ -20337,7 +20337,7 @@ function renderAnchorLeft(L, l) {
       <div class="hint" style="font-size:0.7rem;text-align:center;">${_pT('halign_hint', 'Sets where <b>' + esc(tName) + '</b> sits across every letter. Position tweaks belong to the column (Left / Center / Right) — and stay with it if you switch sides.', { name: '<b>' + esc(tName) + '</b>' })}</div>
       <div class="ctl-row" style="margin-top:6px;align-items:center;gap:6px;">
         <span style="font-size:0.72rem;color:var(--muted);white-space:nowrap;">${I18n.t('fontmaker.panels.default_spread')}</span>
-        <input type="range" id="tropSpread" min="0" max="500" step="10" value="${tOff}" oninput="setTropSideOffset(this.value)" onchange="udSliderCommit('tropSpread')" style="flex:1;" aria-label="${esc(I18n.t('fontmaker.panels.default_spread'))}">
+        <input type="range" id="tropSpread" min="0" max="${Math.max(500, Math.ceil(tOff))}" step="10" value="${tOff}" oninput="setTropSideOffset(this.value)" onchange="udSliderCommit('tropSpread')" style="flex:1;" aria-label="${esc(I18n.t('fontmaker.panels.default_spread'))}">
         <span id="tropSpreadV" class="readout">${tOff}</span>
       </div>
       <div class="hint" style="font-size:0.7rem;text-align:center;">${_pT('default_spread_hint', 'Default distance Left/Right marks shift from center, on all letters (per-letter tweaks come after).')}</div>
@@ -20493,7 +20493,7 @@ function renderAnchorStageBelow(SB, l) {
   SB.innerHTML = `
     <div class="size-slider-col">
       <div class="size-slider-line"><label>${isTrop?I18n.t('fontmaker.panels.trop_size'):I18n.t('fontmaker.panels.nikkud_size')}</label> <input type="range" ${markSizeRange(sizePct, 40, 180)} step="5" value="${sizePct}" oninput="${sizeFn}(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.nikkud_size'))}"> <span id="markScaleV" class="readout">${sizePct}%</span></div>
-      ${isTrop?'':`<div class="size-slider-line"><label>${I18n.t('fontmaker.panels.holam_size')}</label> <input type="range" min="30" max="180" step="5" value="${holPct}" oninput="setHolamScale(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.holam_size'))}"> <span id="holamScaleV" class="readout">${holPct}%</span></div>
+      ${isTrop?'':`<div class="size-slider-line"><label>${I18n.t('fontmaker.panels.holam_size')}</label> <input type="range" ${markSizeRange(holPct, 30, 180)} step="5" value="${holPct}" oninput="setHolamScale(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.holam_size'))}"> <span id="holamScaleV" class="readout">${holPct}%</span></div>
       <div class="size-slider-line"><label>${I18n.t('fontmaker.panels.dagesh_size')}</label> <input type="range" ${markSizeRange(dagPct, 40, 180)} step="5" value="${dagPct}" oninput="setDageshScale(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.dagesh_size'))}"> <span id="dageshScaleV" class="readout">${dagPct}%</span></div>
       ${isVav?`<div class="size-slider-line"><label>${I18n.t('fontmaker.panels.holam_vav_size')}</label> <input type="range" ${markSizeRange(cholPct, 40, 180)} step="5" value="${cholPct}" oninput="setCholamScale(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.holam_vav_size'))}"> <span id="cholamScaleV" class="readout">${cholPct}%</span></div>`:''}`}
       ${isTrop?'':`<div class="hint" style="font-size:0.7rem;">${I18n.t('fontmaker.panels.size_hint')}${isVav?' '+I18n.t('fontmaker.panels.size_hint_vav'):''}</div>`}

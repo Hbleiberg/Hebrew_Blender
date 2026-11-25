@@ -915,8 +915,10 @@ six settings (`markScale`, `dageshScale`, `cholamScale`, `holamScale`, `tropScal
 and every per-form `pc.markScale` — exact for built-in and custom marks alike, and `markNudge` needs
 no change (it is added before the multiplier). That is why the **stored** mark-size range is wider
 than the sliders': `MARK_SIZE_MIN`–`MARK_SIZE_MAX` (10–400%) in the setters and
-`sanitizeFontNumbers`, while each slider keeps its 40–180 (a form's dot 30–200) and stretches only as
-far as it must to hold the value it finds (`markSizeRange`). Latin accents have no size setting (they
+`sanitizeFontNumbers`, while each slider keeps its 40–180 (Holam size 30–180, a form's dot 30–200)
+and stretches only as far as it must to hold the value it finds (`markSizeRange`). The trop Default
+spread slider (0–500) stretches the same way up to the spread's stored limit of 600, so a scaled
+spread is never clamped by its first touch. Latin accents have no size setting (they
 bake at scale 1), so there the shape *is* scaled: an imported accent in place, a built-in one that
 actually ships through a scaled custom copy created before the undo snapshot (the Generate Bold
 idiom — emptied by undo, it reads as the built-in again). An accent belongs to the Latin letters, not
