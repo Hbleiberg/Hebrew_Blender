@@ -205,7 +205,11 @@ handler goes through the real setters (`setMarkEnabled`, `setAdd*`, `setInputMod
   removed and all its call sites migrated to `esc()`.
 - **Global keyboard shortcuts**: start the handler with the `udShortcutBlocked()` guard (blocks
   while typing or when ask/help/QA overlays are open), and register the shortcut in BOTH the `?`
-  cheat sheet (`shortcutGroups()`) and the triggering button's `title=` tooltip.
+  cheat sheet (`shortcutGroups()`) and the triggering button's `title=` tooltip. A focused field
+  counts as typing, with one narrow exception: `udShortcutBlocked(own)` lets the key through while
+  the focus is on `own` — Shift+G and Shift+R pass their own Advanced checkbox (`#showGridChk`,
+  `#showRulersChk`), which shows that key beside it and keeps the focus after a click. Never widen
+  it to fields in general: arrows on a slider must never nudge points.
 - **A key press that closes a dialog is the dialog's, not a shortcut's.** A dialog closes in the
   middle of the key's own dispatch — the modal trap on Escape, a dialog's own handler on Enter — and
   the handlers that run afterwards for that same key find no dialog and focus back on the opener, so
@@ -258,6 +262,9 @@ time.
 **Rules that are easy to break:**
 - The caps are `display: none` unless `(pointer: fine)` — the suite's rule for key hints; the
   `aria-keyshortcuts` stays (a keyboard may be attached to a tablet).
+- A cap promises what its key does from where it is shown. Esc returns to Select from Marquee, Pen
+  or a shape, but with Select already the tool it leaves Edit points, so the pressed Select's cap is
+  `visibility: hidden` (it keeps its width, nothing moves).
 - A cap must never change a row: `.kh` has a negative block margin so a button is not taller for
   it, the bar's icons-only layout (`#nodeBar.nb-tight`) drops the on-button caps, and the Draw
   tools use the corner. Above the icons-only width the Edit points bar drops them by measurement:

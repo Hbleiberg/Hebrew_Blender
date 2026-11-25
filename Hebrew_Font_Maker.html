@@ -913,6 +913,9 @@ header{--kin-pt:10px;--kin-pb:10px;--kin-gap:14px;}   /* this header's block pad
     [data-kh-pop]:hover > .kh-pop, [data-kh-pop]:focus-visible > .kh-pop { visibility: visible; opacity: 1; transition: opacity 0.12s linear 0.3s, visibility 0s linear 0.3s; }
     #nodeBar.nb-tight .kh:not(.kh-pop) { display: none; }   /* the bar's icons-only layout */
     #nodeBar.nb-nocaps .kh:not(.kh-pop) { display: none; }  /* nodeBarFitCheck measured that the caps would cost the bar a row */
+    /* Esc returns to Select from Marquee, Pen or a shape; with Select already the tool it leaves Edit points. So the cap
+       is not shown on the pressed Select — hidden, not removed, so the button keeps its width and nothing moves. */
+    #nodeBar .npnl-mode-btn[data-mode="select"][aria-pressed="true"] > .kh { visibility: hidden; }
   }
   /* The size of the font as last built, beside Export — present only while that build is still this project's font.
      It is out of the toolbar's flow: its slot is placed after the Export group, so it coming and going can never re-wrap
@@ -14836,7 +14839,7 @@ function initRulers() {
     if (e.key === 'Escape' && _rlDrag) { rlEndDrag(true); e.stopPropagation(); return; }   // abandon a half-pulled guide
     if (e.key !== 'R' && e.key !== 'r') return;
     if (!e.shiftKey || e.ctrlKey || e.metaKey || e.altKey) return;
-    if (udShortcutBlocked()) return;                       // typing in a field / modal open / no project
+    if (udShortcutBlocked(chk)) return;                    // typing in a field / modal open / no project — its own checkbox is not typing
     e.preventDefault();
     setRulersShown(!_rulersOn);
     status(I18n.t(_rulersOn ? 'fontmaker.rulers.on' : 'fontmaker.rulers.off'));
@@ -15047,7 +15050,7 @@ function initGrid() {
   document.addEventListener('keydown', e => {
     if (e.key !== 'G' && e.key !== 'g') return;
     if (!e.shiftKey || e.ctrlKey || e.metaKey || e.altKey) return;
-    if (udShortcutBlocked()) return;                       // typing in a field / modal open / no project
+    if (udShortcutBlocked(chk)) return;                    // typing in a field / modal open / no project — its own checkbox is not typing
     e.preventDefault();
     setGridShown(!_gridOn);
     status(I18n.t(_gridOn ? 'fontmaker.grid.on' : 'fontmaker.grid.off'));
@@ -20590,12 +20593,15 @@ function wireDrop(id, cb, multi) {
     const f = fs[0]; if (f) cb(f); });
 }
 
-/* shared guard for global shortcuts: ignore while typing, a modal is open, or no project */
-function udShortcutBlocked() {
+/* shared guard for global shortcuts: ignore while typing, a modal is open, or no project. `own` is the one field whose
+   focus does not count as typing for this key: a view toggle's checkbox shows its key beside it (Shift+G on the grid
+   box), and the state right after clicking it is that focus. Every other field still blocks — arrows on a slider must
+   never nudge points. */
+function udShortcutBlocked(own) {
   if (!project) return true;
   if (keyClosedADialog()) return true;   // this very key press just closed a dialog: it was the dialog's, not a shortcut's
   const ae = document.activeElement;
-  if (ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA' || ae.isContentEditable)) return true;
+  if (ae && ae !== own && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA' || ae.isContentEditable)) return true;
   if (document.getElementById('askOverlay')?.classList.contains('open')) return true;
   if (document.querySelector('.ivsav-overlay')) return true;   // the account screen (js/ivrit-saves.js) is open over the editor
   if (document.getElementById('helpOverlay')?.classList.contains('open')) return true;
