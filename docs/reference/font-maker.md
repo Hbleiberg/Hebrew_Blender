@@ -555,9 +555,13 @@ every route in — a file upload, a sheet, auto-split, a sheet re-read when a pr
   measurements, so a sheet or an illustration pasted by mistake stayed under every cap and held the
   tab for minutes. `parseSvgEntries` therefore gives a pasted read `SVG_PASTE_BUDGET_MS` (about four
   seconds) for the sanitizer pass and the measuring together; `svgBudgetCheck` is asked at every
-  element, every subpath and every sixteenth sample, and past the deadline the read stops with
-  `svg_too_complex`. `svgPasteParse` gives the same message for a `RangeError` (groups nested deeper
-  than the sanitizer's walk can follow), never the engine's own text.
+  element, every subpath and before every sample, and past the deadline the read stops with
+  `svg_too_complex`. One measurement walks its whole subpath, so a single long one can outlast the
+  budget all by itself (a 2 MB path of curves took seconds per call): a sample is not started when
+  the subpath's own `getTotalLength` time says it would end past the deadline, and a pasted outline —
+  a subpath, a polygon's points — of more than `SVG_PASTE_MAX_SUBPATH_NUMS` numbers is refused with
+  the same message before anything is measured. `svgPasteParse` gives that message for a `RangeError`
+  too (groups nested deeper than the sanitizer's walk can follow), never the engine's own text.
 
 **The project file is the other way in, and it is as untrusted as the sheet inside it.** The page
 writes an item's numbers into markup — the Letter metrics fields, the Trace sliders and their readout,

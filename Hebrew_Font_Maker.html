@@ -9929,6 +9929,7 @@ const SVG_STYLE_PROPS = ['display', 'visibility', 'fill', 'stroke', 'fill-opacit
 const SVG_CSS_XFORM = ['transform', 'transform-origin', 'transform-box'];
 const SVG_PASTE_MAX_CHARS = 2000000, SVG_PASTE_MAX_SHAPES = 3000, SVG_PASTE_MAX_SUBPATHS = 4000;   // pasted artwork only (opts.paste) — a cap must never refuse a sheet a saved project already holds
 const SVG_PASTE_BUDGET_MS = 4000;           // …and how long reading it may take (svgBudgetCheck): the caps bound the size, not the time
+const SVG_PASTE_MAX_SUBPATH_NUMS = 20000;   // …and how many numbers one outline (a subpath, a polygon's points) may hold: every measurement of it walks all of it, so one alone could outlast the budget
 const SVG_IMPORT_FLAGS = ['engSource', 'cyrSource', 'phnSource', 'aramSource', 'smrSource'];   // "this letter came with the imported font", one per glyph set
 function svgInlineDecls(el) {                // style="a:b; c:d" → {a:'b', c:'d'}, by hand: an element of an inert document may have no .style at all
   const out = {}, s = el.getAttribute('style');
@@ -9962,8 +9963,11 @@ function svgSanitize(root, opts) {           // inert parsed root → { svg: a g
   const count = (src, tag) => {               // the caps are for pasted artwork only — they must never refuse a sheet a saved project already holds
     if (!o.paste) return;
     stat.shapes++;
-    stat.subpaths += tag === 'path' ? Math.max(1, ((src.getAttribute('d') || '').match(/[Mm]/g) || []).length) : 1;
-    if (stat.shapes > SVG_PASTE_MAX_SHAPES || stat.subpaths > SVG_PASTE_MAX_SUBPATHS) throw new Error(I18n.t('fontmaker.modals.svg_too_complex'));
+    const d = tag === 'path' ? (src.getAttribute('d') || '') : '';
+    stat.subpaths += tag === 'path' ? Math.max(1, (d.match(/[Mm]/g) || []).length) : 1;
+    const runs = tag === 'path' ? splitSubpaths(d) : (tag === 'polygon' || tag === 'polyline') ? [src.getAttribute('points') || ''] : [];
+    if (stat.shapes > SVG_PASTE_MAX_SHAPES || stat.subpaths > SVG_PASTE_MAX_SUBPATHS || runs.some(s => svgNumsOver(s, SVG_PASTE_MAX_SUBPATH_NUMS)))
+      throw new Error(I18n.t('fontmaker.modals.svg_too_complex'));
   };
   const copy = (src, out, names) => names.forEach(n => { const v = src.getAttribute(n); if (v != null) out.setAttribute(n, v); });
   const xrules = rules.filter(r => SVG_CSS_XFORM.some(p => r.style.getPropertyValue(p)));   // the <style> rules that move something — usually none
@@ -10064,8 +10068,14 @@ function polyToD(el, close) {
   let d = `M${n[0]} ${n[1]}`; for (let i = 2; i + 1 < n.length; i += 2) d += `L${n[i]} ${n[i + 1]}`;
   return d + (close ? 'Z' : '');
 }
-function svgBudgetCheck(o) {                // pasted artwork is read against the clock (o.deadline, set by parseSvgEntries for opts.paste only): past it the read stops with a message, instead of a tab that does not answer
-  if (o && o.deadline && performance.now() > o.deadline) throw new Error(I18n.t('fontmaker.modals.svg_too_complex'));
+function svgBudgetCheck(o, ahead) {         // pasted artwork is read against the clock (o.deadline, set by parseSvgEntries for opts.paste only): past it the read stops with a message, instead of a tab that does not answer. `ahead`: what the next step is known to cost, so a step that would end past the deadline is not started
+  if (o && o.deadline && performance.now() + (ahead || 0) > o.deadline) throw new Error(I18n.t('fontmaker.modals.svg_too_complex'));
+}
+function svgNumsOver(s, max) {              // does this run of path data (or of points) hold more than `max` numbers? Counting stops there; a number takes at least one character
+  if (!s || s.length <= max) return false;
+  const re = /[-+]?(?:\d*\.\d+|\d+\.?)(?:[eE][-+]?\d+)?/g; let n = 0;
+  while (re.exec(s)) if (++n > max) return true;
+  return false;
 }
 function elementToLoops(el, rootScreenCTM, opts) {      // one renderable element → contours [[ [x,y]... ]] in root (viewBox) user units, y-down
   const tag = el.localName;
@@ -10085,11 +10095,13 @@ function elementToLoops(el, rootScreenCTM, opts) {      // one renderable elemen
     const p = document.createElementNS(SVG_NS, 'path'); p.setAttribute('d', d);
     parent.appendChild(p);
     try {
-      let len = 0; try { len = p.getTotalLength(); } catch (e) {}
+      let len = 0; const t0 = performance.now();
+      try { len = p.getTotalLength(); } catch (e) {}
+      const each = performance.now() - t0;                              // what one measurement of this subpath costs: each point below walks all of it again
       if (len > 0.5) {
         const n = Math.max(12, Math.min(600, Math.round(len / SVG_SAMPLE_PX))), pts = [];
         for (let i = 0; i < n; i++) {
-          if ((i & 15) === 15) svgBudgetCheck(opts);                   // one very long subpath is slow to measure all by itself
+          svgBudgetCheck(opts, each);                                   // one long subpath is slow to measure all by itself: a measurement that would end past the deadline is not started
           let pt = null; try { pt = p.getPointAtLength(len * i / n); } catch (e) {}
           if (pt) pts.push(ctm ? [ctm.a * pt.x + ctm.c * pt.y + ctm.e, ctm.b * pt.x + ctm.d * pt.y + ctm.f] : [pt.x, pt.y]);
         }
