@@ -13972,22 +13972,59 @@ function renestNodeModel() {
     }
     const area = signedArea(rings[i]);
     if ((wantOuter && area > 0) || (!wantOuter && area < 0)) {     // same area convention as assignWindingByNesting
-      reverseNodeContour(ct); turned++;
-      const n = ct.nodes.length, re = [];
-      nodeSel.forEach(k => { const [c, ni] = k.split(':').map(Number);
-        if (c === i) { nodeSel.delete(k); re.push(nodeKey(c, n - 1 - ni)); } });
-      re.forEach(k => nodeSel.add(k));
+      nodeTurnContour(ct, i); turned++;
     }
     ct.winding = wantOuter ? 'cw' : 'ccw';
     if (kept) ct.dirSet = true;
   });
   return turned;
 }
-/* Automatic → kept. Runs the nesting rule one last time (which also puts an imported CFF outline or
-   a stock punctuation mark, both drawn the other way round, into this file's convention), then
-   flags every contour. Called BEFORE a flagged contour is added: one added first would be counted
-   in the others' nesting and could flip a stem it happens to cover. */
-function nodeKeepAll() { renestNodeModel(); nodeModel.contours.forEach(ct => { ct.dirSet = true; }); }
+function nodeTurnContour(ct, i) {                     // reverse contour i of the model (curves kept); its selected points go with it
+  reverseNodeContour(ct);
+  const n = ct.nodes.length, re = [];
+  nodeSel.forEach(k => { const [c, ni] = k.split(':').map(Number);
+    if (c === i) { nodeSel.delete(k); re.push(nodeKey(c, n - 1 - ni)); } });
+  re.forEach(k => nodeSel.add(k));
+}
+/* Which contours are holes → { reversed, holes: [one boolean per ring] }. A contour's role is the
+   ORDER of its points, never its label: counter-clockwise (signedArea > 0 in y-up units) is a hole.
+   That is all there is to say of a KEPT letter. An AUTOMATIC one may be drawn the other way round as
+   a whole — its solids counter-clockwise, as an imported CFF outline and the stock punctuation marks
+   are — so there the direction is read against the letter's own: `reversed` when the contour with
+   the largest area (an outline's biggest ring is a solid) runs counter-clockwise, and then clockwise
+   is the hole. And a contour that stands clear of every other one (their boxes do not meet) is a
+   solid whichever way it runs: it has nothing to cut (the stock question mark's hook runs one way,
+   its stem and dot the other). No nesting is decided here. One reading for the Contours rows,
+   holeTroubles and nodeKeepAll, so the three cannot disagree. */
+function contourRoles(rings, kept) {
+  const A = rings.map(R => R.length >= 3 ? signedArea(R) : 0);
+  if (kept) return { reversed: false, holes: A.map(a => a > 0) };
+  let big = 0; A.forEach(a => { if (Math.abs(a) > Math.abs(big)) big = a; });
+  const reversed = big > 0, pad = 2;
+  const B = rings.map(R => { const b = [Infinity, Infinity, -Infinity, -Infinity]; R.forEach(p => { if (p[0] < b[0]) b[0] = p[0]; if (p[1] < b[1]) b[1] = p[1]; if (p[0] > b[2]) b[2] = p[0]; if (p[1] > b[3]) b[3] = p[1]; }); return b; });
+  const alone = i => B.every((b, j) => j === i || rings[j].length < 3 || b[0] > B[i][2] + pad || b[2] < B[i][0] - pad || b[1] > B[i][3] + pad || b[3] < B[i][1] - pad);
+  return { reversed, holes: A.map((a, i) => (reversed ? a < 0 : a > 0) && !alone(i)) };
+}
+/* Automatic → kept, WITHOUT changing the fill. Every contour is flagged and labelled from the
+   direction it really runs in — exactly the roles contourRoles reads, so no row of the Contours list
+   changes. No nesting decision is taken: the nesting rule reads only a contour's first point, and on
+   an imported letter of overlapping solids it turns one of them into a hole; frozen by the flag,
+   that blanked the letter. An outline drawn the other way round as a whole has EVERY contour
+   reversed together (the winding changes sign everywhere, so the nonzero fill is the same), which
+   puts it in this file's convention; a contour standing clear of the rest is turned to run as the
+   solid it is (either direction fills the same). A letter that is already kept only has its
+   contours made to run the way their labels say. Called BEFORE a flagged contour is added, so the
+   letter's own direction is read without it. */
+function nodeKeepAll() {
+  if (nodeKept()) { renestNodeModel(); return; }      // (renest flags a straggler that arrived without the flag)
+  const cts = nodeModel.contours, rings = cts.map(nodeContourToPoints), roles = contourRoles(rings, false);
+  cts.forEach((ct, i) => {
+    let a = rings[i].length >= 3 ? signedArea(rings[i]) : 0;
+    if (roles.reversed) { nodeTurnContour(ct, i); a = -a; }
+    if (!roles.holes[i] && a > 0) { nodeTurnContour(ct, i); a = -a; }   // only one that stands clear of the rest gets here
+    ct.winding = a > 0 ? 'ccw' : 'cw'; ct.dirSet = true;
+  });
+}
 /* Structural write-through — for edits that change contour COUNT or ORIENTATION (contour delete,
    paste, transforms). Rebuilds l.contours wholesale; plain writeThrough's index mapping stays for
    pure point moves. */
@@ -15338,7 +15375,7 @@ function shapeInsert(box) {                      // one undo step: the letter be
   if (hole) reverseNodeContour(ct);
   const adv0 = (!l.contours && l.advance == null) ? Math.round(dispAdvance(l)) : null;   // a blank letter shows the reference glyph's width; keep it, or the width line jumps when the first shape lands
   udDo([itemScope()], (hole ? 'add hole' : kind === 'rect' ? 'add rectangle' : kind === 'round' ? 'add rounded rectangle' : 'add ellipse') + ' — ' + l.name, () => {
-    nodeKeepAll();                               // before the push: a flagged shape counted in the others' nesting could flip a stem it covers
+    nodeKeepAll();                               // before the push: the letter's own direction is read without the shape (a big one would otherwise pass for its largest contour)
     nodeModel.contours.push(ct);
     renestNodeModel(); writeThroughRebuild(l);
     if (adv0 != null) l.advance = adv0;
