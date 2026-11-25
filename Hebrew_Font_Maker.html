@@ -27543,7 +27543,7 @@ async function wizardOsFinish(){
   // the engine) reads the project when the engine arrives: this import would replace it under that build,
   // half-imported. It waits, like the file and installed-font imports (fontImportHeld), and says so here
   // in the wizard — the status line sits behind it. Nothing has changed yet; the wizard keeps every answer.
-  if (_fontOut) { hold.textContent = I18n.t('fontmaker.oswizard.wait_build', { btn: I18n.t('fontmaker.wizard.create') }); hold.hidden = false; return; }
+  if (_fontOut) { hold.textContent = I18n.t('fontmaker.oswizard.wait_build', { btn: I18n.t('fontmaker.oswizard.start_editing') }); hold.hidden = false; return; }   // the button's label in this mode (wizardOpen)
   const ctx = _osStartCtx, e = ctx.entry;
   const name = document.getElementById('wizOsName').value.trim();
   const author = document.getElementById('wizOsAuthor').value.trim();
