@@ -5180,6 +5180,19 @@ function _focusables(el) {
   return [...el.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])')]
     .filter(n => !n.disabled && n.offsetParent !== null);
 }
+/* The Tab stops among them, as the browser counts them: a radio group is ONE stop — its checked radio,
+   else its first. The trap below wraps from the first stop and the last, and Tab or Shift+Tab from ANY
+   radio of a group leaves the whole group: compared with the group's first radio alone, a dialog that
+   opens on its checked choice (the paste dialog's Size, on a letter with a tail or a remembered "Keep
+   its original size") let Shift+Tab walk out to the page behind it. */
+const _isRadio = n => !!n && n.tagName === 'INPUT' && n.type === 'radio' && !!n.name;
+const _sameRadioGroup = (a, b) => _isRadio(a) && _isRadio(b) && a.name === b.name && a.form === b.form;
+function _tabStops(el) {
+  const f = _focusables(el);
+  return f.filter((n, i) => !_isRadio(n) || f.findIndex(m => _sameRadioGroup(m, n)) === i)
+    .map(n => _isRadio(n) ? (f.find(m => _sameRadioGroup(m, n) && m.checked) || n) : n);
+}
+function _isTabStop(a, stop) { return a === stop || _sameRadioGroup(a, stop); }
 function aOpenModal(id, closeFn) {
   const ov = document.getElementById(id); if (!ov) return;
   _modalsUnder = _modalsUnder.filter(m => m.id !== id);
@@ -5193,7 +5206,7 @@ function aOpenModal(id, closeFn) {
   document.querySelectorAll('.overlay.open').forEach(o => { if (o !== ov) top = Math.max(top, parseInt(getComputedStyle(o).zIndex, 10) || 0); });
   if (top && top >= (parseInt(getComputedStyle(ov).zIndex, 10) || 0)) ov.style.zIndex = String(top + 1);
   ov.classList.add('open');
-  const f = _focusables(ov); if (f.length) setTimeout(() => f[0].focus(), 0);
+  const f = _tabStops(ov); if (f.length) setTimeout(() => f[0].focus(), 0);
 }
 function aCloseModal(id) {
   const ov = document.getElementById(id); if (ov) { ov.classList.remove('open'); ov.style.zIndex = ''; }
@@ -5224,7 +5237,7 @@ function aCloseModal(id) {
   // outside it (the closed dialog was opened from the page, or its opener is gone), bring it in —
   // Enter or Space on a toolbar button behind an open dialog would press that button.
   const top = _activeModal && document.getElementById(_activeModal.id);
-  if (top && top.classList.contains('open') && !top.contains(document.activeElement)) { const f = _focusables(top); try { (f[0] || top.querySelector('[tabindex="-1"]') || top).focus(); } catch (e) {} }
+  if (top && top.classList.contains('open') && !top.contains(document.activeElement)) { const f = _tabStops(top); try { (f[0] || top.querySelector('[tabindex="-1"]') || top).focus(); } catch (e) {} }
 }
 /* A key press that closes a dialog belongs to that dialog — it is not also a shortcut. A dialog
    closes in the middle of the key's own dispatch (the trap below on Escape; a dialog's own handler on
@@ -5259,8 +5272,8 @@ document.addEventListener('keydown', e => {
   if (am && am.classList.contains('open')) {
     if (e.key === 'Escape') { e.preventDefault(); e.stopImmediatePropagation(); _activeModal.close(); return; }   // the Escape is spent here: no later handler on the document sees it
     if (e.key === 'Tab') {
-      const f = _focusables(am);
-      if (!f.length) {
+      const s = _tabStops(am);   // stops, not focusables: see _tabStops
+      if (!s.length) {
         // A modal with nothing focusable is still modal: the import-progress dialog has no controls
         // by design, and surrendering Tab here would let the keyboard walk the workspace BEHIND a
         // dialog that exists precisely because that workspace is mid-import. Hold focus on the
@@ -5269,10 +5282,10 @@ document.addEventListener('keydown', e => {
         try { (am.querySelector('[tabindex="-1"]') || am).focus(); } catch (err) {}
         return;
       }
-      const first = f[0], last = f[f.length - 1];
-      if (!am.contains(document.activeElement)) { e.preventDefault(); first.focus(); }
-      else if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
-      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      const first = s[0], last = s[s.length - 1], a = document.activeElement;
+      if (!am.contains(a)) { e.preventDefault(); first.focus(); }
+      else if (e.shiftKey && _isTabStop(a, first)) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && _isTabStop(a, last)) { e.preventDefault(); first.focus(); }
     }
     return;
   }
