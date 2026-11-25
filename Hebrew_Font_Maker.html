@@ -16391,14 +16391,26 @@ function xformPutCarry(l, c) { ['transform', 'captureBox', 'draw', 'drawSig', 'p
 function xformScope(l, kind) {   // a slant that carries pen strokes must snapshot them too (draw is outside a plain item scope)
   return (kind === 'slant' && xformWhole() && l.draw && l.draw.strokes && l.draw.strokes.length) ? Object.assign(itemScope(), { withDraw: true }) : itemScope();
 }
-function xformMappedAnchors(src, m, piv, flip) {             // src: { anchors, markAnchors } (never mutated) → the mapped pair
+/* The points move by where their marks LAND (land — xformLand; null when every mark lands on its attach point):
+   a' = M(a + c) − c, the mark itself unchanged, so a flip mirrors the landing point and never the mark. A side
+   column that swaps takes the other column's landing point, less its own offset. */
+function xformLand(l) {   // → { keys, pin(cp, key), form(pc, key) } — the letter's landing offsets for a point-editor transform (its marks stay as they are: c2 = c) — or null
+  const t = markLandTable(null); if (!t) return null;
+  return { keys: t.keys(l), pin: (cp, key) => t.mark(l, catOfCp(cp), cp, key), form: (pc, key) => precompLandCC(t, pc, key) };
+}
+function xformMappedAnchors(src, m, piv, flip, land) {       // src: { anchors, markAnchors } (never mutated) → the mapped pair
   const ok = p => !!p && Number.isFinite(p.x) && Number.isFinite(p.y);
   const mp = p => Object.assign({}, p, { x: Math.round(piv.cx + m.a * (p.x - piv.cx) + m.b * (p.y - piv.cy)), y: Math.round(piv.cy + m.c * (p.x - piv.cx) + m.d * (p.y - piv.cy)) });
+  const LT = [m.a, m.b, m.c, m.d, 0, 0], ks = land ? land.keys : {};
+  const mpTo = (p, from, to) => {                            // M(p + c_from) − c_to, rounded at the source; the plain map when both offsets are 0
+    const d = (from || to) ? gxLandD(LT, [from ? from[0] : { x: 0, y: 0 }, to ? to[0] : { x: 0, y: 0 }]) : null;
+    return d ? Object.assign({}, p, { x: Math.round(piv.cx + m.a * (p.x - piv.cx) + m.b * (p.y - piv.cy) + d[0]), y: Math.round(piv.cy + m.c * (p.x - piv.cx) + m.d * (p.y - piv.cy) + d[1]) }) : mp(p);
+  };
   const out = { anchors: null, markAnchors: null }, side = {};
   if (src.anchors) {
-    const an = {};
-    for (const k in src.anchors) an[k] = ok(src.anchors[k]) ? mp(src.anchors[k]) : src.anchors[k];
-    if (flip) XFORM_LR.forEach(([L, R]) => { if (ok(an[L]) && ok(an[R])) { const t = an[L]; an[L] = an[R]; an[R] = t; side[L] = side[R] = true; } });
+    const an = {}, A = src.anchors;
+    for (const k in A) an[k] = ok(A[k]) ? mpTo(A[k], ks[k], ks[k]) : A[k];
+    if (flip) XFORM_LR.forEach(([L, R]) => { if (ok(an[L]) && ok(an[R])) { an[L] = mpTo(A[R], ks[R], ks[L]); an[R] = mpTo(A[L], ks[L], ks[R]); side[L] = side[R] = true; } });
     out.anchors = an;
   }
   if (src.markAnchors) {
@@ -16406,8 +16418,12 @@ function xformMappedAnchors(src, m, piv, flip) {             // src: { anchors, 
     for (const cp in src.markAnchors) {
       const p = src.markAnchors[cp];
       if (!ok(p)) { ma[cp] = p; continue; }
-      const a0 = flip && side[p.key] && src.anchors[p.key];
-      ma[cp] = a0 ? Object.assign({}, p, { x: out.anchors[p.key].x - (p.x - a0.x), y: out.anchors[p.key].y + (p.y - a0.y) }) : mp(p);
+      const a0 = flip && side[p.key] && src.anchors[p.key], pc = land ? land.pin(cp, p.key) : null;
+      if (a0) {                                              // a side column's pin keeps its mirrored offset from its column — measured between the two landing points
+        const kc = ks[p.key] ? ks[p.key][0] : { x: 0, y: 0 }, mc = pc ? pc[0] : { x: 0, y: 0 }, dx = 2 * (kc.x - mc.x);
+        const x = out.anchors[p.key].x - (p.x - a0.x);
+        ma[cp] = Object.assign({}, p, { x: dx ? Math.round(x + dx) : x, y: out.anchors[p.key].y + (p.y - a0.y) });
+      } else ma[cp] = mpTo(p, pc, pc);
     }
     out.markAnchors = ma;
   }
@@ -16436,10 +16452,15 @@ function xformFormsBase(l) {
   });
   return out;
 }
-function xformMappedForms(base, m, piv) {                    // base: xformFormsBase's list (never mutated) → the mapped list
+function xformMappedForms(base, m, piv, land) {              // base: xformFormsBase's list (never mutated) → the mapped list; land: xformLand (each dot moves by where its own mark lands)
+  const LT = [m.a, m.b, m.c, m.d, 0, 0];
   return base.map(f => {
-    const set = {};
-    for (const key in f.set) { const p = f.set[key]; set[key] = Object.assign({}, p, { x: Math.round(piv.cx + m.a * (p.x - piv.cx) + m.b * (p.y - piv.cy)), y: Math.round(piv.cy + m.c * (p.x - piv.cx) + m.d * (p.y - piv.cy)) }); }
+    const set = {}, pc = land ? getPrecomp(f.target) : null;
+    for (const key in f.set) {
+      const p = f.set[key], d = pc ? gxLandD(LT, land.form(pc, key)) : null;
+      const x = piv.cx + m.a * (p.x - piv.cx) + m.b * (p.y - piv.cy), y = piv.cy + m.c * (p.x - piv.cx) + m.d * (p.y - piv.cy);
+      set[key] = Object.assign({}, p, { x: Math.round(d ? x + d[0] : x), y: Math.round(d ? y + d[1] : y) });
+    }
     return { target: f.target, set };
   });
 }
@@ -16468,9 +16489,9 @@ function transformSelectedNodes(kind, angleDeg) {            // button / number-
   if (!keys.length) return;
   const piv = xformPivot(keys, m);
   if (!piv) return;
-  const whole = xformWhole();
-  const anch = xformAnchorsFollow(kind) ? xformMappedAnchors(l, m, piv, kind === 'fliph') : null;
-  const forms = xformFormsFollow(kind) ? xformMappedForms(xformFormsBase(l), m, piv) : [];
+  const whole = xformWhole(), land = (xformAnchorsFollow(kind) || xformFormsFollow(kind)) ? xformLand(l) : null;
+  const anch = xformAnchorsFollow(kind) ? xformMappedAnchors(l, m, piv, kind === 'fliph', land) : null;
+  const forms = xformFormsFollow(kind) ? xformMappedForms(xformFormsBase(l), m, piv, land) : [];
   const carry = (kind === 'slant' && whole) ? xformSlantCarry(l, xformCarryBase(l), m.deg) : null;
   if (xformOutOfRange(piv, m) || (anch && xformAnchorsTooFar(anch)) || xformFormsTooFar(forms) || (carry && carry.drawOut)) { status(I18n.t('fontmaker.status.xform_too_big')); return; }   // refused whole: nothing written, no undo entry
   const lean = whole ? xformSlantAfter(kind, angleDeg, xformLeanFor(l, kind)) : null;
@@ -16566,19 +16587,20 @@ function xformLive(kind, v) {
                    whole: xformWhole(), carry: xformCarryBase(l),   // the letter's photo, strokes and lean record as they were — re-derived from these, never compounded
                    lean0: xformLeanFor(l, kind),                    // the lean the gesture starts from (for a rotation: also an angle the last turn took out of range)
                    // a whole-glyph scale carries the anchors and pins: keep the pre-drag pair, re-map it from scratch each tick
-                   anch: xformAnchorsFollow(kind) ? JSON.parse(JSON.stringify({ anchors: l.anchors || null, markAnchors: l.markAnchors || null })) : null, forms };
+                   anch: xformAnchorsFollow(kind) ? JSON.parse(JSON.stringify({ anchors: l.anchors || null, markAnchors: l.markAnchors || null })) : null, forms,
+                   land: (xformAnchorsFollow(kind) || forms.length) ? xformLand(l) : null };   // where its marks land — the marks do not change during the gesture
   }
   let val = _XFORM_CLAMP[kind](v);
   nodeModel = JSON.parse(JSON.stringify(_xformBase.model));  // reset to the pre-drag snapshot, re-apply at the new value
   nodeSel = new Set(_xformBase.sel);
   let m = xformMatrix(kind, val);                            // null at neutral (0° / 100%) → identity preview
   const piv = xformPivot(_xformBase.keys, m);
-  let anch = (m && piv && _xformBase.anch) ? xformMappedAnchors(_xformBase.anch, m, piv, false) : null;
-  let forms = (m && piv) ? xformMappedForms(_xformBase.forms, m, piv) : _xformBase.forms;
+  let anch = (m && piv && _xformBase.anch) ? xformMappedAnchors(_xformBase.anch, m, piv, false, _xformBase.land) : null;
+  let forms = (m && piv) ? xformMappedForms(_xformBase.forms, m, piv, _xformBase.land) : _xformBase.forms;
   if (m && piv && (xformOutOfRange(piv, m) || (anch && xformAnchorsTooFar(anch)) || xformFormsTooFar(forms))) {   // past what a font can hold — stay at the last good value
     val = _xformBase.val; m = xformMatrix(kind, val);
-    anch = (m && _xformBase.anch) ? xformMappedAnchors(_xformBase.anch, m, piv, false) : null;
-    forms = m ? xformMappedForms(_xformBase.forms, m, piv) : _xformBase.forms;
+    anch = (m && _xformBase.anch) ? xformMappedAnchors(_xformBase.anch, m, piv, false, _xformBase.land) : null;
+    forms = m ? xformMappedForms(_xformBase.forms, m, piv, _xformBase.land) : _xformBase.forms;
   }
   _xformBase.val = val;
   if (m) applyXformToKeys(_xformBase.keys, m);               // same keys every tick ⇒ same bbox pivot every tick

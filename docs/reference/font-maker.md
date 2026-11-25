@@ -1488,12 +1488,15 @@ font or the English tab, whether or not this box is ticked. Importing a kind's s
 marks are not stem-corrected.
 
 **In the point editor** the Transform section works on the node model, about the centre of the
-affected nodes' box, as before. A whole-glyph **scale or horizontal flip** (nothing selected, no
+affected nodes' box, as before. A whole-glyph **scale, slant or horizontal flip** (nothing selected, no
 contour hidden) also maps `l.anchors` and the pins about that pivot in the same undo step
-(`xformMappedAnchors`; on a flip the left / right columns keep their sides and a side column's pin
-keeps its mirrored offset). A whole-glyph **scale or slant** carries, through the same pivot map and
-rounded, what the letter's composed forms place for themselves — `pc.anchor` (its `auto` flag rides
-along) and `pc.holam` of every form whose base is this letter, the list the engine builds for a
+(`xformMappedAnchors`), each by where its marks land (`xformLand` — *Where a mark lands*; the marks
+themselves do not change, so `c2 = c` and a flip mirrors the landing point, never the mark); on a flip
+the left / right columns keep their sides (each takes the other's landing point, less its own offset)
+and a side column's pin keeps its mirrored offset from its column. A whole-glyph **scale or slant**
+carries, through the same pivot map and rounded, what the letter's composed forms place for themselves
+— `pc.anchor` (its `auto` flag rides along) and `pc.holam` of every form whose base is this letter,
+each by its own mark's landing point, the list the engine builds for a
 letter (`xformFormsBase` / `xformMappedForms`; `xformFormsFollow` says when) — and the matching
 `precomp` scopes join the letter's in the one `udDo` or slider burst; a flip leaves them, since a
 shin dot keeps its side. A rotation, a vertical flip and any selection leave all of these alone — an
