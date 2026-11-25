@@ -29262,6 +29262,7 @@ function applyI18n() {
   try { renderControls(); } catch (e) {}
   try { renderGrids(); } catch (e) {}
   try { if (project) syncOsFontLock(); } catch (e) {}   // partner license-lock note text is I18n.t-built
+  try { syncItalicRow(); } catch (e) {}   // the note under the Italic angle is I18n.t-built (reads the project, writes the row only)
   // Starting-font picker cards (badges, aria-labels, intro, count) are JS-built — rebuild them read-only;
   // already-loaded preview faces re-attach from the memoized _osPickFaces without a refetch.
   try {

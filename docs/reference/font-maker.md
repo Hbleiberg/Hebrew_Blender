@@ -1534,7 +1534,8 @@ the Regular's.
 - **The declared angle** is `fontItalicLean()` (+ = right; the file gets its negative): the teacher's
   own number from Font Details (`project.font.italicLean`) when set, else the most common lean among
   the drawn letters' records (`fontSlantInfo()`, which also counts how many letters differ — shown
-  in the panel and, when the teacher has not chosen, on the Exported screen). Regular and Bold
+  in the panel by `syncItalicRow()`, which `applyI18n` re-runs so the note follows a live language
+  switch, and, when the teacher has not chosen, on the Exported screen). Regular and Bold
   declare 0 whatever the letters do. The caret slope is `UPM / round(tan(lean) × UPM)`, or 1 / 0.
 - Importing a font sets the style from the source's **style flags alone** (`importFontIdentity`:
   fsSelection bit 0 or macStyle bit 1 for Italic; fsSelection bit 5, macStyle bit 0 or a weight of
