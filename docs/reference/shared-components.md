@@ -1107,11 +1107,14 @@ Documented keyboard shortcuts get visible `<kbd>` hint rows (surfaced on keyboar
 touch-primary tools get gesture equivalents; every new interactive element must be keyboard-operable.
 - **Implemented on** (census measured across all seven tools):
   **One heavy surface.** `Hebrew_Font_Maker.html` carries the full treatment — global shortcut handler +
-  `?` cheat sheet via `shortcutGroups()`/`openShortcuts()` + the key shown on every button that has
-  one, with its `aria-keyshortcuts` and title, all read from one table (`KH`: Undo / Redo in four
-  places, Copy / Paste / Select all, the Draw tools, Select / Marquee / Pen, rulers and grid; ⌘ and
-  `Meta` on a Mac — `docs/reference/font-maker.md` → *Shortcut keys on buttons*). The right shape for a
-  tool with dozens of shortcuts, and the only one.
+  `?` cheat sheet via `shortcutGroups()`/`openShortcuts()` + the key shown as a cap, with its
+  `aria-keyshortcuts` and title, on the buttons listed in one table (`KH`: Undo / Redo in four
+  places, Copy / Paste / Select all, the Draw tools, Select / Marquee / Pen, rulers and grid, the
+  Shapes tool's Cancel; the pen's Cancel path is in the table too but names its key only in its
+  title and `aria-keyshortcuts`; ⌘ and `Meta` on a Mac — `docs/reference/font-maker.md` → *Shortcut
+  keys on buttons*). Other keys that act on a control — brush size, pen style, swapping Draw / Erase,
+  Delete, Insert point, Next unfinished letter — show no cap and are listed in the cheat sheet (some
+  also in the control's title). The right shape for a tool with dozens of shortcuts, and the only one.
   **Five light surfaces, all `<kbd>` hints without a cheat sheet.** `flash_cards.html`:
   two `.fc-kh-set` rows under the card nav that swap with `setListenChrome()`, because a listening round
   takes different keys (no flip, no Y/N), plus numbered `.lc-key` badges on the listening tiles — the

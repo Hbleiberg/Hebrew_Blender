@@ -892,8 +892,6 @@ header{--kin-pt:10px;--kin-pb:10px;--kin-gap:14px;}   /* this header's block pad
   .shp-ico { flex-shrink: 0; }
   .shp-armed { margin-top: 6px; padding: 6px; border: 1px dashed var(--gold); border-radius: 6px; }
   .shp-armed .hint { margin: 0; }
-  .shp-kbd { margin-inline-start: 4px; }
-  @media not (pointer: fine) { .shp-kbd { display: none; } }
   /* Shortcut keys on buttons (the KH table): a key sits on its button where there is room; where there is none
      (the icon buttons) it pops up under the button on hover or keyboard focus. Shown only with a mouse or trackpad —
      a touch-only device has no keys to press. The pop-up is centred by a physical offset on purpose: centring has no
@@ -2079,7 +2077,7 @@ html[lang="he"] .tp-label{letter-spacing:normal;text-transform:none;}
         <button type="button" id="unfinishedBtn" class="hint-link" style="display:none;margin-top:5px;"
           onclick="stepUnfinished(1)" title="Jump to the next letter still missing an outline or its anchors (Shift + ], or Shift + [ to go back)"
           data-i18n="fontmaker.panels.unfinished_btn" data-i18n-title="fontmaker.panels.unfinished_btn_title">Next unfinished letter</button>
-        <div class="ctl-row" style="margin-top:6px;"><button type="button" class="ctl-btn draw-save-all" data-cat="letter" style="display:none;" onclick="drawCommitAll('letter')" title="Save &amp; trace every drawing on this tab that is not saved yet, in one step (one Ctrl+Z undoes them all). Glyphs whose points were edited by hand are left for you to save one at a time." data-i18n-title="fontmaker.draw.save_all_title"><span data-i18n="fontmaker.draw.save_all">Save all drawings</span> <span class="dsa-n"></span></button> <button type="button" class="ctl-btn trace-all" data-cat="letter" style="display:none;" onclick="traceAll('letter')" title="Trace every letter on this tab that has a photo but no outline yet, in one step (one Ctrl+Z undoes them all). Letters that already have an outline are left alone — fine-tune any letter on its Trace step afterwards." data-i18n-title="fontmaker.panels.trace_all_title"><span data-i18n="fontmaker.panels.trace_all">Trace all</span> <span class="tra-n"></span></button></div>
+        <div class="ctl-row" style="margin-top:6px;"><button type="button" class="ctl-btn draw-save-all" data-cat="letter" style="display:none;" onclick="drawCommitAll('letter')" title="Save &amp; trace every drawing on this tab that is not saved yet, in one step (one {keys} undoes them all). Glyphs whose points were edited by hand are left for you to save one at a time." data-i18n-title="fontmaker.draw.save_all_title" data-kh-ref="undo"><span data-i18n="fontmaker.draw.save_all">Save all drawings</span> <span class="dsa-n"></span></button> <button type="button" class="ctl-btn trace-all" data-cat="letter" style="display:none;" onclick="traceAll('letter')" title="Trace every letter on this tab that has a photo but no outline yet, in one step (one {keys} undoes them all). Letters that already have an outline are left alone — fine-tune any letter on its Trace step afterwards." data-i18n-title="fontmaker.panels.trace_all_title" data-kh-ref="undo"><span data-i18n="fontmaker.panels.trace_all">Trace all</span> <span class="tra-n"></span></button></div>
       </div>
     </div>
 
@@ -2110,7 +2108,7 @@ html[lang="he"] .tp-label{letter-spacing:normal;text-transform:none;}
           <button class="mode-btn" id="engCaseLower" onclick="setEnglishCase('lower')" aria-pressed="false" data-i18n="fontmaker.panels.eng_case_lower">Lowercase a–z</button>
           <button class="mode-btn" id="engCaseAccent" onclick="setEnglishCase('accent')" aria-pressed="false" style="display:none;" data-i18n="fontmaker.panels.eng_case_accent">Accented &amp; extra</button>
         </div>
-        <div class="ctl-row" style="margin:0 0 8px;"><button type="button" class="ctl-btn draw-save-all" data-cat="english" style="display:none;" onclick="drawCommitAll('english')" title="Save &amp; trace every drawing on this tab that is not saved yet, in one step (one Ctrl+Z undoes them all). Glyphs whose points were edited by hand are left for you to save one at a time." data-i18n-title="fontmaker.draw.save_all_title"><span data-i18n="fontmaker.draw.save_all">Save all drawings</span> <span class="dsa-n"></span></button> <button type="button" class="ctl-btn trace-all" data-cat="english" style="display:none;" onclick="traceAll('english')" title="Trace every letter on this tab that has a photo but no outline yet, in one step (one Ctrl+Z undoes them all). Letters that already have an outline are left alone — fine-tune any letter on its Trace step afterwards." data-i18n-title="fontmaker.panels.trace_all_title"><span data-i18n="fontmaker.panels.trace_all">Trace all</span> <span class="tra-n"></span></button></div>
+        <div class="ctl-row" style="margin:0 0 8px;"><button type="button" class="ctl-btn draw-save-all" data-cat="english" style="display:none;" onclick="drawCommitAll('english')" title="Save &amp; trace every drawing on this tab that is not saved yet, in one step (one {keys} undoes them all). Glyphs whose points were edited by hand are left for you to save one at a time." data-i18n-title="fontmaker.draw.save_all_title" data-kh-ref="undo"><span data-i18n="fontmaker.draw.save_all">Save all drawings</span> <span class="dsa-n"></span></button> <button type="button" class="ctl-btn trace-all" data-cat="english" style="display:none;" onclick="traceAll('english')" title="Trace every letter on this tab that has a photo but no outline yet, in one step (one {keys} undoes them all). Letters that already have an outline are left alone — fine-tune any letter on its Trace step afterwards." data-i18n-title="fontmaker.panels.trace_all_title" data-kh-ref="undo"><span data-i18n="fontmaker.panels.trace_all">Trace all</span> <span class="tra-n"></span></button></div>
         <div class="letter-grid" id="englishGrid"></div>
         <div id="englishAccentNote" style="display:none;margin-top:9px;font-size:0.72rem;color:var(--muted);line-height:1.5;"></div>
       </div>
@@ -2122,28 +2120,28 @@ html[lang="he"] .tp-label{letter-spacing:normal;text-transform:none;}
           <button class="mode-btn" id="cyrCaseUpper" onclick="setCyrillicCase('upper')" aria-pressed="true" data-i18n="fontmaker.panels.cyr_case_upper">Uppercase А–Я</button>
           <button class="mode-btn" id="cyrCaseLower" onclick="setCyrillicCase('lower')" aria-pressed="false" data-i18n="fontmaker.panels.cyr_case_lower">Lowercase а–я</button>
         </div>
-        <div class="ctl-row" style="margin:0 0 8px;"><button type="button" class="ctl-btn draw-save-all" data-cat="cyrillic" style="display:none;" onclick="drawCommitAll('cyrillic')" title="Save &amp; trace every drawing on this tab that is not saved yet, in one step (one Ctrl+Z undoes them all). Glyphs whose points were edited by hand are left for you to save one at a time." data-i18n-title="fontmaker.draw.save_all_title"><span data-i18n="fontmaker.draw.save_all">Save all drawings</span> <span class="dsa-n"></span></button> <button type="button" class="ctl-btn trace-all" data-cat="cyrillic" style="display:none;" onclick="traceAll('cyrillic')" title="Trace every letter on this tab that has a photo but no outline yet, in one step (one Ctrl+Z undoes them all). Letters that already have an outline are left alone — fine-tune any letter on its Trace step afterwards." data-i18n-title="fontmaker.panels.trace_all_title"><span data-i18n="fontmaker.panels.trace_all">Trace all</span> <span class="tra-n"></span></button></div>
+        <div class="ctl-row" style="margin:0 0 8px;"><button type="button" class="ctl-btn draw-save-all" data-cat="cyrillic" style="display:none;" onclick="drawCommitAll('cyrillic')" title="Save &amp; trace every drawing on this tab that is not saved yet, in one step (one {keys} undoes them all). Glyphs whose points were edited by hand are left for you to save one at a time." data-i18n-title="fontmaker.draw.save_all_title" data-kh-ref="undo"><span data-i18n="fontmaker.draw.save_all">Save all drawings</span> <span class="dsa-n"></span></button> <button type="button" class="ctl-btn trace-all" data-cat="cyrillic" style="display:none;" onclick="traceAll('cyrillic')" title="Trace every letter on this tab that has a photo but no outline yet, in one step (one {keys} undoes them all). Letters that already have an outline are left alone — fine-tune any letter on its Trace step afterwards." data-i18n-title="fontmaker.panels.trace_all_title" data-kh-ref="undo"><span data-i18n="fontmaker.panels.trace_all">Trace all</span> <span class="tra-n"></span></button></div>
         <div class="letter-grid" id="cyrillicGrid"></div>
       </div>
     </div>
     <div class="panel collapsed cat-panel" data-cat="phoenician">
       <div class="panel-title"><span data-i18n="fontmaker.panels.phoenician">Phoenician / Paleo-Hebrew</span> <span id="phoenicianProgress" style="font-size:0.7rem;color:var(--gold-light);"></span></div>
       <div class="panel-body">
-        <div class="ctl-row" style="margin:0 0 8px;"><button type="button" class="ctl-btn draw-save-all" data-cat="phoenician" style="display:none;" onclick="drawCommitAll('phoenician')" title="Save &amp; trace every drawing on this tab that is not saved yet, in one step (one Ctrl+Z undoes them all). Glyphs whose points were edited by hand are left for you to save one at a time." data-i18n-title="fontmaker.draw.save_all_title"><span data-i18n="fontmaker.draw.save_all">Save all drawings</span> <span class="dsa-n"></span></button> <button type="button" class="ctl-btn trace-all" data-cat="phoenician" style="display:none;" onclick="traceAll('phoenician')" title="Trace every letter on this tab that has a photo but no outline yet, in one step (one Ctrl+Z undoes them all). Letters that already have an outline are left alone — fine-tune any letter on its Trace step afterwards." data-i18n-title="fontmaker.panels.trace_all_title"><span data-i18n="fontmaker.panels.trace_all">Trace all</span> <span class="tra-n"></span></button></div>
+        <div class="ctl-row" style="margin:0 0 8px;"><button type="button" class="ctl-btn draw-save-all" data-cat="phoenician" style="display:none;" onclick="drawCommitAll('phoenician')" title="Save &amp; trace every drawing on this tab that is not saved yet, in one step (one {keys} undoes them all). Glyphs whose points were edited by hand are left for you to save one at a time." data-i18n-title="fontmaker.draw.save_all_title" data-kh-ref="undo"><span data-i18n="fontmaker.draw.save_all">Save all drawings</span> <span class="dsa-n"></span></button> <button type="button" class="ctl-btn trace-all" data-cat="phoenician" style="display:none;" onclick="traceAll('phoenician')" title="Trace every letter on this tab that has a photo but no outline yet, in one step (one {keys} undoes them all). Letters that already have an outline are left alone — fine-tune any letter on its Trace step afterwards." data-i18n-title="fontmaker.panels.trace_all_title" data-kh-ref="undo"><span data-i18n="fontmaker.panels.trace_all">Trace all</span> <span class="tra-n"></span></button></div>
         <div class="letter-grid" id="phoenicianGrid"></div>
       </div>
     </div>
     <div class="panel collapsed cat-panel" data-cat="aramaic">
       <div class="panel-title"><span data-i18n="fontmaker.panels.aramaic">Imperial Aramaic</span> <span id="aramaicProgress" style="font-size:0.7rem;color:var(--gold-light);"></span></div>
       <div class="panel-body">
-        <div class="ctl-row" style="margin:0 0 8px;"><button type="button" class="ctl-btn draw-save-all" data-cat="aramaic" style="display:none;" onclick="drawCommitAll('aramaic')" title="Save &amp; trace every drawing on this tab that is not saved yet, in one step (one Ctrl+Z undoes them all). Glyphs whose points were edited by hand are left for you to save one at a time." data-i18n-title="fontmaker.draw.save_all_title"><span data-i18n="fontmaker.draw.save_all">Save all drawings</span> <span class="dsa-n"></span></button> <button type="button" class="ctl-btn trace-all" data-cat="aramaic" style="display:none;" onclick="traceAll('aramaic')" title="Trace every letter on this tab that has a photo but no outline yet, in one step (one Ctrl+Z undoes them all). Letters that already have an outline are left alone — fine-tune any letter on its Trace step afterwards." data-i18n-title="fontmaker.panels.trace_all_title"><span data-i18n="fontmaker.panels.trace_all">Trace all</span> <span class="tra-n"></span></button></div>
+        <div class="ctl-row" style="margin:0 0 8px;"><button type="button" class="ctl-btn draw-save-all" data-cat="aramaic" style="display:none;" onclick="drawCommitAll('aramaic')" title="Save &amp; trace every drawing on this tab that is not saved yet, in one step (one {keys} undoes them all). Glyphs whose points were edited by hand are left for you to save one at a time." data-i18n-title="fontmaker.draw.save_all_title" data-kh-ref="undo"><span data-i18n="fontmaker.draw.save_all">Save all drawings</span> <span class="dsa-n"></span></button> <button type="button" class="ctl-btn trace-all" data-cat="aramaic" style="display:none;" onclick="traceAll('aramaic')" title="Trace every letter on this tab that has a photo but no outline yet, in one step (one {keys} undoes them all). Letters that already have an outline are left alone — fine-tune any letter on its Trace step afterwards." data-i18n-title="fontmaker.panels.trace_all_title" data-kh-ref="undo"><span data-i18n="fontmaker.panels.trace_all">Trace all</span> <span class="tra-n"></span></button></div>
         <div class="letter-grid" id="aramaicGrid"></div>
       </div>
     </div>
     <div class="panel collapsed cat-panel" data-cat="samaritan">
       <div class="panel-title"><span data-i18n="fontmaker.panels.samaritan">Samaritan</span> <span id="samaritanProgress" style="font-size:0.7rem;color:var(--gold-light);"></span></div>
       <div class="panel-body">
-        <div class="ctl-row" style="margin:0 0 8px;"><button type="button" class="ctl-btn draw-save-all" data-cat="samaritan" style="display:none;" onclick="drawCommitAll('samaritan')" title="Save &amp; trace every drawing on this tab that is not saved yet, in one step (one Ctrl+Z undoes them all). Glyphs whose points were edited by hand are left for you to save one at a time." data-i18n-title="fontmaker.draw.save_all_title"><span data-i18n="fontmaker.draw.save_all">Save all drawings</span> <span class="dsa-n"></span></button> <button type="button" class="ctl-btn trace-all" data-cat="samaritan" style="display:none;" onclick="traceAll('samaritan')" title="Trace every letter on this tab that has a photo but no outline yet, in one step (one Ctrl+Z undoes them all). Letters that already have an outline are left alone — fine-tune any letter on its Trace step afterwards." data-i18n-title="fontmaker.panels.trace_all_title"><span data-i18n="fontmaker.panels.trace_all">Trace all</span> <span class="tra-n"></span></button></div>
+        <div class="ctl-row" style="margin:0 0 8px;"><button type="button" class="ctl-btn draw-save-all" data-cat="samaritan" style="display:none;" onclick="drawCommitAll('samaritan')" title="Save &amp; trace every drawing on this tab that is not saved yet, in one step (one {keys} undoes them all). Glyphs whose points were edited by hand are left for you to save one at a time." data-i18n-title="fontmaker.draw.save_all_title" data-kh-ref="undo"><span data-i18n="fontmaker.draw.save_all">Save all drawings</span> <span class="dsa-n"></span></button> <button type="button" class="ctl-btn trace-all" data-cat="samaritan" style="display:none;" onclick="traceAll('samaritan')" title="Trace every letter on this tab that has a photo but no outline yet, in one step (one {keys} undoes them all). Letters that already have an outline are left alone — fine-tune any letter on its Trace step afterwards." data-i18n-title="fontmaker.panels.trace_all_title" data-kh-ref="undo"><span data-i18n="fontmaker.panels.trace_all">Trace all</span> <span class="tra-n"></span></button></div>
         <div class="letter-grid" id="samaritanGrid"></div>
       </div>
     </div>
@@ -5949,6 +5947,7 @@ const KH = {
   rulers: ['Shift+R'], grid: ['Shift+G'],
   drawDraw: ['D'], drawLine: ['L'], drawMove: ['V'], drawStamp: ['S'], drawErase: ['E'],
   nodeSelect: ['Escape'], nodeMarquee: ['M'], nodePen: ['P'],
+  shapeCancel: ['Escape'], penCancel: ['Escape'],   // the Shapes tool's Cancel and the pen's Cancel path: Esc puts either away
 };
 function khCaps(id) { return KH[id][0].split('+').map(k => k === 'mod' ? modKey() : k === 'Escape' ? 'Esc' : k); }
 function khTitle(id) { return khCaps(id).join('+'); }                                                       // "Ctrl+Z" — for a title
@@ -6636,7 +6635,7 @@ function gridPanelHTML(){
   const t = k => I18n.t('fontmaker.panels.' + k);
   return `
     <div class="ws-side-title" style="margin-top:12px;">${t('grid')}</div>
-    <label class="chk"><input type="checkbox" ${_gridOn?'checked':''} onchange="setGridShown(this.checked)" title="${esc(t('adv_grid_title'))}"> ${t('grid_show')}</label>
+    <label class="chk"><input type="checkbox" ${_gridOn?'checked':''} onchange="setGridShown(this.checked)" title="${esc(I18n.t('fontmaker.panels.adv_grid_title', { keys: khTitle('grid') }))}"> ${t('grid_show')}</label>
     <label class="chk"><input type="checkbox" id="gridSnapChk" ${_gridSnapOn?'checked':''} onchange="setGridSnap(this.checked)" title="${esc(t('grid_snap_title'))}"> ${t('grid_snap')}</label>
     <div class="ctl-row" style="margin-top:5px;">
       <span class="guide-lbl">${t('grid_step')}</span>
@@ -7272,7 +7271,7 @@ function renderPunctPanel() {
     <div class="hint" style="margin:6px 0 9px;">${ on
       ? _pT('punct_on_hint', 'Included in the exported font &amp; the Punctuation practice template. Trace or draw each one like a letter — digits start blank; punctuation comes pre-shaped, and drawing over a built-in shape replaces it. Clear all existing glyphs to start every one blank.')
       : _pT('punct_off_hint', 'Currently <strong>off</strong>: these glyphs are skipped on export and have no practice page. Turn it on to include them.') }</div>
-    <div class="ctl-row" style="margin:0 0 9px;"><button class="ctl-btn" id="punctClearAllBtn" title="${esc(_pT('punct_clear_all_title', 'Remove every outline, drawing and photo on this tab — the built-in shapes too — so each glyph starts blank. Asks first; one Ctrl+Z restores everything.'))}">${_pT('punct_clear_all', 'Clear all existing glyphs…')}</button>${drawSaveAllBtnHTML('punct')}${traceAllBtnHTML('punct')}</div>
+    <div class="ctl-row" style="margin:0 0 9px;"><button class="ctl-btn" id="punctClearAllBtn" title="${esc(_pT('punct_clear_all_title', 'Remove every outline, drawing and photo on this tab — the built-in shapes too — so each glyph starts blank. Asks first; one ' + khTitle('undo') + ' restores everything.', { keys: khTitle('undo') }))}">${_pT('punct_clear_all', 'Clear all existing glyphs…')}</button>${drawSaveAllBtnHTML('punct')}${traceAllBtnHTML('punct')}</div>
     <div class="letter-grid" id="punctGrid"></div>`;
   // Wired here rather than as an inline handler (the renderFormPanel rule): nothing is interpolated into JS.
   const clearBtn = document.getElementById('punctClearAllBtn'); if (clearBtn) clearBtn.addEventListener('click', clearAllPunct);
@@ -7302,7 +7301,7 @@ function clearAllPunct() {
   let body = t(count === 1 ? 'punct_clear_body.one' : 'punct_clear_body.other', { count });
   if (stock) body += ' ' + t(stock === 1 ? 'punct_clear_stock.one' : 'punct_clear_stock.other', { stock });
   if (own) body += ' ' + t(own === 1 ? 'punct_clear_own.one' : 'punct_clear_own.other', { own });
-  body += ' ' + t('punct_clear_undo');
+  body += ' ' + t('punct_clear_undo', { keys: khTitle('undo') });
   askModal(t('punct_clear_title'), body,
     [ { label: t('cancel'), cls: 'ghost' },
       { label: t('clear_all'), onClick: () => _clearAllPunctNow(items) } ]);
@@ -7325,7 +7324,7 @@ function _clearAllPunctNow(items) {
   _drawSel.clear();
   renderGrids();
   if (isPunctItem()) _setWorkMode(_defaultStepForCur()); else { renderStage(); renderControls(); }
-  status(I18n.t(items.length === 1 ? 'fontmaker.status.punct_cleared.one' : 'fontmaker.status.punct_cleared.other', { count: items.length }));
+  status(I18n.t(items.length === 1 ? 'fontmaker.status.punct_cleared.one' : 'fontmaker.status.punct_cleared.other', { count: items.length, keys: khTitle('undo') }));
 }
 function renderPunctGrid() {
   const grid = document.getElementById('punctGrid'); if (!grid) return;
@@ -13226,7 +13225,7 @@ function drawCommit(advance) {   // warn-first wraps udDo — same shape as trac
   const cl = curLetter();
   if (!cl || !(cl.draw && cl.draw.strokes.length)) { status(I18n.t('fontmaker.draw.nothing_toast')); return; }
   if (cl.handEdited) {
-    askModal(I18n.t('fontmaker.draw.retrace_title'), I18n.t('fontmaker.draw.retrace_body'),
+    askModal(I18n.t('fontmaker.draw.retrace_title'), I18n.t('fontmaker.draw.retrace_body', { keys: khTitle('undo') }),
       [{ label: I18n.t('fontmaker.modals.retrace'), onClick: () => _drawCommitNow(advance) },
        { label: I18n.t('fontmaker.modals.cancel'), cls: 'ghost' }]);
     return;
@@ -13315,7 +13314,7 @@ function drawAdvance() {   // next glyph in THIS tab still to draw
    skipped rather than stamped with a signature its outline never came from. ── */
 let _drawSaveAllBusy = false;
 function drawSaveAllBtnHTML(cat) {   // cat is a static literal at every call site — never user data — so the inline handler is the file's idiom
-  return `<button type="button" class="ctl-btn draw-save-all" data-cat="${cat}" style="display:none;" onclick="drawCommitAll('${cat}')" title="${esc(_drawT('save_all_title', 'Save & trace every drawing on this tab that is not saved yet, in one step (one Ctrl+Z undoes them all). Glyphs whose points were edited by hand are left for you to save one at a time.'))}"><span>${_drawT('save_all', 'Save all drawings')}</span> <span class="dsa-n"></span></button>`;
+  return `<button type="button" class="ctl-btn draw-save-all" data-cat="${cat}" style="display:none;" onclick="drawCommitAll('${cat}')" title="${esc(_drawT('save_all_title', 'Save & trace every drawing on this tab that is not saved yet, in one step (one ' + khTitle('undo') + ' undoes them all). Glyphs whose points were edited by hand are left for you to save one at a time.', { keys: khTitle('undo') }))}"><span>${_drawT('save_all', 'Save all drawings')}</span> <span class="dsa-n"></span></button>`;
 }
 function drawPendingFor(cat) {   // { pending, handEdited } — drawings on this tab still waiting for their Save
   const pending = [], handEdited = [];
@@ -13398,7 +13397,7 @@ async function drawCommitAll(cat) {
    there is nothing to warn about; drawings belong to Save all drawings. ── */
 let _traceAllBusy = false;
 function traceAllBtnHTML(cat) {   // cat is a static literal at every call site — never user data — so the inline handler is the file's idiom
-  return `<button type="button" class="ctl-btn trace-all" data-cat="${cat}" style="display:none;" onclick="traceAll('${cat}')" title="${esc(_pT('trace_all_title', 'Trace every letter on this tab that has a photo but no outline yet, in one step (one Ctrl+Z undoes them all). Letters that already have an outline are left alone — fine-tune any letter on its Trace step afterwards.'))}"><span>${_pT('trace_all', 'Trace all')}</span> <span class="tra-n"></span></button>`;
+  return `<button type="button" class="ctl-btn trace-all" data-cat="${cat}" style="display:none;" onclick="traceAll('${cat}')" title="${esc(_pT('trace_all_title', 'Trace every letter on this tab that has a photo but no outline yet, in one step (one ' + khTitle('undo') + ' undoes them all). Letters that already have an outline are left alone — fine-tune any letter on its Trace step afterwards.', { keys: khTitle('undo') }))}"><span>${_pT('trace_all', 'Trace all')}</span> <span class="tra-n"></span></button>`;
 }
 function tracePendingFor(cat) {   // the letters on this tab with a real photo and no outline — exactly the ones the enter-Trace courtesy would trace one at a time
   return tabDrawCps(cat).map(cp => (project.letters || []).find(x => x.codepoint === cp)).filter(l =>
@@ -15453,7 +15452,7 @@ function shapesPanelHTML() {
       <div class="hint">${T(_shapeHole ? 'shape_hint_armed_hole' : 'shape_hint_armed')}</div>
       <div class="ctl-row" style="gap:6px;flex-wrap:wrap;margin-top:4px;">
         <button type="button" class="ctl-btn primary" data-fk="shp:place" onclick="shapePlaceMiddle()" title="${esc(T('shape_place_title'))}">${T('shape_place')}</button>
-        <button type="button" class="ctl-btn" data-fk="shp:cancel" onclick="shapePick(null)" title="${esc(T('shape_cancel_title'))}" aria-keyshortcuts="Escape">${T('shape_cancel')} <kbd class="shp-kbd" aria-hidden="true">Esc</kbd></button>
+        <button type="button" class="ctl-btn" data-fk="shp:cancel" onclick="shapePick(null)" title="${esc(I18n.t('fontmaker.node_editor.shape_cancel_title', {keys: khTitle('shapeCancel')}))}" aria-keyshortcuts="${khAria('shapeCancel')}">${T('shape_cancel')}${khHtml('shapeCancel')}</button>
       </div>
     </div>` : `<div class="hint" style="margin:4px 0 0;">${T('shape_hint_idle')}</div>`}
     <div class="xf-wh">
@@ -15961,7 +15960,7 @@ function nodeEditPanelHTML(l) {
   const ctx = _penMode
     ? `<div class="npnl-ctx" role="group" aria-label="${esc(I18n.t('fontmaker.node_editor.mode_pen'))}">
     <div class="npnl-pen-lines">${I18n.t('fontmaker.node_editor.pen_lines')}</div>
-    <button class="ctl-btn hi-btn npnl-pen-cancel" onclick="togglePenMode()" title="${esc(I18n.t('fontmaker.node_editor.pen_cancel_title'))}"><svg class="hi hi-sm hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg>${I18n.t('fontmaker.node_editor.pen_cancel')}</button>
+    <button class="ctl-btn hi-btn npnl-pen-cancel" onclick="togglePenMode()" title="${esc(I18n.t('fontmaker.node_editor.pen_cancel_title', {keys: khTitle('penCancel')}))}" aria-keyshortcuts="${khAria('penCancel')}"><svg class="hi hi-sm hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg>${I18n.t('fontmaker.node_editor.pen_cancel')}</button>
   </div>`
     : cnt === 0
     ? `<div class="npnl-ctx" role="group" aria-label="${esc(I18n.t('fontmaker.node_editor.sel_actions'))}">
@@ -16139,7 +16138,7 @@ function updateTraceInfo(l) {
   if (ti) ti.textContent = l.contours ? _pT('trace_info', `${l.contours.length} contour(s) · adv ${l.advance}`, {count: l.contours.length, adv: l.advance}) : _pT('trace_info_no_ink', 'no ink detected');
 }
 function traceCurrent() {   // warn-first wraps udDo (never nests an async confirm inside it)
-  if (curItem().handEdited) { askModal(I18n.t('fontmaker.modals.retrace_title'), I18n.t('fontmaker.modals.retrace_body'), [{ label:I18n.t('fontmaker.modals.retrace'), onClick: _traceCurrentNow }, { label:I18n.t('fontmaker.modals.cancel'), cls:'ghost' }]); return; }
+  if (curItem().handEdited) { askModal(I18n.t('fontmaker.modals.retrace_title'), I18n.t('fontmaker.modals.retrace_body', { keys: khTitle('undo') }), [{ label:I18n.t('fontmaker.modals.retrace'), onClick: _traceCurrentNow }, { label:I18n.t('fontmaker.modals.cancel'), cls:'ghost' }]); return; }
   _traceCurrentNow();
 }
 /* Shared trace core (re-trace + Draw-mode commit): rasterize → vectorize → finalize.
@@ -16161,7 +16160,7 @@ function _traceCurrentNow() {
   });
 }
 function clearTrace() {
-  if (curItem().handEdited) { askModal(I18n.t('fontmaker.modals.clear_outline_title'), I18n.t('fontmaker.modals.clear_outline_body'), [{ label:I18n.t('fontmaker.modals.clear'), onClick: _clearTraceNow }, { label:I18n.t('fontmaker.modals.cancel'), cls:'ghost' }]); return; }
+  if (curItem().handEdited) { askModal(I18n.t('fontmaker.modals.clear_outline_title'), I18n.t('fontmaker.modals.clear_outline_body', { keys: khTitle('undo') }), [{ label:I18n.t('fontmaker.modals.clear'), onClick: _clearTraceNow }, { label:I18n.t('fontmaker.modals.cancel'), cls:'ghost' }]); return; }
   _clearTraceNow();
 }
 function _clearTraceNow() {
@@ -20117,7 +20116,7 @@ function renderDrawLeft(L, l) {
       <button class="ctl-btn" onclick="openSvgPasteCode()" title="${esc(I18n.t('fontmaker.panels.paste_svg_code_title', {mod: modKey()}))}">${I18n.t('fontmaker.panels.paste_svg_code')}</button>
       <span class="readout">${nStrokes ? _drawT(nStrokes === 1 ? 'stroke_count.one' : 'stroke_count.other', nStrokes + (nStrokes === 1 ? ' stroke' : ' strokes'), { count: nStrokes }) : ''}</span>
     </div>
-    <div class="hint">${_drawT('hint', 'Draw over the gray reference with a pen, finger, or mouse. Each stroke can be undone with Ctrl+Z. Save runs the tracer — fine-tune Detail and Corners in step 2.')}</div>`;
+    <div class="hint">${_drawT('hint', 'Draw over the gray reference with a pen, finger, or mouse. Each stroke can be undone with ' + khTitle('undo') + '. Save runs the tracer — fine-tune Detail and Corners in step 2.', { keys: khTitle('undo') })}</div>`;
   wireInputModeBlock();
   drawPreviewRefresh();   // the pvBox svg renders empty — first paint needs the box's measured width
   // move-tool selection count — diff-guarded so unrelated re-renders never re-announce (#nsSel idiom)
@@ -23578,7 +23577,7 @@ function glyphRangeError(spec) {   // → a ready-to-show message, or '' when ev
   // text — esc() before it is interpolated (I18n.t substitutes raw).
   const names = bad.map(b => esc(b.label)).join(', ');
   return I18n.t(bad.length === 1 ? 'fontmaker.export.out_of_range.one' : 'fontmaker.export.out_of_range.other',
-                { names, count: bad.length, limit: GLYF_COORD_MAX, worst: bad[0].worst });
+                { names, count: bad.length, limit: GLYF_COORD_MAX, worst: bad[0].worst, keys: khTitle('undo') });
 }
 /* ═══ Font size readout ═══
    Every build of the font is remembered with what it was built from: the project object, the edit count at the moment

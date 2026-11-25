@@ -230,7 +230,14 @@ handler goes through the real setters (`setMarkEnabled`, `setAdd*`, `setInputMod
 A button that has a keyboard shortcut shows it. `KH` (beside `modKey()`) is the one table: an entry
 per shortcut, each a list of combinations written with `mod` for the platform's modifier
 (`undo: ['mod+Z']`, `redo: ['mod+Shift+Z', 'mod+Y']`, `drawLine: ['L']`, `nodeSelect: ['Escape']`).
-Three readers, and nothing else spells a key:
+Three readers, and no title, hint, dialog or toast types a Ctrl or ⌘ by hand: a string that names a
+key takes `{keys}` from `khTitle(id)` — the buttons' own titles, and the prose that tells the
+teacher how to undo (`khTitle('undo')`: Trace all, Save all drawings, Clear all on the Punctuation
+tab, the Draw step's hint, the re-trace / clear / Clear-all dialogs, the Punctuation toast, the
+out-of-range build error). A few older strings name a modifier through `{mod}` (`modKey()`), which
+switches the same way (delete contour, copied contours, Reduce points, Paste SVG code). Two still
+type a key that is not Ctrl: the Help tab's "Ctrl/⌘-Z" names both, and "Next unfinished letter"
+spells `Shift + ]` (its bidi isolates keep the bracket from mirroring in Hebrew).
 
 | Reader | Gives | Used for |
 |---|---|---|
@@ -243,8 +250,9 @@ Three readers, and nothing else spells a key:
 
 **Two forms.** A key *sits on* its button where there is room — the Draw tools (in the button's
 corner: the five share one row of the panel and have no width to give), Select / Marquee / Pen in
-the Edit points bar, Copy / Paste / Select all in the points panel, and after the label of the
-rulers and grid checkboxes in Advanced. Where there is none — Undo and Redo in the toolbar, the Edit
+the Edit points bar, Copy / Paste / Select all in the points panel, the Shapes tool's Cancel
+(`shapeCancel`), and after the label of the rulers and grid checkboxes in Advanced. The pen's
+Cancel path (`penCancel`) only names its Esc in the title and `aria-keyshortcuts`. Where there is none — Undo and Redo in the toolbar, the Edit
 points bar, the Draw panel and the Edit-shape window, and the bar's Grid toggle — it is the
 *pop-up* form (`khHtml(id, true)`, `.kh-pop`): a child of the button, out of the row's flow, shown
 by CSS on `:hover` and `:focus-visible` after a short delay. The host carries `data-kh-pop`.
@@ -260,9 +268,12 @@ on its `<label>` and is also its `aria-label`). `khSyncStatic()` — run at star
 label). Before the locale has loaded, or if it never does, the string is its own key: the title is
 then the authored English with the key filled in, else the control's own label (`khLabel`: its
 `aria-label`, else its words without the caps and icon glyphs) and `khTitle(id)` — `Undo (Ctrl+Z)`,
-`Undo (⌘+Z)` on a Mac. A button built in a template calls the three readers itself (Copy, Paste
-and Select all pass `{keys: khTitle(id)}`). `khSyncStatic` writes attributes and the caps only; it
-is safe to run at any time.
+`Undo (⌘+Z)` on a Mac. An element whose title mentions a key that is not its own (the static Trace
+all / Save all drawings buttons: "one {keys} undoes them all") carries `data-kh-ref="undo"` instead
+of `data-kh`: `khSyncStatic` fills its title the same way and adds no caps and no
+`aria-keyshortcuts`. A button built in a template calls the three readers itself (Copy, Paste and
+Select all pass `{keys: khTitle(id)}`). `khSyncStatic` writes attributes and the caps only; it is
+safe to run at any time.
 
 **Rules that are easy to break:**
 - The caps are `display: none` unless `(pointer: fine)` — the suite's rule for key hints; the
