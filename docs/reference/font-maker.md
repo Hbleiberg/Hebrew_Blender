@@ -224,6 +224,12 @@ handler goes through the real setters (`setMarkEnabled`, `setAdd*`, `setInputMod
   and arrows and draw mode's keys would act on the letter behind the window). A dialog raised over it
   refuses even those three, and the window's own arrow nudge stands down for it too (the *Apply* and
   *Reset* confirmations used to let the arrows move the selected piece behind them).
+  A focused field counts as typing, with one narrow exception: `udShortcutBlocked({ own })` lets the
+  key through while the focus is on `own` — Shift+G and Shift+R pass their own Advanced checkbox
+  (`#showGridChk`, `#showRulersChk`), which shows that key beside it and keeps the focus after a
+  click. Never widen it to fields in general: arrows on a slider must never nudge points. (The SVG
+  paste's `ownFocusRule` is not a widening for keys: the paste listener asks the focused field
+  itself, below.)
 - **A key press that closes a dialog is the dialog's, not a shortcut's.** A dialog closes in the
   middle of the key's own dispatch — the modal trap on Escape, a dialog's own handler on Enter — and
   the handlers that run afterwards for that same key find no dialog and focus back on the opener, so
@@ -247,10 +253,32 @@ handler goes through the real setters (`setMarkEnabled`, `setAdd*`, `setInputMod
 
 ### Shortcut keys on buttons — the `KH` table
 
-A button that has a keyboard shortcut shows it. `KH` (beside `modKey()`) is the one table: an entry
+The buttons whose shortcut is in `KH` show it. `KH` (beside `modKey()`) is the one table: an entry
 per shortcut, each a list of combinations written with `mod` for the platform's modifier
 (`undo: ['mod+Z']`, `redo: ['mod+Shift+Z', 'mod+Y']`, `drawLine: ['L']`, `nodeSelect: ['Escape']`).
-Three readers, and nothing else spells a key:
+Three readers, and a key in the table is typed nowhere else: every string that names one takes it
+from `khTitle(id)` through a placeholder (`{keys}`, or a named one where a sentence names two) —
+the buttons' own titles; the prose that tells the teacher how to undo (`khTitle('undo')`: Trace
+all, Save all drawings, Clear all on the Punctuation tab, the Draw step's hint, Reduce points, the
+re-trace / clear / delete-contour / delete-outline / Clear-all dialogs, the Punctuation toast, the
+out-of-range build error) or paste (`khTitle('paste')`: Paste SVG code, the copied-contours toast);
+the Edit points tips and lines (Marquee's M and Esc, the shape tool's Esc, the pen's Esc and the
+empty contour list's P); and the Draw legend's D / L / V / S / E. A `data-i18n-html` string cannot
+take a placeholder (`check-i18n` Check C), so the Advanced rulers and grid hints do not name their
+key: the checkbox above each shows it and its title names it. Change a key in the table and every
+one of these follows.
+
+Three places spell the table's keys themselves: the cheat sheet (`shortcutGroups()`, the full list —
+its rows and group titles, such as "Pen — draw a contour (P)"), the Help tab's prose ("Ctrl/⌘-Z",
+which names both modifiers) and the About tab's changelog (history, left as it was written). A
+shortcut that is not in the table is typed where a string names it: the drag and click modifiers
+(Shift, Alt), the arrows, Enter, Delete and Backspace, the Esc that clears a stroke selection or
+cancels a crop box, and the keys of a few older controls that name their own key in their title
+and have no entry: the points panel's Delete ("Delete or
+Backspace", and the Del / Shift+Del beside the Delete menu's items), Delete contour, its `?` button,
+Next unfinished letter (`Shift + ]` — its bidi isolates keep the bracket from mirroring in Hebrew)
+and the Draw panel's brush and eraser size sliders (`[ / ]`). A change to one of those keys is a
+search through the CSV and the page.
 
 | Reader | Gives | Used for |
 |---|---|---|
@@ -263,24 +291,44 @@ Three readers, and nothing else spells a key:
 
 **Two forms.** A key *sits on* its button where there is room — the Draw tools (in the button's
 corner: the five share one row of the panel and have no width to give), Select / Marquee / Pen in
-the Edit points bar, Copy / Paste / Select all in the points panel, and after the label of the
-rulers and grid checkboxes in Advanced. Where there is none — Undo and Redo in the toolbar, the Edit
+the Edit points bar, Copy / Paste / Select all in the points panel, the Shapes tool's Cancel
+(`shapeCancel`), and after the label of the rulers and grid checkboxes in Advanced. The pen's
+Cancel path (`penCancel`) only names its Esc in the title and `aria-keyshortcuts`. Where there is none — Undo and Redo in the toolbar, the Edit
 points bar, the Draw panel and the Edit-shape window, and the bar's Grid toggle — it is the
 *pop-up* form (`khHtml(id, true)`, `.kh-pop`): a child of the button, out of the row's flow, shown
 by CSS on `:hover` and `:focus-visible` after a short delay. The host carries `data-kh-pop`.
 
 **Static and built buttons.** A button in the page's markup carries `data-kh="<id>"` (plus
-`data-kh-pop`, and `data-kh-title="<string key>"` in place of a fixed `title`); `khSyncStatic()`
-— run at start and from `applyI18n` — sets `aria-keyshortcuts`, the title, and adds the caps once
-(a checkbox's caps go after its label). A button built in a template calls the three readers
-itself. `khSyncStatic` writes attributes and the caps only; it is safe to run at any time.
+`data-kh-pop`) and no `aria-keyshortcuts`; its title string takes `{keys}` and is named either by
+`data-kh-title="<string key>"` (no fixed `title`: the six Undo / Redo buttons) or by the host's
+own `data-i18n-title`, whose authored English `title` in the markup carries `{keys}` too, never a
+key (Select / Marquee / Pen, the bar's Grid, the two Advanced checkboxes — a checkbox's title is
+on its `<label>` and is also its `aria-label`). `khSyncStatic()` — run at start and from
+`applyI18n`, after `applyStaticI18n` has written the string with `{keys}` unfilled — sets
+`aria-keyshortcuts`, fills the title, and adds the caps once (a checkbox's caps go after its
+label). Before the locale has loaded, or if it never does, the string is its own key: the title is
+then the authored English with the key filled in, else the control's own label (`khLabel`: its
+`aria-label`, else its words without the caps and icon glyphs) and `khTitle(id)` — `Undo (Ctrl+Z)`,
+`Undo (⌘+Z)` on a Mac. An element whose title mentions a key that is not its own (the static Trace
+all / Save all drawings buttons: "one {keys} undoes them all") carries `data-kh-ref="undo"` instead
+of `data-kh`: `khSyncStatic` fills its title the same way and adds no caps and no
+`aria-keyshortcuts`. A button built in a template calls the three readers itself (Copy, Paste and
+Select all pass `{keys: khTitle(id)}`). `khSyncStatic` writes attributes and the caps only; it is
+safe to run at any time.
 
 **Rules that are easy to break:**
 - The caps are `display: none` unless `(pointer: fine)` — the suite's rule for key hints; the
   `aria-keyshortcuts` stays (a keyboard may be attached to a tablet).
+- A cap promises what its key does from where it is shown. Esc returns to Select from Marquee, Pen
+  or a shape, but with Select already the tool it leaves Edit points, so the pressed Select's cap is
+  `visibility: hidden` (it keeps its width, nothing moves).
 - A cap must never change a row: `.kh` has a negative block margin so a button is not taller for
   it, the bar's icons-only layout (`#nodeBar.nb-tight`) drops the on-button caps, and the Draw
-  tools use the corner. Measure a new site with the caps hidden and shown.
+  tools use the corner. Above the icons-only width the Edit points bar drops them by measurement:
+  `nodeBarFitCheck()` (run by every render of the bar, the window's resize, the splitters and a UI
+  font arriving) sets `#nodeBar.nb-nocaps` whenever the bar is taller with the caps than without
+  them — a fixed width cannot know the language or how wide the side panels were dragged. Measure a
+  new site with the caps hidden and shown.
 - A greyed-out button is faded with `opacity`, which would fade a pop-up inside it and make the
   button a layer the following content paints over. So a pop-up host rises on hover / focus
   (`z-index`), and `.tbtn.ghost[data-kh-pop]:disabled` / `.ctl-btn[data-kh-pop]:disabled` fade
@@ -406,20 +454,39 @@ The size of the font is shown in two places, and neither ever starts a build.
 - **Beside the Export button** (`#exportSize`, also the button's `aria-describedby`): the size of
   the last build, for the picked format, **only while that build is still this project's font**.
   Every build — `buildFontBytes()` (Preview PDF, Send, Save to My Fonts) and `doExport` — calls
-  `fmBuildKeep(bytes, gen)`, which stores `window._lastBuild = { proj, gen, stem, ref, ttf, woff2 }`:
+  `fmBuildKeep(bytes, gen)`, which stores `window._lastBuild = { proj, gen, stem, ver, ref, ttf, woff2 }`:
   the `project` object, the edit count read **together with the spec** (`_editGen`, bumped by
-  `markDirty()`), and the file stem. `fmBuildFresh()` is true while all three still hold;
-  `exportSizeSync()` shows or empties the readout and is called by `fmBuildKeep`, by `markDirty`
-  (only while the readout is showing), by `onExportFormatChange` and by `udClear` (a project just
-  arrived or left). The WOFF2 size is known only after a WOFF2 was made from that same build
-  (`ref === bytes`); the zip and the UFO show nothing.
+  `markDirty()`), the file stem and the font's version (an export stamps a new version without an
+  edit — a UFO export, or a bump rolled back by a Cancel). `fmBuildFresh()` is true while all four
+  still hold; `exportSizeSync()` shows or empties the readout and is called by `fmBuildKeep`, by
+  `markDirty` (only while the readout is showing), by `onExportFormatChange`, by the export's
+  version setter and by `udClear` (a project just arrived or left — which also drops a build that
+  belongs to another project object). The WOFF2 size is known only after a WOFF2 was made from that
+  same build (`ref === bytes`); the zip and the UFO show nothing.
+- **Out of the toolbar's flow.** The readout sits in `.export-size-slot`, positioned after the Export
+  group (`.tb-export` is its containing block, `pointer-events: none`), so it coming and going
+  cannot re-wrap the toolbar — in the flow it tipped a row in and out and the editor jumped under the
+  pointer. The slot carries no `dir` (Chromium resolves `inset-inline-start` by the element's own
+  direction, and the readout itself is `dir="ltr"`). `exportSizeFit()` shows it only where the room
+  after the group, up to the next control on that row or the toolbar's content edge, holds it with
+  the toolbar's 8px gap; elsewhere it gets `.es-nofit` (`display: none` — a hidden box past the
+  toolbar's edge would still scroll the page) and the Export button's description and the Exported ✓
+  screen still carry the size. A `ResizeObserver` on the toolbar and each of its parts re-runs the
+  check (window width, language, the sign-in pip, the engine badge, a font arriving), and
+  `exportSizeSync` runs it after every text change.
 
-Three things to keep:
+Four things to keep:
 - The edit count is read with `buildFontSpec()`, not when the bytes come back: the export awaits
   the shaping check and the WOFF2 package after the build, and an edit made meanwhile must leave
-  the build an old one.
+  the build an old one. The same count tells the Exported ✓ screen whether to mark the project
+  clean: `offerSaveToMyFonts(…, gen)` calls `markClean()` only if nothing was edited after the
+  export read its spec — an edit made while it waited is not in the file and stays unsaved.
 - The export's own version bump does not go through `markDirty`, so a finished export keeps its
   readout; an undo does (it is an edit of the project), so an old number never returns.
+- Freshness rests on `markDirty()` being called by everything that changes the font. The placement
+  step's carry-over (`maybeInheritAnchors`, run when a letter is opened there) writes anchors
+  outside `udDo`, so it calls `markDirty()` itself when it moved one (still no undo step: the
+  carry-over is part of opening the letter).
 - When the readout is hidden its text **and its title** are removed. A hidden element still
   describes the button it is `aria-describedby` for, and with no text the browser falls back to
   the title — which would tell a screen reader "nothing has changed since" about a font that has.

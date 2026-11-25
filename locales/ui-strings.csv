@@ -1771,8 +1771,8 @@ fontmaker.changelog.v4_6,"v4.6 — Point editing gets a proper cockpit. Everythi
 fontmaker.changelog.v4_7,"v4.7 — Two quiet export safeguards. First: if your project somehow carries a word spacing of zero (possible in very old or hand-edited save files — the slider itself never goes below 80), the exported font used to get a zero-width space, so every word ran together; the space now always exports at least the slider's minimum width. Second: when vowels or trop are enabled, every export runs a quick shaping check to confirm the marks actually position correctly — but if that checker couldn't load (say, a flaky connection), the font downloaded anyway with only a briefly-flashed note. Now the Exported ✓ screen tells you plainly when the check was skipped, so you know to test the font before sharing it. (July 2026)","v4.7 — שני אמצעי הגנה שקטים בייצוא. ראשית: אם הפרויקט שלכם נושא איכשהו ריווח מילים של אפס (אפשרי בקבצי שמירה ישנים מאוד או שנערכו ידנית — המחוון עצמו לעולם אינו יורד מתחת ל-80), הגופן המיוצא קיבל בעבר רווח ברוחב אפס, כך שכל המילים נצמדו יחד; הרווח מיוצא כעת תמיד לפחות ברוחב המינימלי של המחוון. שנית: כשתנועות או טעמים מופעלים, כל ייצוא מריץ בדיקת עיצוב מהירה כדי לוודא שהסימנים אכן ממוקמים נכון — אך אם הבודק לא הצליח להיטען (למשל, חיבור לא יציב), הגופן ירד בכל זאת עם הערה שהבזיקה לרגע בלבד. כעת מסך היוצא ✓ אומר לכם בבירור מתי הבדיקה דולגה, כך שתדעו לבדוק את הגופן לפני שיתופו. (July 2026)",changelog entry,changelog; html-stripped
 fontmaker.changelog.v4_8,"v4.8 — Older projects export safely again. A project saved by a much older version (or edited outside the app) could be missing some of its vowel anchor points under the hood — and exporting it would fail with a generic ""Export error"" before your font ever built. The app now quietly restores any missing anchor points (in the same spots a fresh letter would get them) wherever it finds them — opening the anchor editor, previewing, or exporting — so those projects build normally; you can still fine-tune every anchor afterwards. (July 2026)","v4.8 — פרויקטים ישנים מיוצאים שוב בבטחה. פרויקט שנשמר על ידי גרסה ישנה בהרבה (או נערך מחוץ לאפליקציה) היה עלול לחסר חלק מנקודות עוגן התנועות שלו מאחורי הקלעים — וייצואו היה נכשל עם ""שגיאת ייצוא"" כללית עוד לפני שהגופן שלכם נבנה. האפליקציה משחזרת כעת בשקט כל נקודת עוגן חסרה (באותם מקומות שאות חדשה הייתה מקבלת אותן) בכל מקום שהיא מוצאת — פתיחת עורך העוגנים, תצוגה מקדימה, או ייצוא — כך שהפרויקטים האלה נבנים כרגיל; עדיין תוכלו לכוונן כל עוגן לאחר מכן. (July 2026)",changelog entry,changelog; html-stripped
 fontmaker.changelog.v4_9,"v4.9 — Your font's version number behaves itself. Two small bookkeeping fixes: a pre-1.0 version you typed yourself (like 0.5) no longer silently becomes 1.0-something in the exported file, and the automatic per-export version tick now only sticks when a font file actually downloads — cancelling after a failed shaping check, or a WOFF2 conversion hiccup, no longer inches the version up on every retry. (July 2026)","v4.9 — מספר הגרסה של הגופן שלכם מתנהג יפה. שני תיקוני רישום קטנים: גרסה שלפני 1.0 שהקלדתם בעצמכם (כמו 0.5) כבר אינה הופכת בשקט ל-1.0-משהו בקובץ המיוצא, וקידום הגרסה האוטומטי לכל ייצוא נדבק כעת רק כשקובץ גופן באמת יורד — ביטול אחרי בדיקת עיצוב כושלת, או תקלת המרת WOFF2, כבר אינו מקדם את הגרסה בכל ניסיון חוזר. (July 2026)",changelog entry,changelog; html-stripped
-fontmaker.export.out_of_range.one,"{names} has points far outside the letter box, so the font cannot be built. Open that letter on Edit points and undo whatever moved them (Ctrl+Z), or trace it again — then try again.","לאות {names} יש נקודות הרחק מחוץ לתיבת האות, ולכן לא ניתן לבנות את הגופן. פתחו את האות ב«עריכת נקודות» ובטלו את הפעולה שהזיזה אותן (Ctrl+Z), או עקבו אותה מחדש — ונסו שוב.",build-blocking error shown in the Preview PDF / Export dialog,REVIEW: machine-drafted HE — confirm
-fontmaker.export.out_of_range.other,"{count} letters have points far outside the letter box, so the font cannot be built: {names}. Open each on Edit points and undo whatever moved them (Ctrl+Z), or trace them again — then try again.","ל־{count} אותיות יש נקודות הרחק מחוץ לתיבת האות, ולכן לא ניתן לבנות את הגופן: {names}. פתחו כל אחת ב«עריכת נקודות» ובטלו את הפעולה שהזיזה אותן (Ctrl+Z), או עקבו אותן מחדש — ונסו שוב.",build-blocking error shown in the Preview PDF / Export dialog,REVIEW: machine-drafted HE — confirm
+fontmaker.export.out_of_range.one,"{names} has points far outside the letter box, so the font cannot be built. Open that letter on Edit points and undo whatever moved them ({keys}), or trace it again — then try again.","לאות {names} יש נקודות הרחק מחוץ לתיבת האות, ולכן לא ניתן לבנות את הגופן. פתחו את האות ב«עריכת נקודות» ובטלו את הפעולה שהזיזה אותן ({keys}), או עקבו אותה מחדש — ונסו שוב.",build-blocking error shown in the Preview PDF / Export dialog; {keys} is the undo shortcut (Ctrl+Z / ⌘+Z),REVIEW: machine-drafted HE — confirm
+fontmaker.export.out_of_range.other,"{count} letters have points far outside the letter box, so the font cannot be built: {names}. Open each on Edit points and undo whatever moved them ({keys}), or trace them again — then try again.","ל־{count} אותיות יש נקודות הרחק מחוץ לתיבת האות, ולכן לא ניתן לבנות את הגופן: {names}. פתחו כל אחת ב«עריכת נקודות» ובטלו את הפעולה שהזיזה אותן ({keys}), או עקבו אותן מחדש — ונסו שוב.",build-blocking error shown in the Preview PDF / Export dialog; {keys} is the undo shortcut (Ctrl+Z / ⌘+Z),REVIEW: machine-drafted HE — confirm
 fontmaker.fullscreen.panels_show,Show Panels,הצג פאנלים,Fullscreen draw-mode toggle label (panels currently hidden),leading-none
 fontmaker.fullscreen.panels_hide,Hide Panels,הסתר פאנלים,Fullscreen draw-mode toggle label (panels currently shown),leading-none
 fontmaker.fullscreen.panels_title,Show or hide the settings panels without leaving fullscreen,הצג או הסתר את פאנלי ההגדרות בלי לצאת ממסך מלא,Fullscreen draw-mode panel toggle title,title
@@ -2213,7 +2213,7 @@ fontmaker.import_progress.note,The font engine downloads once (about 8 MB) and i
 fontmaker.modals.build_fail_title,Build failed,הבנייה נכשלה,dialog title,
 fontmaker.modals.cancel,Cancel,ביטול,dialog button,
 fontmaker.modals.clear,Clear,נקה,dialog button,
-fontmaker.modals.clear_outline_body,This letter has hand-edited points. Clearing discards the outline and your point edits (you can still undo with Ctrl+Z afterward).,לאות זו יש נקודות שנערכו ידנית. הניקוי מבטל את המתאר ואת עריכות הנקודות שלכם (עדיין תוכלו לבטל עם Ctrl+Z לאחר מכן).,dialog body,
+fontmaker.modals.clear_outline_body,This letter has hand-edited points. Clearing discards the outline and your point edits (you can still undo with {keys} afterward).,לאות זו יש נקודות שנערכו ידנית. הניקוי מבטל את המתאר ואת עריכות הנקודות שלכם (עדיין תוכלו לבטל עם {keys} לאחר מכן).,dialog body; {keys} is the undo shortcut (Ctrl+Z / ⌘+Z),
 fontmaker.modals.clear_outline_title,Clear this outline?,לנקות מתאר זה?,dialog title,
 fontmaker.modals.clear_all,Clear all,ניקוי הכול,dialog button,
 fontmaker.modals.punct_clear_title,Clear all digits & punctuation?,לנקות את כל הספרות והפיסוק?,dialog title,
@@ -2223,7 +2223,7 @@ fontmaker.modals.punct_clear_stock.one,One of them is still the built-in shape.,
 fontmaker.modals.punct_clear_stock.other,{stock} of them are still the built-in shapes.,{stock} מהם עדיין בצורות המובנות.,dialog body — sentence appended after punct_clear_body,plural
 fontmaker.modals.punct_clear_own.one,One carries your own drawing or trace.,אחד נושא ציור או עקיבה משלכם.,dialog body — sentence appended after punct_clear_body,plural
 fontmaker.modals.punct_clear_own.other,{own} carry your own drawings or traces.,{own} נושאים ציורים או עקיבות משלכם.,dialog body — sentence appended after punct_clear_body,plural
-fontmaker.modals.punct_clear_undo,You can undo with Ctrl+Z afterward.,תוכלו לבטל עם Ctrl+Z לאחר מכן.,dialog body — closing sentence,
+fontmaker.modals.punct_clear_undo,You can undo with {keys} afterward.,תוכלו לבטל עם {keys} לאחר מכן.,dialog body — closing sentence; {keys} is the undo shortcut (Ctrl+Z / ⌘+Z),
 fontmaker.modals.confirm_apply_outline_all,Apply this letter's outline setting and line weight to every letter? Per-letter outline tuning will be overwritten (you can undo).,להחיל את הגדרת המתאר ועובי הקו של אות זו על כל אות? כוונון המתאר לכל אות ידרס (אפשר לבטל).,confirm dialog,
 fontmaker.modals.confirm_clear_guides,Remove all guides?,להסיר את כל קווי העזר?,confirm dialog,
 fontmaker.modals.confirm_convert_mark,Convert this mark to a main glyph? It becomes a standalone glyph with its own adjustable width and no longer attaches to letters. This cannot be undone.,להמיר סימן זה לגליף ראשי? הוא הופך לגליף עצמאי עם רוחב מתכוונן משלו ואינו מתחבר עוד לאותיות. אי אפשר לבטל זאת.,confirm dialog,
@@ -2258,10 +2258,10 @@ fontmaker.modals.couldnt_save_browser_title,Couldn't save in the browser,לא נ
 fontmaker.modals.couldnt_save_title,Couldn't save,לא ניתן לשמור,dialog title,
 fontmaker.modals.delete,Delete,מחק,dialog button,
 fontmaker.modals.delete_all,Delete all,מחק הכל,dialog button,
-fontmaker.modals.delete_contour_body.one,This removes {count} contour ({pts} points) from {name}. You can undo with {mod}+Z.,זה מסיר {count} קו מתאר ({pts} נקודות) מ-{name}. אפשר לבטל עם {mod}+Z.,dialog body,plural
-fontmaker.modals.delete_contour_body.other,This removes {count} contours ({pts} points) from {name}. You can undo with {mod}+Z.,זה מסיר {count} קווי מתאר ({pts} נקודות) מ-{name}. אפשר לבטל עם {mod}+Z.,dialog body,plural
+fontmaker.modals.delete_contour_body.one,This removes {count} contour ({pts} points) from {name}. You can undo with {keys}.,זה מסיר {count} קו מתאר ({pts} נקודות) מ-{name}. אפשר לבטל עם {keys}.,dialog body; {keys} is the undo shortcut (Ctrl+Z / ⌘+Z),plural
+fontmaker.modals.delete_contour_body.other,This removes {count} contours ({pts} points) from {name}. You can undo with {keys}.,זה מסיר {count} קווי מתאר ({pts} נקודות) מ-{name}. אפשר לבטל עם {keys}.,dialog body; {keys} is the undo shortcut (Ctrl+Z / ⌘+Z),plural
 fontmaker.modals.delete_contour_title,Delete contour?,למחוק קו מתאר?,dialog title,
-fontmaker.modals.delete_outline_body,"This deletes every remaining contour of {name} — the letter goes back to untraced. Its width and mark placement are kept, and you can undo with {mod}+Z.","זה מוחק כל קו מתאר שנותר של {name} — האות חוזרת למצב ללא מעקב. הרוחב שלה ומיקום הסימנים נשמרים, ואפשר לבטל עם {mod}+Z.",dialog body,
+fontmaker.modals.delete_outline_body,"This deletes every remaining contour of {name} — the letter goes back to untraced. Its width and mark placement are kept, and you can undo with {keys}.","זה מוחק כל קו מתאר שנותר של {name} — האות חוזרת למצב ללא מעקב. הרוחב שלה ומיקום הסימנים נשמרים, ואפשר לבטל עם {keys}.",dialog body; {keys} is the undo shortcut (Ctrl+Z / ⌘+Z),
 fontmaker.modals.delete_outline_title,Delete the whole outline?,למחוק את כל המתאר?,dialog title,
 fontmaker.modals.download_anyway,Download anyway,הורד בכל זאת,dialog button,
 fontmaker.modals.engine_fail_body,"Couldn't download the font engine. Check your internet connection, then click Export to try again.","לא ניתן היה להוריד את מנוע הגופן. בדקו את חיבור האינטרנט שלכם, ואז לחצו על ייצוא כדי לנסות שוב.",dialog body,
@@ -2468,7 +2468,7 @@ fontmaker.modals.reset_shape_body,Are you sure? This discards your dots & bars a
 fontmaker.modals.reset_shape_title,Reset shape,איפוס צורה,dialog title,
 fontmaker.modals.reset_to_default,Reset to default,אפס לברירת מחדל,dialog button,
 fontmaker.modals.retrace,Re-trace,עקוב מחדש,dialog button,
-fontmaker.modals.retrace_body,This letter has hand-edited points. Re-tracing rebuilds the outline from the image and discards your point edits (you can still undo with Ctrl+Z afterward).,לאות זו יש נקודות שנערכו ידנית. מעקב מחדש בונה מחדש את המתאר מהתמונה ומבטל את עריכות הנקודות שלכם (עדיין תוכלו לבטל עם Ctrl+Z לאחר מכן).,dialog body,
+fontmaker.modals.retrace_body,This letter has hand-edited points. Re-tracing rebuilds the outline from the image and discards your point edits (you can still undo with {keys} afterward).,לאות זו יש נקודות שנערכו ידנית. מעקב מחדש בונה מחדש את המתאר מהתמונה ומבטל את עריכות הנקודות שלכם (עדיין תוכלו לבטל עם {keys} לאחר מכן).,dialog body; {keys} is the undo shortcut (Ctrl+Z / ⌘+Z),
 fontmaker.modals.retrace_title,Re-trace this letter?,לעקוב מחדש אחר אות זו?,dialog title,
 fontmaker.modals.save_as_body,"Give the copy a name. Your current font stays in Recent Projects, and you'll switch to editing the copy so you can make a variant.","תנו שם לעותק. הפונט הנוכחי יישמר ברשימת הפרויקטים האחרונים, ותעברו לעריכת העותק כדי ליצור וריאציה.",dialog body,
 fontmaker.modals.save_as_name_placeholder,Font name,שם הפונט,input placeholder,
@@ -2545,11 +2545,11 @@ fontmaker.node_editor.contour_make_solid_title,Hole — press to make it solid,�
 fontmaker.node_editor.contour_row,Contour {count} — {n} pts,קו מתאר {count} — {n} נק׳,contour row label,
 fontmaker.node_editor.contour_select_title,Select this contour's points (Shift adds to the selection),בחר את נקודות קו המתאר הזה (Shift מוסיף לבחירה),contour row title,
 fontmaker.node_editor.contour_show_aria,Show contour {count} while editing (it still exports),הצגת קו מתאר {count} תוך כדי עריכה (הוא עדיין מיוצא),contour row aria-label,aria-label only
-fontmaker.node_editor.contours_empty,No contours yet — draw one with the pen (P).,אין עדיין קווי מתאר — ציירו אחד עם העט (P).,empty state,
+fontmaker.node_editor.contours_empty,No contours yet — draw one with the pen ({keys}).,אין עדיין קווי מתאר — ציירו אחד עם העט ({keys}).,empty state; {keys} is the pen's shortcut (P),
 fontmaker.node_editor.contours_hint,Colors and hiding are editing aids only — hidden contours still export and show in previews.,צבעים והסתרה הם כלי עזר לעריכה בלבד — קווי מתאר מוסתרים עדיין מיוצאים ומופיעים בתצוגות מקדימות.,disclosure hint,
 fontmaker.node_editor.contours_summary,Contours ({count}),קווי מתאר ({count}),disclosure summary,
 fontmaker.node_editor.copy,Copy,העתק,button,
-fontmaker.node_editor.copy_title,Copy the selected points as new contour(s) ({mod}+C),העתקת הנקודות הנבחרות כקו/י מתאר חדשים ({mod}+C),button title,
+fontmaker.node_editor.copy_title,Copy the selected points as new contour(s) ({keys}),העתקת הנקודות הנבחרות כקו/י מתאר חדשים ({keys}),button title; {keys} is the shortcut (Ctrl+C / ⌘+C),
 fontmaker.node_editor.corner,□ Corner,□ פינה,button,leading-emoji
 fontmaker.node_editor.corner_title,Make the selected points corners □,הפוך את הנקודות הנבחרות לפינות □,button title,
 fontmaker.node_editor.delete,Delete,מחק,button,
@@ -2571,26 +2571,26 @@ fontmaker.node_editor.handles_title,Show curve handles on every point (off: sele
 fontmaker.node_editor.head_edit_points,Edit points · {name},עריכת נקודות · {name},panel header,
 fontmaker.node_editor.mode_group_aria,Editing mode,מצב עריכה,node editor mode group,aria-label only
 fontmaker.node_editor.mode_marquee,Marquee,מלבן בחירה,node-mode button,
-fontmaker.node_editor.mode_marquee_title,"Marquee — dragging anywhere box-selects, even from a point (M)","מלבן בחירה — גרירה בכל מקום בוחרת בתיבה, אפילו מנקודה (M)",node-mode button title,
+fontmaker.node_editor.mode_marquee_title,"Marquee — dragging anywhere box-selects, even from a point ({keys})","מלבן בחירה — גרירה בכל מקום בוחרת בתיבה, אפילו מנקודה ({keys})",node-mode button title; {keys} is the shortcut (M),
 fontmaker.node_editor.mode_pen,Pen,עט,node-mode button,
-fontmaker.node_editor.mode_pen_title,Pen — draw a new contour point by point (P),עט — ציור קו מתאר חדש נקודה אחר נקודה (P),node-mode button title,
+fontmaker.node_editor.mode_pen_title,Pen — draw a new contour point by point ({keys}),עט — ציור קו מתאר חדש נקודה אחר נקודה ({keys}),node-mode button title; {keys} is the shortcut (P),
 fontmaker.node_editor.mode_select,Select,בחירה,node-mode button,
-fontmaker.node_editor.mode_select_title,Select — click and drag points (Esc leaves marquee or pen),בחירה — לחצו וגררו נקודות (Esc יוצא ממלבן הבחירה או מהעט),node-mode button title,
+fontmaker.node_editor.mode_select_title,Select — click and drag points ({keys} leaves marquee or pen),בחירה — לחצו וגררו נקודות ({keys} יוצא ממלבן הבחירה או מהעט),node-mode button title; {keys} is the shortcut (Esc),
 fontmaker.node_editor.more_delete_aria,More delete options,אפשרויות מחיקה נוספות,button aria-label,aria-label only
 fontmaker.node_editor.node_hint,Drag points to reshape · <b>?</b> for all shortcuts,גררו נקודות כדי לעצב מחדש · <b>?</b> לכל הקיצורים,node hint bar,
 fontmaker.node_editor.node_hint_dismiss_aria,Dismiss this hint,סגור רמז זה,button aria-label,aria-label only
 fontmaker.node_editor.node_hint_shortcuts_aria,All point-editing shortcuts,כל קיצורי עריכת הנקודות,button aria-label,aria-label only
 fontmaker.node_editor.paste,Paste,הדבק,button,
-fontmaker.node_editor.paste_title,Paste the copied contour(s) into this letter ({mod}+V),הדבק את קו/י המתאר שהועתקו לאות זו ({mod}+V),button title,
+fontmaker.node_editor.paste_title,Paste the copied contour(s) into this letter ({keys}),הדבק את קו/י המתאר שהועתקו לאות זו ({keys}),button title; {keys} is the shortcut (Ctrl+V / ⌘+V),
 fontmaker.node_editor.pen_cancel,Cancel path,ביטול נתיב,pen button,svg-icon-in-markup
-fontmaker.node_editor.pen_cancel_title,Discard the drawing and leave the pen (Esc),ביטול הציור ויציאה מהעט (Esc),pen button title,
-fontmaker.node_editor.pen_lines,· click: corner · drag: curve · Enter: close · Esc: discard,· לחיצה: פינה · גרירה: עקומה · Enter: סגירה · Esc: ביטול,pen status lines,
+fontmaker.node_editor.pen_cancel_title,Discard the drawing and leave the pen ({keys}),ביטול הציור ויציאה מהעט ({keys}),pen button title; {keys} is the shortcut (Esc),
+fontmaker.node_editor.pen_lines,· click: corner · drag: curve · Enter: close · {keys}: discard,· לחיצה: פינה · גרירה: עקומה · Enter: סגירה · {keys}: ביטול,pen status lines; {keys} is the pen's Cancel shortcut (Esc),
 fontmaker.node_editor.radius_aria,"Corner rounding radius in font units — previews live, commits on release","רדיוס עיגול פינות ביחידות גופן — תצוגה מקדימה חיה, מתבצע בשחרור",slider aria-label,aria-label only
 fontmaker.node_editor.radius_label,Radius,רדיוס,slider label,
 fontmaker.node_editor.reduce_apply_title,Simplify at the current strength (selected contours only — or the whole letter when nothing is selected),פישוט בעוצמה הנוכחית (רק קווי המתאר שנבחרו — או האות כולה כשלא נבחר דבר),button title,
 fontmaker.node_editor.reduce_count,{before} → {after} points,מ־{before} ל־{after} נקודות,live point-count readout,
 fontmaker.node_editor.reduce_count_now,{count} points now,{count} נקודות כעת,point-count readout before any reduction,
-fontmaker.node_editor.reduce_hint,Removes unnecessary points and refits smooth curves — great for letters imported from an existing font or SVG. Drag for a live preview; release to keep it ({mod}+Z undoes).,מסיר נקודות מיותרות ומתאים מחדש עקומות חלקות — מצוין לאותיות שיובאו מגופן קיים או מ־SVG. גררו לתצוגה מקדימה חיה; שחררו כדי לשמור ({mod}+Z מבטל).,disclosure hint,
+fontmaker.node_editor.reduce_hint,Removes unnecessary points and refits smooth curves — great for letters imported from an existing font or SVG. Drag for a live preview; release to keep it ({keys} undoes).,מסיר נקודות מיותרות ומתאים מחדש עקומות חלקות — מצוין לאותיות שיובאו מגופן קיים או מ־SVG. גררו לתצוגה מקדימה חיה; שחררו כדי לשמור ({keys} מבטל).,disclosure hint; {keys} is the undo shortcut (Ctrl+Z / ⌘+Z),
 fontmaker.node_editor.reduce_strength_aria,Point-reduction strength,עוצמת הפחתת הנקודות,slider aria-label,
 fontmaker.node_editor.reduce_strength_label,Strength,עוצמה,slider label,
 fontmaker.node_editor.reduce_summary,Reduce points,הפחתת נקודות,disclosure summary,
@@ -2615,7 +2615,7 @@ fontmaker.node_editor.seg_curve_title,Curve segment — click to make it a strai
 fontmaker.node_editor.seg_line_title,Line segment — click to make it a curve,מקטע ישר — לחצו כדי להפוך אותו לעקומה,segment dot title (SVG),
 fontmaker.node_editor.seg_why,— select 2+ adjacent points first,— בחרו קודם 2+ נקודות סמוכות,button title suffix,
 fontmaker.node_editor.select_all,Select all,בחר הכל,button,
-fontmaker.node_editor.select_all_title,Select every point ({mod}+A),בחר את כל הנקודות ({mod}+A),button title,
+fontmaker.node_editor.select_all_title,Select every point ({keys}),בחר את כל הנקודות ({keys}),button title; {keys} is the shortcut (Ctrl+A / ⌘+A),
 fontmaker.node_editor.shortcuts_help_aria,Keyboard shortcuts for point editing,קיצורי מקלדת לעריכת נקודות,button aria-label,aria-label only
 fontmaker.node_editor.shortcuts_help_title,All point-editing shortcuts (?),כל קיצורי עריכת הנקודות (?),button title,
 fontmaker.node_editor.smooth,○ Smooth,○ חלקה,button,leading-emoji
@@ -2623,7 +2623,7 @@ fontmaker.node_editor.smooth_title,Make the selected points smooth ○,הפוך 
 fontmaker.node_editor.snap,Snap,הצמדה,node-bar toggle,
 fontmaker.node_editor.snap_title,"Snap dragged points to guides, metric lines and the grid (Alt bypasses)","הצמד נקודות נגררות לקווי עזר, לקווי מדידה ולרשת (Alt עוקף)",node-bar toggle title,
 fontmaker.node_editor.tip_default,Tip: drag points to reshape · Alt-click the outline adds a point.,טיפ: גררו נקודות כדי לעצב מחדש · Alt-לחיצה על המתאר מוסיפה נקודה.,panel tip,
-fontmaker.node_editor.tip_marquee,Tip: drag anywhere to box-select · Shift adds · M or Esc leaves.,טיפ: גררו בכל מקום לבחירה בתיבה · Shift מוסיף · M או Esc יוצאים.,panel tip,
+fontmaker.node_editor.tip_marquee,Tip: drag anywhere to box-select · Shift adds · {marquee_keys} or {select_keys} leaves.,טיפ: גררו בכל מקום לבחירה בתיבה · Shift מוסיף · {marquee_keys} או {select_keys} יוצאים.,panel tip; {marquee_keys} is the Marquee shortcut (M) and {select_keys} the Select one (Esc),
 fontmaker.node_editor.tip_pen,Tip: a contour drawn inside another shape becomes a hole.,טיפ: קו מתאר המצויר בתוך צורה אחרת הופך לחור.,panel tip,
 fontmaker.node_editor.tip_selected,Tip: arrows nudge 5 units (Shift = 25) · double-click toggles ○/□.,טיפ: החצים מכווננים 5 יחידות (Shift = 25) · לחיצה כפולה מחליפה ○/□.,panel tip,
 fontmaker.node_editor.to_curve,To curve,לעקומה,button,
@@ -2670,9 +2670,9 @@ fontmaker.panels.adv_aramaic_label,Imperial Aramaic letters,אותיות ארמ�
 fontmaker.panels.adv_samaritan_label,Samaritan letters,אותיות שומרוניות,advanced control label,
 fontmaker.panels.adv_input_mode,Input mode,מצב קלט,advanced group title,
 fontmaker.panels.adv_canvas,Canvas,קנבס,advanced group title,
-fontmaker.panels.adv_rulers_hint,"Numbered rulers along the top and left of the editing canvas, measured in <strong>font units</strong> &mdash; zero sits at the letter's origin and on the baseline. A marker on each ruler follows your pointer, and the corner box shows the zoom (click it to snap back to 100%). <strong>Drag off a ruler</strong> onto the canvas to drop a new guide. Shortcut: <strong>Shift + R</strong>.","סרגלים ממוספרים בראש אזור העריכה ובצדו השמאלי, <strong>ביחידות הגופן</strong> &mdash; האפס יושב בנקודת המוצא של האות ועל קו הבסיס. מחוון על כל סרגל עוקב אחרי מיקום המצביע, ותיבת הפינה מציגה את הזום (לחצו עליה כדי לחזור ל-100%). <strong>גררו מתוך סרגל</strong> אל הקנבס כדי להוסיף קו עזר חדש. קיצור: <strong>Shift + R</strong>.",advanced hint,html
+fontmaker.panels.adv_rulers_hint,"Numbered rulers along the top and left of the editing canvas, measured in <strong>font units</strong> &mdash; zero sits at the letter's origin and on the baseline. A marker on each ruler follows your pointer, and the corner box shows the zoom (click it to snap back to 100%). <strong>Drag off a ruler</strong> onto the canvas to drop a new guide.","סרגלים ממוספרים בראש אזור העריכה ובצדו השמאלי, <strong>ביחידות הגופן</strong> &mdash; האפס יושב בנקודת המוצא של האות ועל קו הבסיס. מחוון על כל סרגל עוקב אחרי מיקום המצביע, ותיבת הפינה מציגה את הזום (לחצו עליה כדי לחזור ל-100%). <strong>גררו מתוך סרגל</strong> אל הקנבס כדי להוסיף קו עזר חדש.",advanced hint (its key is shown beside the checkbox above it),html
 fontmaker.panels.adv_rulers_label,Rulers,סרגלים,advanced control label,
-fontmaker.panels.adv_rulers_title,Show rulers along the top and left of the editing canvas (Shift + R),הצג סרגלים בראש אזור העריכה ובצדו השמאלי (Shift + R),advanced toggle title,
+fontmaker.panels.adv_rulers_title,Show rulers along the top and left of the editing canvas ({keys}),הצג סרגלים בראש אזור העריכה ובצדו השמאלי ({keys}),advanced toggle title; {keys} is the shortcut (Shift+R),
 fontmaker.panels.adv_show_rulers,Show canvas rulers,הצג סרגלים בקנבס,checkbox label,
 fontmaker.rulers.corner_title,Zoom — click to reset to 100%,זום — לחצו לאיפוס ל-100%,ruler corner button,
 fontmaker.rulers.off,Rulers hidden,הסרגלים מוסתרים,status toast,
@@ -2681,11 +2681,11 @@ fontmaker.grid.off,Grid hidden,הרשת מוסתרת,status toast,
 fontmaker.grid.on,Grid shown,הרשת מוצגת,status toast,
 fontmaker.help.sc_grid,Show or hide the canvas grid,הצגה או הסתרה של רשת הקנבס,shortcut description,
 fontmaker.node_editor.grid,Grid,רשת,node-bar toggle,
-fontmaker.node_editor.grid_title,Show the canvas grid (Shift + G),הצג את רשת הקנבס (Shift + G),node-bar toggle title,
+fontmaker.node_editor.grid_title,Show the canvas grid ({keys}),הצג את רשת הקנבס ({keys}),node-bar toggle title; {keys} is the shortcut (Shift+G),
 fontmaker.node_editor.hole_warn,"Part of this hole is not cutting: a hole only shows where it lies inside the letter, and not over another hole. Where it sticks out, it prints as ink.","חלק מהחור הזה אינו חותך: חור נראה רק במקום שבו הוא נמצא בתוך האות, ולא מעל חור אחר. במקום שבו הוא בולט החוצה, הוא מודפס כדיו.",contour row note,
-fontmaker.panels.adv_grid_hint,"Graph paper across the editing canvas, spaced in <strong>font units</strong> like the rulers &mdash; handy for matching stroke widths and keeping vowels a consistent distance from the baseline. It re-spaces itself as you zoom &mdash; finer divisions on the way in, coarser ones on the way out &mdash; and snapping follows what is on screen. Spacing, the heavier every-Nth line, opacity and <strong>snapping</strong> live in the <span class=""ui"">Grid</span> panel beside the canvas, where you can see them change. Shortcut: <strong>Shift + G</strong>.","נייר משבצות על פני אזור העריכה, במרווחים של <strong>יחידות גופן</strong> כמו הסרגלים &mdash; שימושי להתאמת עוביי קווים ולשמירה על מרחק אחיד של תנועות מקו הבסיס. היא מתאימה את המרווח שלה מחדש ככל שמשנים זום &mdash; חלוקות עדינות יותר בכניסה, גסות יותר ביציאה &mdash; וההצמדה עוקבת אחרי מה שעל המסך. המרווח, הקו המודגש כל N קווים, האטימות וה<strong>הצמדה</strong> נמצאים בפאנל <span class=""ui"">רשת</span> שליד הבד, שם אפשר לראות אותם משתנים. קיצור דרך: <strong>Shift + G</strong>.",advanced hint,html
+fontmaker.panels.adv_grid_hint,"Graph paper across the editing canvas, spaced in <strong>font units</strong> like the rulers &mdash; handy for matching stroke widths and keeping vowels a consistent distance from the baseline. It re-spaces itself as you zoom &mdash; finer divisions on the way in, coarser ones on the way out &mdash; and snapping follows what is on screen. Spacing, the heavier every-Nth line, opacity and <strong>snapping</strong> live in the <span class=""ui"">Grid</span> panel beside the canvas, where you can see them change.","נייר משבצות על פני אזור העריכה, במרווחים של <strong>יחידות גופן</strong> כמו הסרגלים &mdash; שימושי להתאמת עוביי קווים ולשמירה על מרחק אחיד של תנועות מקו הבסיס. היא מתאימה את המרווח שלה מחדש ככל שמשנים זום &mdash; חלוקות עדינות יותר בכניסה, גסות יותר ביציאה &mdash; וההצמדה עוקבת אחרי מה שעל המסך. המרווח, הקו המודגש כל N קווים, האטימות וה<strong>הצמדה</strong> נמצאים בפאנל <span class=""ui"">רשת</span> שליד הבד, שם אפשר לראות אותם משתנים.",advanced hint (its key is shown beside the checkbox above it),html
 fontmaker.panels.adv_grid_label,Grid,רשת,advanced control label,
-fontmaker.panels.adv_grid_title,Show graph-paper grid lines across the editing canvas (Shift + G),הצג קווי רשת על פני אזור העריכה (Shift + G),advanced toggle title,
+fontmaker.panels.adv_grid_title,Show graph-paper grid lines across the editing canvas ({keys}),הצג קווי רשת על פני אזור העריכה ({keys}),advanced toggle title; {keys} is the shortcut (Shift+G),
 fontmaker.panels.adv_show_grid,Show canvas grid,הצג רשת בקנבס,checkbox label,
 fontmaker.panels.grid,Grid,רשת,side title,
 fontmaker.panels.grid_eff,showing {step} at this zoom,מציג {step} בזום הזה,side panel note,
@@ -2763,7 +2763,7 @@ fontmaker.panels.confirm_placement_title,Marks this letter's placement as review
 fontmaker.panels.copy_outline,Copy outline…,העתק מתאר…,button,svg-icon-in-markup
 fontmaker.panels.copy_outline_title,Start this letter from another letter's outline,התחל אות זו ממתאר של אות אחרת,button title,
 fontmaker.panels.paste_svg_code,Paste SVG code…,הדבקת קוד SVG…,button,
-fontmaker.panels.paste_svg_code_title,"Paste a shape copied from Illustrator, Inkscape, Figma or another drawing app as SVG code. Or simply press {mod}+V while the letter is open.","הדביקו צורה שהועתקה מ-Illustrator, מ-Inkscape, מ-Figma או מתוכנת ציור אחרת כקוד SVG. אפשר גם פשוט ללחוץ {mod}+V כשהאות פתוחה.",button title; the app names are brand names,
+fontmaker.panels.paste_svg_code_title,"Paste a shape copied from Illustrator, Inkscape, Figma or another drawing app as SVG code. Or simply press {keys} while the letter is open.","הדביקו צורה שהועתקה מ-Illustrator, מ-Inkscape, מ-Figma או מתוכנת ציור אחרת כקוד SVG. אפשר גם פשוט ללחוץ {keys} כשהאות פתוחה.",button title; the app names are brand names; {keys} is the paste shortcut (Ctrl+V / ⌘+V),
 fontmaker.localfont.pick,Pick an installed font…,בחירת גופן מותקן…,"button; shown only in browsers that can list installed fonts (Chrome, Edge on a computer)",
 fontmaker.localfont.pick_title,Choose from the fonts installed on this computer. The browser asks for your permission first.,בחרו מתוך הגופנים המותקנים במחשב הזה. הדפדפן מבקש קודם את רשותכם.,button title,
 fontmaker.localfont.title,Pick an installed font,בחירת גופן מותקן,dialog title,
@@ -3135,7 +3135,7 @@ fontmaker.panels.punct_include,Include digits & punctuation in my font,כלול 
 fontmaker.panels.punct_off_hint,Currently <strong>off</strong>: these glyphs are skipped on export and have no practice page. Turn it on to include them.,כרגע <strong>כבוי</strong>: הגליפים האלה מדולגים בייצוא ואין להם עמוד תרגול. הפעילו כדי לכלול אותם.,panel hint,
 fontmaker.panels.punct_on_hint,"Included in the exported font &amp; the Punctuation practice template. Trace or draw each one like a letter — digits start blank; punctuation comes pre-shaped, and drawing over a built-in shape replaces it. Clear all existing glyphs to start every one blank.","כלולים בגופן המיוצא ובתבנית התרגול של הפיסוק. עקבו או ציירו כל אחד כמו אות — ספרות מתחילות ריקות; הפיסוק מגיע מעוצב מראש, וציור מעל צורה מובנית מחליף אותה. ניקוי כל הגליפים הקיימים מתחיל את כולם ריקים.",panel hint,
 fontmaker.panels.punct_clear_all,Clear all existing glyphs…,ניקוי כל הגליפים הקיימים…,button on the Punctuation tab — wipes every outline/drawing/photo there after a confirm,
-fontmaker.panels.punct_clear_all_title,"Remove every outline, drawing and photo on this tab — the built-in shapes too — so each glyph starts blank. Asks first; one Ctrl+Z restores everything.","מסיר כל מתאר, ציור ותמונה בכרטיסייה זו — גם הצורות המובנות — כך שכל גליף מתחיל ריק. שואל קודם; Ctrl+Z אחד משחזר הכול.",button title (tooltip) on the Punctuation tab,
+fontmaker.panels.punct_clear_all_title,"Remove every outline, drawing and photo on this tab — the built-in shapes too — so each glyph starts blank. Asks first; one {keys} restores everything.","מסיר כל מתאר, ציור ותמונה בכרטיסייה זו — גם הצורות המובנות — כך שכל גליף מתחיל ריק. שואל קודם; {keys} אחד משחזר הכול.",button title (tooltip) on the Punctuation tab; {keys} is the undo shortcut (Ctrl+Z / ⌘+Z),
 fontmaker.panels.raise_mark_title,Raise this mark on every letter,הגבה סימן זה בכל אות,button title,
 fontmaker.panels.raise_vowel_title,Raise this vowel on every letter,הגבה תנועה זו בכל אות,button title,
 fontmaker.panels.reference_font,Reference font (tracing guide),גופן ייחוס (מדריך מעקב),field label,
@@ -3193,7 +3193,7 @@ fontmaker.panels.trace_all,Trace all,עקיבה אחר הכול,button — trace
 fontmaker.panels.trace_all_changed,Changed while tracing — trace again: {names}.,השתנו במהלך העקיבה — עקבו שוב: {names}.,toast — appended sentence,
 fontmaker.panels.trace_all_none,Every photo on this tab is already traced.,כל התמונות בכרטיסייה זו כבר עברו עקיבה.,toast,
 fontmaker.panels.trace_all_progress,Tracing {i} of {total} letters…,עוקב אחר אות {i} מתוך {total}…,sticky status while Trace all works,
-fontmaker.panels.trace_all_title,"Trace every letter on this tab that has a photo but no outline yet, in one step (one Ctrl+Z undoes them all). Letters that already have an outline are left alone — fine-tune any letter on its Trace step afterwards.","עקיבה אחר כל אות בכרטיסייה זו שיש לה תמונה אך עדיין אין לה קו מתאר, בצעד אחד (Ctrl+Z אחד מבטל את כולן). אותיות שכבר יש להן קו מתאר נשארות כפי שהן — כווננו כל אות בשלב העקיבה שלה לאחר מכן.",button title (tooltip),
+fontmaker.panels.trace_all_title,"Trace every letter on this tab that has a photo but no outline yet, in one step (one {keys} undoes them all). Letters that already have an outline are left alone — fine-tune any letter on its Trace step afterwards.","עקיבה אחר כל אות בכרטיסייה זו שיש לה תמונה אך עדיין אין לה קו מתאר, בצעד אחד ({keys} אחד מבטל את כולן). אותיות שכבר יש להן קו מתאר נשארות כפי שהן — כווננו כל אות בשלב העקיבה שלה לאחר מכן.",button title (tooltip); {keys} is the undo shortcut (Ctrl+Z / ⌘+Z),
 fontmaker.panels.trace_all_toast.one,Traced {count} letter — open any letter's Trace step to fine-tune it.,בוצעה עקיבה אחר {count} אות — פתחו את שלב העקיבה של כל אות כדי לכוונן אותה.,toast,plural
 fontmaker.panels.trace_all_toast.other,Traced {count} letters — open any letter's Trace step to fine-tune it.,בוצעה עקיבה אחר {count} אותיות — פתחו את שלב העקיבה של כל אות כדי לכוונן אותה.,toast,plural
 fontmaker.panels.trace_hint,"Lower <b>threshold</b> captures lighter ink; higher <b>detail</b> hugs the ink more closely (more nodes). <b>Corners</b> sets how sharp a turn must be to stay a crisp corner — slide right to round more of them into smooth curves. Counters (ס, ם, ע) punch out automatically. Turn on <b>Outline only</b> for hollow “bubble” letters — <b>line weight</b> sets the ring thickness.","<b>סף</b> נמוך יותר קולט דיו בהיר יותר; <b>פירוט</b> גבוה יותר נצמד לדיו יותר מקרוב (יותר נקודות). <b>הפינות</b> קובעות עד כמה פנייה צריכה להיות חדה כדי להישאר פינה חדה — הזיזו שמאלה כדי לעגל יותר מהן לעקומות חלקות. חללים פנימיים (ס, ם, ע) מנוקבים אוטומטית. הפעילו <b>מתאר בלבד</b> עבור אותיות ""בועה"" חלולות — <b>עובי הקו</b> קובע את עובי הטבעת.",panel hint,mixed UI+content — do not translate {…}
@@ -3355,8 +3355,8 @@ fontmaker.status.compressing_woff2,Compressing WOFF2…,דוחס WOFF2…,toast,
 fontmaker.status.contour_now_hole,Contour {count} is now a hole.,קו מתאר {count} הוא עכשיו חור.,toast,
 fontmaker.status.contour_now_solid,Contour {count} is now solid.,קו מתאר {count} הוא עכשיו מלא.,toast,
 fontmaker.status.converted_main,Converted U+{cp} to a main glyph — set its width under Letter Metrics.,U+{cp} הומר לגליף ראשי — קבעו את רוחבו תחת מדדי האות.,toast,
-fontmaker.status.copied_contours.one,Copied {count} contour — open another letter's Edit points and press {mod}+V.,הועתק {count} קו מתאר — פתחו את עריכת הנקודות של אות אחרת ולחצו {mod}+V.,toast,plural
-fontmaker.status.copied_contours.other,Copied {count} contours — open another letter's Edit points and press {mod}+V.,הועתקו {count} קווי מתאר — פתחו את עריכת הנקודות של אות אחרת ולחצו {mod}+V.,toast,plural
+fontmaker.status.copied_contours.one,Copied {count} contour — open another letter's Edit points and press {keys}.,הועתק {count} קו מתאר — פתחו את עריכת הנקודות של אות אחרת ולחצו {keys}.,toast; {keys} is the paste shortcut (Ctrl+V / ⌘+V),plural
+fontmaker.status.copied_contours.other,Copied {count} contours — open another letter's Edit points and press {keys}.,הועתקו {count} קווי מתאר — פתחו את עריכת הנקודות של אות אחרת ולחצו {keys}.,toast; {keys} is the paste shortcut (Ctrl+V / ⌘+V),plural
 fontmaker.status.copied_outline,Copied outline from {name} — reshape it with “✎ Edit points”.,"הועתק מתאר מ-{name} — עצבו אותו מחדש עם ""✎ עריכת נקודות"".",toast,
 fontmaker.status.copy_min_points,Select at least 3 points on a contour to copy.,בחרו לפחות 3 נקודות בקו מתאר כדי להעתיק.,toast,
 fontmaker.status.crop_box_help,Crop box — arrows move · +/− resize · Enter to crop · Esc to cancel.,תיבת חיתוך — חצים מזיזים · +/− משנים גודל · Enter לחיתוך · Esc לביטול.,toast,
@@ -3465,8 +3465,8 @@ fontmaker.status.pick_traced_outline,Pick a letter that has a traced outline.,ב
 fontmaker.status.placement_confirmed,Placement confirmed for {name} ✓,המיקום אושר עבור {name} ✓,toast,leading-emoji
 fontmaker.status.preparing_letters,Preparing {i} / {total} letters…,מכין {i} / {total} אותיות…,toast,
 fontmaker.status.preview_pdf_saved,Preview PDF saved.,ה-PDF לתצוגה מקדימה נשמר.,toast,
-fontmaker.status.punct_cleared.one,Cleared {count} glyph on the Punctuation tab — Ctrl+Z restores it.,נוקה גליף {count} בכרטיסיית הפיסוק — Ctrl+Z משחזר אותו.,toast,plural
-fontmaker.status.punct_cleared.other,Cleared {count} glyphs on the Punctuation tab — Ctrl+Z restores them.,נוקו {count} גליפים בכרטיסיית הפיסוק — Ctrl+Z משחזר אותם.,toast,plural
+fontmaker.status.punct_cleared.one,Cleared {count} glyph on the Punctuation tab — {keys} restores it.,נוקה גליף {count} בכרטיסיית הפיסוק — {keys} משחזר אותו.,toast; {keys} is the undo shortcut (Ctrl+Z / ⌘+Z),plural
+fontmaker.status.punct_cleared.other,Cleared {count} glyphs on the Punctuation tab — {keys} restores them.,נוקו {count} גליפים בכרטיסיית הפיסוק — {keys} משחזר אותם.,toast; {keys} is the undo shortcut (Ctrl+Z / ⌘+Z),plural
 fontmaker.status.project_loaded,Project loaded.,הפרויקט נטען.,toast,
 fontmaker.status.project_saved_computer,Project saved to your computer (.hebrewfont).,הפרויקט נשמר במחשב שלכם (.hebrewfont).,toast,
 fontmaker.status.project_saved_computer2,Project saved to your computer.,הפרויקט נשמר במחשב שלכם.,toast,
@@ -5759,7 +5759,7 @@ fontmaker.node_editor.scale_w,Width %,רוחב %,input label,
 fontmaker.node_editor.scale_w_aria,Width percentage — 100 is unchanged,אחוז רוחב — 100 ללא שינוי,input aria-label,aria-label only
 fontmaker.node_editor.segment_type,Segment type,סוג מקטע,group aria-label,
 fontmaker.node_editor.shape_cancel,Cancel,ביטול,button,
-fontmaker.node_editor.shape_cancel_title,Put the shape tool away without adding anything (Esc),הניחו את כלי הצורות בלי להוסיף דבר (Esc),button title,
+fontmaker.node_editor.shape_cancel_title,Put the shape tool away without adding anything ({keys}),הניחו את כלי הצורות בלי להוסיף דבר ({keys}),button title; {keys} is the shortcut (Esc),
 fontmaker.node_editor.shape_ellipse,Ellipse,אליפסה,shape button,
 fontmaker.node_editor.shape_ellipse_title,"Ellipse: pick it, then drag on the letter to draw it, or press Place in the middle. Hold Shift for a circle.","אליפסה: בחרו בה, ואז גררו על האות כדי לצייר אותה, או לחצו על ״הצבה באמצע״. החזיקו Shift לעיגול.",button title,
 fontmaker.node_editor.shape_hint_armed,"Drag on the letter to draw it — Shift keeps it square or round, Alt turns snapping off. Or place one in the middle and move it with the arrow keys.","גררו על האות כדי לצייר אותה — Shift שומר עליה ריבועית או עגולה, Alt מבטל את ההצמדה. או הציבו אחת באמצע והזיזו אותה במקשי החצים.",hint while a shape is picked,
@@ -5783,7 +5783,7 @@ fontmaker.node_editor.slant_aria,"Slant angle in degrees, 0 to 30","זווית �
 fontmaker.node_editor.slant_label,Slant°,הטיה°,input label,
 fontmaker.node_editor.slant_slider_aria,"Slant angle, from the baseline — previews live, commits on release; the lean buttons below choose left or right","זווית הטיה, מקו הבסיס — תצוגה חיה, נקבעת בשחרור; כפתורי הנטייה שלמטה בוחרים שמאלה או ימינה",slider aria-label,aria-label only
 fontmaker.node_editor.slant_title,"How far to lean, in degrees. The letter leans from the baseline, so it keeps standing on the line. Choose the direction with Lean left or Lean right. (Inside a font file a lean to the right is written as a negative italic angle.)","בכמה להטות, במעלות. האות נוטה מקו הבסיס, ולכן היא ממשיכה לעמוד על השורה. את הכיוון בוחרים ב«נטייה שמאלה» או ב«נטייה ימינה». (בתוך קובץ גופן נטייה ימינה נכתבת כזווית נטייה שלילית.)",input title,
-fontmaker.node_editor.tip_shape,Tip: drag on the letter to draw the shape · Shift = square or circle · Alt = no snapping · Esc puts the tool away.,טיפ: גררו על האות כדי לצייר את הצורה · Shift = ריבוע או עיגול · Alt = בלי הצמדה · Esc מניח את הכלי.,panel tip,
+fontmaker.node_editor.tip_shape,Tip: drag on the letter to draw the shape · Shift = square or circle · Alt = no snapping · {keys} puts the tool away.,טיפ: גררו על האות כדי לצייר את הצורה · Shift = ריבוע או עיגול · Alt = בלי הצמדה · {keys} מניח את הכלי.,panel tip; {keys} is the shape tool's Cancel shortcut (Esc),
 fontmaker.node_editor.xform_anchor_note_sel,Changing selected points never moves the nikkud and trop points.,שינוי של נקודות נבחרות אינו מזיז את נקודות הניקוד והטעמים.,panel hint,
 fontmaker.node_editor.xform_anchor_note_whole,"Scaling or slanting the whole glyph, or flipping it left–right, moves its nikkud and trop points with it. Rotating it or flipping it top–bottom does not.","שינוי גודל או הטיה של הגליף כולו, או שיקוף שלו שמאל–ימין, מזיזים איתו את נקודות הניקוד והטעמים. סיבוב או שיקוף מעלה–מטה אינם מזיזים אותן.",panel hint,
 fontmaker.panels.edit_shape_btn,"Edit shape (square, dots & bars)","עריכת צורה (ריבוע, נקודות ומוטות)",button,svg-icon-in-markup
@@ -6007,9 +6007,9 @@ fontmaker.draw.replay_title,Replay the strokes in the order they were drawn,הצ
 fontmaker.draw.replay_reduced,"Reduced motion is on, so the strokes are shown all at once.","מצב תנועה מופחתת פעיל, ולכן הקווים מוצגים בבת אחת.",status line when the replay animation is suppressed,REVIEW: HE draft
 fontmaker.draw.stroke_count.one,{count} stroke,קו אחד,stroke count readout,plural
 fontmaker.draw.stroke_count.other,{count} strokes,{count} קווים,stroke count readout,plural
-fontmaker.draw.hint,"Draw over the gray reference with a pen, finger, or mouse. Each stroke can be undone with Ctrl+Z. Save runs the tracer — fine-tune Detail and Corners in step 2.","ציירו מעל אות הייחוס האפורה בעט, באצבע או בעכבר. כל קו ניתן לביטול עם Ctrl+Z. שמירה מפעילה את העוקב — כווננו פירוט ופינות בשלב 2.",draw panel hint,
+fontmaker.draw.hint,"Draw over the gray reference with a pen, finger, or mouse. Each stroke can be undone with {keys}. Save runs the tracer — fine-tune Detail and Corners in step 2.","ציירו מעל אות הייחוס האפורה בעט, באצבע או בעכבר. כל קו ניתן לביטול עם {keys}. שמירה מפעילה את העוקב — כווננו פירוט ופינות בשלב 2.",draw panel hint; {keys} is the undo shortcut (Ctrl+Z / ⌘+Z),
 fontmaker.draw.empty_hint,Draw the letter here — trace the gray reference.,ציירו כאן את האות — עקבו אחר אות הייחוס האפורה.,empty-canvas hint (in-SVG),
-fontmaker.draw.legend,"Draw with a pen, finger, or mouse · D / L / V / S / E switch tools · Save runs the tracer","ציור בעט, באצבע או בעכבר · D / L / V / S / E מחליפים כלי · שמירה מפעילה את העוקב",stage legend,
+fontmaker.draw.legend,"Draw with a pen, finger, or mouse · {keys} switch tools · Save runs the tracer","ציור בעט, באצבע או בעכבר · {keys} מחליפים כלי · שמירה מפעילה את העוקב",stage legend; {keys} is the five drawing tools' keys (D / L / V / S / E),
 fontmaker.draw.save_next,Save letter & next →,שמירת האות והבאה ←,primary button,
 fontmaker.draw.save_stay,Save & stay,שמירה והישארות,secondary button,
 fontmaker.draw.nothing_toast,Nothing drawn yet — add a stroke first.,עוד לא צוירו קווים — הוסיפו קו תחילה.,toast,
@@ -6017,7 +6017,7 @@ fontmaker.draw.saved_toast,{name} saved and traced.,{name} נשמרה ונעקב
 fontmaker.draw.all_done_toast,"All letters drawn — check spacing, then export.",כל האותיות צוירו — בדקו את הריווח וייצאו.,toast,
 fontmaker.draw.all_done_punct_toast,"All digits and punctuation drawn — check spacing, then export.",כל הספרות וסימני הפיסוק צוירו — בדקו את הריווח וייצאו.,toast — Save letter & next on the Punctuation tab when nothing is left to draw,
 fontmaker.draw.retrace_title,Save over hand-edited points?,לשמור מעל נקודות שנערכו ידנית?,dialog title,
-fontmaker.draw.retrace_body,This letter has hand-edited points. Saving the drawing rebuilds the outline from your strokes and discards those point edits (you can still undo with Ctrl+Z afterward).,לאות הזו יש נקודות שנערכו ידנית. שמירת הציור בונה מחדש את קו המתאר מהקווים שציירתם ומוחקת את עריכות הנקודות (עדיין אפשר לבטל עם Ctrl+Z).,dialog body,
+fontmaker.draw.retrace_body,This letter has hand-edited points. Saving the drawing rebuilds the outline from your strokes and discards those point edits (you can still undo with {keys} afterward).,לאות הזו יש נקודות שנערכו ידנית. שמירת הציור בונה מחדש את קו המתאר מהקווים שציירתם ומוחקת את עריכות הנקודות (עדיין אפשר לבטל עם {keys}).,dialog body; {keys} is the undo shortcut (Ctrl+Z / ⌘+Z),
 fontmaker.draw.canvas_aria,Drawing canvas — {glyph},קנבס ציור — {glyph},stage aria-label,
 fontmaker.draw.nexthint_start,Pick a letter and draw it right on the canvas.,בחרו אות וציירו אותה ישירות על הקנבס.,letter-grid hint,
 fontmaker.tabs.step_draw,1 · Draw,1 · ציור,work-step tab,
@@ -6088,7 +6088,7 @@ fontmaker.draw.untraced_handedited,"This letter’s points were edited by hand, 
 fontmaker.draw.untraced_stale_stage,The outline below is older than this drawing — re-trace to catch it up.,קווי המתאר שלמטה ישנים יותר מהציור הזה — המירו מחדש כדי לעדכן אותם.,Trace stage caption when an existing outline is older than the strokes,
 fontmaker.draw.stock_ghost_hint,"Built-in shape — draw over it to replace it, or leave it as is.","צורה מובנית — ציירו מעליה כדי להחליף אותה, או השאירו אותה כפי שהיא.",Draw stage caption under a punctuation mark that still carries its shipped default outline,
 fontmaker.draw.save_all,Save all drawings,שמירת כל הציורים,button — commits every drawing on this tab that is not saved yet,
-fontmaker.draw.save_all_title,"Save & trace every drawing on this tab that is not saved yet, in one step (one Ctrl+Z undoes them all). Glyphs whose points were edited by hand are left for you to save one at a time.","שמירה והמרה לקווי מתאר של כל ציור בכרטיסייה זו שעדיין לא נשמר, בצעד אחד (Ctrl+Z אחד מבטל את כולם). גליפים שנקודותיהם נערכו ידנית נשארים לשמירה אחד-אחד.",button title (tooltip),
+fontmaker.draw.save_all_title,"Save & trace every drawing on this tab that is not saved yet, in one step (one {keys} undoes them all). Glyphs whose points were edited by hand are left for you to save one at a time.","שמירה והמרה לקווי מתאר של כל ציור בכרטיסייה זו שעדיין לא נשמר, בצעד אחד ({keys} אחד מבטל את כולם). גליפים שנקודותיהם נערכו ידנית נשארים לשמירה אחד-אחד.",button title (tooltip); {keys} is the undo shortcut (Ctrl+Z / ⌘+Z),
 fontmaker.draw.save_all_none,Every drawing on this tab is already saved.,כל הציורים בכרטיסייה זו כבר שמורים.,toast,
 fontmaker.draw.save_all_progress,Preparing drawing {i} of {total}…,מכין ציור {i} מתוך {total}…,sticky status while Save all drawings rasterises,
 fontmaker.draw.save_all_tracing,Tracing the drawings…,ממיר את הציורים לקווי מתאר…,sticky status during the trace block,
