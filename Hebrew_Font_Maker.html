@@ -23649,6 +23649,7 @@ async function buildFontBytes(leaving) {          // build the TTF in memory (no
   if (res.error) throw new Error(res.error);
   const bytes = b64ToBytes(res.ttf_b64);
   window._lastFontBytes = bytes; window._lastFontStem = fontFileStem();   // for Send to IvritSuite (stem = freshness stamp)
+  window._lastFontLic = project.font.license;   // …and the licence it was built under: Preview PDF's build is ungated, so Send never reuses one made while no licence was chosen
   fmBuildKeep(bytes, gen);
   return bytes;
 }
@@ -23725,9 +23726,12 @@ function fmSubmitDraft(files, dest) {   // same layout as resources.html's openS
   return { subject, body, shareText };
 }
 function fmLicenseFile() { return new File([licenseText()], fontSafeBase(project.font.familyName) + '-LICENSE.txt', {type:'text/plain'}); }
-async function fmSendFiles() {   // [TTF File, LICENSE File] — always the TTF; rebuilt when the last build is missing or stale (UFO export, rename). null = the build failed; false = the licence gate stopped it
+async function fmSendFiles() {   // [TTF File, LICENSE File] — always the TTF; rebuilt when the last build is missing or stale (UFO export, rename, another licence). null = the build failed; false = the licence gate stopped it
   const stem = fontFileStem();
-  if (!(window._lastFontBytes && window._lastFontBytes.length) || window._lastFontStem !== stem) {
+  // A build made under another licence is stale too: the TTF's own licence record would contradict the
+  // LICENSE file sent beside it — and one made by Preview PDF while no licence was chosen would leave the
+  // computer saying "License not chosen" (its build is the one the gate leaves open).
+  if (!(window._lastFontBytes && window._lastFontBytes.length) || window._lastFontStem !== stem || window._lastFontLic !== project.font.license) {
     status(I18n.t('fontmaker.send.rebuilding'), true);
     _fontOut++;
     try { if (!await buildFontBytes(true)) { status(''); return false; } } catch (err) { console.error(err); status(''); return null; } finally { _fontOut--; }
@@ -24010,6 +24014,7 @@ async function finishDownload(bytes, gateSkipped, fmt) {   // resolves true only
   fmt = fmt || 'ttf';
   const fam = fontFileStem();   // family base + '-Bold' for the bold style — no Regular/Bold file collisions
   window._lastFontBytes = bytes; window._lastFontStem = fontFileStem();   // for Send to IvritSuite (stem = freshness stamp)
+  window._lastFontLic = project.font.license;
   window._lastExport = null;   // the Exported ✓ screen's size line — set below with the file that really went out
   if (fmt === 'ttf') {
     window._lastExport = { kind: 'ttf', size: bytes.length };
