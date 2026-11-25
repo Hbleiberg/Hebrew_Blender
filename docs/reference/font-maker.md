@@ -1100,7 +1100,10 @@ corner or tangle a noisy outline.
   high-contrast face does at every foot), and that is not a part of the letter coming away. A letter
   with more pieces after than before is **not given the step**: its spec is the plain scale by the shapes' factor with `stretched: true` (advance,
   anchors, pen and photo as with the box off; no `handEdited` stamp), and the plan lists it in
-  `warn.stretched`. The dialog names those letters in their own warn-styled sentence; Edit points
+  `warn.stretched`. The plain scale never pulls overlapping ink apart; contours that only touch (a
+  font whose parts meet within a unit and never overlap, as Paskol's ampersand) can still come out a
+  unit or two apart in the file after rounding and the curve conversion — with the box off as well.
+  The dialog names those letters in their own warn-styled sentence; Edit points
   says it in the status line. The "before" counts ride on the census (`cen.pieces`), which the
   dialog keeps while it is open.
 - *The result* is translated so the ink's left edge lands exactly on s × its old place, rounded, and
