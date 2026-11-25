@@ -6159,6 +6159,7 @@ function syncOsFontLock() {
   syncSourceFontNote();   // the other licence note: a font that came from the computer's installed fonts (Installed fonts block)
 }
 function onMetaChange() {
+  const licWas = project.font.license;
   project.font.familyName = document.getElementById('familyName').value;
   if (!project.osFont) {
     project.font.reservedFontName = document.getElementById('reservedName').value;
@@ -6171,6 +6172,7 @@ function onMetaChange() {
   project.font.style = fontStyleOf(document.getElementById('fontStyle').value);
   { const w = fontWidthOf(document.getElementById('fontWidth').value); if (w === 'normal') delete project.font.width; else project.font.width = w; }
   syncItalicRow();
+  if (project.font.license !== licWas) syncSourceFontNote();   // a licence was just chosen in the menu: the "choose a license" reminder under it (the menu's description) goes with the old state
   markDirty();   // meta edits autosave like every other edit
 }
 /* ════════ Template fonts — ported from torah_trainer.html, same grouping ════════ */
