@@ -982,7 +982,10 @@ is the identity at 0:
   on the un-leaned ink, so a slanted letter traced again keeps its advance instead of gaining its
   overhang.
 - `seedAnchors`, `ensureNikkudAnchors`, `ensureTropAnchors` and the QA mirror seed on
-  `uprightContours(l)` and then lean the points (`leanAnchorSet`).
+  `uprightContours(l)` and then lean the points (`leanAnchorSet`) — the Samaritan columns too
+  (`smrAnchorSeed`, from the upright extent, so Reset anchors and the QA grid agree with the engine),
+  and the default holam slot after שׁ / שׂ leans its 55 units of height by the base letter's record
+  (`precompHolamAnchor`).
 - Wide letterforms and digraphs: an x-scale would turn a lean of k into k·w, so `buildWideGlyph`
   un-leans, widens and leans again (`wideXY`), and hands every other site the one map, `g.tx(x, y,
   i)` — the donor's anchors and pins, QA's wide rows. A new site that widens uses `g.tx`, never

@@ -16320,12 +16320,12 @@ function seedAnchorsIfNeeded(l) { if (!l.anchors) seedAnchors(l); else { ensureN
    the source (feaLib rejects a fraction). */
 const SMR_SIDE_FRAC = 0.39;
 function smrAnchorSeed(l) {   // pure: the three column points for a Samaritan letter (ensureSmrAnchors and qaAnchors share it)
-  const hasInk = !!(l.contours && l.contours.length);
-  const x0 = hasInk ? letterInkLeft(l) : 0, x1 = hasInk ? letterInkRight(l) : (l.advance != null ? l.advance : Math.round(gxKY(LETTER_TOP) * 0.7));
+  const hasInk = !!(l.contours && l.contours.length), ue = hasInk ? uprightExtent(l) : null;   // a slanted letter is seeded on its upright shape, then the points are leaned with it (seedAnchors' rule)
+  const x0 = hasInk ? Math.round(ue.minX) : 0, x1 = hasInk ? Math.round(ue.maxX) : (l.advance != null ? l.advance : Math.round(gxKY(LETTER_TOP) * 0.7));
   const mid = Math.round((x0 + x1) / 2), off = Math.round(Math.max(0, x1 - x0) * SMR_SIDE_FRAC);
-  const maxY = hasInk ? glyphBBox(l.contours, true, letterMeta(l.codepoint)).maxY : gxKY(LETTER_TOP);
+  const maxY = hasInk ? glyphBBox(uprightContours(l), true, letterMeta(l.codepoint)).maxY : gxKY(LETTER_TOP);
   const y = (l.anchors && l.anchors.above) ? l.anchors.above.y : Math.max(gxKY(ANCHOR_Y.above), Math.round(maxY) + gxKLen(40));
-  return { smrAboveR: { x: mid + off, y }, smrAbove: { x: mid, y }, smrAboveL: { x: mid - off, y } };
+  return leanAnchorSet({ smrAboveR: { x: mid + off, y }, smrAbove: { x: mid, y }, smrAboveL: { x: mid - off, y } }, letterLeanK(l));
 }
 function ensureSmrAnchors(l) {   // back-fill the columns on a mark-bearing Samaritan letter (a save from before the family, a fresh seed); idempotent
   if (!smrMarkBase(l) || !l.anchors) return;
@@ -16622,7 +16622,8 @@ function precompTakesHolam(pc) { return !!pc && pc.base === '05E9' && (pc.mark =
 function precompHolamAnchor(pc) {
   if (pc.holam && pc.holam.x != null) return pc.holam;   // user override
   const a = precompAnchor(pc);                            // tracks any dot-position override too
-  return { x: a.x - gxKLen(120), y: a.y + gxKLen(55) };
+  const base = project.letters.find(l => l.codepoint === precompBaseCp(pc)), dy = gxKLen(55);
+  return { x: a.x - gxKLen(120) + Math.round(letterLeanK(base) * dy), y: a.y + dy };   // the 55 units of height lean with the letter
 }
 function precompMarkScale(pc) {
   if (catOfCp(pc.mark) === 'accent') return 1;                           // Latin accents are pre-sized — no per-form scaling
