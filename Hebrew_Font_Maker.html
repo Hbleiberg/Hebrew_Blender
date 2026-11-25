@@ -6163,7 +6163,7 @@ function onMetaChange() {
   project.font.familyName = document.getElementById('familyName').value;
   if (!project.osFont) {
     project.font.reservedFontName = document.getElementById('reservedName').value;
-    project.font.license = document.getElementById('license').value;
+    { const v = document.getElementById('license').value; if (v) project.font.license = v; }   // a blank menu is a licence key this page has no option for (a hand-edited or newer file): it is not overwritten with "" by an unrelated keystroke — the gate stops on it until one is chosen
   } else {
     project.font.license = 'os-passthrough';   // partner lock: license + reserved names are upstream truth, never read from the DOM
   }
@@ -10942,9 +10942,17 @@ function lfStampInstalled(file) {
   if (src) project.font.sourceFont = src; else delete project.font.sourceFont;
   syncMetaToForm(); markDirty();
 }
+/* "A licence has been chosen" = the project's licence is one of the table's own keys other than
+   'unset'. Anything else — empty, a key this page does not know, 'unset' itself — is "not chosen yet":
+   the gate stops on it and the note under the menu says so. (An older page version has no 'unset'
+   option and writes the field back empty; a hand-edited file can hold anything.) */
+function licenseChosen() {
+  const k = project && project.font.license;
+  return typeof k === 'string' && k !== 'unset' && Object.prototype.hasOwnProperty.call(LICENSES, k);
+}
 function syncSourceFontNote() {               // Font Details: the "not chosen yet" option and what the source font says about itself
   const lic = document.getElementById('license'), note = document.getElementById('srcFontNote'); if (!lic || !note) return;
-  const src = (project && !project.osFont && project.font.sourceFont) || null, unset = !!(project && !project.osFont && project.font.license === 'unset');
+  const src = (project && !project.osFont && project.font.sourceFont) || null, unset = !!(project && !project.osFont && !licenseChosen());
   note.hidden = !src && !unset;
   note.textContent = '';
   if (note.hidden) { if (lic.getAttribute('aria-describedby') === 'srcFontNote') lic.removeAttribute('aria-describedby'); return; }
@@ -10958,8 +10966,8 @@ function syncSourceFontNote() {               // Font Details: the "not chosen y
   }
   lic.setAttribute('aria-describedby', 'srcFontNote');
 }
-function licenseUnsetGate() {                 // true = stop: nothing is exported, saved to My Fonts or sent while no licence was chosen
-  if (!project || project.osFont || project.font.license !== 'unset') return false;
+function licenseUnsetGate() {                 // true = stop: no font is exported, saved to My Fonts or sent while no licence was chosen
+  if (!project || project.osFont || licenseChosen()) return false;   // a partner-locked project is never stopped: its licence is the partner's
   const src = project.font.sourceFont;
   askModal(I18n.t('fontmaker.modals.license_unset_title'),
     esc(I18n.t(src ? 'fontmaker.modals.license_unset_body' : 'fontmaker.modals.license_unset_body_plain', { font: src ? src.name : '' })),
@@ -27019,9 +27027,13 @@ function migrateProject(data) {
   if (data.font) {
     if (data.font.author === undefined) data.font.author = data.font.copyright || '';   // Copyright field → Author
     delete data.font.copyright;
-    if (!data.font.license) data.font.license = 'ofl';
     { const src = lfCleanSource(data.font.sourceFont); if (src) data.font.sourceFont = src; else delete data.font.sourceFont; }   // what an installed font said about itself: text from a project file, shape-checked and capped
     if (data.osFont && typeof data.osFont !== 'object') delete data.osFont;   // junk partner block → plain project
+    // A project that started from an installed font (its sourceFont survived the check above) never heals
+    // to OFL: a licence that is empty or not one of the table's keys — what an older page version writes
+    // back, or the orphaned lock key — is "not chosen yet". Without a source font an empty licence is OFL, as before.
+    if (!data.osFont && data.font.sourceFont && !(typeof data.font.license === 'string' && Object.prototype.hasOwnProperty.call(LICENSES, data.font.license))) data.font.license = 'unset';
+    if (!data.font.license) data.font.license = 'ofl';
     if (data.osFont) {   // partner starting-font (see CLAUDE.md: Starting Fonts): the license lock survives every load
       data.font.license = 'os-passthrough';
       if (!Array.isArray(data.osFont.reservedFontNames)) data.osFont.reservedFontNames = [];
