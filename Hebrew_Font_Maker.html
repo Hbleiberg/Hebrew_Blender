@@ -10290,18 +10290,103 @@ function svgInkLoops(loops) {                // the loops that enclose something
   return loops.filter(L => Math.abs(signedArea(L)) > floor);
 }
 function svgSkippedNote(n) { return n ? I18n.t(n === 1 ? 'fontmaker.modals.svgpaste_skipped.one' : 'fontmaker.modals.svgpaste_skipped.other', { count: n }) : ''; }   // "N stroke-only shapes were left out…", or ''
-function svgLoopsToContours(loops, opts) {
+function svgLoopsToContours(loops, opts) {     // opts.shapeOf (beside loops: the SVG shape each loop came from) winds each shape by itself — see svgWindByShape
   const o = opts || {};
-  loops = svgInkLoops(loops);
+  let of = o.shapeOf || null;
+  const ink = svgInkLoops(loops);
+  if (of) { const k = new Set(ink); of = of.filter((s, i) => k.has(loops[i])); }
+  loops = ink;
   const bb = loopsBBox(loops);
   if (!isFinite(bb.x) || bb.h <= 0) return null;
   const span = o.span || { bottom: 0, top: effMetrics().letterTop };
   const s = (span.top - span.bottom) / bb.h;
   const lsb = (o.lsb != null) ? o.lsb : effMetrics().defaultLSB;
   let rings = loops.map(L => L.map(([x, y]) => [(x - bb.x) * s + lsb, (bb.y + bb.h - y) * s + span.bottom]));
-  rings = rings.map(r => rdpClosed(r, 1.2)).filter(r => r.length >= 3 && Math.abs(signedArea(r)) > 40);
+  rings = rings.map(r => rdpClosed(r, 1.2));
+  const keep = rings.map(r => r.length >= 3 && Math.abs(signedArea(r)) > 40);
+  rings = rings.filter((r, i) => keep[i]); if (of) of = of.filter((s, i) => keep[i]);
   if (!rings.length) return null;
-  return assignWindingByNesting(rings);
+  return of ? svgWindByShape(rings, of) : assignWindingByNesting(rings);
+}
+/* "Add to it" reads the artwork ONE SVG SHAPE AT A TIME (a path, a rect, a circle… — one entry of
+   parseSvgEntries). The plain import nests every loop against every other, so a shape whose first
+   point lies inside another, separate shape becomes that shape's hole: a T drawn as two rectangles
+   imports with a notch where they overlap, and the part of the stem that sticks out of the bar is
+   wound the wrong way round — laid over a letter it would cancel the letter's ink. In the SVG itself
+   one shape painted over another never cuts it. So for Add each shape's loops are nested among
+   that shape's loops only: its outer +1, its own counters back to 0, and the shapes together are
+   their union, which is what the dialog's preview then shows too. Within one shape the nesting
+   stands, with one exception: a loop read as the hole of a loop it STICKS OUT OF is no counter of
+   it — wound as a hole, the part outside would cancel the letter's ink beneath — so it is wound as
+   a solid (a T drawn as one path of two rectangles is then a T, as a path's subpaths drawn the
+   same way round paint it). A counter lying inside its outer is never changed — touching it, or
+   crossing it by less than SVG_STICK_TOL, which is all the flattening of a thin wall can do. The
+   cost: a loop that pokes out of its outer on purpose (an even-odd notch, a hole cut through a
+   wall) is read as a solid in Add. The shape index lives only here: nothing of it reaches the
+   project. */
+function svgWindByShape(rings, shapeOf) {
+  const out = new Array(rings.length), by = new Map();
+  shapeOf.forEach((s, i) => { if (!by.has(s)) by.set(s, []); by.get(s).push(i); });
+  by.forEach(ix => {
+    const own = ix.map(i => rings[i]), cs = assignWindingByNesting(own), idx = [];
+    cs.forEach((c, h) => {                    // a hole of a loop it sticks out of (the loops holding its first point are the ones the nesting counted)
+      if (c.winding !== 'ccw') return;
+      for (let j = 0; j < own.length; j++) if (j !== h && pointInPoly(own[h][0], own[j]) && svgSticksOut(c.points, cs[j].points, idx[j] || (idx[j] = svgRingIndex(cs[j].points)))) { c.points.reverse(); c.winding = 'cw'; return; }
+    });
+    ix.forEach((i, k) => { out[i] = cs[k]; });
+  });
+  return out;
+}
+/* How far outside its outer (font units) a loop must reach before Add reads it as sticking out.
+   Both rings are flattened (rdpClosed, 1.2 units) and rounded, so a counter drawn inside its outer
+   behind a wall thinner than that can cross it by up to about 3.4 units with nothing of the
+   artwork outside: that crossing is the flattening, never the drawing. */
+const SVG_STICK_TOL = 4;
+function svgRingIndex(B) {                     // ring B's edges bucketed into horizontal strips, so "is this point in B, and how near its edge?" visits only the edges near the point (svgSticksOut asks it every few units along every hole; a full pass over a heavy outer for each question took seconds per redraw of the dialog)
+  let y0 = Infinity, y1 = -Infinity;
+  for (const p of B) { if (p[1] < y0) y0 = p[1]; if (p[1] > y1) y1 = p[1]; }
+  const n = Math.max(1, Math.min(256, Math.ceil(Math.sqrt(B.length)))), h = Math.max(1e-9, (y1 - y0) / n);
+  const strips = Array.from({ length: n }, () => []), at = y => Math.max(0, Math.min(n - 1, Math.floor((y - y0) / h)));
+  for (let j = 0; j < B.length; j++) {
+    const a = B[j], b = B[(j + 1) % B.length], s1 = at(Math.max(a[1], b[1]));
+    for (let s = at(Math.min(a[1], b[1])); s <= s1; s++) strips[s].push(j);
+  }
+  return { B, y0, y1, at, strips };
+}
+function svgRingFar(ix, x, y, t) {             // is (x, y) outside ring B (pointInPoly's even-odd crossing rule) AND more than t from every edge of it? Only edges whose height range meets [y − t, y + t] can be within t, and only those spanning y can cross the ray, so the strips around y answer both
+  const B = ix.B, S = ix.strips;
+  if (y >= ix.y0 && y <= ix.y1) {
+    let inside = false;
+    for (const j of S[ix.at(y)]) {
+      const [xi, yi] = B[(j + 1) % B.length], [xj, yj] = B[j];
+      if (((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / ((yj - yi) || 1e-9) + xi)) inside = !inside;
+    }
+    if (inside) return false;
+  }
+  const t2 = t * t, lo = ix.at(y - t), hi = ix.at(y + t);
+  for (let s = lo; s <= hi; s++) for (const j of S[s]) {
+    const a = B[j], b = B[(j + 1) % B.length], dx = b[0] - a[0], dy = b[1] - a[1], L = dx * dx + dy * dy;
+    const u = L ? Math.max(0, Math.min(1, ((x - a[0]) * dx + (y - a[1]) * dy) / L)) : 0, ex = a[0] + dx * u - x, ey = a[1] + dy * u - y;
+    if (ex * ex + ey * ey <= t2) return false;
+  }
+  return true;
+}
+function svgSticksOut(A, B, ix) {              // does ring A reach CLEARLY outside ring B — a point of its outline (each corner, and every 8 units along each edge) outside B by more than SVG_STICK_TOL? Touching B, or crossing it by less (two flattened rings behind a thin wall), does not count: a counter drawn against or close to its outer's edge still cuts it
+  const t = SVG_STICK_TOL, ba = polysBounds([A]), bb = polysBounds([B]);
+  if (ba.minX < bb.minX - t || ba.maxX > bb.maxX + t || ba.minY < bb.minY - t || ba.maxY > bb.maxY + t) return true;   // a point beyond B's box by more than t is at least that far from B
+  ix = ix || svgRingIndex(B);
+  for (let i = 0; i < A.length; i++) {
+    const a = A[i], b = A[(i + 1) % A.length], dx = b[0] - a[0], dy = b[1] - a[1], n = Math.max(1, Math.ceil(Math.hypot(dx, dy) / 8));
+    for (let q = 0; q < n; q++) if (svgRingFar(ix, a[0] + dx * q / n, a[1] + dy * q / n, t)) return true;
+  }
+  return false;
+}
+function svgBesideEdges(R, f) {                // f(x, y) at points a little to each side of every edge of ring R — every 6 units along it, 0.7 units off it (never ON an edge)
+  for (let i = 0; i < R.length; i++) {
+    const a = R[i], b = R[(i + 1) % R.length], dx = b[0] - a[0], dy = b[1] - a[1], len = Math.hypot(dx, dy); if (!len) continue;
+    const ox = -dy / len * 0.7, oy = dx / len * 0.7, steps = Math.max(1, Math.ceil(len / 6));
+    for (let q = 0; q < steps; q++) { const t = (q + 0.5) / steps, x = a[0] + dx * t, y = a[1] + dy * t; f(x + ox, y + oy); f(x - ox, y - oy); }
+  }
 }
 function svgSpanFor(cp, kind) {             // vertical target band for the fit, by glyph type
   const em = effMetrics();
@@ -10463,7 +10548,7 @@ function svgPasteStageOk() {                 // is a letter's stage what the tea
   return !(tDrag || eDrag || metricDrag || guideDrag || nodeDrag || drawGesture);
 }
 function svgPasteHasOutline(l) { return !!(l && l.contours && l.contours.length && !isStockOutline(l)); }   // a shipped punctuation default is a placeholder, not the teacher's outline
-function svgPasteParse(text) {               // → { loops, bb, shapes, skipped }, or throws an Error whose message is ready to show
+function svgPasteParse(text) {               // → { loops, shapeOf, bb, shapes, skipped } (shapeOf: per loop, the shape it came from — "Add to it" winds each shape by itself), or throws an Error whose message is ready to show
   let t = String(text || '').replace(/^﻿/, '').trim();
   if (t.length > SVG_PASTE_MAX_CHARS) throw new Error(I18n.t('fontmaker.modals.svg_too_big'));
   let parsed;
@@ -10478,10 +10563,12 @@ function svgPasteParse(text) {               // → { loops, bb, shapes, skipped
     if (e instanceof RangeError || (e && e.name === 'InternalError')) throw new Error(I18n.t('fontmaker.modals.svg_too_complex'));
     throw e;
   }
-  const loops = svgInkLoops(parsed.entries.reduce((a, en) => a.concat(en.loops), [])), bb = loopsBBox(loops);
+  const all = [], of = [];
+  parsed.entries.forEach((en, e) => en.loops.forEach(L => { all.push(L); of.push(e); }));
+  const loops = svgInkLoops(all), k = new Set(loops), shapeOf = of.filter((e, i) => k.has(all[i])), bb = loopsBBox(loops);
   if (!loops.length || !isFinite(bb.x) || !(bb.h > 0) || !(bb.w > 0))
     throw new Error(I18n.t(parsed.skipped ? 'fontmaker.modals.svgpaste_only_strokes' : 'fontmaker.modals.svg_no_paths'));
-  return { loops, bb, shapes: parsed.entries.length, skipped: parsed.skipped || 0 };
+  return { loops, shapeOf, bb, shapes: parsed.entries.length, skipped: parsed.skipped || 0 };
 }
 function svgPasteFitChoices(cp) {            // the size choices that mean something for this glyph
   const b = glyphBand(cp);
@@ -10501,7 +10588,7 @@ function svgPasteBuild(st, fit, mode) {      // → { contours, inkL, inkR, tooB
   // Centred: a replacement gets an advance of its own (ink + both default margins, the ink in the
   // middle); an added piece goes to the middle of the advance the letter already has.
   const lsb = mode === 'add' ? Math.round((letterAdvance(l) - inkW) / 2) : Math.round((m.defaultLSB + m.defaultRSB) / 2);
-  const contours = svgLoopsToContours(st.parsed.loops, { span, lsb });
+  const contours = svgLoopsToContours(st.parsed.loops, { span, lsb, shapeOf: mode === 'add' ? st.parsed.shapeOf : null });   // Add reads the artwork shape by shape (svgWindByShape); a replacement as the plain import does
   if (!contours) return null;
   let inkL = Infinity, inkR = -Infinity, far = 0;
   contours.forEach(c => c.points.forEach(p => { if (p[0] < inkL) inkL = p[0]; if (p[0] > inkR) inkR = p[0]; far = Math.max(far, Math.abs(p[0]), Math.abs(p[1])); }));
@@ -10654,75 +10741,107 @@ function svgPasteReplace(l, built) {          // ONE undo step that brings back 
   renderGrids();
   status(I18n.t('fontmaker.status.svgpaste_done', { name: gName(l.name) }));
 }
-/* Adding is a UNION: ink is only ever added. Fonts, and every stage here, fill by the nonzero rule,
-   so the union is simply every contour keeping its own direction — the old ones theirs, the new
-   piece's outers clockwise and its counters counter-clockwise. Two things would spoil that:
-   · a contour lying wholly where the other group's ink already is. A new piece inside the letter adds
-     nothing; an old counter the new ink covers would still punch its hole through that ink. Both are
-     left out — that IS the union.
-   · renestNodeModel, which the point editor runs after a rotate, a delete, a paste. It re-reads each
-     contour's direction from how many other rings hold its FIRST point, so a bar laid across a letter
-     (first corner inside the ink) would turn into a hole — a bite out of the letter — at the first
-     such edit. So a contour the other group touches is made to START on a point that is clear of the
-     other group's ink: one of its own points, else a point put on one of its straight edges (a
-     collinear point moves where a contour starts, not its shape).
-   "Clear" is asked of the point and of four points around it, first 4 units out, then 1: both pieces
-   fitted to the same band touch the same top and bottom lines, so corners sitting exactly ON the
-   other's edge are the common case, and there the next rounding would flip the answer.
-   An old contour the new pieces do not reach is not touched at all. Works on the node model only;
-   returns how many of the new contours remain and whether the outline changed at all. */
-function svgPasteSettle(first) {
-  const cts = nodeModel.contours, rings = cts.map(nodeContourToPoints);
-  const isNew = i => i >= first;
-  const parity = (x, y, i, sameGroup) => {     // how many rings of i's own group (or of the other one) hold this point, mod 2 — i itself never counted
-    let d = 0; const pt = [Math.round(x), Math.round(y)];
-    for (let j = 0; j < rings.length; j++) if (j !== i && (isNew(j) === isNew(i)) === sameGroup && rings[j].length >= 3 && pointInPoly(pt, rings[j])) d++;
-    return d % 2;
-  };
-  const base = cts.map((ct, i) => !ct.nodes.length ? 0 : isNew(i) ? (ct.winding === 'ccw' ? 1 : 0) : parity(ct.nodes[0].x, ct.nodes[0].y, i, true));   // an old contour keeps whatever nesting it has today
-  const clear = (x, y, i) => parity(x, y, i, false) === 0 && parity(x, y, i, true) === base[i];
-  const sure = (x, y, i, r) => clear(x, y, i) && clear(x - r, y, i) && clear(x + r, y, i) && clear(x, y - r, i) && clear(x, y + r, i);
-  const seat = (ct, i, r) => {                 // index of a node that is sure at radius r — put in on a straight edge when no existing node is — or -1
-    const nodes = ct.nodes; let k = nodes.findIndex(nd => sure(nd.x, nd.y, i, r));
-    if (k >= 0) return k;
-    for (let a = 0; a < nodes.length; a++) {
-      const A = nodes[a], B = nodes[(a + 1) % nodes.length]; if (A.out || B.in) continue;   // a curved segment is left whole
-      const steps = Math.min(64, Math.max(2, Math.ceil(Math.hypot(B.x - A.x, B.y - A.y) / 8)));
-      for (let q = 1; q < steps; q++) {
-        const x = Math.round(A.x + (B.x - A.x) * q / steps), y = Math.round(A.y + (B.y - A.y) * q / steps);
-        if ((x === Math.round(A.x) && y === Math.round(A.y)) || (x === Math.round(B.x) && y === Math.round(B.y)) || !sure(x, y, i, r)) continue;
-        nodes.splice(a + 1, 0, { x, y, in: null, out: null, type: 'corner' }); return a + 1;
-      }
-    }
-    return -1;
-  };
-  const gone = [];
-  cts.forEach((ct, i) => {
-    if (ct.nodes.length < 3) return;
-    const s0 = ct.nodes[0];
-    if (isNew(i) ? sure(s0.x, s0.y, i, 4)                                                    // already starts somewhere safe
-                 : [[0, 0], [-4, 0], [4, 0], [0, -4], [0, 4]].every(o => parity(s0.x + o[0], s0.y + o[1], i, false) === 0)) return;   // the new pieces are nowhere near this old contour's start
-    let k = seat(ct, i, 4); if (k < 0) k = seat(ct, i, 1);
-    if (k < 0) { gone.push(i); return; }
-    if (k > 0) ct.nodes = ct.nodes.slice(k).concat(ct.nodes.slice(0, k));
+/* Adding is a UNION: ink is only ever added. Fonts, and every stage here, fill by the nonzero rule.
+   Each group is wound to one side: the letter's winding is zero or more everywhere (solids
+   clockwise, counters back to zero), and so is the artwork's, which is read shape by shape for an
+   add (svgWindByShape: each shape +1 inside, its own counters back to zero, separate shapes never
+   cutting one another). Then the union is simply every contour of both, each in its own direction:
+   the sum is nonzero exactly where either one is. Nothing has to be cut, moved or re-seated for
+   that, and no contour changes between solid and hole. The one thing that would spoil it later is
+   the AUTOMATIC nesting rule — renestNodeModel re-deciding a contour's direction from how many
+   other rings hold its first point, at the next rotate, delete or paste: a bar laid across a
+   letter would turn into a hole. So adding makes the letter a KEPT one (dirSet on every contour,
+   see renestNodeModel), whose directions are never re-decided:
+   · the contours that are there go through nodeKeepAll() BEFORE the new ones join — it keeps the
+     fill, and it turns a letter drawn the other way round (a CFF import) into this file's
+     convention, so both groups are wound alike;
+   · every new contour joins flagged, running the way its label says;
+   · no start point is moved, no point is put in, no contour of either group changes between solid
+     and hole, and no solid of the letter is ever taken out.
+   Two things are decided by asking points "is this ink?" (svgWinder), never by a rule about where
+   a contour starts:
+   · "this artwork adds nothing" — of the artwork as a whole: nowhere does it have ink where the
+     letter has none (svgPasteAddsInk). No change, and no undo step. In doubt, it is added.
+   · the one place a letter's winding goes below zero is a hole outside its ink (it shows as ink,
+     and the Contours list notes it as not cutting): the artwork laid over it would cancel that.
+     A hole of the letter — such a one, or a counter — that the artwork's ink covers completely is
+     taken out (svgPasteDeadHoles); that cannot change the union, and no dead hole is left in the
+     Contours list. A hole only partly covered stays, and where the artwork lies over the part of it
+     outside the letter's ink, that ink is cancelled — as it is over the part of a hole that pokes
+     out of the letter's ink and cuts it too. */
+function svgWinder(rings) {                   // → (x, y) → the signed winding number of these rings there: a clockwise ring holds a point at +1, a counter-clockwise one at −1
+  const E = gxwEdges(rings), at = gxwBins(E);
+  return (x, y) => { const B = at(y); let w = 0; for (let i = 0; i < B.length; i++) { const e = B[i]; if ((e[1] > y) !== (e[3] > y) && e[0] + (y - e[1]) * (e[2] - e[0]) / (e[3] - e[1]) < x) w += e[3] > e[1] ? 1 : -1; } return w; };
+}
+function svgPasteAddsInk(oldRings, newRings) {   // is there a point where the artwork has ink and the letter has none?
+  const Wo = svgWinder(oldRings), Wn = svgWinder(newRings);
+  const adds = (x, y) => Wn(x, y) !== 0 && Wo(x, y) === 0;
+  let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+  for (const R of newRings) for (let i = 0; i < R.length; i++) {   // beside the artwork's own outline: every 6 units along each edge, a little to each side (never ON an edge — pieces fitted to one band share its top and bottom lines)
+    const a = R[i], b = R[(i + 1) % R.length], dx = b[0] - a[0], dy = b[1] - a[1], len = Math.hypot(dx, dy);
+    if (a[0] < x0) x0 = a[0]; if (a[0] > x1) x1 = a[0]; if (a[1] < y0) y0 = a[1]; if (a[1] > y1) y1 = a[1];
+    if (!len) continue;
+    const ox = -dy / len * 0.7, oy = dx / len * 0.7, steps = Math.max(1, Math.ceil(len / 6));
+    for (let q = 0; q < steps; q++) { const t = (q + 0.5) / steps, x = a[0] + dx * t, y = a[1] + dy * t; if (adds(x + ox, y + oy) || adds(x - ox, y - oy)) return true; }
+  }
+  const w = x1 - x0, h = y1 - y0; if (!(w > 0 && h > 0)) return true;   // nothing to measure: in doubt, add
+  const step = Math.max(Math.min(6, Math.sqrt(w * h / 2200)), Math.sqrt(w * h / 200000));   // a grid over the artwork's box: about 6 units apart, never fewer than 2,000 points (and no more than 200,000)
+  for (let y = y0 + step * 0.37; y < y1; y += step) for (let x = x0 + step * 0.31; x < x1; x += step) if (adds(x, y)) return true;
+  return false;
+}
+/* The letter's holes that the artwork's ink covers completely → their indices. Asked after the keep
+   step, so a hole is a counter-clockwise ring. A hole goes when the artwork has ink at every point
+   asked inside it — a little inside its edge all the way round, on a grid across it (about 6 units
+   apart, at least 400 points), and a little to each side of every edge of the artwork that comes
+   near it, where a gap in the artwork would show — and the sum still has ink at all of them once it
+   is gone (two of the letter's holes lying over each other, one covered and one not, could
+   otherwise cancel each other's ink there; then they go one at a time, each only where it can). */
+function svgPasteDeadHoles(oldRings, newRings) {
+  const Wo = svgWinder(oldRings), Wn = svgWinder(newRings), bn = polysBounds(newRings), cand = [];
+  const meet = (a, b) => !(a.maxX < b.minX || b.maxX < a.minX || a.maxY < b.minY || b.maxY < a.minY);
+  oldRings.forEach((H, i) => {
+    if (H.length < 3 || !(signedArea(H) > 0)) return;
+    const b = polysBounds([H]); if (b.minX < bn.minX || b.maxX > bn.maxX || b.minY < bn.minY || b.maxY > bn.maxY) return;   // the artwork cannot cover it
+    const Wh = svgWinder([H]), pts = []; let bare = false;
+    const ask = (x, y) => { if (bare || !Wh(x, y)) return; if (!Wn(x, y)) bare = true; else pts.push(x, y); };
+    svgBesideEdges(H, ask);
+    newRings.forEach(R => { if (!bare && meet(b, polysBounds([R]))) svgBesideEdges(R, ask); });
+    const w = b.maxX - b.minX, h = b.maxY - b.minY, step = Math.max(Math.min(6, Math.sqrt(w * h / 400)), Math.sqrt(w * h / 40000));
+    if (step > 0) for (let y = b.minY + step * 0.37; y < b.maxY && !bare; y += step) for (let x = b.minX + step * 0.31; x < b.maxX && !bare; x += step) ask(x, y);
+    if (!bare && pts.length) cand.push({ i, pts });
   });
-  let kept = cts.length - first, oldGone = 0;
-  gone.sort((p, q) => q - p).forEach(i => { cts.splice(i, 1); if (i >= first) kept--; else oldGone++; });
-  return { kept, changed: kept > 0 || oldGone > 0 };   // a piece that only fills a counter leaves no contour of its own behind, and still changed the letter
+  const fine = set => {                       // with every hole of the set taken out, the sum still has ink at every point asked inside them
+    if (!set.length) return true;
+    const Wd = svgWinder(set.map(c => oldRings[c.i]));
+    return set.every(c => { for (let q = 0; q < c.pts.length; q += 2) { const x = c.pts[q], y = c.pts[q + 1]; if (!(Wo(x, y) - Wd(x, y) + Wn(x, y))) return false; } return true; });
+  };
+  if (fine(cand)) return cand.map(c => c.i);
+  const took = []; cand.forEach(c => { if (fine(took.concat([c]))) took.push(c); });
+  return took.map(c => c.i);
 }
 function svgPasteAdd(l, built) {              // the pieces join the outline that is there — through the node model, like pasted points
   _setWorkMode('nodes');                      // Edit points is the one step that always shows the outline itself (Align shows a photo or the strokes)
   buildNodeModel(l); nodeSel.clear(); _hiddenContours.clear();
-  const first = nodeModel.contours.length;
-  built.contours.forEach(c => nodeModel.contours.push({ winding: c.winding, nodes: c.points.map(p => ({ x: p[0], y: p[1], in: null, out: null, type: 'corner' })) }));
-  const { kept, changed } = svgPasteSettle(first);   // on the model only — nothing of the project has changed yet
-  if (!changed) {                             // every new piece lies inside ink that is already there: no change, so no undo step either
-    buildNodeModel(l); renderStage(); renderControls();
+  const fresh = built.contours.map(c => {     // flagged, and running the way the label says: the label only names a direction, the points' order is what fills
+    const ct = { winding: c.winding === 'ccw' ? 'ccw' : 'cw', dirSet: true, nodes: c.points.map(p => ({ x: p[0], y: p[1], in: null, out: null, type: 'corner' })) };
+    const a = signedArea(c.points);
+    if (ct.winding === 'ccw' ? a < 0 : a > 0) reverseNodeContour(ct);
+    return ct;
+  });
+  const newRings = fresh.map(nodeContourToPoints);
+  if (!svgPasteAddsInk(nodeModel.contours.map(nodeContourToPoints), newRings)) {   // asked of the model only — nothing of the project has changed, so no undo step either
+    renderStage(); renderControls();
     status(I18n.t('fontmaker.status.svgpaste_adds_nothing', { name: gName(l.name) }));
     return;
   }
-  const from = nodeModel.contours.length - kept;
-  udDo([{ t: 'item', kind: 'letter', cp: l.codepoint }], 'add SVG — ' + l.name, () => { if (nodeKept()) nodeModel.contours.forEach(ct => { ct.dirSet = true; }); writeThroughRebuild(l); });   // every contour keeps its direction (no renest here: the union above is the nonzero fill of exactly these)
+  let from = 0;
+  udDo([{ t: 'item', kind: 'letter', cp: l.codepoint }], 'add SVG — ' + l.name, () => {
+    nodeKeepAll();                            // before the new contours join: the letter's own direction is read without them
+    svgPasteDeadHoles(nodeModel.contours.map(nodeContourToPoints), newRings).sort((p, q) => q - p).forEach(i => nodeModel.contours.splice(i, 1));   // a hole of the letter that the artwork covers completely cuts nothing any more
+    from = nodeModel.contours.length;
+    fresh.forEach(ct => nodeModel.contours.push(ct));
+    writeThroughRebuild(l);                   // no renest: the union is the nonzero fill of exactly these contours, each as it runs
+  });
   for (let ci = from; ci < nodeModel.contours.length; ci++) nodeModel.contours[ci].nodes.forEach((nd, ni) => nodeSel.add(nodeKey(ci, ni)));
   renderGrids(); renderStage(); renderControls();
   status(I18n.t('fontmaker.status.svgpaste_added', { name: gName(l.name) }));
@@ -14187,8 +14306,8 @@ function reverseNodeContour(ct) {
    the NODE contour so curves survive). The exporter consumes physical point order, so orientation
    fixes must actually reverse the nodes, not just relabel. Remaps nodeSel indices on reversal.
    A letter is either AUTOMATIC (no contour carries dirSet — every contour is decided here by how
-   many other rings hold its first point, on every call) or KEPT (a shape was added, or a contour
-   switched by hand: every contour carries dirSet). In a kept letter a flagged contour is never
+   many other rings hold its first point, on every call) or KEPT (a shape or pasted artwork was
+   added, or a contour switched by hand: every contour carries dirSet). In a kept letter a flagged contour is never
    re-decided: it is only made to run the way its label says (a mirror flip reverses every contour;
    a rectangle dragged inside out reverses one), and a contour that arrives without the flag (pen,
    paste) is decided once by the nesting rule and then flagged. Nesting cannot be the rule there: a
@@ -14211,22 +14330,119 @@ function renestNodeModel() {
     }
     const area = signedArea(rings[i]);
     if ((wantOuter && area > 0) || (!wantOuter && area < 0)) {     // same area convention as assignWindingByNesting
-      reverseNodeContour(ct); turned++;
-      const n = ct.nodes.length, re = [];
-      nodeSel.forEach(k => { const [c, ni] = k.split(':').map(Number);
-        if (c === i) { nodeSel.delete(k); re.push(nodeKey(c, n - 1 - ni)); } });
-      re.forEach(k => nodeSel.add(k));
+      nodeTurnContour(ct, i); turned++;
     }
     ct.winding = wantOuter ? 'cw' : 'ccw';
     if (kept) ct.dirSet = true;
   });
   return turned;
 }
-/* Automatic → kept. Runs the nesting rule one last time (which also puts an imported CFF outline or
-   a stock punctuation mark, both drawn the other way round, into this file's convention), then
-   flags every contour. Called BEFORE a flagged contour is added: one added first would be counted
-   in the others' nesting and could flip a stem it happens to cover. */
-function nodeKeepAll() { renestNodeModel(); nodeModel.contours.forEach(ct => { ct.dirSet = true; }); }
+function nodeTurnContour(ct, i) {                     // reverse contour i of the model (curves kept); its selected points go with it
+  reverseNodeContour(ct);
+  const n = ct.nodes.length, re = [];
+  nodeSel.forEach(k => { const [c, ni] = k.split(':').map(Number);
+    if (c === i) { nodeSel.delete(k); re.push(nodeKey(c, n - 1 - ni)); } });
+  re.forEach(k => nodeSel.add(k));
+}
+/* Which contours are holes → { reversed, holes: [one boolean per ring] }. A contour's role is the
+   ORDER of its points, never its label: counter-clockwise (signedArea > 0 in y-up units) is a hole.
+   That is all there is to say of a KEPT letter. An AUTOMATIC one may be drawn the other way round as
+   a whole — its solids counter-clockwise, as an imported CFF outline and the stock punctuation marks
+   are — so there the direction is read against the letter's own: `reversed` when the contour with
+   the largest area (an outline's biggest ring is a solid) runs counter-clockwise, and then clockwise
+   is the hole. And a contour that stands clear of every other one is a solid whichever way it runs:
+   it has nothing to cut (the stock question mark's hook runs one way, its stem and dot the other;
+   some fonts draw a letter's separate leg against its body). "Clear" of another contour: their
+   boxes do not meet, or — points just inside each are outside the other, and their outlines do not
+   cross. That is proof of standing apart, not a nesting decision: when it cannot be shown, the
+   direction is what counts. One reading for the Contours rows, holeTroubles and nodeKeepAll, so the
+   three cannot disagree. The proof costs a sweep over the edges and one look across each ring's
+   inside points, so the last answer is kept by content: the rows and holeTroubles ask about the
+   same outline on every render. */
+let _rolesLast = null;
+function contourRoles(rings, kept) {
+  const A = rings.map(R => R.length >= 3 ? signedArea(R) : 0);
+  if (kept) return { reversed: false, holes: A.map(a => a > 0) };
+  const key = JSON.stringify(rings);
+  if (_rolesLast && _rolesLast.key === key) return { reversed: _rolesLast.reversed, holes: _rolesLast.holes.slice() };
+  const r = contourRolesRead(rings, A);
+  _rolesLast = { key, reversed: r.reversed, holes: r.holes.slice() };
+  return r;
+}
+function contourRolesRead(rings, A) {                 // contourRoles for an automatic letter
+  let big = 0; A.forEach(a => { if (Math.abs(a) > Math.abs(big)) big = a; });
+  const reversed = big > 0, pad = 2, ins = [];
+  const B = rings.map(R => { const b = [Infinity, Infinity, -Infinity, -Infinity]; R.forEach(p => { if (p[0] < b[0]) b[0] = p[0]; if (p[1] < b[1]) b[1] = p[1]; if (p[0] > b[2]) b[2] = p[0]; if (p[1] > b[3]) b[3] = p[1]; }); return b; });
+  const inside = i => {                               // up to 24 points just inside ring i, all round it (worked out once, and only for a ring that needs them)
+    if (ins[i]) return ins[i];
+    const R = rings[i], s = A[i] > 0 ? 1 : -1, step = Math.max(1, Math.ceil(R.length / 24)), out = [];
+    for (let k = 0; k < R.length; k += step) {
+      const a = R[k], b = R[(k + 1) % R.length], dx = b[0] - a[0], dy = b[1] - a[1], len = Math.hypot(dx, dy); if (len < 3) continue;
+      const p = [(a[0] + b[0]) / 2 - s * 1.5 * dy / len, (a[1] + b[1]) / 2 + s * 1.5 * dx / len];
+      if (pointInPoly(p, R)) out.push(p);
+    }
+    return (ins[i] = out);
+  };
+  let crossing = null;
+  const cross = (i, j) => {                           // contoursOverlap's answer for the pair, from one sweep across x over every ring's edges: only edges of two rings whose boxes meet are put to segIntersect
+    const n = rings.length;
+    if (!crossing) {
+      crossing = new Set(); const all = [], on = [];
+      rings.forEach((R, r) => { if (R.length >= 3) R.forEach((p, k) => { const q = R[(k + 1) % R.length]; all.push([Math.min(p[0], q[0]), Math.max(p[0], q[0]), Math.min(p[1], q[1]), Math.max(p[1], q[1]), p, q, r]); }); });
+      all.sort((u, v) => u[0] - v[0]);
+      for (const e of all) {
+        for (let k = on.length - 1; k >= 0; k--) {
+          const f = on[k];
+          if (f[1] < e[0]) { on[k] = on[on.length - 1]; on.pop(); continue; }   // ends before this one starts: done with it
+          if (f[6] === e[6] || f[3] < e[2] || f[2] > e[3]) continue;
+          const key = Math.min(e[6], f[6]) * n + Math.max(e[6], f[6]);
+          if (!crossing.has(key) && segIntersect(e[4], e[5], f[4], f[5])) crossing.add(key);
+        }
+        on.push(e);
+      }
+    }
+    return crossing.has(Math.min(i, j) * n + Math.max(i, j));
+  };
+  let HE = null, HB = null; const held = [];
+  const holders = i => {                              // the other rings that hold one of ring i's inside points — pointInPoly's own test, put to every ring's edges at once (binned by height)
+    if (held[i]) return held[i];
+    if (!HE) { HE = []; rings.forEach((R, r) => { if (R.length < 3) return; for (let k = 0, m = R.length - 1; k < R.length; m = k++) if (R[k][1] !== R[m][1]) HE.push([R[k][0], R[k][1], R[m][0], R[m][1], r]); }); HB = gxwBins(HE); }
+    const got = new Set();
+    for (const p of inside(i)) {
+      const odd = new Set(), x = p[0], y = p[1];
+      for (const e of HB(y)) if (((e[1] > y) !== (e[3] > y)) && (x < (e[2] - e[0]) * (y - e[1]) / ((e[3] - e[1]) || 1e-9) + e[0])) { if (odd.has(e[4])) odd.delete(e[4]); else odd.add(e[4]); }
+      odd.forEach(r => { if (r !== i) got.add(r); });
+    }
+    return (held[i] = got);
+  };
+  const clear = (i, j) => {
+    const a = B[i], b = B[j];
+    if (b[0] > a[2] + pad || b[2] < a[0] - pad || b[1] > a[3] + pad || b[3] < a[1] - pad) return true;
+    return inside(i).length > 0 && inside(j).length > 0 && !holders(i).has(j) && !holders(j).has(i) && !cross(i, j);
+  };
+  const alone = i => rings.every((R, j) => j === i || R.length < 3 || clear(i, j));
+  return { reversed, holes: A.map((a, i) => (reversed ? a < 0 : a > 0) && !alone(i)) };
+}
+/* Automatic → kept, WITHOUT changing the fill. Every contour is flagged and labelled from the
+   direction it really runs in — exactly the roles contourRoles reads, so no row of the Contours list
+   changes. No nesting decision is taken: the nesting rule reads only a contour's first point, and on
+   an imported letter of overlapping solids it turns one of them into a hole; frozen by the flag,
+   that blanked the letter. An outline drawn the other way round as a whole has EVERY contour
+   reversed together (the winding changes sign everywhere, so the nonzero fill is the same), which
+   puts it in this file's convention; a contour standing clear of the rest is turned to run as the
+   solid it is (either direction fills the same). A letter that is already kept only has its
+   contours made to run the way their labels say. Called BEFORE a flagged contour is added, so the
+   letter's own direction is read without it. */
+function nodeKeepAll() {
+  if (nodeKept()) { renestNodeModel(); return; }      // (renest flags a straggler that arrived without the flag)
+  const cts = nodeModel.contours, rings = cts.map(nodeContourToPoints), roles = contourRoles(rings, false);
+  cts.forEach((ct, i) => {
+    let a = rings[i].length >= 3 ? signedArea(rings[i]) : 0;
+    if (roles.reversed) { nodeTurnContour(ct, i); a = -a; }
+    if (!roles.holes[i] && a > 0) { nodeTurnContour(ct, i); a = -a; }   // only one that stands clear of the rest gets here
+    ct.winding = a > 0 ? 'ccw' : 'cw'; ct.dirSet = true;
+  });
+}
 /* Structural write-through — for edits that change contour COUNT or ORIENTATION (contour delete,
    paste, transforms). Rebuilds l.contours wholesale; plain writeThrough's index mapping stays for
    pure point moves. */
@@ -15539,12 +15755,14 @@ function shapeBoxOf(a, b) {                      // two corners → a box of who
 }
 function shapePick(kind, ev) {                   // a Shapes button: pick it (pressing the picked one puts the tool away); null = put it away
   if (!nodeModel) return;
-  const on = !!kind && SHAPE_KINDS.includes(kind) && _shapeTool !== kind;
+  const on = !!kind && SHAPE_KINDS.includes(kind) && _shapeTool !== kind, was = _shapeTool;
+  const L = document.getElementById('ctlLeft'), a = document.activeElement, inPanel = !!(L && a && a !== document.body && L.contains(a));
   if (nodeDrag && nodeDrag.type === 'shape') { nodeDrag = null; _snapHit = null; }
   if (on) { if (_penMode) { penDraft = null; _penMode = false; } _marqueeMode = false; _shapeTool = _shapeLast = kind; }
   else _shapeTool = null;
   renderStage(); renderControls(); renderLegend();
   if (on && ev && ev.detail === 0) shapeFocus('place');   // picked from the keyboard: the next Enter places it
+  else if (!on && was && inPanel && (!document.activeElement || document.activeElement === document.body)) shapeFocus(was);   // put away from Cancel, or by Esc with focus on Place: those two buttons went with the tool, so focus goes to the shape that had been picked instead of falling to the page
 }
 function shapeFocus(which) { const b = document.querySelector('#ctlLeft [data-fk="shp:' + which + '"]'); if (b && !b.disabled) b.focus({ preventScroll: true }); }
 function shapeHoleToggle() { _shapeHole = !_shapeHole; renderControls(); }
@@ -15552,6 +15770,12 @@ function shapeRadiusSet(el) {
   const v = Math.max(0, Math.min(SHAPE_R_MAX, Math.round(+el.value || 0)));
   _shapeRadius = v; el.value = v; wsSavePref('nodeShapeRadius', v);
 }
+/* The field commits on `change`, and a drag on the stage never fires it: the stage's pointerdown is
+   default-prevented, so the field keeps focus right through the drag, and a radius typed just
+   before it would be used by the NEXT shape. So a stage press and "Place in the middle" read the
+   field themselves, with the same clamping — at that moment only, never on a keystroke, which
+   would rewrite the number while it is being typed. */
+function shapeRadiusCommit() { const el = document.getElementById('shapeRadius'); if (el && el.value !== String(_shapeRadius)) shapeRadiusSet(el); }
 function buildWithShapes(ev) {                   // entry for a blank glyph — an empty outline, the Shapes section open, the last shape picked
   if (curKind !== 'letter') return;
   _shapeEntry = true; _shapesOpen = true;
@@ -15577,6 +15801,7 @@ function shapeDefaultBox(l, hole) {
 function shapePlaceMiddle() {
   if (!nodeModel || !_shapeTool) return;
   const kind = _shapeTool;
+  shapeRadiusCommit();
   if (shapeInsert(shapeDefaultBox(curLetter(), _shapeHole)) && document.activeElement === document.body) shapeFocus(kind);   // the Place button went away with the tool; the arrows nudge from here
 }
 function shapeInsert(box) {                      // one undo step: the letter becomes a kept one, the shape joins it
@@ -15587,7 +15812,7 @@ function shapeInsert(box) {                      // one undo step: the letter be
   if (hole) reverseNodeContour(ct);
   const adv0 = (!l.contours && l.advance == null) ? Math.round(dispAdvance(l)) : null;   // a blank letter shows the reference glyph's width; keep it, or the width line jumps when the first shape lands
   udDo([itemScope()], (hole ? 'add hole' : kind === 'rect' ? 'add rectangle' : kind === 'round' ? 'add rounded rectangle' : 'add ellipse') + ' — ' + l.name, () => {
-    nodeKeepAll();                               // before the push: a flagged shape counted in the others' nesting could flip a stem it covers
+    nodeKeepAll();                               // before the push: the letter's own direction is read without the shape (a big one would otherwise pass for its largest contour)
     nodeModel.contours.push(ct);
     renestNodeModel(); writeThroughRebuild(l);
     if (adv0 != null) l.advance = adv0;
@@ -15595,7 +15820,10 @@ function shapeInsert(box) {                      // one undo step: the letter be
   const ci = nodeModel.contours.indexOf(ct);
   _shapeTool = null; _hiddenContours.clear(); nodeSel.clear();
   if (ci >= 0) ct.nodes.forEach((_, ni) => nodeSel.add(nodeKey(ci, ni)));   // selected: the arrows nudge it, the Transform fields size it
+  const ae = document.activeElement, inRadius = !!ae && ae.id === 'shapeRadius';
+  if (inRadius) ae.blur();                       // the radius field kept focus through the drag; given it back by the rebuild, the arrow keys would step the radius instead of moving the shape
   renderGrids(); renderStage(); renderControls(); renderLegend();
+  if (inRadius) shapeFocus(kind);                // the shape's own button, as after Place in the middle: the arrows nudge from there
   const warn = hole && ci >= 0 && holeTroubles(l).has(ci);
   status(I18n.t(hole ? 'fontmaker.status.shape_added_hole' : 'fontmaker.status.shape_added_' + kind) + (warn ? ' ' + I18n.t('fontmaker.status.shape_hole_warn') : ''));
   return true;
@@ -15606,6 +15834,7 @@ function shapeClampPt(p) {                       // a captured pointer can leave
 }
 function shapePointerDown(e) {
   if (nodeDrag || e.button) return;
+  shapeRadiusCommit();                           // a radius typed just now is this shape's (the draft is drawn with it too)
   const tg = collectSnapTargets(), a = shapeClampPt(clientToFont(e));
   let hit = null;
   if (snapGuidesOn() && !e.altKey) {             // the first corner snaps like a pen click (Alt bypasses)
@@ -15673,18 +15902,21 @@ function shapesPanelHTML() {
 /* Which holes are not cutting cleanly → Set of contour indices. A hole shows only where the letter's
    winding, the hole counted, comes to zero: so points just inside each hole's edge are asked "is
    this ink?" of the whole outline. Ink there means the hole pokes past the letter, lies over
-   another hole or over two overlapping solids, or stands alone. */
+   another hole or over two overlapping solids, or stands alone. Which contours ARE holes is
+   contourRoles' reading — the Contours rows use the same one — so the outer of an imported CFF
+   letter or of a stock punctuation mark (drawn the other way round) is not taken for a hole. */
 function holeTroubles(l) {
-  const out = new Set(), rings = ((l && l.contours) || []).map(c => c.points || []);
-  if (!rings.some(R => R.length >= 3 && signedArea(R) > 0)) return out;
-  const E = gxwEdges(rings);
+  const out = new Set(), cs = (l && l.contours) || [], rings = cs.map(c => c.points || []);
+  const roles = contourRoles(rings, cs.some(c => c.dirSet === true));
+  if (!roles.holes.some(Boolean)) return out;
+  const E = gxwEdges(rings), side = roles.reversed ? -1 : 1;    // a hole runs counter-clockwise (y-up units), its inside on the left of travel — in a letter drawn the other way round, clockwise and on the right
   rings.forEach((R, i) => {
-    if (R.length < 3 || !(signedArea(R) > 0)) return;          // counter-clockwise in y-up units = a hole; its inside is on the left of travel
+    if (!roles.holes[i]) return;
     const step = Math.max(1, Math.ceil(R.length / 48));
     for (let k = 0; k < R.length; k += step) {
       const a = R[k], b = R[(k + 1) % R.length], dx = b[0] - a[0], dy = b[1] - a[1], len = Math.hypot(dx, dy);
       if (len < 4) continue;
-      const p = [(a[0] + b[0]) / 2 - 2.5 * dy / len, (a[1] + b[1]) / 2 + 2.5 * dx / len];
+      const p = [(a[0] + b[0]) / 2 - side * 2.5 * dy / len, (a[1] + b[1]) / 2 + side * 2.5 * dx / len];
       if (!pointInPoly(p, R)) continue;                         // a sliver, or a kink: no verdict from this edge
       if (gxwInside(E, p[0], p[1])) { out.add(i); return; }
     }
@@ -15693,7 +15925,8 @@ function holeTroubles(l) {
 }
 function contourToggleHole(ci) {                 // the Contours list's ○ / ● switch — any contour, one undo step
   if (!nodeModel || !nodeModel.contours[ci]) return;
-  const l = curLetter(), ct = nodeModel.contours[ci], toHole = ct.winding !== 'ccw';   // the opposite of what the row shows
+  const l = curLetter(), ct = nodeModel.contours[ci];
+  const toHole = !contourRoles(nodeModel.contours.map(nodeContourToPoints), nodeKept()).holes[ci];   // the opposite of what the row shows — read before the keep step, which then freezes that same reading
   udDo([itemScope()], (toHole ? 'make hole' : 'make solid') + ' — ' + l.name, () => {
     nodeKeepAll();
     ct.winding = toHole ? 'ccw' : 'cw'; ct.dirSet = true;
@@ -15757,9 +15990,10 @@ function contourSelBoxSVG() {
 function contoursPanelHTML() {
   if (!nodeModel) return '';
   const selCis = _selContourIndices(), bad = holeTroubles(curLetter());
+  const holes = contourRoles(nodeModel.contours.map(nodeContourToPoints), nodeKept()).holes;   // by the order of the points, relative to the letter — never by the label (an imported CFF outer is labelled 'ccw')
   const rows = nodeModel.contours.map((ct, ci) => {
     const hid = _hiddenContours.has(ci), tint = NODE_TINTS[ci % NODE_TINTS.length];
-    const hole = ct.winding === 'ccw', sel = selCis.has(ci);
+    const hole = holes[ci], sel = selCis.has(ci);
     return `<div class="ct-row${hid ? ' hid' : ''}${sel ? ' sel' : ''}"${sel ? ` style="--ct-tint:${tint};"` : ''}>
       <span class="ct-swatch" style="background:${tint};" aria-hidden="true"></span>
       <button type="button" class="ct-kind" data-fk="ct:${ci}" onclick="contourToggleHole(${ci})" title="${esc(I18n.t(hole ? 'fontmaker.node_editor.contour_make_solid_title' : 'fontmaker.node_editor.contour_make_hole_title'))}" aria-label="${esc(I18n.t(hole ? 'fontmaker.node_editor.contour_make_solid_aria' : 'fontmaker.node_editor.contour_make_hole_aria', { count: ci + 1 }))}"><span aria-hidden="true">${hole ? '○' : '●'}</span></button>

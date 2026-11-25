@@ -737,17 +737,70 @@ text newer than the last read (`st.stale`), so Insert never acts on an older one
   It lands on Align through `_setWorkMode`, where the *Imported from SVG* hint and *Next: Nikkud* are;
   an upload lands on the placement step.
 - **Add** (`svgPasteAdd`) is a union, and goes through the node model like a point paste. It lands in
-  Edit points — the one step that always shows the outline itself. Every stage fills nonzero, so the
-  union is every contour keeping its own direction; `svgPasteSettle` protects that from
-  `renestNodeModel`, which later re-reads a contour's direction from how many other rings hold its
-  first point (in an automatic letter; in a kept one — *Shapes, holes and kept directions* — every
-  contour's role is fixed and the added pieces are flagged with the rest). A contour the other group's ink touches is made to start on a point clear of that ink
-  (one of its nodes, else a collinear point put on a straight edge), asked at 4 units and then at 1 so
-  a corner sitting exactly on the other's edge is not chosen; a contour with no such point — a new
-  piece inside the ink, an old counter the new ink covers — is left out, which is what the union means;
-  an old contour the new pieces do not reach is not touched. A piece that changes nothing makes no undo
-  entry. QA's outline scan still reports a piece laid across a counter (an outer/hole crossing): the
-  fill is right under the nonzero rule, the note is about engines that fill by even-odd.
+  Edit points — the one step that always shows the outline itself. Every stage fills nonzero, and the
+  letter and the artwork are each wound to one side (zero or more everywhere: solids +1, their
+  counters back to zero), so the union is simply every contour of both, each in its own direction:
+  the sum is nonzero exactly where either one is. Nothing is cut, moved or re-seated for it, and no
+  contour changes between solid and hole. What would spoil it is the automatic nesting rule
+  re-deciding a direction at the next rotate, delete or paste (a bar laid across a letter would
+  turn into a hole), so **an add makes
+  the letter a kept one** (*Shapes, holes and kept directions*): the contours that are there go
+  through `nodeKeepAll()` first — it keeps the fill and turns a letter drawn the other way round into
+  this file's convention, so both groups are wound alike — and then every new contour joins flagged,
+  running the way its label says. No start point is moved, no point is inserted, and no solid of the
+  letter is ever removed; the added contours are the selection afterwards.
+  - **The artwork is read one SVG shape at a time** (`svgWindByShape`): `svgPasteParse` keeps, beside
+    each loop, the index of the shape (`path`, `rect`, `circle`…) it came from, and `svgPasteBuild`
+    passes it to `svgLoopsToContours` for Add only — a value of the dialog's, never of the project.
+    The plain import nests every loop against every other, so a shape whose first point lies inside
+    another, separate shape becomes that shape's hole: a T drawn as two rectangles imports with a
+    notch where they overlap, the part of its stem outside the bar is wound the wrong way round, and
+    laid over a letter that part cancelled the letter's ink. In the SVG itself one shape painted over
+    another never cuts it. So for Add each shape's loops are nested among that shape's loops only:
+    its outer +1, its own counters back to zero, and the shapes together are their union — a ring
+    with a bar across it is a ring with a bar, a T of two rectangles a T with no notch. Within one
+    shape the nesting stands, with one exception: a loop read as the hole of a loop it sticks out of
+    (`svgSticksOut` — some point of its outline more than `SVG_STICK_TOL`, 4 units, outside it) is
+    no counter of it and is read as a solid, so a T drawn as one path of two rectangles is a T too.
+    The margin is the flattening's: both rings are simplified and rounded, so a counter behind a
+    wall thinner than about 3 units crosses its outer by a fraction of a unit, and it still cuts.
+    The cost: a loop that pokes out of its outer on purpose (an even-odd notch, a hole cut through
+    a wall) is read as a solid in Add, so the part of it inside the outer is filled where the SVG
+    and Replace show a hole. The test asks a strip index of the outer's edges (`svgRingIndex`), so
+    heavy one-path artwork redraws the dialog about as fast in Add as in Replace. The dialog's
+    preview draws these same contours over the letter, so for Add it shows what Go makes — except
+    in the limits below where the artwork winds below zero over the letter's ink: the preview paints
+    the two apart, Go adds them. Switching to Replace redraws it with the plain reading.
+  - Everything else is decided by asking points "is this ink?" (`svgWinder`, a signed winding
+    number), never by a rule about where a contour starts. **The artwork adds nothing** — asked of
+    the artwork as a whole (`svgPasteAddsInk`): nowhere does it have ink where the letter has none,
+    tried beside its own outline (a little to each side of every edge, never on one: pieces fitted to
+    the same band share its top and bottom lines) and on a grid over its box. Then nothing changes
+    and no undo entry is made.
+  - **The letter's holes** (`svgPasteDeadHoles`, after the keep step). The one place a letter's
+    winding goes below zero is a hole lying outside its ink — it shows as ink, and the Contours list
+    notes it as not cutting — and the artwork laid over it would cancel that. A hole of the letter,
+    such a one or a counter, that the artwork's ink covers completely is taken out: the artwork has
+    ink at every point asked inside it — a little inside its edge all the way round, on a grid across
+    it (about 6 units apart, at least 400 points), and a little to each side of every edge of the
+    artwork near it, where a gap in the artwork would show. That cannot change the union, and no
+    dead hole is left in the Contours list. It goes only if the sum still has ink at all those
+    points once it is gone (two holes of the letter lying over each other, one covered and one not,
+    would otherwise cancel each other's ink; then they go one at a time, each only where it can).
+  - **Limits, left for a follow-up.** A hole of the letter only partly covered stays: where the
+    artwork lies over its part outside the letter's ink, that ink is cancelled — and so it is over
+    the part of a hole that pokes out of the letter's ink and cuts it too. The Contours list flags
+    both before the add. Within one SVG shape, two loops that lie inside the same outer and cross
+    each other (a θ drawn as a single path, its bar inside the ring) are both read as holes: where
+    they overlap the shape winds below zero, and over the letter's ink it cancels that ink there.
+    Drawn as separate shapes (a ring and a bar) they join exactly. A single loop that crosses itself
+    (a bow tie, a figure eight) is a limit too: one lobe runs against the other, the SVG paints both,
+    and over the letter's ink the counter-running lobe cancels it. And **Replace**, the upload, a
+    sheet's crop and auto-split, the code box's Replace and a drop keep the plain import's reading
+    across shapes: a shape lying inside another, separate shape is still read as its hole, so a T
+    drawn as two overlapping rectangles imports with a notch where they overlap.
+  - QA's outline scan still reports a piece laid across a counter (an outer/hole crossing): the fill
+    is right under the nonzero rule, the note is about engines that fill by even-odd.
 
 **Points and artwork share Ctrl/⌘+V.** Only the `paste` event can see the clipboard, so it decides:
 SVG there → the dialog (which offers *Paste the copied points instead* when points are waiting), none →
@@ -1406,6 +1459,21 @@ where they overlap, and a hole over two overlapping solids cuts nothing. There i
 `holeTroubles(l)` says when a hole is not cutting — it asks "is this ink?" (`gxwEdges` / `gxwInside`)
 of points just inside each hole's edge — and the Contours list shows a note under that row.
 
+**Which contours are holes is read in one place, `contourRoles(rings, kept)`** — the Contours rows,
+their switch (`contourToggleHole`), `holeTroubles` and `nodeKeepAll` all use it, so a row, its note
+and the keep step cannot disagree. In a kept letter a hole is a counter-clockwise contour, nothing
+more. An automatic letter is read **relative to itself**: when its largest contour (an outline's
+biggest ring is a solid) runs counter-clockwise the whole outline is drawn the other way round — an
+imported CFF outline, the stock punctuation marks — and then *clockwise* is the hole, with its
+inside on the right of travel; and a contour that stands clear of every other one is a solid
+whichever way it runs — the stock question mark's stem and dot run against its hook, and some fonts
+draw a letter's separate leg against its body. "Clear" is shown, never assumed: the two boxes do not
+meet, or points just inside each contour lie outside the other and their outlines do not cross;
+when that cannot be shown the direction counts (so two pieces that touch along an edge and run
+against each other can still read as a solid and a hole that is not cutting). The label is never
+consulted: a CFF outer is labelled `'ccw'`, and reading the label called it a hole that was not
+cutting.
+
 **Nesting cannot decide a block letter.** `renestNodeModel` used to re-derive every contour's
 direction, on every structural edit, from how many other rings hold the contour's *first point*.
 That is right for a traced letter and wrong for one built from **overlapping solids**: a roof bar
@@ -1419,11 +1487,24 @@ carry **`dirSet: true`** ("the teacher chose this contour's role"), and a letter
 | **kept** | all | only makes each contour run the way its label says; a contour that arrives without the flag (pen, paste) is decided once by nesting and then flagged |
 
 - A letter becomes kept when a shape is added (`shapeInsert`), a contour is switched
-  (`contourToggleHole`) or a flagged contour is pasted in. Each of them calls **`nodeKeepAll()`
-  first**: the nesting rule one last time — which also turns an imported CFF outline or a stock
-  punctuation mark, both drawn the other way round, into this file's convention — then the flag on
-  every contour. *Before* the new contour is pushed: one pushed first would be counted in the
-  others' nesting and could flip a stem it happens to cover.
+  (`contourToggleHole`), a flagged contour is pasted in, or artwork is added to it (`svgPasteAdd`).
+  Each of them calls **`nodeKeepAll()` first**, and that step **never changes the fill**. It takes
+  no nesting decision: the nesting rule reads only a contour's first point, and on an imported
+  letter of overlapping contours that run the same way it turns one of them into a hole — frozen by
+  the flag, that blanked part of the letter. Instead every contour is flagged and labelled from the
+  direction it really runs in. An outline drawn the other way round as a whole — its largest
+  contour counter-clockwise, as an imported CFF outline and the stock punctuation marks are — has
+  *every* contour reversed together (`nodeTurnContour`: curves kept, selected points remapped),
+  which leaves the nonzero fill as it was and puts the letter in this file's convention; and a
+  contour that stands clear of all the others is turned to run as a solid, which either direction
+  fills alike (the stock question mark's hook runs one way, its stem and dot the other). The roles
+  are read by `contourRoles(rings, kept)`, so the step freezes exactly what that helper reads. A
+  letter that is already kept only has its contours made to run the way their labels say. *Before*
+  the new contour is pushed: the letter's own direction has to be read without it.
+- `renestNodeModel` is unchanged for an **automatic** letter: a flip, a rotation, pasted points, a
+  pen contour and a contour delete still apply the nesting rule to it, which on a letter of
+  overlapping same-direction contours (a few letters of the starting fonts are drawn that way) can
+  turn one of them into a hole.
 - "Run the way its label says" is what handles a **mirror flip** (which reverses every contour) and
   a contour **dragged or nudged inside out** — the point drag's pointer-up and the arrow nudge call
   `renestNodeModel` too, for kept letters only (`nodeKept()`); they never did before.
@@ -1431,7 +1512,7 @@ carry **`dirSet: true`** ("the teacher chose this contour's role"), and a letter
   only when true and read as `=== true` (a project file is untrusted). **Where it travels:**
   `buildNodeModel` and `writeThroughRebuild`; copy / paste of a *whole* flagged contour
   (`copySelectedNodes` / `pasteNodes` — a partial copy, and any copy from an automatic letter, pastes
-  as before); `svgPasteAdd` into a kept letter (its pieces already have their directions); Generate
+  as before); `svgPasteAdd` (every add makes the letter kept, and its pieces join flagged); Generate
   Bold; Convert wide form (all-or-nothing across the bases it joins); and for free wherever the
   contour object is copied — the transform engine (`gxLetterPatch`), undo, duplicate letter, copy
   outline, save / load, cloud. **Where it is dropped on purpose:** anything that replaces the outline
@@ -1466,6 +1547,14 @@ in `nodeDrag` (`type: 'shape'`) — never in the model, like the pen's.
   `renestNodeModel()`, `writeThroughRebuild(l)`. Afterwards the tool is away and the new contour is
   selected, so the arrows nudge it and the Transform fields size it. No outline moves, so anchors a
   teacher placed stay where they are, as with a pen or pasted contour.
+- **The corner radius** (`#shapeRadius`) commits on its own `change`, and again when a shape is about
+  to be made: `shapePointerDown` and `shapePlaceMiddle` call `shapeRadiusCommit()`, which reads the
+  field with the same clamping. A drag never blurs the field (the stage's pointerdown is
+  default-prevented, so the field keeps focus right through it), and without that a radius typed
+  just before the drag went to the *next* shape. It is never committed on a keystroke, which would
+  rewrite the number while it is being typed. When a shape is inserted with focus in that field,
+  `shapeInsert` moves focus to the shape's own button instead of letting the rebuild hand it back:
+  in a field the arrow keys step the radius, and the status line says they move the new shape.
 - While a shape is picked, `renderNodeChrome` shows none of the three mode buttons pressed but still
   derives the toolbar's single Tab stop from pen / marquee / select — a fourth mode with no bar
   button would leave the whole bar unreachable by Tab.
@@ -1484,7 +1573,11 @@ render, which used to drop focus to `<body>` after any press. A control that car
 wraps `renderControlsNow`). The Shapes buttons, the Contours switches (`ct:<index>`) and the
 Transform buttons opt in; a new keyboard-operable control in that column should too. A press that
 came from the keyboard (`event.detail === 0`) moves focus to *Place in the middle*, so "Enter,
-Enter" adds a shape.
+Enter" adds a shape. *Place in the middle* and *Cancel* exist only while a shape is picked, so they
+have no rebuilt twin when the tool goes away: `shapePlaceMiddle` and `shapePick` then put focus on
+the button of the shape that had been picked — after a placement, after *Cancel*, and after Esc
+pressed with focus in that column (Esc with focus on the page, or the toolbar's Select button,
+moves no focus).
 
 ### Draw step — strokes, holes, and carve generations
 A drawn letter keeps its ink as `l.draw.strokes` (each `{w, pr, pts, st?, …}`, points in font units);
