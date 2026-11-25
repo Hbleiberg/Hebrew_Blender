@@ -8225,7 +8225,7 @@ async function prepImageForItem(it, file) {
     it.binThreshold = binThreshold;
     it.transform = transform;
     it.contours = null; it.anchors = null;
-    delete it.slant;                                  // a new picture is upright until somebody slants it
+    delete it.slant; delete it.photoSlant;            // a new picture is upright until somebody slants it
   };
 }
 async function uploadForCurrent(file) {
@@ -8467,7 +8467,7 @@ async function finalizeCrop(l, stageBox) {
   l.thresholdUserSet = false;
   l.binThreshold = autoThresholdFor(cim, true);
   l.transform = (K && ink) ? sheetFitTransform(ink, l.codepoint, K) : defaultFitTransform(cim, l.codepoint);
-  l.contours = null; l.anchors = null; delete l.slant;
+  l.contours = null; l.anchors = null; delete l.slant; delete l.photoSlant;
   renderGrids(); renderStage(); renderControls();
   status(I18n.t('fontmaker.status.area_selected', {name: gName(l.name)}));
 }
@@ -9063,7 +9063,7 @@ async function adApply() {
       l.source.cropRect = p.rect; l.source.dataUrl = p.url; l.source.sheetId = sheetId;
       l.transform = (K && p.ink && p.ink.h > 0) ? sheetFitTransform(p.ink, l.codepoint, K)   // the sheet's proportions: yod stays small, a final keeps its tail
                                                 : defaultFitTransform(imgCache[p.url], l.codepoint);
-      l.contours = null; l.anchors = null; delete l.slant;    // the fields finalizeCrop clears (curves untouched — parity)
+      l.contours = null; l.anchors = null; delete l.slant; delete l.photoSlant;    // the fields finalizeCrop clears (curves untouched — parity)
       l.flattenLighting = true; l.thresholdUserSet = false; l.binThreshold = p.th;
     });
   });
@@ -16071,6 +16071,7 @@ function finalizeFromRaw(l, rawLoops) {
     .filter(c => c.length >= 3 && Math.abs(signedArea(c)) > 80);
   const out = assignWindingByNesting(contours);   // even nesting depth = outer (cw), odd = hole (ccw)
   l.contours = out.length ? out : null;
+  photoSlantTake(l);                              // the outline now leans as the picture's placement does (Apply alignment may have changed it)
   if (out.length) {
     const fitErr = Math.max(l.epsilon || 0, 1.5);                 // tie fit tightness to the Detail (ε) slider, with a floor
     const cornerDeg = (l.cornerAngle != null ? l.cornerAngle : 32);
@@ -18160,7 +18161,11 @@ function gxSlantOp(deg, o) {   // o: { scope, marks, name }
   return {
     label: o.scope === 'letter' ? 'slant letter — ' + o.name : 'slant letters',
     affine() { return { T: [1, k, 0, 1, -k * b, 0], keepLsb: true }; },   // x' = x + k·(y − baseline); a stored left margin is a width, not a point
-    stamp(l) { const d = slantCompose(letterSlant(l), deg); return { slant: d || null }; },
+    stamp(l) {
+      const d = slantCompose(letterSlant(l), deg), st = { slant: d || null };
+      if (l.photoSlant != null) st.photoSlant = slantCompose(photoLean(l), deg);   // the photo's matrix leans by the same shear, so the lean its next trace gives does too
+      return st;
+    },
     skipBare: true,   // a letter nobody has drawn yet has nothing to lean: no record, its seed anchors left as they are
     lean: all ? k : 0, markShape: !!(all && o.marks),
     fontX: null, fontY: null, markFactor: null
@@ -18432,6 +18437,7 @@ function gxWidthOp(pct, o) {
     },
     stamp(l) {
       const st = { slant: slantDegOf(slantTan(letterSlant(l)) * k) || null };   // a lean is a tangent: it narrows with the letter
+      if (l.photoSlant != null) st.photoSlant = slantDegOf(slantTan(photoLean(l)) * k);   // and so does the lean a photo's placement waits to give (its matrix is squeezed by the same k)
       if (stems && l.contours && l.contours.length && gxwStemFor(cen, l) != null) {
         if (l.lsb != null) st.lsb = Math.max(0, Math.round(l.lsb * k));           // a stored left margin is a width (the affine carries the stem shift)
         // A photo cannot keep stems: re-traced, this letter would silently return to the thin squeeze, so it
@@ -20578,7 +20584,7 @@ function snapFit() {   // "Center" button — fit to the glyph height, then cent
     const wFont = bandH * im.width / im.height;       // scaled width, in font units
     const cx = (effLetterAdvance(l) - wFont) / 2;     // center that width within the glyph's advance
     l.transform = [k,0,0,k, fx(cx), fy(b.top)];
-    l.contours=null; l.curves=null; l.anchors=null; delete l.slant; renderStage(); });   // the picture is set upright again, so the lean record goes with the old matrix
+    l.contours=null; l.curves=null; l.anchors=null; delete l.slant; delete l.photoSlant; renderStage(); });   // the picture is set upright again, so the lean record goes with the old matrix
 }
 function wireDrop(id, cb, multi) {
   const el = document.getElementById(id); if (!el) return;
@@ -21766,6 +21772,21 @@ function fontSlantInfo() {   // → { lean, n (drawn letters), differ (how many 
    or seeds on the UN-LEANED shape and then leans the result. Every helper is the identity at 0. */
 function letterLeanK(l) { return slantTan(letterSlant(l)); }
 function setLetterSlant(l, deg) { const d = Math.max(-60, Math.min(60, Math.round((+deg || 0) * 10) / 10)); if (d) l.slant = d; else delete l.slant; }   // inside the caller's udDo — it is a field of the item
+/* A photo letter's outline is traced from its picture through its placement matrix, so the lean that
+   placement carries is the lean of its next trace. Apply alignment can give a letter a placement that
+   leans differently while it keeps the outline traced from the old one: the record keeps describing that
+   outline, and the placement's lean waits in l.photoSlant (degrees, the record's convention) until the
+   next trace from the picture makes it the record. Absent on every other letter. A drawing never has
+   one: its raster leans as its strokes do, which its record already says. */
+function photoLean(l) {   // the lean a letter's placement matrix carries
+  const v = l ? +l.photoSlant : NaN, drawn = !!(l && l.draw && Array.isArray(l.draw.strokes) && l.draw.strokes.length);
+  return (l && l.photoSlant != null && Number.isFinite(v) && !drawn) ? v : letterSlant(l);
+}
+function photoSlantTake(l) {   // a trace from the picture has just replaced the outline — inside the caller's udDo or burst
+  if (!l || l.photoSlant == null) return;
+  setLetterSlant(l, photoLean(l));
+  delete l.photoSlant;
+}
 function uprightContours(l) {   // the letter's contours with its lean taken out (the same array when it has none)
   const k = letterLeanK(l); if (!k || !l.contours) return l.contours;
   const b = effMetrics().baseline;
@@ -26861,6 +26882,7 @@ function migrateProject(data) {
     if (l.curves != null && !(Array.isArray(l.curves) && l.curves.every(cv => cv == null || (_isObj(cv) && Array.isArray(cv.start) && Array.isArray(cv.segments))))) l.curves = null;
     ['anchors', 'savedAnchors', 'markShapes', 'captureBox'].forEach(k => { if (l[k] != null && !_isObj(l[k])) l[k] = null; });
     if (l.slant != null) { const _s = +l.slant; if (Number.isFinite(_s) && _s !== 0 && Math.abs(_s) <= 60) l.slant = Math.round(_s * 10) / 10; else delete l.slant; }   // the lean record: junk means "upright"
+    if (l.photoSlant != null) { const _p = +l.photoSlant; if (Number.isFinite(_p) && Math.abs(_p) <= 60 && l.source && l.source.dataUrl) l.photoSlant = Math.round(_p * 10) / 10; else delete l.photoSlant; }   // a placement's lean waiting for the next trace (photoLean): only beside a picture
   });
   // ensure all 27 letters exist & fields present (forward-compatible)
   // One item per code point. A save can still carry two at one cp — a custom glyph added where a letter
@@ -27789,8 +27811,17 @@ function applyAlignDo(){
   const cps = [...document.querySelectorAll('#applyAlignList .aa-cp:checked')].map(c => c.value);
   const targets = cps.map(cp => project.letters.find(l => l.codepoint === cp)).filter(Boolean);
   if (!targets.length) { closeApplyAlign(); return; }
+  const lean = photoLean(src);   // the lean the copied placement carries
   udDo(targets.map(l => ({ t:'item', kind:'letter', cp:l.codepoint })), 'apply alignment to ' + targets.length + ' letters', () => {
-    targets.forEach(l => { l.transform = src.transform.slice(); });   // a picture's placement only, never an outline: each letter's lean record stays its own (its outline did not change; a re-trace decides)
+    targets.forEach(l => {
+      l.transform = src.transform.slice();   // a picture's placement only, never an outline: every record keeps describing the outline its letter has
+      // A letter with a photo of its own takes the placement's lean for its NEXT trace (photoSlantTake);
+      // one with no photo of its own (an outline pasted, built, imported or drawn) gets nothing.
+      if (!(l.source && l.source.dataUrl) || isVectorGlyph(l) || (l.draw && Array.isArray(l.draw.strokes) && l.draw.strokes.length)) return;
+      if (!(l.contours && l.contours.length)) { setLetterSlant(l, lean); delete l.photoSlant; }   // nothing traced yet: the record is what the next trace gives
+      else if (lean === letterSlant(l)) delete l.photoSlant;
+      else l.photoSlant = lean;
+    });
     renderGrids(); renderStage(); renderControls();
   });
   closeApplyAlign();

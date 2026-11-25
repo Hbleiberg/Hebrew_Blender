@@ -1002,8 +1002,15 @@ carries its letter's record; pasted onto an outline, the target's own record sta
 emptied by hand (Clear outline, deleting every contour in Edit points) loses its record when no
 photo and no strokes are left to lean (`clearLeanIfBare`; a photo's matrix is still sheared, so a
 photo letter keeps it). *Apply alignment to other letters* copies a picture's placement, never an
-outline, so it leaves every letter's record as it was (a re-trace decides). A new path that
-replaces or copies an outline does the same. The photo "skew" nudges in Align leave no record.
+outline, so every record keeps describing the outline its letter has; a letter with no photo of
+its own (an outline pasted, built, imported or drawn) gets nothing else. A letter with a photo of
+its own is traced through that placement next, so it takes the placement's lean
+(`photoLean(src)`): with no outline yet as its record, and over an outline traced from the old
+placement as `l.photoSlant`, which waits beside the record until the next trace from the picture
+(`finalizeFromRaw` → `photoSlantTake`) makes it the record. `l.photoSlant` composes and narrows with
+the record under Slant and Width (the photo's matrix moves with them), and goes wherever the record
+goes for a new placement (a new photo, crop or auto-split, Center image). A new path that replaces
+or copies an outline does the same. The photo "skew" nudges in Align leave no record.
 
 **Marks under a leaning font (`project.font.markLean[kind] = { place, shape }`, tangents, per mark
 store, under `tropTune`).** A mark is one glyph for every letter, so following a slant is font-level
