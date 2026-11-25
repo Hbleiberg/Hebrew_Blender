@@ -497,7 +497,8 @@ validated against the closed set on read. Validation is inline (the `aria-live` 
   Edit points — the one step that always shows the outline itself. Every stage fills nonzero, so the
   union is every contour keeping its own direction; `svgPasteSettle` protects that from
   `renestNodeModel`, which later re-reads a contour's direction from how many other rings hold its
-  first point. A contour the other group's ink touches is made to start on a point clear of that ink
+  first point (in an automatic letter; in a kept one — *Shapes, holes and kept directions* — every
+  contour's role is fixed and the added pieces are flagged with the rest). A contour the other group's ink touches is made to start on a point clear of that ink
   (one of its nodes, else a collinear point put on a straight edge), asked at 4 units and then at 1 so
   a corner sitting exactly on the other's edge is not chosen; a contour with no such point — a new
   piece inside the ink, an old counter the new ink covers — is left out, which is what the union means;
@@ -1075,6 +1076,102 @@ the normal one, and it replaces that font's file, list entry or saved project.
 - Importing a font reads `usWidthClass`; a family name that already ends in the word gives it up there
   (the export would otherwise say it twice).
 - A condensed font is its own project, as a Bold or an Italic is.
+
+### Shapes, holes and kept directions — the point editor's building blocks
+
+Edit points can add a **rectangle**, a **rounded rectangle** or an **ellipse** as one closed contour,
+solid or as a **hole**, and can switch any contour between the two. Three facts decide the design.
+
+**A hole is a direction, and it is the points' order, not the label.** `c.winding` ('cw' solid,
+'ccw' hole; y-up font units, so a solid's `signedArea` is negative) is only a label. Every view
+(`contoursToPath` / `glyphPathAt`: the stages, the QA grid, the Spacing preview, the transform
+strips) and the export (`Cu2QuPen` with `reverse_direction=False`, no overlap removal, no direction
+fix — TTF and UFO alike) fill by the **nonzero** rule from the order the points are stored in. So a
+contour cuts a hole exactly where it runs against the ink it lies in **and** that ink is wound once:
+a hole that pokes past the letter's edge prints as ink there, two overlapping holes leave an island
+where they overlap, and a hole over two overlapping solids cuts nothing. There is no subtraction;
+`holeTroubles(l)` says when a hole is not cutting — it asks "is this ink?" (`gxwEdges` / `gxwInside`)
+of points just inside each hole's edge — and the Contours list shows a note under that row.
+
+**Nesting cannot decide a block letter.** `renestNodeModel` used to re-derive every contour's
+direction, on every structural edit, from how many other rings hold the contour's *first point*.
+That is right for a traced letter and wrong for one built from **overlapping solids**: a roof bar
+whose first corner lies inside a stem would turn into a hole — a white bite — at the next move, flip
+or paste, and a bar laid over a stem's first point would turn the *stem* into one. So a contour may
+carry **`dirSet: true`** ("the teacher chose this contour's role"), and a letter is one of two kinds:
+
+| | which contours carry `dirSet` | what `renestNodeModel` does |
+|---|---|---|
+| **automatic** | none | the nesting rule, exactly as before, on every call |
+| **kept** | all | only makes each contour run the way its label says; a contour that arrives without the flag (pen, paste) is decided once by nesting and then flagged |
+
+- A letter becomes kept when a shape is added (`shapeInsert`), a contour is switched
+  (`contourToggleHole`) or a flagged contour is pasted in. Each of them calls **`nodeKeepAll()`
+  first**: the nesting rule one last time — which also turns an imported CFF outline or a stock
+  punctuation mark, both drawn the other way round, into this file's convention — then the flag on
+  every contour. *Before* the new contour is pushed: one pushed first would be counted in the
+  others' nesting and could flip a stem it happens to cover.
+- "Run the way its label says" is what handles a **mirror flip** (which reverses every contour) and
+  a contour **dragged or nudged inside out** — the point drag's pointer-up and the arrow nudge call
+  `renestNodeModel` too, for kept letters only (`nodeKept()`); they never did before.
+- The flag lives on `l.contours[i]` and the node-model contour, never on `l.curves[i]`; it is written
+  only when true and read as `=== true` (a project file is untrusted). **Where it travels:**
+  `buildNodeModel` and `writeThroughRebuild`; copy / paste of a *whole* flagged contour
+  (`copySelectedNodes` / `pasteNodes` — a partial copy, and any copy from an automatic letter, pastes
+  as before); `svgPasteAdd` into a kept letter (its pieces already have their directions); Generate
+  Bold; Convert wide form (all-or-nothing across the bases it joins); and for free wherever the
+  contour object is copied — the transform engine (`gxLetterPatch`), undo, duplicate letter, copy
+  outline, save / load, cloud. **Where it is dropped on purpose:** anything that replaces the outline
+  from outside (a re-trace, an import, an SVG upload, Clear outline) — the letter is automatic again.
+- In a kept letter a hole moved out of the letter stays a hole (it prints as ink, and the note says
+  so) until *Make solid* is pressed, and a hole whose parent was deleted likewise. That is the price
+  of a role that does not change behind the teacher's back.
+
+**The tool.** State: `_shapeTool` (null / 'rect' / 'round' / 'ellipse' — exclusive with the pen and
+the marquee at every site the pen has one), `_shapeHole`, `_shapeRadius` (a UI pref), and the draft
+in `nodeDrag` (`type: 'shape'`) — never in the model, like the pen's.
+- `shapeNodes(kind, x0, y0, x1, y1, r)` returns the nodes of a **solid** (clockwise) in whole
+  numbers: curves are rounded when written, so anything else would come back from an undo or a
+  reload as a slightly different shape. An ellipse is four on-curve points with kappa handles
+  (`SHAPE_KAPPA`, per-side radii about a whole-number centre); a rounded rectangle is eight points,
+  one cubic per corner, its radius clamped to half the shorter side, with coincident points merged (a
+  stadium at half a side, a circle at half of both; under 2 units it is a plain rectangle). Node
+  `type` is set with `nodeIsSmooth`, which is how `buildNodeModel` will read it back. A hole is the
+  same nodes through `reverseNodeContour`.
+- **Pick, then place.** A Shapes button picks (`shapePick`; pressing the picked one, the Select
+  button or Esc puts the tool away). Then either a **drag** on the stage — `shapePointerDown` /
+  `Move` / `Up`, routed from `onStageBgPointerDown` *before* the Alt-insert branch because Alt here
+  means "no snapping"; both corners snap like a pen click and light `_snapHit`; Shift makes a square
+  or circle (the longer side wins, then one axis may snap and the other follows); the corner is
+  clamped to the drawn window, since a captured pointer can leave the stage; a click without a drag
+  and a cancelled pointer add nothing — or **Place in the middle** (`shapePlaceMiddle`,
+  `shapeDefaultBox`): a solid at 70% of the letter box (`glyphBand(cp)` × `dispAdvance(l)`), a hole
+  at half the selected contours' box (a shape just added is selected), else the ink's, else the
+  letter box's. There is deliberately **no global Enter key**: the node keydown handler sits on
+  `document` and would swallow Enter on a focused panel button.
+- `shapeInsert` is the one writer: **one `udDo([itemScope()], …)`** = `nodeKeepAll()`, push,
+  `renestNodeModel()`, `writeThroughRebuild(l)`. Afterwards the tool is away and the new contour is
+  selected, so the arrows nudge it and the Transform fields size it. No outline moves, so anchors a
+  teacher placed stay where they are, as with a pen or pasted contour.
+- While a shape is picked, `renderNodeChrome` shows none of the three mode buttons pressed but still
+  derives the toolbar's single Tab stop from pen / marquee / select — a fourth mode with no bar
+  button would leave the whole bar unreachable by Tab.
+
+**A blank letter** has *Build from shapes* beside *Draw with pen* (`buildWithShapes`): the same
+one-shot seeding as `_penEntry` (`_shapeEntry` → an empty model), plus `_blankOk = curCp`, which
+stands the "no outline → back to Trace" guard in `renderStage` down for that one code point — so an
+undo of the first shape stays in Edit points instead of bouncing to Trace (and re-tracing a photo,
+which would empty the redo stack). `_setWorkMode` clears it. The first shape in a blank letter also
+writes the advance the stage was showing (`dispAdvance` falls from the reference glyph's width to a
+default the moment contours exist), in the same undo step.
+
+**Keyboard focus in the left column.** `renderControls` rebuilds that column from scratch on every
+render, which used to drop focus to `<body>` after any press. A control that carries
+**`data-fk="<key>"`** gets focus back on its rebuilt twin when nothing else took it (`renderControls`
+wraps `renderControlsNow`). The Shapes buttons, the Contours switches (`ct:<index>`) and the
+Transform buttons opt in; a new keyboard-operable control in that column should too. A press that
+came from the keyboard (`event.detail === 0`) moves focus to *Place in the middle*, so "Enter,
+Enter" adds a shape.
 
 ### Draw step — strokes, holes, and carve generations
 A drawn letter keeps its ink as `l.draw.strokes` (each `{w, pr, pts, st?, …}`, points in font units);
