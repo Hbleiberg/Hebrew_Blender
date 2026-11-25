@@ -18349,8 +18349,13 @@ function gxwPieces(rings) {
    the fit tolerance, and a joint can hold in one and open in the other. */
 function gxwApart(rings, curves, out, memo, key) {
   if (rings.length < 2) return false;   // one contour is one piece of ink, whatever is done to it
+  const flat = cv => {   // finer than gxwFlatten and not rounded: a hairline's two sides must not be rounded onto each other
+    const pts = [cv.start]; let pen = cv.start;
+    cv.segments.forEach(sg => { if (sg.type === 'cubic') flattenCubic(pen, sg.pts[0], sg.pts[1], sg.pts[2], 16).forEach(p => pts.push(p)); else pts.push(sg.pts[0]); pen = sg.pts[sg.pts.length - 1]; });
+    return pts;
+  };
   const ship = (rs, cvs) => (Array.isArray(cvs) && cvs.length === rs.length && cvs.some(cv => cv && cv.segments && cv.segments.length))
-    ? rs.map((r, i) => (cvs[i] && cvs[i].segments && cvs[i].segments.length) ? gxwFlatten(cvs[i]) : r) : null;
+    ? rs.map((r, i) => (cvs[i] && cvs[i].segments && cvs[i].segments.length) ? flat(cvs[i]) : r) : null;
   let was = memo ? memo.get(key) : null;
   if (!was) { const s0 = ship(rings, curves); was = [gxwPieces(rings), s0 ? gxwPieces(s0) : null]; if (memo) memo.set(key, was); }
   const more = (a, b) => b[0] > a[0] || b[1] > a[1];
