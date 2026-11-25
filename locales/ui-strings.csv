@@ -2548,7 +2548,7 @@ fontmaker.node_editor.contours_empty,No contours yet — draw one with the pen (
 fontmaker.node_editor.contours_hint,Colors and hiding are editing aids only — hidden contours still export and show in previews.,צבעים והסתרה הם כלי עזר לעריכה בלבד — קווי מתאר מוסתרים עדיין מיוצאים ומופיעים בתצוגות מקדימות.,disclosure hint,
 fontmaker.node_editor.contours_summary,Contours ({count}),קווי מתאר ({count}),disclosure summary,
 fontmaker.node_editor.copy,Copy,העתק,button,
-fontmaker.node_editor.copy_title,Copy the selected points as new contour(s) ({mod}+C),העתקת הנקודות הנבחרות כקו/י מתאר חדשים ({mod}+C),button title,
+fontmaker.node_editor.copy_title,Copy the selected points as new contour(s) ({keys}),העתקת הנקודות הנבחרות כקו/י מתאר חדשים ({keys}),button title; {keys} is the shortcut (Ctrl+C / ⌘+C),
 fontmaker.node_editor.corner,□ Corner,□ פינה,button,leading-emoji
 fontmaker.node_editor.corner_title,Make the selected points corners □,הפוך את הנקודות הנבחרות לפינות □,button title,
 fontmaker.node_editor.delete,Delete,מחק,button,
@@ -2570,17 +2570,17 @@ fontmaker.node_editor.handles_title,Show curve handles on every point (off: sele
 fontmaker.node_editor.head_edit_points,Edit points · {name},עריכת נקודות · {name},panel header,
 fontmaker.node_editor.mode_group_aria,Editing mode,מצב עריכה,node editor mode group,aria-label only
 fontmaker.node_editor.mode_marquee,Marquee,מלבן בחירה,node-mode button,
-fontmaker.node_editor.mode_marquee_title,"Marquee — dragging anywhere box-selects, even from a point (M)","מלבן בחירה — גרירה בכל מקום בוחרת בתיבה, אפילו מנקודה (M)",node-mode button title,
+fontmaker.node_editor.mode_marquee_title,"Marquee — dragging anywhere box-selects, even from a point ({keys})","מלבן בחירה — גרירה בכל מקום בוחרת בתיבה, אפילו מנקודה ({keys})",node-mode button title; {keys} is the shortcut (M),
 fontmaker.node_editor.mode_pen,Pen,עט,node-mode button,
-fontmaker.node_editor.mode_pen_title,Pen — draw a new contour point by point (P),עט — ציור קו מתאר חדש נקודה אחר נקודה (P),node-mode button title,
+fontmaker.node_editor.mode_pen_title,Pen — draw a new contour point by point ({keys}),עט — ציור קו מתאר חדש נקודה אחר נקודה ({keys}),node-mode button title; {keys} is the shortcut (P),
 fontmaker.node_editor.mode_select,Select,בחירה,node-mode button,
-fontmaker.node_editor.mode_select_title,Select — click and drag points (Esc leaves marquee or pen),בחירה — לחצו וגררו נקודות (Esc יוצא ממלבן הבחירה או מהעט),node-mode button title,
+fontmaker.node_editor.mode_select_title,Select — click and drag points ({keys} leaves marquee or pen),בחירה — לחצו וגררו נקודות ({keys} יוצא ממלבן הבחירה או מהעט),node-mode button title; {keys} is the shortcut (Esc),
 fontmaker.node_editor.more_delete_aria,More delete options,אפשרויות מחיקה נוספות,button aria-label,aria-label only
 fontmaker.node_editor.node_hint,Drag points to reshape · <b>?</b> for all shortcuts,גררו נקודות כדי לעצב מחדש · <b>?</b> לכל הקיצורים,node hint bar,
 fontmaker.node_editor.node_hint_dismiss_aria,Dismiss this hint,סגור רמז זה,button aria-label,aria-label only
 fontmaker.node_editor.node_hint_shortcuts_aria,All point-editing shortcuts,כל קיצורי עריכת הנקודות,button aria-label,aria-label only
 fontmaker.node_editor.paste,Paste,הדבק,button,
-fontmaker.node_editor.paste_title,Paste the copied contour(s) into this letter ({mod}+V),הדבק את קו/י המתאר שהועתקו לאות זו ({mod}+V),button title,
+fontmaker.node_editor.paste_title,Paste the copied contour(s) into this letter ({keys}),הדבק את קו/י המתאר שהועתקו לאות זו ({keys}),button title; {keys} is the shortcut (Ctrl+V / ⌘+V),
 fontmaker.node_editor.pen_cancel,Cancel path,ביטול נתיב,pen button,svg-icon-in-markup
 fontmaker.node_editor.pen_cancel_title,Discard the drawing and leave the pen (Esc),ביטול הציור ויציאה מהעט (Esc),pen button title,
 fontmaker.node_editor.pen_lines,· click: corner · drag: curve · Enter: close · Esc: discard,· לחיצה: פינה · גרירה: עקומה · Enter: סגירה · Esc: ביטול,pen status lines,
@@ -2614,7 +2614,7 @@ fontmaker.node_editor.seg_curve_title,Curve segment — click to make it a strai
 fontmaker.node_editor.seg_line_title,Line segment — click to make it a curve,מקטע ישר — לחצו כדי להפוך אותו לעקומה,segment dot title (SVG),
 fontmaker.node_editor.seg_why,— select 2+ adjacent points first,— בחרו קודם 2+ נקודות סמוכות,button title suffix,
 fontmaker.node_editor.select_all,Select all,בחר הכל,button,
-fontmaker.node_editor.select_all_title,Select every point ({mod}+A),בחר את כל הנקודות ({mod}+A),button title,
+fontmaker.node_editor.select_all_title,Select every point ({keys}),בחר את כל הנקודות ({keys}),button title; {keys} is the shortcut (Ctrl+A / ⌘+A),
 fontmaker.node_editor.shortcuts_help_aria,Keyboard shortcuts for point editing,קיצורי מקלדת לעריכת נקודות,button aria-label,aria-label only
 fontmaker.node_editor.shortcuts_help_title,All point-editing shortcuts (?),כל קיצורי עריכת הנקודות (?),button title,
 fontmaker.node_editor.smooth,○ Smooth,○ חלקה,button,leading-emoji
@@ -2671,7 +2671,7 @@ fontmaker.panels.adv_input_mode,Input mode,מצב קלט,advanced group title,
 fontmaker.panels.adv_canvas,Canvas,קנבס,advanced group title,
 fontmaker.panels.adv_rulers_hint,"Numbered rulers along the top and left of the editing canvas, measured in <strong>font units</strong> &mdash; zero sits at the letter's origin and on the baseline. A marker on each ruler follows your pointer, and the corner box shows the zoom (click it to snap back to 100%). <strong>Drag off a ruler</strong> onto the canvas to drop a new guide. Shortcut: <strong>Shift + R</strong>.","סרגלים ממוספרים בראש אזור העריכה ובצדו השמאלי, <strong>ביחידות הגופן</strong> &mdash; האפס יושב בנקודת המוצא של האות ועל קו הבסיס. מחוון על כל סרגל עוקב אחרי מיקום המצביע, ותיבת הפינה מציגה את הזום (לחצו עליה כדי לחזור ל-100%). <strong>גררו מתוך סרגל</strong> אל הקנבס כדי להוסיף קו עזר חדש. קיצור: <strong>Shift + R</strong>.",advanced hint,html
 fontmaker.panels.adv_rulers_label,Rulers,סרגלים,advanced control label,
-fontmaker.panels.adv_rulers_title,Show rulers along the top and left of the editing canvas (Shift + R),הצג סרגלים בראש אזור העריכה ובצדו השמאלי (Shift + R),advanced toggle title,
+fontmaker.panels.adv_rulers_title,Show rulers along the top and left of the editing canvas ({keys}),הצג סרגלים בראש אזור העריכה ובצדו השמאלי ({keys}),advanced toggle title; {keys} is the shortcut (Shift+R),
 fontmaker.panels.adv_show_rulers,Show canvas rulers,הצג סרגלים בקנבס,checkbox label,
 fontmaker.rulers.corner_title,Zoom — click to reset to 100%,זום — לחצו לאיפוס ל-100%,ruler corner button,
 fontmaker.rulers.off,Rulers hidden,הסרגלים מוסתרים,status toast,
@@ -2680,11 +2680,11 @@ fontmaker.grid.off,Grid hidden,הרשת מוסתרת,status toast,
 fontmaker.grid.on,Grid shown,הרשת מוצגת,status toast,
 fontmaker.help.sc_grid,Show or hide the canvas grid,הצגה או הסתרה של רשת הקנבס,shortcut description,
 fontmaker.node_editor.grid,Grid,רשת,node-bar toggle,
-fontmaker.node_editor.grid_title,Show the canvas grid (Shift + G),הצג את רשת הקנבס (Shift + G),node-bar toggle title,
+fontmaker.node_editor.grid_title,Show the canvas grid ({keys}),הצג את רשת הקנבס ({keys}),node-bar toggle title; {keys} is the shortcut (Shift+G),
 fontmaker.node_editor.hole_warn,"Part of this hole is not cutting: a hole only shows where it lies inside the letter, and not over another hole. Where it sticks out, it prints as ink.","חלק מהחור הזה אינו חותך: חור נראה רק במקום שבו הוא נמצא בתוך האות, ולא מעל חור אחר. במקום שבו הוא בולט החוצה, הוא מודפס כדיו.",contour row note,
 fontmaker.panels.adv_grid_hint,"Graph paper across the editing canvas, spaced in <strong>font units</strong> like the rulers &mdash; handy for matching stroke widths and keeping vowels a consistent distance from the baseline. It re-spaces itself as you zoom &mdash; finer divisions on the way in, coarser ones on the way out &mdash; and snapping follows what is on screen. Spacing, the heavier every-Nth line, opacity and <strong>snapping</strong> live in the <span class=""ui"">Grid</span> panel beside the canvas, where you can see them change. Shortcut: <strong>Shift + G</strong>.","נייר משבצות על פני אזור העריכה, במרווחים של <strong>יחידות גופן</strong> כמו הסרגלים &mdash; שימושי להתאמת עוביי קווים ולשמירה על מרחק אחיד של תנועות מקו הבסיס. היא מתאימה את המרווח שלה מחדש ככל שמשנים זום &mdash; חלוקות עדינות יותר בכניסה, גסות יותר ביציאה &mdash; וההצמדה עוקבת אחרי מה שעל המסך. המרווח, הקו המודגש כל N קווים, האטימות וה<strong>הצמדה</strong> נמצאים בפאנל <span class=""ui"">רשת</span> שליד הבד, שם אפשר לראות אותם משתנים. קיצור דרך: <strong>Shift + G</strong>.",advanced hint,html
 fontmaker.panels.adv_grid_label,Grid,רשת,advanced control label,
-fontmaker.panels.adv_grid_title,Show graph-paper grid lines across the editing canvas (Shift + G),הצג קווי רשת על פני אזור העריכה (Shift + G),advanced toggle title,
+fontmaker.panels.adv_grid_title,Show graph-paper grid lines across the editing canvas ({keys}),הצג קווי רשת על פני אזור העריכה ({keys}),advanced toggle title; {keys} is the shortcut (Shift+G),
 fontmaker.panels.adv_show_grid,Show canvas grid,הצג רשת בקנבס,checkbox label,
 fontmaker.panels.grid,Grid,רשת,side title,
 fontmaker.panels.grid_eff,showing {step} at this zoom,מציג {step} בזום הזה,side panel note,

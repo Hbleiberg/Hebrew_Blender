@@ -250,14 +250,19 @@ points bar, the Draw panel and the Edit-shape window, and the bar's Grid toggle 
 by CSS on `:hover` and `:focus-visible` after a short delay. The host carries `data-kh-pop`.
 
 **Static and built buttons.** A button in the page's markup carries `data-kh="<id>"` (plus
-`data-kh-pop`, and `data-kh-title="<string key>"` in place of a fixed `title`); `khSyncStatic()`
-— run at start and from `applyI18n` — sets `aria-keyshortcuts`, the title, and adds the caps once
-(a checkbox's caps go after its label). Before the locale has loaded, or if it never does, the
-string is its own key, and the title is built from the control's own label (`khLabel`: its
-`aria-label`, else its words without the caps and icon glyphs — the page's authored English then)
-and `khTitle(id)`: `Undo (Ctrl+Z)`, `Undo (⌘+Z)` on a Mac. A button built in a template calls the
-three readers itself. `khSyncStatic` writes attributes and the caps only; it is safe to run at any
-time.
+`data-kh-pop`) and no `aria-keyshortcuts`; its title string takes `{keys}` and is named either by
+`data-kh-title="<string key>"` (no fixed `title`: the six Undo / Redo buttons) or by the host's
+own `data-i18n-title`, whose authored English `title` in the markup carries `{keys}` too, never a
+key (Select / Marquee / Pen, the bar's Grid, the two Advanced checkboxes — a checkbox's title is
+on its `<label>` and is also its `aria-label`). `khSyncStatic()` — run at start and from
+`applyI18n`, after `applyStaticI18n` has written the string with `{keys}` unfilled — sets
+`aria-keyshortcuts`, fills the title, and adds the caps once (a checkbox's caps go after its
+label). Before the locale has loaded, or if it never does, the string is its own key: the title is
+then the authored English with the key filled in, else the control's own label (`khLabel`: its
+`aria-label`, else its words without the caps and icon glyphs) and `khTitle(id)` — `Undo (Ctrl+Z)`,
+`Undo (⌘+Z)` on a Mac. A button built in a template calls the three readers itself (Copy, Paste
+and Select all pass `{keys: khTitle(id)}`). `khSyncStatic` writes attributes and the caps only; it
+is safe to run at any time.
 
 **Rules that are easy to break:**
 - The caps are `display: none` unless `(pointer: fine)` — the suite's rule for key hints; the

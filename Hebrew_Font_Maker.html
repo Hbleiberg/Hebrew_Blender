@@ -2240,12 +2240,12 @@ html[lang="he"] .tp-label{letter-spacing:normal;text-transform:none;}
         <div class="col-split adv-grid">
           <div>
             <div class="ctl-label" style="margin-bottom:6px;" data-i18n="fontmaker.panels.adv_rulers_label">Rulers</div>
-            <label class="chk" title="Show rulers along the top and left of the editing canvas (Shift + R)" data-i18n-title="fontmaker.panels.adv_rulers_title"><input type="checkbox" id="showRulersChk" data-kh="rulers" checked onchange="setRulersShown(this.checked)" aria-label="Show rulers along the top and left of the editing canvas (Shift + R)" data-i18n-aria-label="fontmaker.panels.adv_rulers_title"> <span data-i18n="fontmaker.panels.adv_show_rulers">Show canvas rulers</span></label>
+            <label class="chk" title="Show rulers along the top and left of the editing canvas ({keys})" data-i18n-title="fontmaker.panels.adv_rulers_title"><input type="checkbox" id="showRulersChk" data-kh="rulers" checked onchange="setRulersShown(this.checked)" aria-label="Show rulers along the top and left of the editing canvas ({keys})" data-i18n-aria-label="fontmaker.panels.adv_rulers_title"> <span data-i18n="fontmaker.panels.adv_show_rulers">Show canvas rulers</span></label>
             <div class="hint" data-i18n-html="fontmaker.panels.adv_rulers_hint">Numbered rulers along the top and left of the editing canvas, measured in <strong>font units</strong> &mdash; zero sits at the letter's origin and on the baseline. A marker on each ruler follows your pointer, and the corner box shows the zoom (click it to snap back to 100%). <strong>Drag off a ruler</strong> onto the canvas to drop a new guide. Shortcut: <strong>Shift + R</strong>.</div>
           </div>
           <div>
             <div class="ctl-label" style="margin-bottom:6px;" data-i18n="fontmaker.panels.adv_grid_label">Grid</div>
-            <label class="chk" title="Show graph-paper grid lines across the editing canvas (Shift + G)" data-i18n-title="fontmaker.panels.adv_grid_title"><input type="checkbox" id="showGridChk" data-kh="grid" checked onchange="setGridShown(this.checked)" aria-label="Show graph-paper grid lines across the editing canvas (Shift + G)" data-i18n-aria-label="fontmaker.panels.adv_grid_title"> <span data-i18n="fontmaker.panels.adv_show_grid">Show canvas grid</span></label>
+            <label class="chk" title="Show graph-paper grid lines across the editing canvas ({keys})" data-i18n-title="fontmaker.panels.adv_grid_title"><input type="checkbox" id="showGridChk" data-kh="grid" checked onchange="setGridShown(this.checked)" aria-label="Show graph-paper grid lines across the editing canvas ({keys})" data-i18n-aria-label="fontmaker.panels.adv_grid_title"> <span data-i18n="fontmaker.panels.adv_show_grid">Show canvas grid</span></label>
             <div class="hint" data-i18n-html="fontmaker.panels.adv_grid_hint">Graph paper across the editing canvas, spaced in <strong>font units</strong> like the rulers &mdash; handy for matching stroke widths and keeping vowels a consistent distance from the baseline. It re-spaces itself as you zoom &mdash; finer divisions on the way in, coarser ones on the way out &mdash; and snapping follows what is on screen. Spacing, the heavier every-Nth line, opacity and <strong>snapping</strong> live in the <span class="ui">Grid</span> panel beside the canvas, where you can see them change. Shortcut: <strong>Shift + G</strong>.</div>
           </div>
         </div>
@@ -2283,13 +2283,13 @@ html[lang="he"] .tp-label{letter-spacing:normal;text-transform:none;}
              calls the same function its panel/toolbar predecessor did (zero behavioral change) -->
         <div id="nodeBar" role="toolbar" aria-label="Point editing tools" data-i18n-aria-label="fontmaker.node_editor.toolbar_aria">
           <div class="npnl-mode nb-mode" role="group" aria-label="Editing mode" data-i18n-aria-label="fontmaker.node_editor.mode_group_aria">
-            <button class="npnl-mode-btn active" data-mode="select" data-kh="nodeSelect" aria-pressed="true" tabindex="0" aria-keyshortcuts="Escape" title="Select — click and drag points (Esc leaves marquee or pen)" data-i18n-title="fontmaker.node_editor.mode_select_title" onclick="npnlMode('select')" onkeydown="nodeBarKey(event, this)"><span class="nb-glyph" aria-hidden="true">↖</span> <span class="nb-label" data-i18n="fontmaker.node_editor.mode_select">Select</span></button>
-            <button class="npnl-mode-btn" data-mode="marquee" data-kh="nodeMarquee" aria-pressed="false" tabindex="-1" aria-keyshortcuts="M" title="Marquee — dragging anywhere box-selects, even from a point (M)" data-i18n-title="fontmaker.node_editor.mode_marquee_title" onclick="npnlMode('marquee')" onkeydown="nodeBarKey(event, this)"><span class="nb-glyph" aria-hidden="true">▭</span> <span class="nb-label" data-i18n="fontmaker.node_editor.mode_marquee">Marquee</span></button>
-            <button class="npnl-mode-btn" data-mode="pen" data-kh="nodePen" aria-pressed="false" tabindex="-1" aria-keyshortcuts="P" title="Pen — draw a new contour point by point (P)" data-i18n-title="fontmaker.node_editor.mode_pen_title" onclick="npnlMode('pen')" onkeydown="nodeBarKey(event, this)"><span class="nb-glyph" aria-hidden="true">✒</span> <span class="nb-label" data-i18n="fontmaker.node_editor.mode_pen">Pen</span></button>
+            <button class="npnl-mode-btn active" data-mode="select" data-kh="nodeSelect" aria-pressed="true" tabindex="0" title="Select — click and drag points ({keys} leaves marquee or pen)" data-i18n-title="fontmaker.node_editor.mode_select_title" onclick="npnlMode('select')" onkeydown="nodeBarKey(event, this)"><span class="nb-glyph" aria-hidden="true">↖</span> <span class="nb-label" data-i18n="fontmaker.node_editor.mode_select">Select</span></button>
+            <button class="npnl-mode-btn" data-mode="marquee" data-kh="nodeMarquee" aria-pressed="false" tabindex="-1" title="Marquee — dragging anywhere box-selects, even from a point ({keys})" data-i18n-title="fontmaker.node_editor.mode_marquee_title" onclick="npnlMode('marquee')" onkeydown="nodeBarKey(event, this)"><span class="nb-glyph" aria-hidden="true">▭</span> <span class="nb-label" data-i18n="fontmaker.node_editor.mode_marquee">Marquee</span></button>
+            <button class="npnl-mode-btn" data-mode="pen" data-kh="nodePen" aria-pressed="false" tabindex="-1" title="Pen — draw a new contour point by point ({keys})" data-i18n-title="fontmaker.node_editor.mode_pen_title" onclick="npnlMode('pen')" onkeydown="nodeBarKey(event, this)"><span class="nb-glyph" aria-hidden="true">✒</span> <span class="nb-label" data-i18n="fontmaker.node_editor.mode_pen">Pen</span></button>
           </div>
           <span class="nb-sep" aria-hidden="true"></span>
-          <button class="ctl-btn nb-btn" id="nodeUndoBtn" onclick="undo()" data-kh="undo" data-kh-pop data-kh-title="fontmaker.toolbar.undo_title" data-i18n-aria-label="fontmaker.toolbar.undo_aria" aria-label="Undo" aria-keyshortcuts="Control+Z" onkeydown="nodeBarKey(event, this)" tabindex="-1" disabled><svg class="hi hi-sm hi-undo" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 5.6 4.4 11.2 10 16.8"/><path d="M4.4 11.2h9.2a6 6 0 0 1 0 12h-1.8"/></svg></button>
-          <button class="ctl-btn nb-btn" id="nodeRedoBtn" onclick="redo()" data-kh="redo" data-kh-pop data-kh-title="fontmaker.toolbar.redo_title" data-i18n-aria-label="fontmaker.toolbar.redo_aria" aria-label="Redo" aria-keyshortcuts="Control+Shift+Z Control+Y" onkeydown="nodeBarKey(event, this)" tabindex="-1" disabled><svg class="hi hi-sm hi-redo" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 5.6l5.6 5.6L14 16.8"/><path d="M19.6 11.2h-9.2a6 6 0 0 0 0 12h1.8"/></svg></button>
+          <button class="ctl-btn nb-btn" id="nodeUndoBtn" onclick="undo()" data-kh="undo" data-kh-pop data-kh-title="fontmaker.toolbar.undo_title" data-i18n-aria-label="fontmaker.toolbar.undo_aria" aria-label="Undo" onkeydown="nodeBarKey(event, this)" tabindex="-1" disabled><svg class="hi hi-sm hi-undo" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 5.6 4.4 11.2 10 16.8"/><path d="M4.4 11.2h9.2a6 6 0 0 1 0 12h-1.8"/></svg></button>
+          <button class="ctl-btn nb-btn" id="nodeRedoBtn" onclick="redo()" data-kh="redo" data-kh-pop data-kh-title="fontmaker.toolbar.redo_title" data-i18n-aria-label="fontmaker.toolbar.redo_aria" aria-label="Redo" onkeydown="nodeBarKey(event, this)" tabindex="-1" disabled><svg class="hi hi-sm hi-redo" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 5.6l5.6 5.6L14 16.8"/><path d="M19.6 11.2h-9.2a6 6 0 0 0 0 12h1.8"/></svg></button>
           <span class="nb-sep" aria-hidden="true"></span>
           <button class="ctl-btn nb-btn" onclick="setZoom(Math.max(0.01, stageZoom - 0.1))" title="Zoom out" data-i18n-title="fontmaker.node_editor.zoom_out_title" aria-label="Zoom out" data-i18n-aria-label="fontmaker.node_editor.zoom_out_title" onkeydown="nodeBarKey(event, this)" tabindex="-1">−</button>
           <input type="range" id="nodeZoomRange" class="nb-zoom-range" min="1" max="400" step="1" value="100" oninput="setZoom(this.value/100)" title="Zoom the view" data-i18n-title="fontmaker.node_editor.zoom_title" aria-label="Zoom the view" data-i18n-aria-label="fontmaker.node_editor.zoom_title" tabindex="0">
@@ -2299,7 +2299,7 @@ html[lang="he"] .tp-label{letter-spacing:normal;text-transform:none;}
           <span class="nb-sep" aria-hidden="true"></span>
           <button class="ctl-btn nb-btn nb-toggle" id="nodeHandlesBtn" aria-pressed="false" onclick="setNodeHandlesAll(!_nodeHandlesAll)" title="Show curve handles on every point (off: selected points only)" data-i18n-title="fontmaker.node_editor.handles_title" onkeydown="nodeBarKey(event, this)" tabindex="-1"><span class="nb-glyph" aria-hidden="true">⌖</span> <span class="nb-label" data-i18n="fontmaker.node_editor.handles">Handles</span></button>
           <button class="ctl-btn nb-btn nb-toggle" id="nodeGuidesBtn" aria-pressed="true" onclick="setNodeGuidesShown(!_nodeGuidesOn)" title="Show guide and metric lines (view only — snapping is unaffected)" data-i18n-title="fontmaker.node_editor.guides_title" onkeydown="nodeBarKey(event, this)" tabindex="-1"><span class="nb-glyph" aria-hidden="true">▦</span> <span class="nb-label" data-i18n="fontmaker.node_editor.guides">Guides</span></button>
-          <button class="ctl-btn nb-btn nb-toggle" id="nodeGridBtn" data-kh="grid" data-kh-pop aria-pressed="true" onclick="setGridShown(!_gridOn)" title="Show the canvas grid (Shift + G)" data-i18n-title="fontmaker.node_editor.grid_title" onkeydown="nodeBarKey(event, this)" tabindex="-1"><span class="nb-glyph" aria-hidden="true">⊞</span> <span class="nb-label" data-i18n="fontmaker.node_editor.grid">Grid</span></button>
+          <button class="ctl-btn nb-btn nb-toggle" id="nodeGridBtn" data-kh="grid" data-kh-pop aria-pressed="true" onclick="setGridShown(!_gridOn)" title="Show the canvas grid ({keys})" data-i18n-title="fontmaker.node_editor.grid_title" onkeydown="nodeBarKey(event, this)" tabindex="-1"><span class="nb-glyph" aria-hidden="true">⊞</span> <span class="nb-label" data-i18n="fontmaker.node_editor.grid">Grid</span></button>
           <label class="chk nb-snap" title="Snap dragged points to guides, metric lines and the grid (Alt bypasses)" data-i18n-title="fontmaker.node_editor.snap_title"><input type="checkbox" id="nodeSnapChk" onchange="setSnapGuides(this.checked)" onkeydown="nodeBarKey(event, this)" tabindex="-1" aria-label="Snap dragged points to guides, metric lines and the grid (Alt bypasses)" data-i18n-aria-label="fontmaker.node_editor.snap_title"> <span class="nb-glyph" aria-hidden="true">🧲</span><span class="nb-label" data-i18n="fontmaker.node_editor.snap">Snap</span></label>
         </div>
         <div class="stage-wrap" dir="ltr">
@@ -5956,21 +5956,27 @@ function khAria(id) { return KH[id].map(c => c.replace('mod', IS_MAC ? 'Meta' : 
 function khHtml(id, pop) {   // the caps; `pop` = the pop-up form, for a button with no room (its host carries data-kh-pop)
   return `<span class="kh${pop ? ' kh-pop' : ''}" aria-hidden="true" dir="ltr">` + khCaps(id).map(c => `<kbd>${esc(c)}</kbd>`).join('') + '</span>';
 }
-/* The buttons that are in the page's markup: data-kh names the key, data-kh-pop asks for the pop-up form, and
-   data-kh-title is the title's string (it takes {keys}). Run at start and from applyI18n; it changes nothing but
-   attributes and the caps, which it adds once. A checkbox shows its key after its label. */
+/* The buttons that are in the page's markup: data-kh names the key, data-kh-pop asks for the pop-up form, and the
+   title's string takes {keys} — data-kh-title, or the host's own data-i18n-title (whose authored English title in the
+   markup carries {keys} too, never a key). data-kh-ref names a key the title mentions that is not the element's own
+   (Trace all: "one {keys} undoes them all"): the title only, no caps and no aria-keyshortcuts. Run at start and from
+   applyI18n (after applyStaticI18n, which leaves {keys} unfilled); it changes nothing but attributes and the caps, which
+   it adds once. A checkbox shows its key after its label, and its title is also its name. */
 function khSyncStatic() {
-  document.querySelectorAll('[data-kh]').forEach(el => {
-    const id = el.dataset.kh; if (!KH[id]) return;
-    el.setAttribute('aria-keyshortcuts', khAria(id));
-    const host = el.tagName === 'INPUT' ? el.parentElement : el;
-    if (el.dataset.khTitle && host) {
-      const k = el.dataset.khTitle, t = window.I18n ? I18n.t(k, { keys: khTitle(id) }) : k;
-      // Before the locale has loaded (or if it never does) the string is its own key: the title is then the control's own
-      // label with its keys — so an icon-only Undo never loses its tooltip, and the key is still this computer's.
-      host.title = t !== k ? t : khLabel(el) + ' (' + khTitle(id) + ')';
+  document.querySelectorAll('[data-kh], [data-kh-ref]').forEach(el => {
+    const own = el.dataset.kh, id = own || el.dataset.khRef; if (!KH[id]) return;
+    const host = el.tagName === 'INPUT' ? el.parentElement : el; if (!host) return;
+    if (own) el.setAttribute('aria-keyshortcuts', khAria(id));
+    const k = el.dataset.khTitle || host.getAttribute('data-i18n-title');
+    if (k) {
+      if (!('khTpl' in host.dataset)) host.dataset.khTpl = host.getAttribute('title') || '';   // the authored English, read once
+      const t = window.I18n ? I18n.t(k, { keys: khTitle(id) }) : k, tpl = host.dataset.khTpl;
+      // Before the locale has loaded (or if it never does) the string is its own key: the authored English then, or the
+      // control's own label with its keys — so an icon-only Undo never loses its tooltip, and the key is this computer's.
+      host.title = t !== k ? t : tpl.includes('{keys}') ? tpl.replace('{keys}', khTitle(id)) : khLabel(el) + ' (' + khTitle(id) + ')';
+      if (host !== el && el.getAttribute('data-i18n-aria-label') === k) el.setAttribute('aria-label', host.title);
     }
-    if (host && !host.querySelector(':scope > .kh')) host.insertAdjacentHTML('beforeend', khHtml(id, el.hasAttribute('data-kh-pop')));
+    if (own && !host.querySelector(':scope > .kh')) host.insertAdjacentHTML('beforeend', khHtml(id, el.hasAttribute('data-kh-pop')));
   });
 }
 function khLabel(el) {   // a control's own words without its caps or icon glyphs — the page's authored English until a locale lands
@@ -15960,8 +15966,8 @@ function nodeEditPanelHTML(l) {
     : cnt === 0
     ? `<div class="npnl-ctx" role="group" aria-label="${esc(I18n.t('fontmaker.node_editor.sel_actions'))}">
     <div class="npnl-stack">
-      <button class="ctl-btn" onclick="selectAllNodes()" title="${esc(I18n.t('fontmaker.node_editor.select_all_title', {mod: M}))}" aria-keyshortcuts="${khAria('selectAll')}">${I18n.t('fontmaker.node_editor.select_all')}${khHtml('selectAll')}</button>
-      <button class="ctl-btn" onclick="pasteNodes()" title="${esc(I18n.t('fontmaker.node_editor.paste_title', {mod: M}))}" aria-keyshortcuts="${khAria('paste')}" ${nodeClipboard ? '' : 'disabled'}>${I18n.t('fontmaker.node_editor.paste')}${khHtml('paste')}</button>
+      <button class="ctl-btn" onclick="selectAllNodes()" title="${esc(I18n.t('fontmaker.node_editor.select_all_title', {keys: khTitle('selectAll')}))}" aria-keyshortcuts="${khAria('selectAll')}">${I18n.t('fontmaker.node_editor.select_all')}${khHtml('selectAll')}</button>
+      <button class="ctl-btn" onclick="pasteNodes()" title="${esc(I18n.t('fontmaker.node_editor.paste_title', {keys: khTitle('paste')}))}" aria-keyshortcuts="${khAria('paste')}" ${nodeClipboard ? '' : 'disabled'}>${I18n.t('fontmaker.node_editor.paste')}${khHtml('paste')}</button>
       <button class="ctl-btn" onclick="openSvgPasteCode()" title="${esc(I18n.t('fontmaker.panels.paste_svg_code_title', {mod: M}))}">${I18n.t('fontmaker.panels.paste_svg_code')}</button>
       <button class="ctl-btn" onclick="doRemoveSpecks()" title="${esc(I18n.t('fontmaker.node_editor.remove_specks_title'))}">${I18n.t('fontmaker.node_editor.remove_specks')}</button>
     </div>
@@ -15978,7 +15984,7 @@ function nodeEditPanelHTML(l) {
         <button class="ctl-btn" onclick="setSelectedSegsType(false)" title="${esc(I18n.t('fontmaker.node_editor.to_line_title', {why: segWhy}))}" ${dis2}>${I18n.t('fontmaker.node_editor.to_line')}</button>
       </span>
       <span aria-hidden="true"></span>
-      <button class="ctl-btn npnl-left" onclick="copySelectedNodes()" title="${esc(I18n.t('fontmaker.node_editor.copy_title', {mod: M}))}" aria-keyshortcuts="${khAria('copy')}">${I18n.t('fontmaker.node_editor.copy')}${khHtml('copy')}</button>
+      <button class="ctl-btn npnl-left" onclick="copySelectedNodes()" title="${esc(I18n.t('fontmaker.node_editor.copy_title', {keys: khTitle('copy')}))}" aria-keyshortcuts="${khAria('copy')}">${I18n.t('fontmaker.node_editor.copy')}${khHtml('copy')}</button>
       <span class="npnl-del npnl-right">
         <button class="ctl-btn npnl-danger" onclick="doNodeDelete()" title="${esc(I18n.t('fontmaker.node_editor.delete_title'))}">${I18n.t('fontmaker.node_editor.delete')}</button>
         <button class="ctl-btn npnl-danger npnl-del-caret" aria-haspopup="menu" aria-expanded="false" aria-label="${esc(I18n.t('fontmaker.node_editor.more_delete_aria'))}" onclick="npnlDelToggle(this)" onkeydown="npnlDelKey(event)">▾</button>
