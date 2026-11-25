@@ -1192,9 +1192,14 @@ and the keep step cannot disagree. In a kept letter a hole is a counter-clockwis
 more. An automatic letter is read **relative to itself**: when its largest contour (an outline's
 biggest ring is a solid) runs counter-clockwise the whole outline is drawn the other way round — an
 imported CFF outline, the stock punctuation marks — and then *clockwise* is the hole, with its
-inside on the right of travel; and a contour that stands clear of every other one (their boxes do
-not meet) is a solid whichever way it runs. The label is never consulted: a CFF outer is labelled
-`'ccw'`, and reading the label called it a hole that was not cutting.
+inside on the right of travel; and a contour that stands clear of every other one is a solid
+whichever way it runs — the stock question mark's stem and dot run against its hook, and some fonts
+draw a letter's separate leg against its body. "Clear" is shown, never assumed: the two boxes do not
+meet, or points just inside each contour lie outside the other and their outlines do not cross;
+when that cannot be shown the direction counts (so two pieces that touch along an edge and run
+against each other can still read as a solid and a hole that is not cutting). The label is never
+consulted: a CFF outer is labelled `'ccw'`, and reading the label called it a hole that was not
+cutting.
 
 **Nesting cannot decide a block letter.** `renestNodeModel` used to re-derive every contour's
 direction, on every structural edit, from how many other rings hold the contour's *first point*.

@@ -14021,17 +14021,36 @@ function nodeTurnContour(ct, i) {                     // reverse contour i of th
    a whole — its solids counter-clockwise, as an imported CFF outline and the stock punctuation marks
    are — so there the direction is read against the letter's own: `reversed` when the contour with
    the largest area (an outline's biggest ring is a solid) runs counter-clockwise, and then clockwise
-   is the hole. And a contour that stands clear of every other one (their boxes do not meet) is a
-   solid whichever way it runs: it has nothing to cut (the stock question mark's hook runs one way,
-   its stem and dot the other). No nesting is decided here. One reading for the Contours rows,
-   holeTroubles and nodeKeepAll, so the three cannot disagree. */
+   is the hole. And a contour that stands clear of every other one is a solid whichever way it runs:
+   it has nothing to cut (the stock question mark's hook runs one way, its stem and dot the other;
+   some fonts draw a letter's separate leg against its body). "Clear" of another contour: their
+   boxes do not meet, or — points just inside each are outside the other, and their outlines do not
+   cross. That is proof of standing apart, not a nesting decision: when it cannot be shown, the
+   direction is what counts. One reading for the Contours rows, holeTroubles and nodeKeepAll, so the
+   three cannot disagree. */
 function contourRoles(rings, kept) {
   const A = rings.map(R => R.length >= 3 ? signedArea(R) : 0);
   if (kept) return { reversed: false, holes: A.map(a => a > 0) };
   let big = 0; A.forEach(a => { if (Math.abs(a) > Math.abs(big)) big = a; });
-  const reversed = big > 0, pad = 2;
+  const reversed = big > 0, pad = 2, ins = [];
   const B = rings.map(R => { const b = [Infinity, Infinity, -Infinity, -Infinity]; R.forEach(p => { if (p[0] < b[0]) b[0] = p[0]; if (p[1] < b[1]) b[1] = p[1]; if (p[0] > b[2]) b[2] = p[0]; if (p[1] > b[3]) b[3] = p[1]; }); return b; });
-  const alone = i => B.every((b, j) => j === i || rings[j].length < 3 || b[0] > B[i][2] + pad || b[2] < B[i][0] - pad || b[1] > B[i][3] + pad || b[3] < B[i][1] - pad);
+  const inside = i => {                               // up to 24 points just inside ring i, all round it (worked out once, and only for a ring that needs them)
+    if (ins[i]) return ins[i];
+    const R = rings[i], s = A[i] > 0 ? 1 : -1, step = Math.max(1, Math.ceil(R.length / 24)), out = [];
+    for (let k = 0; k < R.length; k += step) {
+      const a = R[k], b = R[(k + 1) % R.length], dx = b[0] - a[0], dy = b[1] - a[1], len = Math.hypot(dx, dy); if (len < 3) continue;
+      const p = [(a[0] + b[0]) / 2 - s * 1.5 * dy / len, (a[1] + b[1]) / 2 + s * 1.5 * dx / len];
+      if (pointInPoly(p, R)) out.push(p);
+    }
+    return (ins[i] = out);
+  };
+  const clear = (i, j) => {
+    const a = B[i], b = B[j];
+    if (b[0] > a[2] + pad || b[2] < a[0] - pad || b[1] > a[3] + pad || b[3] < a[1] - pad) return true;
+    const pi = inside(i), pj = inside(j);
+    return pi.length > 0 && pj.length > 0 && !pi.some(p => pointInPoly(p, rings[j])) && !pj.some(p => pointInPoly(p, rings[i])) && !contoursOverlap(rings[i], rings[j]);
+  };
+  const alone = i => rings.every((R, j) => j === i || R.length < 3 || clear(i, j));
   return { reversed, holes: A.map((a, i) => (reversed ? a < 0 : a > 0) && !alone(i)) };
 }
 /* Automatic → kept, WITHOUT changing the fill. Every contour is flagged and labelled from the
