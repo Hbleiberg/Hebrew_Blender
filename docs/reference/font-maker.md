@@ -1866,8 +1866,12 @@ and the chips read it, so none of them can disagree with the exported font. In `
 the pair being edited shows live while it has something of its own to show — a non-zero Gap, or a
 real saved value being dragged away; at 0 with nothing real saved it falls through to
 `kernEffective`, so a pair saved at 0 under a group pair shows the group's kerning (the status line
-on saving says so). A *group* being edited never hides a saved specific pair. A new reader of
-kerning calls `kernEffective`, never walks the list itself.
+on saving says so). A *group* being edited shows what the font would apply with its row saved as
+it stands: `kernEffective` over the list with that row in its place (Update keeps one row for the
+two sides, Add puts a new one at the end — `kernEffective` and `kernSpecific` take such a list as an
+optional third argument), so the edit shows only for the pairs it would win — never over a saved
+specific pair or an earlier group pair that covers the two letters — and at 0 a later group pair
+shows through. A new reader of kerning calls `kernEffective`, never walks the list itself.
 
 **What the export writes** (`buildFEA`, the `kern` feature). Glyph pairs only, each with the value
 `kernEffective` gives it: `kernExpanded()` works the whole list out in one pass (the same rules, as

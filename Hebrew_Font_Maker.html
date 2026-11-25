@@ -19678,16 +19678,17 @@ function glyphPathAt(cs, dx, yo, curves) {
    says: 0. The export writes these values and nothing else — one glyph pair at a time, from
    kernExpanded() below, which applies the same rules in one pass — and the big sample and the
    Common pairs chips read this one function, so neither can disagree with the font. */
-function kernSpecific(firstCp, secondCp) {       // the specific pair's own value; 0 if none or at 0
+function kernSpecific(firstCp, secondCp, rows) {       // the specific pair's own value; 0 if none or at 0 (rows: another list read the same way — kernPreviewValue's)
   let v = 0;
-  for (const k of fontKerning())
+  for (const k of (rows || fontKerning()))
     if (k && k.value && (k.left||[]).length === 1 && (k.right||[]).length === 1 && k.left[0] === firstCp && k.right[0] === secondCp) v = k.value;
   return v;
 }
-function kernEffective(firstCp, secondCp) {
+function kernEffective(firstCp, secondCp, rows) {
   if (kernPairDir(firstCp, secondCp) === null) return 0;
-  const v = kernSpecific(firstCp, secondCp); if (v) return v;
-  for (const k of fontKerning())
+  rows = rows || fontKerning();
+  const v = kernSpecific(firstCp, secondCp, rows); if (v) return v;
+  for (const k of rows)
     if (k && k.value && ((k.left||[]).length > 1 || (k.right||[]).length > 1) && (k.left||[]).includes(firstCp) && (k.right||[]).includes(secondCp)) return k.value;
   return 0;
 }
@@ -19709,7 +19710,16 @@ function kernPreviewValue(firstCp, secondCp) {   // both previews: the in-progre
   const e = kernEdit;
   if (e) { const L = kernSideCps(e.left), R = kernSideCps(e.right);
     if (L.includes(firstCp) && R.includes(secondCp)) {
-      if (L.length > 1 || R.length > 1) return kernSpecific(firstCp, secondCp) || (e.value|0);   // a group being edited never hides a saved specific pair
+      // A group being edited: what the font would apply with the row saved as it stands — the list with that row at its
+      // place (Update keeps one row for these two sides; Add puts a new one at the end), read by kernEffective. So the
+      // edit shows only where the row would win: never over a saved specific pair or an earlier group pair that covers
+      // the two letters, and at 0 (no rule) a later group pair shows through.
+      if (L.length > 1 || R.length > 1) {
+        const rows = fontKerning(), at = kernPairIndex(L, R), row = { left: L, right: R, value: e.value|0 };
+        const list = rows.filter((k, i) => i === at || !(k && sameSet(k.left, L) && sameSet(k.right, R))).map(k => k === rows[at] ? row : k);
+        if (at < 0) list.push(row);
+        return kernEffective(firstCp, secondCp, list);
+      }
       // The pair being edited shows live — except at 0 with no real value of its own saved. A pair at
       // 0 is no rule at all, so the font gives the two letters whatever a group pair gives them, and
       // drawing 0 would show the group's kerning as removed for this one pair when nothing can do that.
