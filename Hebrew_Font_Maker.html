@@ -18046,7 +18046,7 @@ function gxPlan(op, set) {
         const o = sp.out || gxOutline(s.contours, s.curves, sp.T);
         if (o.closed && !plan.warn.closed.includes(nm)) plan.warn.closed.push(nm);
         if (sp.stretched && !plan.warn.stretched.includes(nm)) plan.warn.stretched.push(nm);
-        const adv =Math.max(0, sp.advance != null ? sp.advance : Math.round((+s.advance || 0) * sp.T[0]));
+        const adv = Math.max(0, sp.advance != null ? sp.advance : Math.round((+s.advance || 0) * sp.T[0]));
         if (!o.rings.length) { plan.refuse.gone.push(nm); return; }
         if (gxOutlineExtent(o).worst > GX_COORD_MAX || adv > GX_SRC_ADV_MAX) big(GX_COORD_MAX + 1, nm);
         if (o.lost && !plan.warn.lost.includes(nm)) plan.warn.lost.push(nm);
@@ -18390,15 +18390,15 @@ function gxwShape(rings, curves, s, t, hand) {
      the stem's own side moves away from it: the pieces come apart. So where one ring can lie in another's
      ink, each leg is asked whether just OUTSIDE its own ring there is ink of the other rings (hidden — and
      the ring must not be a counter cut out of that ink). A point with a buried leg, or that lies in such
-     ink itself, must stay buried: it is held inside the horizontal chord of ink of the ring that covers it (chord), at least as deep from each
-     end as it was (up to half a stem; narrowed with a narrowed letter), the chord's two ends standing where
-     their own rings' points were moved to (keep; settled in a few passes, since a cover's own end may be
-     held too). A point that is
-     still that deep where the step put it is not touched: the side of a stem whose top runs into a roof
-     stays parallel to its other side. Two kinds of ring are never asked and take exactly the path above:
-     one with no ring of its own direction near it (every ordinary letter), and one with less than a third
-     of its outline still showing — a fill-in at a joint, not a stroke: held in its two covers it would be
-     pulled into a web across the joint, where left alone it thins away as the joint opens. */
+     ink itself, must stay buried: it is held inside the horizontal chord of ink of the ring that covers
+     it (chord), at least as deep from each end as it was (up to half a stem; narrowed with a narrowed
+     letter), the chord's two ends standing where their own rings' points were moved to (keep; settled in
+     a few passes, since a cover's own end may be held too). A point that is still that deep where the
+     step put it is not touched: the side of a stem whose top runs into a roof stays parallel to its
+     other side. Two kinds of ring are never asked and take exactly the path above: one with no ring of
+     its own direction near it (every ordinary letter), and one with less than a third of its outline
+     still showing — a fill-in at a joint, not a stroke: held in its two covers it would be pulled into a
+     web across the joint, where left alone it thins away as the joint opens. */
   const turn = rings.map(r => (r.length >= 3 && signedArea(r) > 0) ? 1 : -1);   // +1: the ring's inside is on the left of its direction of travel (and counts −1 in gxwRuns' winding)
   const size = rings.map(r => (r.length >= 3 ? Math.abs(signedArea(r)) : 0)), bx = rings.map(r => polysBounds([r]));
   const deep = rings.map((r, i) => r.length >= 3 && rings.some((q, j) => j !== i && q.length >= 3 && turn[j] === turn[i] &&
