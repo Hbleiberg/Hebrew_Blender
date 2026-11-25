@@ -9329,6 +9329,40 @@ async function uploadSourceFont(file) {
 function importFontLean(font) {   // the source font's own declared lean, in this app's convention (+ = right); 0 when upright or unreadable
   try { const a = +(font.tables && font.tables.post && font.tables.post.italicAngle); return (Number.isFinite(a) && Math.abs(a) >= 0.05 && Math.abs(a) <= 60) ? Math.round(-a * 10) / 10 : 0; } catch (e) { return 0; }
 }
+/* Which member of which family a source font says it is → { bold, italic, width }. Both halves become
+   this project's names and file name, so each is taken only from what the font states outright:
+   - Italic from the style flags alone (OS/2 fsSelection bit 0, head.macStyle bit 1). A declared italic
+     angle is NOT one: handwriting faces declare an angle on their Regular, and such a font would export
+     as an "Italic" with no Regular beside it. The angle still stamps each letter's lean record
+     (importFontLean) — that is what the record is for.
+   - A width name from OS/2 usWidthClass only when the font's own names (name IDs 1, 2, 4, 16, 17, any
+     language) carry the same word — case, spaces and hyphens aside. The class is often set carelessly,
+     and the word joins the family name: on the class alone an unchanged font would be renamed. */
+function importFontIdentity(font) {
+  const tb = (font && font.tables) || {}, os2 = tb.os2 || null, head = tb.head || null;
+  const bold = !!((os2 && (((os2.fsSelection || 0) & 0x20) || (os2.usWeightClass || 0) >= 600)) || (head && ((head.macStyle || 0) & 0x01)));
+  const italic = !!((os2 && ((os2.fsSelection || 0) & 0x01)) || (head && ((head.macStyle || 0) & 0x02)));
+  const wc = os2 ? +os2.usWidthClass : 5;
+  let width = (!Number.isFinite(wc) || wc === 5 || wc < 1 || wc > 9) ? 'normal' : wc <= 3 ? 'condensed' : wc === 4 ? 'semicondensed' : wc === 6 ? 'semiextended' : 'extended';
+  if (width !== 'normal') {
+    const squash = v => String(v).toLowerCase().replace(/[\s_-]+/g, ''), word = squash(fontWidthInfo(width).name);
+    const longer = Object.keys(FONT_WIDTHS).map(key => squash(FONT_WIDTHS[key].name)).filter(w => w !== word && w.includes(word));   // "Semi Condensed" is not "Condensed"
+    const N = (font && font.names) || {}, per = ['windows', 'macintosh', 'unicode'].map(key => N[key]).filter(t => t && typeof t === 'object');   // the names by platform (newer opentype.js) or flat
+    const said = [];
+    (per.length ? per : [N]).forEach(t => ['fontFamily', 'fontSubfamily', 'fullName', 'preferredFamily', 'preferredSubfamily'].forEach(key => {
+      const v = t[key];
+      if (typeof v === 'string') said.push(squash(v)); else if (v && typeof v === 'object') Object.keys(v).forEach(lang => said.push(squash(v[lang])));
+    }));
+    if (!said.some(nm => longer.reduce((rest, w) => rest.split(w).join(' '), nm).includes(word))) width = 'normal';
+  }
+  return { bold, italic, width };
+}
+function importIdentityNote() {   // what an import set the Style and the Width name to, for the status line ('' for a Regular of normal width)
+  let s = '';
+  if (fontStyleOf(project.font.style) !== 'regular') s += ' ' + I18n.t('fontmaker.status.style_detected', { style: I18n.t('fontmaker.panels.style_' + fontStyleOf(project.font.style)) });
+  if (fontWidthOf(project.font.width) !== 'normal') s += ' ' + I18n.t('fontmaker.status.width_detected', { width: I18n.t('fontmaker.panels.width_' + fontWidthOf(project.font.width)) });
+  return s;
+}
 function importLetterOutline(l, font, scale) {
   const glyph = font.charToGlyph(String.fromCodePoint(parseInt(l.codepoint,16)));
   l.source = { kind:'font', dataUrl:null, cropRect:null };
@@ -9785,15 +9819,13 @@ async function applyFontImport(file, font, bytes, opts) {
     // only import keeps the current project's style).
     if (opts.outlines) {
       try {
-        const os2 = font.tables && font.tables.os2, head = font.tables && font.tables.head;
-        const srcBold = !!((os2 && (((os2.fsSelection || 0) & 0x20) || (os2.usWeightClass || 0) >= 600)) || (head && ((head.macStyle || 0) & 0x01)));
-        // …and one flagged italic (fsSelection bit 0, macStyle bit 1, or a declared italic angle) its Italic.
-        const srcItalic = !!((os2 && ((os2.fsSelection || 0) & 0x01)) || (head && ((head.macStyle || 0) & 0x02)) || importFontLean(font));
-        project.font.style = fontStyleMake(srcBold, srcItalic);
+        // …and one flagged italic (fsSelection bit 0 or macStyle bit 1 — never a declared angle alone) its Italic.
+        const idn = importFontIdentity(font);
+        project.font.style = fontStyleMake(idn.bold, idn.italic);
         delete project.font.italicLean;   // the angle now comes from the imported letters' own records
-        // …and one that declares a width (OS/2 usWidthClass) its Condensed / Extended. The width word joins the
-        // family name on export, so a family name that already ends in it gives the word up here.
-        const wc = os2 ? +os2.usWidthClass : 5, wkey = (!Number.isFinite(wc) || wc === 5 || wc < 1 || wc > 9) ? 'normal' : wc <= 3 ? 'condensed' : wc === 4 ? 'semicondensed' : wc === 6 ? 'semiextended' : 'extended';
+        // …and one that declares a width (OS/2 usWidthClass) AND says so in its names its Condensed / Extended. The
+        // width word joins the family name on export, so a family name that already ends in it gives the word up here.
+        const wkey = idn.width;
         if (wkey === 'normal') delete project.font.width;
         else {
           project.font.width = wkey;
@@ -9928,8 +9960,7 @@ async function applyFontImport(file, font, bytes, opts) {
     if (nForms) msg += ' ' + pl('fontmaker.status.import_loaded_forms', nForms);
     if (metricsImported) msg += ' ' + I18n.t('fontmaker.status.import_metrics');
     if (nKern) msg += ' ' + pl('fontmaker.status.import_kerning', nKern);
-    if (opts.outlines && fontStyleOf(project.font.style) !== 'regular') msg += ' ' + I18n.t('fontmaker.status.style_detected', { style: I18n.t('fontmaker.panels.style_' + fontStyleOf(project.font.style)) });
-    if (opts.outlines && fontWidthOf(project.font.width) !== 'normal') msg += ' ' + I18n.t('fontmaker.status.width_detected', { width: I18n.t('fontmaker.panels.width_' + fontWidthOf(project.font.width)) });
+    if (opts.outlines) msg += importIdentityNote();
     if (opts.outlines && n && !fontIsBold() && !opts.boldAfter) msg += ' ' + I18n.t('fontmaker.status.boldgen_hint');
     status(msg);
     markDirty();   // applyFontImport mutates project directly (a bulk import is a deliberate udDo exception) and used to leave _projectDirty false, so nothing scheduled an autosave
@@ -16376,9 +16407,10 @@ function xformWidthStems(pct) {
   udFlushPending();   // a slider preview still open would write its old model back over the result — taken back here, before the plan is made
   const res = gxWidthPlan(pct, { scope: 'letter', stems: true, spacing: false, marks: false, name: l.name }, { scope: 'letter', cp: l.codepoint, cat: _drawCatOf(l.codepoint) });
   if (gxRefused(res.plan) || !res.plan.scopes.length) { status(gxRefusalText(res.plan, 'width', pct) || I18n.t('fontmaker.scaleall.note_nothing')); return; }
-  const warn = res.plan.warn.closed.length > 0;
+  const warn = res.plan.warn.closed.length > 0, stretched = res.plan.warn.stretched.length > 0;   // stretched: the stem step would have pulled this letter apart, so the plan gave it the plain stretch
+  const wide = res.k > GXW_WIDE;   // the strokes kept, everything else in the letter stretched more than twice
   if (!gxCommit(res.plan, null)) return;
-  status(I18n.t(warn ? 'fontmaker.node_editor.scale_stems_warn' : 'fontmaker.widthall.applied_letter', { pct }));
+  status(I18n.t(stretched ? 'fontmaker.node_editor.scale_stems_stretched' : warn ? 'fontmaker.node_editor.scale_stems_warn' : wide ? 'fontmaker.node_editor.scale_stems_wide' : 'fontmaker.widthall.applied_letter', { pct }));
 }
 /* Live transform sliders — the fillet/reduce burst idiom, but for a RELATIVE op: the slider value
    is the total rotation/scale since drag start (reset-from-base each tick), and it snaps back to
@@ -18448,7 +18480,7 @@ function gxPlan(op, set) {
   const fS = grp('spaceX'), fP = grp('pairX'), fG = grp('gapX');
   const mw = (all && op.markWide != null && op.markWide !== 1) ? op.markWide : null;
   const plan = { label: op.label, items: [], precomp: [], font: {}, scopes: [], count: 0, adv: { before: 0, after: 0 },
-                 refuse: { range: [], gone: [], draw: [], mirror: false, narrow: op.refuse === 'narrow' }, warn: { lost: [], off: [], held: [], closed: [] } };
+                 refuse: { range: [], gone: [], draw: [], mirror: false, narrow: op.refuse === 'narrow' }, warn: { lost: [], off: [], held: [], closed: [], stretched: [] } };
   const held = new Set();
   const lim = (v, lo, hi, tag) => { const r = Math.round(v); if (r < lo || r > hi) { held.add(tag); return Math.max(lo, Math.min(hi, r)); } return r; };
   const big = (v, name) => { if (Math.abs(v) > GX_COORD_MAX && !plan.refuse.range.includes(name)) plan.refuse.range.push(name); };
@@ -18571,6 +18603,7 @@ function gxPlan(op, set) {
     if (r.lost && !r.gone) plan.warn.lost.push(nm);
     if (r.off) plan.warn.off.push(nm);
     if (r.closed) plan.warn.closed.push(nm);
+    if (spec.stretched) plan.warn.stretched.push(nm);   // the operation gave this letter its plain map in place of the one it was asked for (a width's stem step that would pull the letter apart)
     if (r.set.contours && r.set.advance != null) { plan.adv.before += letterAdvance(l); plan.adv.after += r.set.advance; }   // what the text's length becomes
     if (!Object.keys(r.set).length) return;
     const it = { l, set: r.set };
@@ -18596,6 +18629,7 @@ function gxPlan(op, set) {
         if (!sp || sp === 'mirror') return;
         const o = sp.out || gxOutline(s.contours, s.curves, sp.T);
         if (o.closed && !plan.warn.closed.includes(nm)) plan.warn.closed.push(nm);
+        if (sp.stretched && !plan.warn.stretched.includes(nm)) plan.warn.stretched.push(nm);
         const adv = Math.max(0, sp.advance != null ? sp.advance : Math.round((+s.advance || 0) * sp.T[0]));
         if (!o.rings.length) { plan.refuse.gone.push(nm); return; }
         if (gxOutlineExtent(o).worst > GX_COORD_MAX || adv > GX_SRC_ADV_MAX) big(GX_COORD_MAX + 1, nm);
@@ -18736,10 +18770,12 @@ function gxSlantOp(deg, o) {   // o: { scope, marks, name }
 const GXW_MIN = 50, GXW_MAX = 150, GXW_PRESETS = [85, 92, 100, 108, 115];
 const GXW_WIN = 8;            // a polygon's direction at a vertex is read over this much outline, so a noisy tracing does not jitter
 const GXW_LOCAL_MAX = 1500;   // above this many points a letter uses its one stem value for every edge (the per-edge look-across is quadratic)
+const GXW_WIDE = 2;           // a shapes' factor above this (one narrow letter, nearly all stroke, widened on its own) stretches everything but its strokes to more than twice its width: the dialog and Edit points say so
+const GXW_UPRIGHT = 0.95;     // an edge this upright as drawn (the sine of its angle, about 72°) is a side of a stem: where it shows, holding a joint together never moves it (gxwShape's buried ends)
 function gxwMedian(a) { if (!a.length) return null; const b = a.slice().sort((x, y) => x - y), m = b.length >> 1; return b.length % 2 ? b[m] : (b[m - 1] + b[m]) / 2; }
-function gxwEdges(rings) {   // every non-flat edge: [x1, y1, x2, y2, ring]
+function gxwEdges(rings) {   // every non-flat edge: [x1, y1, x2, y2, ring, the index of its first point in that ring]
   const E = [];
-  rings.forEach((r, ri) => { const n = r.length; for (let i = 0; i < n; i++) { const a = r[i], b = r[(i + 1) % n]; if (a[1] !== b[1]) E.push([a[0], a[1], b[0], b[1], ri]); } });
+  rings.forEach((r, ri) => { const n = r.length; for (let i = 0; i < n; i++) { const a = r[i], b = r[(i + 1) % n]; if (a[1] !== b[1]) E.push([a[0], a[1], b[0], b[1], ri, i]); } });
   return E;
 }
 function gxwRuns(E, y) {   // the ink (nonzero winding) along the horizontal line at y: [[x0, x1, edge0, edge1], …]
@@ -18831,6 +18867,16 @@ function gxwSplitCubic(p0, c1, c2, p3) {   // → the cubic cut at its interior 
   out.push([P[1], P[2], P[3]]);
   return out;
 }
+function gxwAt(P, u) {   // a point of a segment's absolute control polygon (a line's two points, or a cubic's four) at u
+  if (P.length === 2) return [P[0][0] + (P[1][0] - P[0][0]) * u, P[0][1] + (P[1][1] - P[0][1]) * u];
+  const v = 1 - u; return [v*v*v*P[0][0] + 3*v*v*u*P[1][0] + 3*v*u*u*P[2][0] + u*u*u*P[3][0], v*v*v*P[0][1] + 3*v*v*u*P[1][1] + 3*v*u*u*P[2][1] + u*u*u*P[3][1]];
+}
+function gxwCut(P, u) {   // that segment cut at u → [the part before, the part after]
+  const l = (a, b) => [a[0] + (b[0] - a[0]) * u, a[1] + (b[1] - a[1]) * u];
+  if (P.length === 2) { const q = l(P[0], P[1]); return [[P[0], q], [q, P[1]]]; }
+  const ab = l(P[0], P[1]), bc = l(P[1], P[2]), cd = l(P[2], P[3]), abc = l(ab, bc), bcd = l(bc, cd), q = l(abc, bcd);
+  return [[P[0], ab, abc, q], [q, bcd, cd, P[3]]];
+}
 function gxwFlatten(cv) {   // a curve entry → its integer polygon, as nodeContourToPoints flattens a node contour (10 samples per cubic)
   const pts = [cv.start.slice()]; let pen = cv.start;
   cv.segments.forEach(sg => {
@@ -18850,15 +18896,74 @@ function gxwUnloop(pts) {   // cut out a small loop where a ring crosses itself 
     const t = ((c[0] - a[0]) * (d[1] - c[1]) - (c[1] - a[1]) * (d[0] - c[0])) / den, P = [Math.round(a[0] + t * (b[0] - a[0])), Math.round(a[1] + t * (b[1] - a[1]))];
     if (inner <= 8 && inner <= n - inner) r = r.slice(0, i + 1).concat([P], r.slice(j + 1));
     else if (n - inner <= 8) r = [P].concat(r.slice(i + 1, j + 1));
-    else return null;   // a real overlap of two strokes, not a notch tip — left as it is (the gap columns report it)
+    else return null;   // a real overlap of two strokes, not a notch tip — left as it is (gxwShape reports the letter as closed)
     r = bgDedupe(r); if (r.length < 3) return null;
   }
   return contourSelfIntersects(r) ? null : r;
 }
+/* The pieces a letter's ink is in — the connected parts of its nonzero fill, counted on horizontal slices
+   one unit apart: runs of ink on neighbouring slices belong together when they overlap. → [n, firm]: n
+   lets parts within a unit of each other count as joined (two contours that only touch are one piece);
+   firm asks two CONTOURS for a real overlap — a joint that holds only by touching is one a rounding can
+   open — and takes a contour's own ink as one piece wherever it pinches (a run of ink belongs to the
+   contours that bound it). A piece smaller than GXW_SPECK units² is not counted either way: the tip
+   of a hairline serif can shed a sliver a unit high as the step thins it back, and that is not a part
+   of the letter coming away. No height moves under a width change, so the same slices cut the letter
+   before and after: the two results are only ever compared (gxwApart), never read on their own. */
+const GXW_SPECK = 60;
+function gxwPieces(rings) {
+  const E = gxwEdges(rings); if (!E.length) return [0, 0];
+  let y0 = Infinity, y1 = -Infinity;
+  E.forEach(e => { y0 = Math.min(y0, e[1], e[3]); y1 = Math.max(y1, e[1], e[3]); });
+  const R = rings.length, near = gxwBins(E), loose = [], wide = [], firm = rings.map((r, i) => i);   // firm: one node per contour, then one per run
+  const find = (p, a) => { while (p[a] !== a) { p[a] = p[p[a]]; a = p[a]; } return a; }, join = (p, a, b) => { a = find(p, a); b = find(p, b); if (a !== b) p[a] = b; };
+  let prev = [];
+  for (let y = Math.floor(y0) + 0.5; y < y1; y += 1) {
+    const cur = [];
+    gxwRuns(near(y), y).forEach(q => {
+      if (!(q[1] - q[0] > 0.01)) return;
+      const id = loose.length; cur.push([q[0], q[1], id]); loose.push(id); wide.push(q[1] - q[0]); firm.push(R + id);
+      join(firm, R + id, q[2][4]); join(firm, R + id, q[3][4]);
+    });
+    cur.forEach(c => prev.forEach(p => {
+      const ov = Math.min(c[1], p[1]) - Math.max(c[0], p[0]);
+      if (ov > -1) join(loose, c[2], p[2]);
+      if (ov >= Math.min(1, 0.5 * Math.min(c[1] - c[0], p[1] - p[0]))) join(firm, R + c[2], R + p[2]);   // a unit — or half of the narrower run, so the tip of a point still belongs to its stroke
+    }));
+    prev = cur;
+  }
+  const count = (p, off) => {   // the parts of some size: slices are a unit apart, so a run's width is its area
+    const area = new Map(); let n = 0;
+    for (let i = 0; i < loose.length; i++) { const r = find(p, off + i); area.set(r, (area.get(r) || 0) + wide[i]); }
+    area.forEach(a => { if (a >= GXW_SPECK) n++; });
+    return n;
+  };
+  return [count(loose, 0), count(firm, R)];
+}
+/* Did the stem step pull a letter's ink apart? rings / curves: the letter before; out: gxwShape's result;
+   memo: a (Weak)Map that keeps the "before" counts per letter (the dialog plans the same font many times).
+   Counted on the polygons and, where curves ship, on the curves too (flattened) — the two agree only to
+   the fit tolerance, and a joint can hold in one and open in the other. */
+function gxwApart(rings, curves, out, memo, key) {
+  if (rings.length < 2) return false;   // one contour is one piece of ink, whatever is done to it
+  const flat = cv => {   // finer than gxwFlatten and not rounded: a hairline's two sides must not be rounded onto each other
+    const pts = [cv.start]; let pen = cv.start;
+    cv.segments.forEach(sg => { if (sg.type === 'cubic') flattenCubic(pen, sg.pts[0], sg.pts[1], sg.pts[2], 16).forEach(p => pts.push(p)); else pts.push(sg.pts[0]); pen = sg.pts[sg.pts.length - 1]; });
+    return pts;
+  };
+  const ship = (rs, cvs) => (Array.isArray(cvs) && cvs.length === rs.length && cvs.some(cv => cv && cv.segments && cv.segments.length))
+    ? rs.map((r, i) => (cvs[i] && cvs[i].segments && cvs[i].segments.length) ? flat(cvs[i]) : r) : null;
+  let was = memo ? memo.get(key) : null;
+  if (!was) { const s0 = ship(rings, curves); was = [gxwPieces(rings), s0 ? gxwPieces(s0) : null]; if (memo) memo.set(key, was); }
+  const more = (a, b) => b[0] > a[0] || b[1] > a[1];
+  if (more(was[0], gxwPieces(out.rings))) return true;
+  const s1 = was[1] ? ship(out.rings, out.curves) : null;
+  return !!s1 && more(was[1], gxwPieces(s1));
+}
 /* The outline step. rings: [[x,y]…] per contour (font units, as stored); curves: 1:1 or null; s: the
    X factor; t: the stem thickness to restore; hand: the polygon is exactly its curves flattened
    (a hand-edited letter) and is rebuilt that way. → gxOutline's record { keep, rings, curves, lost }
-   plus closed (a counter closes or nearly does, or strokes meet — see the gap columns below), tau (the shift that put the
+   plus closed (a counter closes or nearly does, or strokes meet — the gap columns below — or a stroke runs into its own contour), tau (the shift that put the
    ink's left edge at s × its old place) and b0 / b1 (the polygon's bounds before and after). */
 function gxwShape(rings, curves, s, t, hand) {
   const hasCv = Array.isArray(curves) && curves.length === rings.length;
@@ -18878,42 +18983,213 @@ function gxwShape(rings, curves, s, t, hand) {
     return [w, -sg * Math.sign(uy) * (tl / 2) * (1 - s * Math.sqrt(ux * ux / (s * s) + w)) / Math.abs(uy)];
   };
   const mix = (a, b) => (a[0] + b[0] > 0) ? (a[0] * a[1] + b[0] * b[1]) / (a[0] + b[0]) : 0;
-  const movePoly = (r, sg) => {
-    const n = r.length;
-    const reach = (i, dir) => { let j = i, acc = 0; for (let k = 0; k < n - 1 && acc < GXW_WIN; k++) { const nj = (j + dir + n) % n; acc += Math.hypot(r[nj][0] - r[j][0], r[nj][1] - r[j][1]); j = nj; } return r[j]; };
-    const P = r.map((V, i) => {
-      const B = reach(i, -1), F = reach(i, 1);
-      const a = leg(V[0] - B[0], V[1] - B[1], (V[0] + B[0]) / 2, (V[1] + B[1]) / 2, sg), b = leg(F[0] - V[0], F[1] - V[1], (V[0] + F[0]) / 2, (V[1] + F[1]) / 2, sg);
-      return [V[0] * s + mix(a, b), V[1]];
-    });
-    // An edge whose ends have passed each other (the floor of a notch narrower than the stems grew): the
-    // two ends meet in the middle — the notch closes to a point there instead of the outline crossing itself.
-    for (let i = 0; i < n; i++) { const j = (i + 1) % n; if ((r[j][0] - r[i][0]) * (P[j][0] - P[i][0]) < 0) { const m = (P[i][0] + P[j][0]) / 2; P[i][0] = m; P[j][0] = m; } }
-    return P;
+  const reach = (r, i, dir) => { const n = r.length; let j = i, acc = 0; for (let k = 0; k < n - 1 && acc < GXW_WIN; k++) { const nj = (j + dir + n) % n; acc += Math.hypot(r[nj][0] - r[j][0], r[nj][1] - r[j][1]); j = nj; } return r[j]; };
+  // An edge whose ends have passed each other (the floor of a notch narrower than the stems grew): the
+  // two ends meet in the middle — the notch closes to a point there instead of the outline crossing itself.
+  const unpass = (r, P) => { const n = r.length; for (let i = 0; i < n; i++) { const j = (i + 1) % n; if ((r[j][0] - r[i][0]) * (P[j][0] - P[i][0]) < 0) { const m = (P[i][0] + P[j][0]) / 2; P[i][0] = m; P[j][0] = m; } } return P; };
+  const movePoly = (r, sg) => unpass(r, r.map((V, i) => {
+    const B = reach(r, i, -1), F = reach(r, i, 1);
+    const a = leg(V[0] - B[0], V[1] - B[1], (V[0] + B[0]) / 2, (V[1] + B[1]) / 2, sg), b = leg(F[0] - V[0], F[1] - V[1], (V[0] + F[0]) / 2, (V[1] + F[1]) / 2, sg);
+    return [V[0] * s + mix(a, b), V[1]];
+  }));
+  const moved0 = rings.map((r, i) => (r.length >= 3 ? movePoly(r, sides[i]) : r.map(p => [p[0] * s, p[1]])));
+  /* Buried ends. A letter assembled from overlapping contours (a roof bar run into a stem, the arch of an n
+     run into its stem) has edges that lie inside another contour's ink. They are not the sides of a stroke,
+     and corrected as if they were, the end of a widened bar is pulled back out of the stem it sat in while
+     the stem's own side moves away from it: the pieces come apart. So where one ring can lie in another's
+     ink, each leg is asked whether just OUTSIDE its own ring there is ink of the other rings (hidden — and
+     the ring must not be a counter cut out of that ink). A point is held inside the horizontal chord of
+     ink of the ring that covers it (chord) when it has a buried leg the step moves it for (up: a flat leg
+     moves nothing), or — the tip of a foot that only just reaches into a leg — when it lies in such ink
+     itself, its outline turns back there instead of running on past, and its cover holds nothing of its
+     own in this ring (tip). Two rings buried in each other hold only the smaller one. A held point still
+     buried where the step put it is not moved. One the step pushed out is put back as deep from that end
+     as it was (up to half a stem; narrowed with a narrowed letter), the chord's ends standing where their
+     own rings' points were moved to (keep; settled in a few passes, since a cover's own end may be held
+     too), and the rest of its buried run moves by the same amount, so the end of a stroke shifts as one
+     piece and the stroke's two sides keep their spacing (hold). But an upright side that shows is the
+     step's alone: a hold that would move a part of a near-upright edge (GXW_UPRIGHT, as drawn) by more
+     than a unit where that part shows — not inside other ink and not running along it within a unit and
+     a half, as the underside of an ear merging into its stem does — is let go, and the other holds settle
+     again without it (shows): a stem whose corner only touches a roof, or the side of a tail below the
+     bowl it leaves, keeps the thickness the step gave it. Where the point let go is drawn on a corner of
+     its cover (a stem's top corner on a corner of the roof), that corner of the cover goes with it instead,
+     unless that moves an upright side of the cover — the two still meet. A joint that comes apart all the
+     same is the plan's to stretch plainly (gxwApart). A ring's curve follows its polygon's holds (moveCurve). Two kinds of ring are never asked and take exactly the path above: one with no ring of its own
+     direction near it (every ordinary letter), and one with less than a third of its outline still
+     showing — a fill-in at a joint, not a stroke: held in its two covers it would be pulled into a web
+     across the joint, where left alone it thins away as the joint opens. */
+  const turn = rings.map(r => (r.length >= 3 && signedArea(r) > 0) ? 1 : -1);   // +1: the ring's inside is on the left of its direction of travel (and counts −1 in gxwRuns' winding)
+  const size = rings.map(r => (r.length >= 3 ? Math.abs(signedArea(r)) : 0)), bx = rings.map(r => polysBounds([r]));
+  const deep = rings.map((r, i) => r.length >= 3 && rings.some((q, j) => j !== i && q.length >= 3 && turn[j] === turn[i] &&
+    bx[j].minX <= bx[i].maxX + 1 && bx[j].maxX >= bx[i].minX - 1 && bx[j].minY <= bx[i].maxY + 1 && bx[j].maxY >= bx[i].minY - 1));
+  const crossX = (e, y) => e[0] + (y - e[1]) * (e[2] - e[0]) / (e[3] - e[1]);
+  const inked = (ri, q) => {   // is q in ink of the OTHER rings, which would be ink with ring ri or without it? → q, or null
+    const B = near(q[1]); let w = 0;
+    for (let i = 0; i < B.length; i++) { const e = B[i]; if (e[4] !== ri && (e[1] > q[1]) !== (e[3] > q[1]) && crossX(e, q[1]) < q[0]) w += e[3] > e[1] ? 1 : -1; }
+    return (w !== 0 && w - turn[ri] !== 0) ? q : null;
   };
-  const moveCurve = (cv, sg) => {
+  const hidden = (ri, px, py, dx, dy) => { const L = Math.hypot(dx, dy); if (!L) return null; const o = turn[ri] * 0.25 / L; return inked(ri, [px + o * dy, py - o * dx]); };   // the outline of ring ri at p, running along (dx, dy): is it covered — tested a quarter unit outside the ring? → that point, or null
+  const chord = (ri, q) => {   // the largest other ring of ri's own direction that holds the point q, and its run of ink through q (its counters taken out) → [left edge, right edge, their x at q's height, that height, that ring]
+    const B = near(q[1]), cr = [], on = e => e[4] !== ri && (e[1] > q[1]) !== (e[3] > q[1]), wind = new Map(); let j = -1;
+    for (let i = 0; i < B.length; i++) { const e = B[i]; if (on(e) && turn[e[4]] === turn[ri] && crossX(e, q[1]) < q[0]) wind.set(e[4], (wind.get(e[4]) || 0) + (e[3] > e[1] ? 1 : -1)); }
+    wind.forEach((w, k) => { if (w && (j < 0 || size[k] > size[j])) j = k; });
+    if (j < 0) return null;
+    for (let i = 0; i < B.length; i++) { const e = B[i]; if (on(e) && (e[4] === j || turn[e[4]] !== turn[ri])) cr.push([crossX(e, q[1]), e[3] > e[1] ? 1 : -1, e]); }
+    cr.sort((a, b) => a[0] - b[0]);
+    let w = 0, L = null;
+    for (let i = 0; i < cr.length; i++) { const c = cr[i], w1 = w + c[1]; if (!w && w1) L = c; else if (w && !w1 && L[0] <= q[0] && q[0] <= c[0]) return [L[2], c[2], L[0], c[0], q[1], j]; w = w1; }
+    return null;
+  };
+  const up = (dx, dy) => { const X = dx * s, L2 = X * X + dy * dy; return L2 > 0 && dy * dy >= 1e-4 * L2; };   // the step moves a point for this leg (leg()'s own test: it is not flat)
+  const heldOf = ri => {   // the points of ring ri that must stay buried: [index, its cover's chord, held only for lying in the cover] — null when it has none, or when the ring is a fill-in
+    const r = rings[ri], n = r.length, list = []; let seen = 0, all = 0;
+    const at = (V, T, f) => [V[0] + f * (T[0] - V[0]), V[1] + f * (T[1] - V[1])];
+    const legHid = (V, T, dx, dy) => [0.5, 0.25, 0.75].every(f => { const p = at(V, T, f); return hidden(ri, p[0], p[1], dx, dy); });
+    const probe = (V, T, dx, dy) => { const d = Math.hypot(T[0] - V[0], T[1] - V[1]), p = at(V, T, Math.min(0.25, d / 2) / (d || 1)), q = hidden(ri, p[0], p[1], dx, dy); return q && chord(ri, q); };
+    for (let i = 0; i < n; i++) {
+      const V = r[i], B = reach(r, i, -1), F = reach(r, i, 1);
+      const bdx = V[0] - B[0], bdy = V[1] - B[1], fdx = F[0] - V[0], fdy = F[1] - V[1], lb = Math.hypot(bdx, bdy), lf = Math.hypot(fdx, fdy);
+      const hb = legHid(V, B, bdx, bdy), hf = legHid(V, F, fdx, fdy);
+      all += lb + lf; seen += (hb ? 0 : lb) + (hf ? 0 : lf);
+      const c = (hf && up(fdx, fdy) && probe(V, F, fdx, fdy)) || (hb && up(bdx, bdy) && probe(V, B, bdx, bdy));   // a buried leg the step moves the point for
+      const d = !c && !(bdy * fdy > 0) && inked(ri, V) && chord(ri, V);   // or the point itself lies in the cover where its outline turns back (the tip of a foot that only just reaches into a leg)
+      if (c || d) list.push([i, c || d, !c]);
+    }
+    return (list.length && seen * 3 >= all) ? list : null;
+  };
+  const held = rings.map((r, i) => (deep[i] ? heldOf(i) : null));
+  const into = new Set();   // "i>j": ring i has buried legs held in ring j
+  held.forEach((list, ri) => { if (list) list.forEach(d => { if (!d[2]) into.add(ri + '>' + d[1][5]); }); });
+  held.forEach((list, ri) => { if (list) list.forEach(d => { const j = d[1][5]; if (!d[2] && into.has(j + '>' + ri) && (size[ri] > size[j] || (size[ri] === size[j] && ri > j))) d[3] = true; }); });   // two rings buried in each other: the larger one gives way
+  held.forEach((list, ri) => { if (list) list.forEach(d => { if (d[3]) into.delete(ri + '>' + d[1][5]); }); });
+  const tip = (ri, c) => !into.has(c[5] + '>' + ri);   // a point only lying in its cover is held there only when the cover holds nothing of its own in this ring
+  held.forEach((list, ri) => { if (list) { const f = list.filter(d => !d[3] && (!d[2] || tip(ri, d[1]))); held[ri] = f.length ? f : null; } });
+  const moved = moved0.map((P, i) => (held[i] ? P.map(p => p.slice()) : P));
+  const keep = (c, x, own) => {   // the place of a point that was at x and that the step put at `own`, held inside its cover's chord as the chord's ends now stand
+    const at = e => { const P = moved[e[4]], a = P[e[5]], b = P[(e[5] + 1) % P.length]; return a[0] + (c[4] - e[1]) / (e[3] - e[1]) * (b[0] - a[0]); };
+    const L = at(c[0]), R = at(c[1]);
+    if (own > L + 1 && own < R - 1) return own;   // still buried where the step put it
+    const f = Math.min(1, s), lo = L + f * Math.min(x - c[2], t / 2), hi = R - f * Math.min(c[3] - x, t / 2);   // the depth it had — a narrowed letter's, narrowed with it
+    return lo > hi ? (lo + hi) / 2 : Math.max(lo, Math.min(hi, own));
+  };
+  const hold = (list, xs, own, n) => {   // list: a ring's [index, chord] in ring order (n points); xs: their old x; own: where the step put them → their held places, a buried run moving as one piece
+    const at = list.map((d, k) => keep(d[1], xs[k], own[k])), out = at.slice(), N = list.length;
+    const next = k => list[(k + 1) % N][0] === (list[k][0] + 1) % n && list[(k + 1) % N][1][5] === list[k][1][5];   // the next held point is the ring's next point, in the same cover
+    let a0 = 0; while (a0 < N && next((a0 - 1 + N) % N)) a0++; if (a0 === N) a0 = 0;   // start at the beginning of a run
+    for (let a = 0; a < N; ) {
+      let b = a + 1; while (b < N && next((a0 + b - 1) % N)) b++;
+      let D = 0, sg = 0, mixed = false;   // the run's largest correction, when all of its corrections go one way
+      for (let q = a; q < b; q++) { const k = (a0 + q) % N, dd = at[k] - own[k]; if (Math.abs(dd) > 1e-9) { if (sg && Math.sign(dd) !== sg) mixed = true; sg = Math.sign(dd); if (Math.abs(dd) > Math.abs(D)) D = dd; } }
+      if (D && !mixed) for (let q = a; q < b; q++) { const k = (a0 + q) % N; out[k] = keep(list[k][1], xs[k], own[k] + D); }
+      a = b;
+    }
+    return out;
+  };
+  const nearInk = (ri, px, py, dx, dy) => { const L = Math.hypot(dx, dy), o = 1.5 / (L || 1); return !!L && !!(inked(ri, [px + o * dy, py - o * dx]) || inked(ri, [px - o * dy, py + o * dx])); };   // other rings' ink within a unit and a half of this point of ring ri's outline, on either side
+  const shows = (ri, D, i, dir) => {   // D: the holds of ring ri's points → does the hold of point i move a part of its edge toward i + dir that shows, on a near-upright edge, by more than a unit (its own share of that more than half: a point is not let go for its neighbour's hold)?
+    const P = rings[ri], n = P.length, j = (i + dir + n) % n, V = P[i], N = P[j], dx = N[0] - V[0], dy = N[1] - V[1];
+    if (!(Math.abs(D[i]) > 1e-9) || Math.abs(dy) < GXW_UPRIGHT * Math.hypot(dx, dy)) return false;
+    const tx = dir > 0 ? dx : -dx, ty = dir > 0 ? dy : -dy;   // the ring's own direction of travel along that edge
+    return [0.05, 0.2, 0.35, 0.5, 0.65, 0.8, 0.95].some(f => Math.abs((1 - f) * D[i] + f * D[j]) > 1 && Math.abs((1 - f) * D[i]) > 0.5 && !hidden(ri, V[0] + f * dx, V[1] + f * dy, tx, ty) && !nearInk(ri, V[0] + f * dx, V[1] + f * dy, tx, ty));
+  };
+  const welded = [];   // rings whose corner went with a let-go point of another ring (below)
+  if (held.some(Boolean)) {
+    const was = held.map(Boolean), first = held.map(l => l && l.slice());
+    for (let round = 0; round < 24; round++) {
+      held.forEach((list, ri) => { if (was[ri]) moved[ri] = moved0[ri].map(p => p.slice()); });
+      for (let pass = 0; pass < 3; pass++) held.forEach((list, ri) => { if (!list) return; const r = rings[ri], x = hold(list, list.map(d => r[d[0]][0]), list.map(d => moved0[ri][d[0]][0]), r.length); list.forEach((d, k) => { moved[ri][d[0]][0] = x[k]; }); });
+      let letGo = false;
+      held.forEach((list, ri) => {
+        if (!list) return;
+        const D = rings[ri].map((p, i) => moved[ri][i][0] - moved0[ri][i][0]), f = list.filter(d => !shows(ri, D, d[0], 1) && !shows(ri, D, d[0], -1));
+        if (f.length !== list.length) { letGo = true; held[ri] = f.length ? f : null; }
+      });
+      if (!letGo) break;
+    }
+    held.forEach((list, ri) => { if (!list && was[ri]) moved[ri] = moved0[ri]; });
+    // Two contours drawn to meet at a corner (a stem whose top corner is a corner of the roof over it): where the stem's corner
+    // was let go, the roof's corner at that place goes with it instead — unless that would move an upright side of the roof.
+    first.forEach((list, ri) => { if (list) list.forEach(d => {
+      if (held[ri] && held[ri].includes(d)) return;
+      const V = rings[ri][d[0]], cj = d[1][5], C = rings[cj]; let w = -1, bd = 1.5;
+      C.forEach((p, i) => { const e = Math.hypot(p[0] - V[0], p[1] - V[1]); if (e <= bd) { bd = e; w = i; } });
+      if (w < 0) return;
+      const D = C.map((p, i) => moved[cj][i][0] - moved0[cj][i][0]), x = moved[ri][d[0]][0] + (C[w][0] - V[0]) * s;
+      D[w] = x - moved0[cj][w][0];
+      if (shows(cj, D, w, 1) || shows(cj, D, w, -1)) return;
+      if (moved[cj] === moved0[cj]) moved[cj] = moved0[cj].map(p => p.slice());
+      moved[cj][w][0] = x; welded[cj] = true;
+    }); });
+    moved.forEach((P, ri) => { if (P !== moved0[ri]) unpass(rings[ri], P); });
+  }
+  const moveCurve = (cv, sg, ri) => {
     const segs = []; let pen = cv.start;   // absolute control polygons, cubics cut at their extrema
     cv.segments.forEach(g => {
       if (g.type === 'cubic') gxwSplitCubic(pen, g.pts[0], g.pts[1], g.pts[2]).forEach(q => { segs.push([pen, q[0], q[1], q[2]]); pen = q[2]; });
       else { segs.push([pen, g.pts[0]]); pen = g.pts[0]; }
     });
-    const m = segs.length, far = (P, from, to) => { for (let i = from; i !== to; i += (to > from ? 1 : -1)) if (Math.hypot(P[i][0] - P[from][0], P[i][1] - P[from][1]) > 0.01 && i !== from) return P[i]; return P[to]; };
-    const at = (P, u) => { if (P.length === 2) return [P[0][0] + (P[1][0] - P[0][0]) * u, P[0][1] + (P[1][1] - P[0][1]) * u]; const v = 1 - u; return [v*v*v*P[0][0] + 3*v*v*u*P[1][0] + 3*v*u*u*P[2][0] + u*u*u*P[3][0], v*v*v*P[0][1] + 3*v*v*u*P[1][1] + 3*v*u*u*P[2][1] + u*u*u*P[3][1]]; };
+    let m = segs.length;
+    const far = (P, from, to) => { for (let i = from; i !== to; i += (to > from ? 1 : -1)) if (Math.hypot(P[i][0] - P[from][0], P[i][1] - P[from][1]) > 0.01 && i !== from) return P[i]; return P[to]; };
+    const at = gxwAt;
     const dl = segs.map((P, j) => {   // the shift of the node each segment STARTS at: its incoming leg (end of the previous segment) and its outgoing one
       const Q = segs[(j - 1 + m) % m], V = P[0], pin = far(Q, Q.length - 1, 0), pout = far(P, 0, P.length - 1);
       const si = at(Q, Q.length === 2 ? 0.5 : 0.8), so = at(P, P.length === 2 ? 0.5 : 0.2);
       return mix(leg(V[0] - pin[0], V[1] - pin[1], si[0], si[1], sg), leg(pout[0] - V[0], pout[1] - V[1], so[0], so[1], sg));
     });
-    for (let j = 0; j < m; j++) {   // the same rule for a curve's nodes (movePoly): a segment whose ends passed each other closes to a point
+    const unpassCv = () => { for (let j = 0; j < m; j++) {   // the same rule for a curve's nodes (movePoly): a segment whose ends passed each other closes to a point
       const a = segs[j][0], bn = segs[(j + 1) % m][0], i2 = (j + 1) % m, od = (bn[0] - a[0]) * s, nd = od + dl[i2] - dl[j];
       if (od * nd < 0) { const mid = (a[0] * s + dl[j] + bn[0] * s + dl[i2]) / 2; dl[j] = mid - a[0] * s; dl[i2] = mid - bn[0] * s; }
+    } };
+    unpassCv();
+    const Dv = (held[ri] || welded[ri]) ? rings[ri].map((p, i) => moved[ri][i][0] - moved0[ri][i][0]) : null;   // the polygon's holds (the polygon is this curve flattened)
+    if (Dv && Dv.some(d => Math.abs(d) > 1e-9)) {   // a held ring's curve is also cut where those holds begin and end, so that it bends where the polygon bends and nowhere else
+      const r = rings[ri], n = r.length, on = i => Math.abs(Dv[(i + n) % n]) > 1e-9, cuts = new Map();
+      for (let i = 0; i < n; i++) {
+        if (!(on(i) || on(i - 1) || on(i + 1))) continue;
+        const Q = r[i], A = r[(i - 1 + n) % n], B = r[(i + 1) % n], wx = B[0] - A[0], wy = B[1] - A[1];   // searched only where the curve runs the polygon's way (the two sides of a hairline run opposite ways)
+        const dist = (j, u) => { const P = segs[j], p = gxwAt(P, u), a = gxwAt(P, Math.max(0, u - 0.01)), b = gxwAt(P, Math.min(1, u + 0.01)); return ((b[0] - a[0]) * wx + (b[1] - a[1]) * wy < 0) ? Infinity : Math.hypot(p[0] - Q[0], p[1] - Q[1]); };
+        let best = null;
+        for (let j = 0; j < segs.length; j++) for (let q = 0; q <= 32; q++) { const d = dist(j, q / 32); if (!best || d < best[0]) best = [d, j, q / 32]; }
+        let d = best[0], u = best[2]; const j = best[1];
+        for (let h = 1 / 64; h > 1 / 4096; h /= 2) [u - h, u + h].forEach(v => { if (v >= 0 && v <= 1) { const e = dist(j, v); if (e < d) { d = e; u = v; } } });
+        const P = segs[j], p = gxwAt(P, u), a = P[0], b = P[P.length - 1];
+        if (d <= 3 && Math.hypot(p[0] - a[0], p[1] - a[1]) > 1 && Math.hypot(p[0] - b[0], p[1] - b[1]) > 1) { if (!cuts.has(j)) cuts.set(j, []); cuts.get(j).push(u); }
+      }
+      if (cuts.size) {   // a cut node takes the shift the step already gave that point of the curve, so the cut alone changes nothing
+        const out = [], dout = [];
+        segs.forEach((P, j) => {
+          const d0 = dl[j], d1 = dl[(j + 1) % m]; let rest = P, done = 0, last = P[0]; dout.push(d0);
+          (cuts.get(j) || []).sort((x, y) => x - y).forEach(u => { const q = gxwAt(P, u); if (Math.hypot(q[0] - last[0], q[1] - last[1]) <= 1) return; const c = gxwCut(rest, (u - done) / (1 - done)), w = P.length === 2 ? 1 - u : (1 - u) * (1 - u) * (1 - u) + 3 * (1 - u) * (1 - u) * u; out.push(c[0]); dout.push(w * d0 + (1 - w) * d1); rest = c[1]; done = u; last = q; });
+          out.push(rest);
+        });
+        segs.splice(0, segs.length, ...out); dl.splice(0, dl.length, ...dout); m = segs.length;
+      }
+    }
+    if (Dv) {   // a node where the polygon is held goes where the held polygon is (across the edge where a hold ends, blended into the curve's own place); its handles go with it
+      const r = rings[ri], n = r.length, P1 = moved[ri], on = i => Math.abs(Dv[i]) > 1e-9, unit = (x, y) => { const L = Math.hypot(x, y); return L ? [x / L, y / L] : [0, 0]; };
+      let any = false;
+      for (let j = 0; j < m; j++) {
+        const V = segs[j][0], Q = segs[(j - 1 + m) % m], pin = far(Q, Q.length - 1, 0), pout = far(segs[j], 0, segs[j].length - 1), a = unit(V[0] - pin[0], V[1] - pin[1]), b = unit(pout[0] - V[0], pout[1] - V[1]), wx = a[0] + b[0], wy = a[1] + b[1];
+        let best = null;   // the nearest edge that runs the curve's way here
+        for (let i = 0; i < n; i++) {
+          const p = r[i], q = r[(i + 1) % n], ex = q[0] - p[0], ey = q[1] - p[1], L2 = ex * ex + ey * ey; if (!L2 || ex * wx + ey * wy < 0) continue;
+          const f = Math.max(0, Math.min(1, ((V[0] - p[0]) * ex + (V[1] - p[1]) * ey) / L2)), d = Math.hypot(p[0] + f * ex - V[0], p[1] + f * ey - V[1]);
+          if (!best || d < best[0]) best = [d, i, f];
+        }
+        if (!best || best[0] > 3) continue;
+        const i = best[1], i2 = (i + 1) % n, f = best[2], w = (on(i) ? 1 - f : 0) + (on(i2) ? f : 0);   // how much of this place is held
+        if (!(w > 1e-9)) continue;
+        const px = r[i][0] + f * (r[i2][0] - r[i][0]), held = P1[i][0] + f * (P1[i2][0] - P1[i][0]) + (V[0] - px) * s;   // the held polygon's x here (the node's own offset from the polygon kept)
+        dl[j] = w * (held - V[0] * s) + (1 - w) * dl[j]; any = true;
+      }
+      if (any) unpassCv();
     }
     const mv = (p, d) => [p[0] * s + d, p[1]];
     return { winding: cv.winding, start: mv(segs[0][0], dl[0]),
       segments: segs.map((P, j) => { const d0 = dl[j], d1 = dl[(j + 1) % m]; return P.length === 2 ? { type: 'line', pts: [mv(P[1], d1)] } : { type: 'cubic', pts: [mv(P[1], d0), mv(P[2], d1), mv(P[3], d1)] }; }) };
   };
-  const moved = rings.map((r, i) => (r.length >= 3 ? movePoly(r, sides[i]) : r.map(p => [p[0] * s, p[1]])));
-  const movedCv = hasCv ? curves.map((cv, i) => (cv && cv.segments && cv.segments.length) ? moveCurve(cv, sides[i]) : null) : null;
+  const movedCv = hasCv ? curves.map((cv, i) => (cv && cv.segments && cv.segments.length) ? moveCurve(cv, sides[i], i) : null) : null;
   const b0 = polysBounds(rings); let mn = Infinity;
   moved.forEach(r => r.forEach(p => { if (p[0] < mn) mn = p[0]; }));
   const tau = Number.isFinite(mn) ? Math.round(b0.minX * s) - mn : 0;   // the ink's left edge lands exactly on s × its old place — the side bearing scales with the letter
@@ -18924,7 +19200,10 @@ function gxwShape(rings, curves, s, t, hand) {
     let pts = (hand && cv) ? gxwFlatten(cv) : bgDedupe(r.map(rp));
     // The step must not leave an outline crossing itself where it did not: the tip of a sharp notch is cut
     // back to where its two sides now meet. That contour then ships as its polygon (a null curve entry).
-    if (pts.length <= 400 && contourSelfIntersects(pts) && !contourSelfIntersects(rings[i])) { const mended = gxwUnloop(pts); if (mended) { pts = mended; cv = null; } }
+    // A crossing that cannot be mended that way is a stroke that now runs into another part of its own
+    // contour (the free end of an open bowl reaching the stem). The gap columns below cannot see it — the
+    // gap it closed shares its column with the wide counter beside it — so the letter is reported here.
+    if (pts.length <= 400 && contourSelfIntersects(pts) && !contourSelfIntersects(rings[i])) { const mended = gxwUnloop(pts); if (mended) { pts = mended; cv = null; } else out.closed = true; }
     const A0 = signedArea(rings[i]), A1 = pts.length >= 3 ? signedArea(pts) : 0;
     if (pts.length < 3 || Math.abs(A1) < 1 || (A1 > 0) !== (A0 > 0)) { out.lost++; if (A0 * sides[i] > 0) out.closed = true; return; }   // collapsed or turned inside out — and if it was a counter, the counter closed
     out.keep.push(i); out.rings.push(pts);
@@ -18964,15 +19243,26 @@ function gxwShape(rings, curves, s, t, hand) {
 function gxWidthOp(pct, o) {
   const s = pct / 100, all = o.scope === 'all', stems = !!o.stems;
   const cen = stems ? (o.cen || gxwCensus()) : null, k = (stems && o.k != null) ? o.k : s;
+  /* One letter's stem step, worked out once → { t, out, apart }. The guarantee behind the step is that a
+     letter never leaves it in more pieces than it came in: one whose ink came apart all the same (apart —
+     gxwApart) is not given the step. It is stretched plainly, which cannot separate anything, and the
+     plan names it (warn.stretched). */
+  const tried = new Map(), memo = cen ? (cen.pieces || (cen.pieces = new WeakMap())) : null;   // the "before" counts ride on the census, which the dialog keeps while it is open
+  const step = l => {
+    let r = tried.get(l); if (r) return r;
+    r = { t: gxwStemFor(cen, l), out: null, apart: false };
+    if (r.t != null) { const rings = l.contours.map(c => c.points); r.out = gxwShape(rings, l.curves, k, r.t, !!l.handEdited); r.apart = !!r.out.b1 && gxwApart(rings, l.curves, r.out, memo, l); }
+    tried.set(l, r); return r;
+  };
   return {
     label: o.scope === 'letter' ? 'width ' + pct + '% — ' + o.name : 'letter width ' + pct + '%',
-    refuse: (stems && !(k >= 0.2 && k <= 2)) ? 'narrow' : null,
+    refuse: (stems && !(k >= 0.2)) ? 'narrow' : null,   // no upper bound: a factor above 2 is a letter whose ink is nearly all stem being widened — only its side spaces grow (a result out of range is the plan's own refusal)
     affine(l) {
-      const has = !!(l.contours && l.contours.length), t = (stems && has) ? gxwStemFor(cen, l) : null;
+      const has = !!(l.contours && l.contours.length), st = (stems && has) ? step(l) : null;
       if (!has) return [k, 0, 0, 1, 0, 0];
       const adv0 = letterAdvance(l);
-      if (t == null) return { T: [k, 0, 0, 1, 0, 0], advance: Math.round(adv0 * k), setAdvance: true };   // the plain scale (and a font with no measurable stem)
-      const out = gxwShape(l.contours.map(c => c.points), l.curves, k, t, !!l.handEdited);
+      if (!st || st.t == null || st.apart) return { T: [k, 0, 0, 1, 0, 0], advance: Math.round(adv0 * k), setAdvance: true, stretched: !!(st && st.apart) };   // the plain scale (a font with no measurable stem, and a letter the step would pull apart)
+      const out = st.out;
       if (!out.b1) return { T: [k, 0, 0, 1, 0, 0], out };
       const W0 = out.b0.maxX - out.b0.minX, ka = W0 > 0 ? (out.b1.maxX - out.b1.minX) / W0 : k;
       return { T: [k, 0, 0, 1, out.tau, 0], out, penK: 1, keepLsb: true, setAdvance: true,
@@ -18981,7 +19271,8 @@ function gxWidthOp(pct, o) {
     },
     stamp(l) {
       const st = { slant: slantDegOf(slantTan(letterSlant(l)) * k) || null };   // a lean is a tangent: it narrows with the letter
-      if (stems && l.contours && l.contours.length && gxwStemFor(cen, l) != null) {
+      const kept = (stems && l.contours && l.contours.length) ? step(l) : null;
+      if (kept && kept.t != null && !kept.apart) {
         if (l.lsb != null) st.lsb = Math.max(0, Math.round(l.lsb * k));           // a stored left margin is a width (the affine carries the stem shift)
         // A photo cannot keep stems: re-traced, this letter would silently return to the thin squeeze, so it
         // counts as hand-edited — Trace then asks before it discards the correction.
@@ -19207,14 +19498,16 @@ function scaleAllScan() {
     if (was == null || Math.abs(was - res.k) > 1e-9) saStrips();
   }
   const ap = document.getElementById('saApply'), note = document.getElementById('saNote');
-  const bad = gxRefused(plan), empty = !plan.scopes.length;
-  note.className = 'hint' + ((bad || plan.warn.closed.length) ? ' warn' : '');
+  const bad = gxRefused(plan), empty = !plan.scopes.length, wide = st.tool === 'width' && st.opt[0] && res.k > GXW_WIDE;
+  note.className = 'hint' + ((bad || plan.warn.closed.length || plan.warn.stretched.length || wide) ? ' warn' : '');
   if (bad) note.textContent = gxRefusalText(plan, st.tool, st.val);
   else if (empty) note.textContent = I18n.t('fontmaker.scaleall.note_nothing');
   else {
     const parts = [I18n.t(plan.count === 1 ? 'fontmaker.scaleall.note_count.one' : 'fontmaker.scaleall.note_count.other', { count: plan.count })];
     if (res.ratio != null && st.opt[0]) parts.push(I18n.t('fontmaker.widthall.note_ratio', { pct: Math.abs(res.ratio * 100 - Math.round(res.ratio * 100)) < 0.15 ? Math.round(res.ratio * 100) : Math.round(res.ratio * 1000) / 10 }));
     if (plan.warn.closed.length) parts.push(I18n.t('fontmaker.widthall.warn_closed', { names: gxNames(plan.warn.closed) }));
+    if (plan.warn.stretched.length) parts.push(I18n.t('fontmaker.widthall.warn_stretched', { names: gxNames(plan.warn.stretched) }));
+    if (wide) parts.push(I18n.t('fontmaker.widthall.warn_wide', { pct: st.val }));
     if (plan.warn.lost.length) parts.push(I18n.t('fontmaker.scaleall.warn_lost', { names: gxNames(plan.warn.lost) }));
     if (plan.warn.off.length) parts.push(I18n.t('fontmaker.scaleall.warn_off', { names: gxNames(plan.warn.off) }));
     if (plan.warn.held.length) parts.push(I18n.t('fontmaker.scaleall.warn_held', { things: plan.warn.held.map(t => I18n.t('fontmaker.scaleall.held_' + t)).join(', ') }));
@@ -28359,7 +28652,7 @@ async function wizardOsFinish(){
                           boldAfter: false, autofix: true, english: eng, cyrillic: cyr, phoenician: phn, aramaic: aram, samaritan: smr });
   setInputMode('font');   // applyFontImport stamps project.inputMode; this also persists the pref
   setCatTab('letter');
-  status(I18n.t('fontmaker.oswizard.created_toast', { font: e.displayName || e.id, name }));
+  status(I18n.t('fontmaker.oswizard.created_toast', { font: e.displayName || e.id, name }) + importIdentityNote());   // this line replaces the import's own: carry what it said about the Style and Width the project was set to
   markDirty();   // applyFontImport never dirties — this makes the import tomorrow's "Continue" snapshot
   if (tour) tourStartWhenClear();
 }

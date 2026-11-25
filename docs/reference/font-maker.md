@@ -1104,7 +1104,9 @@ One engine applies a geometric change to many glyphs in **one** undo step. A new
   place; `TA` is the map for anchors, pins and a composed form's `anchor` / `holam` when it differs
   from `T` (which stays the map of the photo, the capture box and the stroke centre lines); `penK`
   fixes the pen-width factor (1 = the pen is left exactly as it is, a chisel's nib included);
-  `setAdvance` writes the new advance on a letter that was still on the default one.
+  `setAdvance` writes the new advance on a letter that was still on the default one; `stretched`
+  says the operation gave this letter its plain map in place of the one it was asked for (the plan
+  lists it in `warn.stretched`).
 - `fontX` / `fontY` are the factors for font-wide horizontal / vertical lengths (`null` = leave them);
   `markFactor` is the uniform factor for mark size (`null` = leave marks). The horizontal factor has
   four audiences, each following `fontX` unless the operation names it: letter geometry (`fontX`
@@ -1196,7 +1198,8 @@ contour; a mirror; an operation's own `refuse` (`narrow`: a width with no room l
 *Warn* (Apply stays available): contours lost to rounding; a letter with a photo or drawing whose ink
 leaves the window the tracer can rasterize (`GX_TRACE_WIN` — its outline is fine, a later re-trace
 would clip it); settings held at a stored limit; `closed` — letters in which a counter closes or
-strokes meet (the width step's finding). Letter names in a message go through
+strokes meet (the width step's finding); `stretched` — letters the width step would have pulled
+apart, given the plain stretch instead (its guarantee, below). Letter names in a message go through
 `gName`, and through `textContent`.
 
 **The size factor (`metrics.sizeK`, read by `gxK()`).** The anchor seeds (`ANCHOR_Y`, the +40 / 120 /
@@ -1297,7 +1300,77 @@ corner or tangle a noisy outline.
   other closes to a point in the middle instead of leaving the outline crossing itself; and where a
   ring still crosses itself that did not before, the small loop at the notch's tip is cut back to
   where its two sides meet (`gxwUnloop`) and that one contour ships as its polygon (a null curve
-  entry). A large loop is a real overlap of two strokes: left as it is and reported by the gap columns.
+  entry). A large loop is a real overlap of two strokes — the free end of an open bowl that now runs
+  through the stem: it is left as it is, and the letter is reported as `closed` there and then (the
+  gap columns cannot see it: the gap it closed shares its column with the wide counter beside it).
+- *Buried ends — letters assembled from overlapping contours.* An edge that lies inside another
+  contour's ink (the end of a roof bar run into a stem, the root of an n's arch) is not the side of a
+  stroke. Corrected as one, a widened bar's end is pulled back out of the stem while the stem's own
+  side moves away from it — the pieces come apart — and a narrowed one grows out of the far side of a
+  thin stroke. So such a point is **held inside its cover** (`heldOf`, `chord`, `keep`, `hold`):
+  inside the horizontal run of ink of the largest ring of its own direction that covers it. Which
+  points are held decides whether the visible strokes beside a joint stay straight:
+  - a point with a buried leg the step moves it for (`hidden`: a quarter unit outside its own ring
+    there is ink of the other rings, and the ring is not a counter cut out of that ink; `up`: a flat
+    leg moves nothing and holds nothing) — the cap of a bar, an arch or a bowl run into a stem;
+  - a point that only *lies* in the other ink, with no buried leg (the tip of a foot that just reaches
+    into a leg), when its outline turns back there rather than running on past, and when the cover
+    holds nothing of its own in this ring (`tip`);
+  - when two rings are buried in each other, only the smaller is held (a thin arm of X in the thick
+    diagonal, not the diagonal's notch in the arm).
+
+  A held point that is still buried where the step put it is not moved. One the step pushed out is
+  put back as deep from each end as it was — up to half the stem, and narrowed with a narrowed
+  letter — the run's ends taken where their own points were moved to (three passes: a cover's own
+  end may be held too), and the rest of its buried run moves by the same amount, so a stroke's end
+  shifts as one piece and its two sides keep their spacing (K's leg under its arm).
+
+  **An upright side that shows is the step's alone** (`shows`, `GXW_UPRIGHT`). A hold that would move
+  any part of a near-upright edge (as drawn, steeper than about 72°) by more than a unit, where that
+  part shows, is let go, and the other holds settle again without it. "Shows" means not inside the
+  other rings' ink and not running along it within a unit and a half — the underside of r's ear,
+  where it merges into the stem, runs along the stem and is part of the joint. So the corner of a
+  stem under a roof it only touches, the corner of a stem tucked under an arch root (r, m, n) or a
+  bowl's end (a, b, d), and the side of a tail below the bowl it leaves (Rashi Samekh) all keep the
+  thickness the step gave them, instead of tapering. Where the point let go is drawn on a corner of
+  its cover — two contours made to meet at a corner, as each roof and stem of Stopmotion do — that
+  corner of the cover goes with it instead (its slanted end turns a little), unless that would move
+  an upright side of the cover; the two still meet. A joint that comes apart all the same is the
+  guarantee's (below): the letter is stretched plainly and named.
+
+  **The curves follow the polygon's holds** (`moveCurve`): a held ring's curve is first cut where its
+  polygon's holds begin and end (the polygon point is found on the curve that runs its way, so the
+  two sides of a hairline are not confused; `gxwAt`, `gxwCut`). A cut node takes the shift the step
+  already gave that point of the curve, so a cut alone changes nothing. Then a node where the polygon
+  is held goes where the held polygon is — across the edge where a hold ends, blended into the
+  curve's own place — and its handles go with it. A curve therefore bends only where its polygon
+  bends, and never holds what the polygon let go. Two kinds of ring are never asked and
+  come out exactly as before: one with no ring of its own direction near it — every ordinary letter,
+  point for point — and one with less than a third of its outline showing (a fill-in at a joint: held
+  in its two covers it would be stretched into a web across the joint; left alone it thins away as
+  the joint opens, and is reported as lost detail when it goes). What a held end still costs: the
+  outline beside it that is not upright bends near the joint — the arch of an n leaving its stem,
+  the end of u's bowl at its stem, the bowl of ø where the slash crosses it, the foot of an arm that
+  ends a few units into a diagonal: a few units at 115%, up to about a dozen at 150% — and a buried
+  run moved as one piece can show a little past a narrower part of its cover (æ's a-stem in the e's
+  counter at 150%).
+- *The guarantee — a letter never leaves the step in more pieces than it came in (`gxwPieces`,
+  `gxwApart`).* For every letter of more than one contour `gxWidthOp` counts the pieces of ink
+  before and after: the connected parts of the nonzero fill on slices one unit apart, counted twice
+  — parts within a unit of each other joined (two contours that only touch are one piece), and two
+  contours joined only by a real overlap (a joint that merely touches is one a rounding can open; a
+  contour's own ink counts as one piece wherever it pinches) — on the polygons and, where curves
+  ship, on the flattened curves. A piece smaller than `GXW_SPECK` units² is not counted either way:
+  as the step thins it back, the tip of a hairline serif can shed a sliver a unit high (a
+  high-contrast face does at every foot), and that is not a part of the letter coming away. A letter
+  with more pieces after than before is **not given the step**: its spec is the plain scale by the shapes' factor with `stretched: true` (advance,
+  anchors, pen and photo as with the box off; no `handEdited` stamp), and the plan lists it in
+  `warn.stretched`. The plain scale never pulls overlapping ink apart; contours that only touch (a
+  font whose parts meet within a unit and never overlap, as Paskol's ampersand) can still come out a
+  unit or two apart in the file after rounding and the curve conversion — with the box off as well.
+  The dialog names those letters in their own warn-styled sentence; Edit points
+  says it in the status line. The "before" counts ride on the census (`cen.pieces`), which the
+  dialog keeps while it is open.
 - *The result* is translated so the ink's left edge lands exactly on s × its old place, rounded, and
   returned as the spec's `out`; `TA` maps old ink edges → new ink edges (`boldGenLetter`'s rule) and
   `penK` is 1, so a re-saved drawing keeps its stems. A **photo** cannot: such a letter is stamped
@@ -1306,7 +1379,13 @@ corner or tangle a noisy outline.
   than the typed s, one for the whole set, chosen so that the set's total advance comes out at s:
   first `(s·ΣA − Σt)/(ΣA − Σt)` (`gxwFirstK`), then corrected from the plan's own outcome, at most
   twice (`gxWidthPlan`; `plan.adv` is the total advance before and after). The dialog's note says
-  what the text becomes. `k` outside 0.2–2 is the `narrow` refusal.
+  what the text becomes. `k` below 0.2 is the `narrow` refusal (no room left for the strokes). There
+  is no upper bound: a factor above 2 is one narrow letter whose ink is nearly all stem being widened
+  on its own, and a result that leaves the coordinate range is the plan's own refusal. Above
+  `GXW_WIDE` (2) everything in that letter but its strokes — its side spaces, and any dot, accent or
+  curl it has — is stretched to more than twice its width, so the dialog adds a warn-styled sentence
+  (`widthall.warn_wide`) and Edit points its own status line (`node_editor.scale_stems_wide`); the
+  change is still offered.
 - *The `closed` finding — gap columns.* No height moved, so the same horizontal slice cuts the letter
   before and after: every gap between two runs of ink (a counter, or the space between two strokes)
   is followed slice by slice as a column and matched to what is left of it. A column is reported when
@@ -1314,7 +1393,8 @@ corner or tangle a noisy outline.
   old width — along its **whole** height; a
   ring that collapses or turns inside out is reported when it was a counter. A wedge-shaped notch only
   gets shorter at its tip — which is why this follows columns instead of testing the outline for
-  crossings (those fire on every crotch).
+  crossings (those fire on every crotch); the one crossing that is reported is the one `gxwUnloop`
+  could not mend (above).
 - *Lean.* A lean is a tangent, so it narrows with the letter: the stamp scales `l.slant`, `leanScale`
   scales `markLean`'s numbers for a whole-font run, and a typed Italic angle rides `gxMeta`.
 
@@ -1407,8 +1487,13 @@ the Regular's.
   the drawn letters' records (`fontSlantInfo()`, which also counts how many letters differ — shown
   in the panel and, when the teacher has not chosen, on the Exported screen). Regular and Bold
   declare 0 whatever the letters do. The caret slope is `UPM / round(tan(lean) × UPM)`, or 1 / 0.
-- Importing a font flagged italic (fsSelection bit 0, macStyle bit 1 or a declared angle) sets the
-  style and stamps the source's angle on each imported letter (`importFontLean`).
+- Importing a font sets the style from the source's **style flags alone** (`importFontIdentity`:
+  fsSelection bit 0 or macStyle bit 1 for Italic; fsSelection bit 5, macStyle bit 0 or a weight of
+  600 and up for Bold). A declared italic angle is not a style — handwriting faces declare one on
+  their Regular, and such a font would export as an Italic with no Regular beside it — but it is
+  still stamped on each imported letter as its lean record (`importFontLean`), whatever the style.
+  The import's status line says what Style it set (`importIdentityNote`), and the partner-link
+  flow carries that sentence into its own closing line.
 - An Italic is its own project, as a Bold is: the same Family name in each. A whole-font slant with
   its Style box ticked turns *this* project into the Italic, its saved copy with it.
 
@@ -1439,8 +1524,12 @@ the normal one, and it replaces that font's file, list entry or saved project.
 - The Width dialog's box sets the name with the change: `fontWidthAfter(current, pct)` — the nearest
   name (by ratio) to the width the font already stands for × the percentage, so Condensed widened by
   118% is normal again. Only five names; other amounts take the nearest.
-- Importing a font reads `usWidthClass`; a family name that already ends in the word gives it up there
-  (the export would otherwise say it twice).
+- Importing a font takes the width name from `usWidthClass` **only when the source's own names say
+  the same** (`importFontIdentity`: the word in name ID 1, 2, 4, 16 or 17, in any language — case,
+  spaces and hyphens aside, and "Semi Condensed" is not "Condensed"). The class alone is often set
+  carelessly, and the word joins the family name: an unchanged font would be renamed. A family name
+  that already ends in the word gives it up there (the export would otherwise say it twice), and
+  the status line — the partner-link flow's too — says what Width name was set.
 - A condensed font is its own project, as a Bold or an Italic is.
 
 ### Shapes, holes and kept directions — the point editor's building blocks
