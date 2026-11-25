@@ -10050,6 +10050,44 @@ function splitSubpaths(d) {                 // split a path's d at each M/m so h
   while ((m = re.exec(d))) out.push(m[0]);
   return out.length ? out : [d];
 }
+/* splitSubpaths for measuring. A relative `m` that opens a later subpath is relative to where the one
+   before it left the pen — that one's start again after a Z — which is the relative path data Inkscape
+   writes: "m 10,10 h 100 … z m 20,20 …" draws a counter 20 units inside the outer shape. elementToLoops
+   measures each subpath as a path of its own, where that `m` would be read from 0,0 and the counter
+   would land somewhere else, so each later subpath that opens with `m` opens here with the absolute M
+   the browser reached instead (the pairs after its first stay relative lines). */
+function svgSubpathsAbs(d) {
+  const subs = splitSubpaths(d);
+  if (!subs.some((s, i) => i > 0 && s[0] === 'm')) return subs;          // the usual case: every later subpath says where it starts
+  const open = /^[Mm][\s,]*([-+]?(?:\d*\.\d+|\d+\.?)(?:[eE][-+]?\d+)?)[\s,]*([-+]?(?:\d*\.\d+|\d+\.?)(?:[eE][-+]?\d+)?)/;
+  let px = 0, py = 0;
+  return subs.map((s, i) => {
+    const m = open.exec(s); if (!m) return s;                              // no opening point: nothing of it is drawn
+    const rel = i > 0 && s[0] === 'm', sx = (rel ? px : 0) + +m[1], sy = (rel ? py : 0) + +m[2];
+    let out = s;
+    if (rel) { const rest = s.slice(m[0].length); out = 'M' + sx + ' ' + sy + (/^[\s,]*[-+.\d]/.test(rest) ? ' l' + rest.replace(/^[\s,]+/, ' ') : rest); }
+    if (i + 1 < subs.length && subs[i + 1][0] === 'm') [px, py] = /[Zz][\s,]*$/.test(s) ? [sx, sy] : svgPathEnd(out);   // where the next one starts from
+    return out;
+  });
+}
+function svgPathEnd(s) {                     // where a run of path data leaves the pen (from 0,0): its last segment's end, or its subpath's start after a Z — read as a browser reads it, up to the first thing that is not path data
+  const NUM = /[\s,]*([-+]?(?:\d*\.\d+|\d+\.?)(?:[eE][-+]?\d+)?)/y, FLAG = /[\s,]*([01])/y, CMD = /[\s,]*([MmLlHhVvCcSsQqTtAaZz])/y;
+  const ARGS = { m: 2, l: 2, t: 2, h: 1, v: 1, c: 6, s: 4, q: 4, a: 7 };
+  let i = 0, cmd = '', x = 0, y = 0, sx = 0, sy = 0;
+  const take = re => { re.lastIndex = i; const r = re.exec(s); if (r) i = re.lastIndex; return r ? r[1] : null; };
+  for (;;) {
+    const c = take(CMD);
+    if (c) cmd = c; else if (!cmd || cmd === 'z' || cmd === 'Z') break;  // the end, or numbers with no command to repeat
+    const k = cmd.toLowerCase(), rel = cmd === k;
+    if (k === 'z') { x = sx; y = sy; continue; }
+    const a = [];
+    for (let j = 0; j < ARGS[k]; j++) { const v = take(k === 'a' && (j === 3 || j === 4) ? FLAG : NUM); if (v == null) return [x, y]; a.push(+v); }   // an arc's two flags are one digit each, and may be written together
+    const ox = rel ? x : 0, oy = rel ? y : 0;
+    if (k === 'h') x = ox + a[0]; else if (k === 'v') y = oy + a[0]; else { x = ox + a[a.length - 2]; y = oy + a[a.length - 1]; }
+    if (k === 'm') { sx = x; sy = y; cmd = rel ? 'l' : 'L'; }             // more pairs after a moveto are lines
+  }
+  return [x, y];
+}
 function rectToD(el) {
   const x = +el.getAttribute('x') || 0, y = +el.getAttribute('y') || 0, w = +el.getAttribute('width') || 0, h = +el.getAttribute('height') || 0;
   if (w <= 0 || h <= 0) return '';
@@ -10084,7 +10122,7 @@ function svgNumsOver(s, max) {              // does this run of path data (or of
 function elementToLoops(el, rootScreenCTM, opts) {      // one renderable element → contours [[ [x,y]... ]] in root (viewBox) user units, y-down
   const tag = el.localName;
   let dList;
-  if (tag === 'path') dList = splitSubpaths(el.getAttribute('d') || '');
+  if (tag === 'path') dList = svgSubpathsAbs(el.getAttribute('d') || '');
   else if (tag === 'rect') dList = [rectToD(el)];
   else if (tag === 'circle' || tag === 'ellipse') dList = [ellipseToD(el)];
   else if (tag === 'line') dList = [lineToD(el)];

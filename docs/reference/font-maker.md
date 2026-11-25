@@ -549,6 +549,13 @@ every route in — a file upload, a sheet, auto-split, a sheet re-read when a pr
   import. `svgInkLoops` drops a loop that encloses nothing before any fit measures its box. A sheet is
   re-parsed when its project loads (`cacheSvgSheet`), so these readings apply to a saved sheet's next
   crop or auto-split too — letters already assigned keep the contours they have.
+- **Each subpath is measured from where it really starts.** `elementToLoops` measures every subpath of
+  a path as a path of its own (so a counter stays a contour of its own), but a relative `m` that opens
+  a later subpath is relative to where the one before it left the pen — that one's start again after a
+  `Z` — which is the relative path data Inkscape writes; measured alone it was read from 0,0 and the
+  counter landed elsewhere. `svgSubpathsAbs` opens each such subpath with the absolute `M` the browser
+  reached instead (`svgPathEnd` reads where an open subpath ends; the pairs after the first stay
+  relative lines). A path whose later subpaths open with `M` is measured exactly as written.
 - **`opts.paste`** switches on the caps (`SVG_PASTE_MAX_*`, counted over the shapes that are kept)
   and a time budget, and nothing else: neither may ever refuse an uploaded file or a sheet a saved
   project already holds. The caps bound the size, not the time — a shape costs up to 600
