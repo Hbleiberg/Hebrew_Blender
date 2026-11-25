@@ -1079,16 +1079,20 @@ corner or tangle a noisy outline.
 
   **The curves follow the polygon's holds** (`moveCurve`): a held ring's curve is first cut where its
   polygon's holds begin and end (the polygon point is found on the curve that runs its way, so the
-  two sides of a hairline are not confused; `gxwAt`, `gxwCut`), then every node takes the hold of the
-  place it lies on along the polygon, and its handles go with it. A curve therefore bends only where
-  its polygon bends, and never holds what the polygon let go. Two kinds of ring are never asked and
+  two sides of a hairline are not confused; `gxwAt`, `gxwCut`). A cut node takes the shift the step
+  already gave that point of the curve, so a cut alone changes nothing. Then a node where the polygon
+  is held goes where the held polygon is — across the edge where a hold ends, blended into the
+  curve's own place — and its handles go with it. A curve therefore bends only where its polygon
+  bends, and never holds what the polygon let go. Two kinds of ring are never asked and
   come out exactly as before: one with no ring of its own direction near it — every ordinary letter,
   point for point — and one with less than a third of its outline showing (a fill-in at a joint: held
   in its two covers it would be stretched into a web across the joint; left alone it thins away as
   the joint opens, and is reported as lost detail when it goes). What a held end still costs: the
-  outline beside it that is not upright (the arch of an n leaving its stem, the foot of an arm that
-  ends a few units into a diagonal) bends near the joint, and a buried run moved as one piece can
-  show a little past a narrower part of its cover (æ's a-stem in the e's counter at 150%).
+  outline beside it that is not upright bends near the joint — the arch of an n leaving its stem,
+  the end of u's bowl at its stem, the bowl of ø where the slash crosses it, the foot of an arm that
+  ends a few units into a diagonal: a few units at 115%, up to about a dozen at 150% — and a buried
+  run moved as one piece can show a little past a narrower part of its cover (æ's a-stem in the e's
+  counter at 150%).
 - *The guarantee — a letter never leaves the step in more pieces than it came in (`gxwPieces`,
   `gxwApart`).* For every letter of more than one contour `gxWidthOp` counts the pieces of ink
   before and after: the connected parts of the nonzero fill on slices one unit apart, counted twice

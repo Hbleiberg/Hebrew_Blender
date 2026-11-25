@@ -18545,6 +18545,19 @@ function gxwShape(rings, curves, s, t, hand) {
       if (g.type === 'cubic') gxwSplitCubic(pen, g.pts[0], g.pts[1], g.pts[2]).forEach(q => { segs.push([pen, q[0], q[1], q[2]]); pen = q[2]; });
       else { segs.push([pen, g.pts[0]]); pen = g.pts[0]; }
     });
+    let m = segs.length;
+    const far = (P, from, to) => { for (let i = from; i !== to; i += (to > from ? 1 : -1)) if (Math.hypot(P[i][0] - P[from][0], P[i][1] - P[from][1]) > 0.01 && i !== from) return P[i]; return P[to]; };
+    const at = gxwAt;
+    const dl = segs.map((P, j) => {   // the shift of the node each segment STARTS at: its incoming leg (end of the previous segment) and its outgoing one
+      const Q = segs[(j - 1 + m) % m], V = P[0], pin = far(Q, Q.length - 1, 0), pout = far(P, 0, P.length - 1);
+      const si = at(Q, Q.length === 2 ? 0.5 : 0.8), so = at(P, P.length === 2 ? 0.5 : 0.2);
+      return mix(leg(V[0] - pin[0], V[1] - pin[1], si[0], si[1], sg), leg(pout[0] - V[0], pout[1] - V[1], so[0], so[1], sg));
+    });
+    const unpassCv = () => { for (let j = 0; j < m; j++) {   // the same rule for a curve's nodes (movePoly): a segment whose ends passed each other closes to a point
+      const a = segs[j][0], bn = segs[(j + 1) % m][0], i2 = (j + 1) % m, od = (bn[0] - a[0]) * s, nd = od + dl[i2] - dl[j];
+      if (od * nd < 0) { const mid = (a[0] * s + dl[j] + bn[0] * s + dl[i2]) / 2; dl[j] = mid - a[0] * s; dl[i2] = mid - bn[0] * s; }
+    } };
+    unpassCv();
     const Dv = (held[ri] || welded[ri]) ? rings[ri].map((p, i) => moved[ri][i][0] - moved0[ri][i][0]) : null;   // the polygon's holds (the polygon is this curve flattened)
     if (Dv && Dv.some(d => Math.abs(d) > 1e-9)) {   // a held ring's curve is also cut where those holds begin and end, so that it bends where the polygon bends and nowhere else
       const r = rings[ri], n = r.length, on = i => Math.abs(Dv[(i + n) % n]) > 1e-9, cuts = new Map();
@@ -18559,26 +18572,18 @@ function gxwShape(rings, curves, s, t, hand) {
         const P = segs[j], p = gxwAt(P, u), a = P[0], b = P[P.length - 1];
         if (d <= 3 && Math.hypot(p[0] - a[0], p[1] - a[1]) > 1 && Math.hypot(p[0] - b[0], p[1] - b[1]) > 1) { if (!cuts.has(j)) cuts.set(j, []); cuts.get(j).push(u); }
       }
-      if (cuts.size) {
-        const out = [];
-        segs.forEach((P, j) => { let rest = P, done = 0, last = P[0]; (cuts.get(j) || []).sort((x, y) => x - y).forEach(u => { const q = gxwAt(P, u); if (Math.hypot(q[0] - last[0], q[1] - last[1]) <= 1) return; const c = gxwCut(rest, (u - done) / (1 - done)); out.push(c[0]); rest = c[1]; done = u; last = q; }); out.push(rest); });
-        segs.splice(0, segs.length, ...out);
+      if (cuts.size) {   // a cut node takes the shift the step already gave that point of the curve, so the cut alone changes nothing
+        const out = [], dout = [];
+        segs.forEach((P, j) => {
+          const d0 = dl[j], d1 = dl[(j + 1) % m]; let rest = P, done = 0, last = P[0]; dout.push(d0);
+          (cuts.get(j) || []).sort((x, y) => x - y).forEach(u => { const q = gxwAt(P, u); if (Math.hypot(q[0] - last[0], q[1] - last[1]) <= 1) return; const c = gxwCut(rest, (u - done) / (1 - done)), w = P.length === 2 ? 1 - u : (1 - u) * (1 - u) * (1 - u) + 3 * (1 - u) * (1 - u) * u; out.push(c[0]); dout.push(w * d0 + (1 - w) * d1); rest = c[1]; done = u; last = q; });
+          out.push(rest);
+        });
+        segs.splice(0, segs.length, ...out); dl.splice(0, dl.length, ...dout); m = segs.length;
       }
     }
-    const m = segs.length, far = (P, from, to) => { for (let i = from; i !== to; i += (to > from ? 1 : -1)) if (Math.hypot(P[i][0] - P[from][0], P[i][1] - P[from][1]) > 0.01 && i !== from) return P[i]; return P[to]; };
-    const at = gxwAt;
-    const dl = segs.map((P, j) => {   // the shift of the node each segment STARTS at: its incoming leg (end of the previous segment) and its outgoing one
-      const Q = segs[(j - 1 + m) % m], V = P[0], pin = far(Q, Q.length - 1, 0), pout = far(P, 0, P.length - 1);
-      const si = at(Q, Q.length === 2 ? 0.5 : 0.8), so = at(P, P.length === 2 ? 0.5 : 0.2);
-      return mix(leg(V[0] - pin[0], V[1] - pin[1], si[0], si[1], sg), leg(pout[0] - V[0], pout[1] - V[1], so[0], so[1], sg));
-    });
-    const unpassCv = () => { for (let j = 0; j < m; j++) {   // the same rule for a curve's nodes (movePoly): a segment whose ends passed each other closes to a point
-      const a = segs[j][0], bn = segs[(j + 1) % m][0], i2 = (j + 1) % m, od = (bn[0] - a[0]) * s, nd = od + dl[i2] - dl[j];
-      if (od * nd < 0) { const mid = (a[0] * s + dl[j] + bn[0] * s + dl[i2]) / 2; dl[j] = mid - a[0] * s; dl[i2] = mid - bn[0] * s; }
-    } };
-    unpassCv();
-    if (Dv) {   // each node takes the hold of the place it lies on along its ring's polygon (between the two points of that edge), and its handles go with it
-      const r = rings[ri], n = r.length, unit = (x, y) => { const L = Math.hypot(x, y); return L ? [x / L, y / L] : [0, 0]; };
+    if (Dv) {   // a node where the polygon is held goes where the held polygon is (across the edge where a hold ends, blended into the curve's own place); its handles go with it
+      const r = rings[ri], n = r.length, P1 = moved[ri], on = i => Math.abs(Dv[i]) > 1e-9, unit = (x, y) => { const L = Math.hypot(x, y); return L ? [x / L, y / L] : [0, 0]; };
       let any = false;
       for (let j = 0; j < m; j++) {
         const V = segs[j][0], Q = segs[(j - 1 + m) % m], pin = far(Q, Q.length - 1, 0), pout = far(segs[j], 0, segs[j].length - 1), a = unit(V[0] - pin[0], V[1] - pin[1]), b = unit(pout[0] - V[0], pout[1] - V[1]), wx = a[0] + b[0], wy = a[1] + b[1];
@@ -18588,8 +18593,11 @@ function gxwShape(rings, curves, s, t, hand) {
           const f = Math.max(0, Math.min(1, ((V[0] - p[0]) * ex + (V[1] - p[1]) * ey) / L2)), d = Math.hypot(p[0] + f * ex - V[0], p[1] + f * ey - V[1]);
           if (!best || d < best[0]) best = [d, i, f];
         }
-        const D = (best && best[0] <= 3) ? (1 - best[2]) * Dv[best[1]] + best[2] * Dv[(best[1] + 1) % n] : 0;
-        if (Math.abs(D) > 1e-9) { dl[j] += D; any = true; }
+        if (!best || best[0] > 3) continue;
+        const i = best[1], i2 = (i + 1) % n, f = best[2], w = (on(i) ? 1 - f : 0) + (on(i2) ? f : 0);   // how much of this place is held
+        if (!(w > 1e-9)) continue;
+        const px = r[i][0] + f * (r[i2][0] - r[i][0]), held = P1[i][0] + f * (P1[i2][0] - P1[i][0]) + (V[0] - px) * s;   // the held polygon's x here (the node's own offset from the polygon kept)
+        dl[j] = w * (held - V[0] * s) + (1 - w) * dl[j]; any = true;
       }
       if (any) unpassCv();
     }
