@@ -592,7 +592,7 @@ validated against the closed set on read. Validation is inline (the `aria-live` 
     side only while its holes lie inside its own ink; a hole that sticks out is wound the other way
     round there, and over ink of the other group the two cancel. It is asked at points where the
     two boxes meet — a grid about 6 units apart, a little to each side of every edge, and a finer
-    grid across each small counter — against the union, old fill OR new fill. Two mends, each a
+    grid across each small counter — against the union, old fill OR new fill. Three mends, each a
     change that keeps every contour running the way its label says:
     - a **counter of the letter** with the artwork's ink at every point asked inside it is taken out
       when the sum then has ink at all of them. That cannot change the union; it keeps the Contours
@@ -603,10 +603,10 @@ validated against the closed set on read. Validation is inline (the `aria-live` 
       is how a pasted drawing made of overlapping shapes arrives: the importer reads a shape whose
       first point lies inside another as its hole (a T drawn as two rectangles is a bar and a hole
       sticking out of it), and over the letter the part that sticks out cancelled the letter's ink.
-      First a turn is made only where nothing changes but the points it mends, so the union stays
-      exact; then, for what is still cancelled, wherever it mends more points than it spoils. The
-      only other change that second round can bring is ink where the artwork's own shapes overlap —
-      the drawing as its shapes paint it, rather than the notch the importer's reading leaves there.
+      A turn is made only where it mends points and makes no point that was right wrong: first
+      only where nothing else changes, so the union stays exact; then, for what is still
+      cancelled, where the only other change is ink where the artwork's own shapes overlap — the
+      drawing as its shapes paint it, rather than the notch the importer's reading leaves there.
       The letter's ink is never what gives way.
     - a **hole of the letter that cuts nothing** — one of a kept letter lying outside its ink, which
       shows as ink, or one over two of its solids — is turned into a solid when the artwork's ink

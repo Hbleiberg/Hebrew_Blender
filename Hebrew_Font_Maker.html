@@ -10510,10 +10510,10 @@ function svgPasteAddsInk(oldRings, newRings) {   // is there a point where the a
      hole; where it sticks out of the other shape it is wound the other way round, and over the
      letter it cancels the letter's ink. Turned round it is a solid — together with any other hole
      of the artwork whose overlap with it the turn would cancel (two shapes can each be the other's
-     "hole"). First wherever nothing changes but the points it mends: the union is then exact. Then,
-     for what is still cancelled, wherever it mends more points than it spoils; the only other
-     change it may bring is ink in the artwork's own overlap — the drawing as its shapes paint it —
-     so the letter's ink is kept.
+     "hole"). A turn is made only where it mends points and spoils none. First where nothing else
+     changes: the union is then exact. Then, for what is still cancelled, where the only other
+     change is ink in the artwork's own overlap — the drawing as its shapes paint it — so the
+     letter's ink is kept.
    · turnOld — a hole of the letter that cuts nothing (a hole of a kept letter lying outside its
      ink shows as ink; one over two of its solids leaves ink), so that as a solid it is the same
      ink: turned when the artwork's ink would cancel it, alone or with the artwork's holes above.
@@ -10586,7 +10586,7 @@ function svgPasteJoin(oldRings, newRings) {
     const T = inside(O, j); for (let q = 0; q < T.length; q += 2) { const a = wo[T[q]]; if ((a !== 0) !== (a - 2 * T[q + 1] !== 0)) return false; }
     return T.length > 0;
   });
-  const tryTurn = (G0, j0, strict) => {                              // turn the seed — and with it every hole, of either group, whose overlap with it the turn would cancel → how many points it mends, net (0: not done)
+  const tryTurn = (G0, j0, strict) => {                              // turn the seed — and with it every hole, of either group, whose overlap with it the turn would cancel → how many points it mends (0: not done)
     const K = [], touched = [];
     const take = (G, j) => { K.push([G, j]); G.inK[j] = 1; const T = inside(G, j); for (let q = 0; q < T.length; q += 2) { const i = T[q]; if (!mark[i]) { mark[i] = 1; touched.push(i); } G.d[i] -= 2 * T[q + 1]; } };   // turned round, a ring's own winding changes sign
     let fix, hurt, more;
@@ -10606,12 +10606,12 @@ function svgPasteJoin(oldRings, newRings) {
       if (!next.length) break;
       next.forEach(k => take(k[0], k[1]));
     }
-    const ok = fix > 0 && (strict ? !hurt && !more : hurt < fix);   // ("more" can only be the artwork's: a turn of the letter's hole leaves the letter's fill as it is)
+    const ok = fix > 0 && !hurt && (!strict || !more);              // never a point that was right made wrong; "more" can only be the artwork's (a turn of the letter's hole leaves the letter's fill as it is)
     for (const i of touched) { if (ok) { wo[i] += O.d[i]; wn[i] += N.d[i]; } O.d[i] = N.d[i] = 0; mark[i] = 0; }
     K.forEach(([G, j]) => { G.inK[j] = 0; if (ok) { G.cand[j] = false; G.list.push(j); } });
-    return ok ? fix - hurt : 0;
+    return ok ? fix : 0;
   };
-  // Exact first: a turn that changes nothing but the points it mends. Then by points mended, where the only other change is the artwork's ink in its own overlaps.
+  // Exact first: a turn that changes nothing but the points it mends. Then one whose only other change is the artwork's ink in its own overlaps.
   for (const strict of [true, false]) {
     for (let again = true; again && left; ) {
       again = false;
