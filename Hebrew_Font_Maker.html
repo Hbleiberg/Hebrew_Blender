@@ -913,6 +913,9 @@ header{--kin-pt:10px;--kin-pb:10px;--kin-gap:14px;}   /* this header's block pad
     [data-kh-pop]:hover > .kh-pop, [data-kh-pop]:focus-visible > .kh-pop { visibility: visible; opacity: 1; transition: opacity 0.12s linear 0.3s, visibility 0s linear 0.3s; }
     #nodeBar.nb-tight .kh:not(.kh-pop) { display: none; }   /* the bar's icons-only layout */
   }
+  /* The size of the font as last built, beside Export — present only while that build is still this project's font. */
+  .export-size { font-size: 0.74rem; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--gold-light); white-space: nowrap; }
+  @media (max-width: 600px) { .export-size { display: none; } }
   .shp-draft-hole { stroke-dasharray: 5 4; }
   body.shape-armed #stage, body.shape-armed #stage * { cursor: crosshair !important; }
   .ct-name { flex: 1; text-align: start; background: none; border: 1px solid transparent; border-radius: 5px; padding: 2px 6px; font: inherit; font-size: 0.76rem; color: var(--text); cursor: pointer; min-height: 30px; }
@@ -1968,7 +1971,8 @@ html[lang="he"] .tp-label{letter-spacing:normal;text-transform:none;}
       <option value="ttfwoff2" data-i18n="fontmaker.toolbar.fmt_ttfwoff2">TTF + WOFF2 (zip)</option>
       <option value="ufo" data-i18n="fontmaker.toolbar.fmt_ufo">UFO source (zip)</option>
     </select>
-    <button class="tbtn hi-btn" id="exportBtn" onclick="exportFont()"><svg class="hi hi-sm hi-download" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.4v11.2"/><path d="M7.6 10.4 12 14.8l4.4-4.4"/><path d="M4.5 16.6v1.9a2.1 2.1 0 0 0 2.1 2.1h10.8a2.1 2.1 0 0 0 2.1-2.1v-1.9"/></svg><span class="hi-lbl" data-i18n="fontmaker.toolbar.export_btn">Export TTF</span></button>
+    <button class="tbtn hi-btn" id="exportBtn" onclick="exportFont()" aria-describedby="exportSize"><svg class="hi hi-sm hi-download" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.4v11.2"/><path d="M7.6 10.4 12 14.8l4.4-4.4"/><path d="M4.5 16.6v1.9a2.1 2.1 0 0 0 2.1 2.1h10.8a2.1 2.1 0 0 0 2.1-2.1v-1.9"/></svg><span class="hi-lbl" data-i18n="fontmaker.toolbar.export_btn">Export TTF</span></button>
+    <span id="exportSize" class="export-size" dir="ltr" hidden></span>
     <span id="engineBadge" class="engine-badge" title="Getting the font engine ready so your first export is fast" data-i18n-title="fontmaker.toolbar.engine_badge_title" hidden><span class="engine-dot" aria-hidden="true"></span><span data-i18n="fontmaker.toolbar.engine_badge">engine loading…</span></span>
   </div>
   <!-- The other six tools all launch the tour from a header Tour button; here it used to live only
@@ -4459,7 +4463,7 @@ function updateUndoButtons() {   // top-toolbar + node-bar twins (bar buttons ex
     if (to) { focused.tabIndex = -1; to.tabIndex = 0; to.focus(); }   // keep the one-tab-stop roving invariant
   }
 }
-function udClear() { undoStack = []; redoStack = []; _udNudge = null; _burst = null; updateUndoButtons(); }
+function udClear() { undoStack = []; redoStack = []; _udNudge = null; _burst = null; updateUndoButtons(); exportSizeSync();   /* a project just arrived or left: the size beside Export was another one's */ }
 
 function blankLetter(L) {
   const it = {
@@ -23527,8 +23531,35 @@ function glyphRangeError(spec) {   // → a ready-to-show message, or '' when ev
   return I18n.t(bad.length === 1 ? 'fontmaker.export.out_of_range.one' : 'fontmaker.export.out_of_range.other',
                 { names, count: bad.length, limit: GLYF_COORD_MAX, worst: bad[0].worst });
 }
+/* ═══ Font size readout ═══
+   Every build of the font is remembered with what it was built from: the project object, the edit count at the moment
+   the spec was read, and the file stem (style and width are part of it). While all three still hold, the size shows
+   beside Export. Nothing here ever starts a build — it only measures the ones the teacher asked for. */
+let _exportSizeOn = false;
+function fmBuildKeep(bytes, gen) { window._lastBuild = { proj: project, gen, stem: fontFileStem(), ref: bytes, ttf: bytes.length, woff2: 0 }; exportSizeSync(); }
+function fmBuildFresh() { const b = window._lastBuild; return !!(b && project && b.proj === project && b.gen === _editGen && b.stem === fontFileStem()); }
+function exportSizeSync() {
+  const el = document.getElementById('exportSize'); if (!el) return;
+  const fmt = (document.getElementById('exportFormat') || {}).value || 'ttf';
+  const b = fmBuildFresh() ? window._lastBuild : null;
+  const n = !b ? 0 : fmt === 'ttf' ? b.ttf : fmt === 'woff2' ? b.woff2 : 0;   // the zip and the UFO have no size until they are made
+  _exportSizeOn = !!n; el.hidden = !n;
+  // Empty when hidden, title included: the Export button is described by this element, and a hidden one still describes
+  // (a left-over title would tell a screen reader "nothing has changed since" about a font that has).
+  el.textContent = n ? fmt.toUpperCase() + ' · ' + fmMb(n) : '';
+  if (n && window.I18n) el.title = I18n.t('fontmaker.toolbar.export_size_title'); else el.removeAttribute('title');
+}
+function exportSizeLine() {   // the Exported ✓ screen: the size of the file that was just downloaded
+  const x = window._lastExport; if (!x || !x.size) return '';
+  const kind = { ttf: 'TTF', woff2: 'WOFF2', zip: 'ZIP', ufo: 'UFO (zip)' }[x.kind];   // i18n-ignore: format names
+  const size = '<bdi dir="ltr">' + esc(kind + ' · ' + fmMb(x.size)) + '</bdi>';
+  return '<br><br>' + (x.kind === 'zip'
+    ? I18n.t('fontmaker.modals.exported_size_zip', { size, inside: '<bdi dir="ltr">' + esc('TTF ' + fmMb(x.ttf) + ', WOFF2 ' + fmMb(x.woff2)) + '</bdi>' })
+    : I18n.t('fontmaker.modals.exported_size', { size }));
+}
 async function buildFontBytes() {                 // build the TTF in memory (no download) — shared by Preview PDF
   await ensurePyodide();
+  const gen = _editGen;                           // read with the spec: an edit made while the engine works makes this build an old one
   const spec = buildFontSpec();
   const rangeErr = glyphRangeError(spec);   // name the letter here; fontTools would only say 'h' format requires …
   if (rangeErr) throw new Error(rangeErr);
@@ -23537,11 +23568,13 @@ async function buildFontBytes() {                 // build the TTF in memory (no
   if (res.error) throw new Error(res.error);
   const bytes = b64ToBytes(res.ttf_b64);
   window._lastFontBytes = bytes; window._lastFontStem = fontFileStem();   // for Send to IvritSuite (stem = freshness stamp)
+  fmBuildKeep(bytes, gen);
   return bytes;
 }
 
 function onExportFormatChange() {
   const fmt = (document.getElementById('exportFormat') || {}).value || 'ttf';
+  exportSizeSync();   // the size shown is the picked format's
   // Format names are product names (TTF, WOFF2, UFO); only the verb translates. The init call can
   // run before the locale has loaded, when I18n.t hands back the key — keep the English shape then;
   // applyI18n re-runs this once translations land AND on every live language switch (whose static
@@ -23838,7 +23871,8 @@ async function doExport(fmt) {
       pyodide.globals.set('hfm_spec_json', JSON.stringify(spec));
       const ures = JSON.parse(pyodide.runPython('hfm_build_ufo(hfm_spec_json)'));
       if (ures.error) { status(''); _setVersion(_prevVersion); askModal(I18n.t('fontmaker.modals.ufo_fail_title'), '<span class="warn">'+ures.error+'</span>', [{label:I18n.t('fontmaker.modals.ok')}]); return; }
-      downloadBlob(new Blob([b64ToBytes(ures.zip_b64)], {type:'application/zip'}), spec.ufoName + '.ufo.zip');
+      { const zb = b64ToBytes(ures.zip_b64); window._lastExport = { kind: 'ufo', size: zb.length };
+        downloadBlob(new Blob([zb], {type:'application/zip'}), spec.ufoName + '.ufo.zip'); }
       status(window.I18n ? I18n.t('fontmaker.status.exported_ufo', {name: spec.ufoName})
                       : 'Exported ' + spec.ufoName + '.ufo.zip ✓ (UFO source — cubic curves, anchors & features.fea)');
       offerSaveToMyFonts();
@@ -23846,6 +23880,7 @@ async function doExport(fmt) {
     }
 
     status(I18n.t('fontmaker.status.building_font'), true);
+    const _gen = _editGen;                    // read with the spec (the size readout's freshness mark)
     const spec = buildFontSpec();
     const rangeErr = glyphRangeError(spec);   // same guard as the Preview path, in this one's own idiom
     if (rangeErr) { status(''); _setVersion(_prevVersion); askModal(I18n.t('fontmaker.modals.build_fail_title'), '<span class="warn">'+rangeErr+'</span>', [{label:I18n.t('fontmaker.modals.ok')}]); return; }
@@ -23857,6 +23892,7 @@ async function doExport(fmt) {
     const _n2c = {}; for (const cp in spec.cmap) _n2c[spec.cmap[cp]] = String.fromCodePoint(+cp);   // many-to-one entries (space/NBSP) keep the last codepoint — harmless: an empty-contour glyph can never fall back
     window._lastFellBack = (res.fellBack || []).map(n => _n2c[n] || n);
     const bytes = b64ToBytes(res.ttf_b64);
+    fmBuildKeep(bytes, _gen);
 
     // harfbuzz shaping gate (only meaningful when the font has marks to position)
     status(I18n.t('fontmaker.status.validating_shaping'), true);
@@ -23883,7 +23919,9 @@ async function finishDownload(bytes, gateSkipped, fmt) {   // resolves true only
   fmt = fmt || 'ttf';
   const fam = fontFileStem();   // family base + '-Bold' for the bold style — no Regular/Bold file collisions
   window._lastFontBytes = bytes; window._lastFontStem = fontFileStem();   // for Send to IvritSuite (stem = freshness stamp)
+  window._lastExport = null;   // the Exported ✓ screen's size line — set below with the file that really went out
   if (fmt === 'ttf') {
+    window._lastExport = { kind: 'ttf', size: bytes.length };
     downloadBlob(new Blob([bytes], {type:'font/ttf'}), fam + '.ttf');
     status(window.I18n ? I18n.t(gateSkipped ? 'fontmaker.status.exported_ttf_skipped' : 'fontmaker.status.exported_ttf', {name: fam})
                     : 'Exported ' + fam + '.ttf' + (gateSkipped ? ' (shaping check skipped)' : ' ✓'));
@@ -23898,7 +23936,9 @@ async function finishDownload(bytes, gateSkipped, fmt) {   // resolves true only
     const wr = JSON.parse(pyodide.runPython('hfm_ttf_to_woff2(hfm_ttf_b64)'));
     if (wr.error) { status(''); askModal(I18n.t('fontmaker.modals.woff2_fail_title'), '<span class="warn">'+wr.error+'</span>', [{label:I18n.t('fontmaker.modals.ok')}]); return false; }
     const woff2 = b64ToBytes(wr.woff2_b64);
+    if (window._lastBuild && window._lastBuild.ref === bytes) { window._lastBuild.woff2 = woff2.length; exportSizeSync(); }   // the same build, as WOFF2
     if (fmt === 'woff2') {
+      window._lastExport = { kind: 'woff2', size: woff2.length };
       downloadBlob(new Blob([woff2], {type:'font/woff2'}), fam + '.woff2');
       status(I18n.t('fontmaker.status.exported_woff2', {name: fam}));
       offerSaveToMyFonts(true);   // single-file → offer LICENSE.txt reliably from the success screen
@@ -23913,7 +23953,8 @@ async function finishDownload(bytes, gateSkipped, fmt) {   // resolves true only
     ];
     pyodide.globals.set('hfm_zip_json', JSON.stringify(entries));
     const zb64 = pyodide.runPython('hfm_zip(hfm_zip_json)');
-    downloadBlob(new Blob([b64ToBytes(zb64)], {type:'application/zip'}), fam + '.zip');
+    { const zb = b64ToBytes(zb64); window._lastExport = { kind: 'zip', size: zb.length, ttf: bytes.length, woff2: woff2.length };
+      downloadBlob(new Blob([zb], {type:'application/zip'}), fam + '.zip'); }
     status(window.I18n ? I18n.t('fontmaker.status.exported_zip', {name: fam})
                     : 'Exported ' + fam + '.zip ✓ (TTF + WOFF2 + @font-face CSS + LICENSE)');
     offerSaveToMyFonts();
@@ -24482,7 +24523,7 @@ function offerSaveToMyFonts(licenseSeparate) {   // post-export success screen (
     + ' ' + I18n.t('fontmaker.modals.exported_send_os')
     + ((canShareFile || canPick) ? ' ' + I18n.t('fontmaker.modals.exported_getfile', {btn: '<b>' + esc(I18n.t(canShareFile ? 'fontmaker.modals.exported_sharefile_btn' : 'fontmaker.modals.exported_saveas_btn')) + '</b>'}) : '')
     + (canKeep ? ' ' + esc(_cT('exported_keep', 'You can also keep this export with the project in your account.')) : '')
-    + fellHtml + gateHtml + leanHtml,
+    + exportSizeLine() + fellHtml + gateHtml + leanHtml,
     btns);
 }
 async function gzipBlob(str) {                       // string (or an array of Blob parts) → gzip Blob (native, no libs)
@@ -26490,8 +26531,10 @@ function autosaveGet()    { return _fmTx('readonly',  os => os.get('current')); 
 function autosaveClear()  { return _fmTx('readwrite', os => os.delete('current')).catch(() => {}); }
 
 let _projectDirty = false, _autosaveTimer = 0, _autosaveInFlight = false;
+let _editGen = 0;            // counts edits — a kept build (window._lastBuild) is this project's font only while it has not moved
 function markDirty() {   // a real edit happened → flag unsaved + schedule a debounced autosave
   _projectDirty = true;
+  _editGen++; if (_exportSizeOn) exportSizeSync();   // the size beside Export was the previous state's
   if (project && project.cloudId) { _cloudDirty = true; _cloudGen++; fmCloudArm(); fmCloudPipRender(); }
   clearTimeout(_autosaveTimer);
   _autosaveTimer = setTimeout(autosaveNow, 3000);
