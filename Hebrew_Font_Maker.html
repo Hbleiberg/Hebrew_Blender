@@ -9231,6 +9231,7 @@ function dropKindPins(l, kinds) {
   if (!Object.keys(l.markAnchors).length) delete l.markAnchors;
 }
 async function uploadSourceFont(file) {
+  if (file && file.hfmInstalled && lfLettersRefused()) return;   // an installed font's letters never enter a partner-locked project, whichever way the file got here
   status(I18n.t('fontmaker.status.reading_font'), true);
   let font, bytes;
   try {
@@ -10710,8 +10711,18 @@ async function lfFaceBytes(it) {              // the chosen face as a standalone
 
 /* ── the picker ── */
 function lfT(k, p) { return I18n.t('fontmaker.localfont.' + k, p); }
+/* A partner-locked project (project.osFont) carries the partner font's licence and its menu is
+   locked, so nothing in it can become "not chosen yet": an installed font is not taken as a source of
+   LETTERS there. The press says why on the status line and changes nothing. As a tracing guide the
+   same font is fine — it is stored by name and never shipped. */
+function lfLettersRefused() {
+  if (!project || !project.osFont) return false;
+  status(I18n.t('fontmaker.status.localfont_locked', { font: project.osFont.displayName || '' }));
+  return true;
+}
 async function lfOpen(target) {               // called straight from the button's click: the browser wants the teacher's own gesture, so nothing is awaited before queryLocalFonts()
   if (!LF_OK || _lfAsking || _lf) return;
+  if (target !== 'reference' && lfLettersRefused()) return;   // before the browser is asked: no permission prompt for a list that cannot be used
   _lfAsking = true;
   let fonts = null, err = null;
   try { fonts = await window.queryLocalFonts(); } catch (e) { err = e; }
@@ -10893,7 +10904,7 @@ function lfLicenseNotice(info, variable, go) {   // what the font says about its
     '<span class="lf-lic">' + '<span class="lf-lic-line">' + esc(lfT(stated ? 'notice_intro' : 'notice_none', { font: info.name })) + '</span>'
       + box('notice_copyright', info.copyright) + box('notice_license', info.license) + box('notice_url', info.licenseUrl, ' lf-lic-url')
       + '<span class="lf-lic-line"><b>' + esc(lfT('notice_own')) + '</b></span>'
-      + '<span class="lf-lic-line">' + esc(lfT('notice_after')) + '</span>'
+      + ((project && project.osFont) ? '' : '<span class="lf-lic-line">' + esc(lfT('notice_after')) + '</span>')   // promised only where it happens: a partner-locked project keeps its licence (and lfOpen never brings it here)
       + (variable ? '<span class="lf-lic-line">' + esc(lfT('notice_variable')) + '</span>' : '') + '</span>',
     [{ label: I18n.t('fontmaker.modals.cancel'), cls: 'ghost' }, { label: lfT('notice_continue'), onClick: go }]);
   const href = lfHttpUrl(info.licenseUrl), slot = document.querySelector('#askBody .lf-lic-url');
@@ -10906,7 +10917,8 @@ function lfLicenseNotice(info, variable, go) {   // what the font says about its
    before its first change to the project, so nothing of the font is ever in a project that still says
    OFL; syncMetaToForm() right after, or the form's next onMetaChange() would write the old choice back.
    Font metadata is outside undo (onMetaChange → markDirty), and so is a font import; this rides with it.
-   A partner-locked project (project.osFont) keeps its lock. */
+   A partner-locked project (project.osFont) keeps its lock — and never gets this far with an installed
+   font: lfOpen and uploadSourceFont refuse it first (lfLettersRefused). */
 function lfCleanSource(o) {
   if (!o || typeof o !== 'object') return null;
   const s = { name: lfClean(o.name, 160), copyright: lfClean(o.copyright, 600), license: lfClean(o.license, 600), licenseUrl: lfClean(o.licenseUrl, 300) };
