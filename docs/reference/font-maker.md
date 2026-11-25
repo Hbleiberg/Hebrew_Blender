@@ -232,7 +232,14 @@ handler goes through the real setters (`setMarkEnabled`, `setAdd*`, `setInputMod
   returns true for it — so every shortcut handler is covered through the guard it already starts
   with, whatever key closed the dialog and whichever handler closed it. The note is dropped when the
   dispatch is over (a paste or a drop asks the same guard a moment later and must not be refused by
-  an old key press), and a key that closes nothing is not affected by it.
+  an old key press), and a key that closes nothing is not affected by it. **A held key closes one
+  dialog.** Holding a key past the repeat delay sends more keydowns of the same press, and by then the
+  dialog is gone (a held Escape used to close a confirmation, then clear the selection, then leave
+  Edit points). So the same capture listener remembers the key whose press closed a dialog — the count
+  went down, or `aCloseModal` ran during it (a button that closes one confirmation and opens the next,
+  as *Continue* opens the import dialog) — and stops that key's auto-repeats (`e.repeat`) before any
+  handler sees them, until its keyup or the window's blur. A fresh press of the key is never stopped,
+  so a keyup the page missed holds nothing back.
 
 ### Shortcut keys on buttons — the `KH` table
 

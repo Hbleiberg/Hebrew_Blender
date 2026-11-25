@@ -5171,6 +5171,7 @@ function aOpenModal(id, closeFn) {
 }
 function aCloseModal(id) {
   const ov = document.getElementById(id); if (ov) { ov.classList.remove('open'); ov.style.zIndex = ''; }
+  if (_keyNow) _keyClosedIn = _keyNow;   // a key press is closing this dialog: its auto-repeats will be held back (see the capture listener below)
   const ret =(_activeModal && _activeModal.id === id) ? _activeModal.opener : null;
   if (_activeModal && _activeModal.id === id) _activeModal = null;
   // <body> is not an opener: a modal that auto-opens on load (the onboarding wizard) captures it
@@ -5206,10 +5207,24 @@ function aCloseModal(id) {
    selected in Edit points or left the step, Enter finished a crop or placed a pen point. So the count
    of open dialogs is noted before any handler sees the key, and udShortcutBlocked() refuses a key
    during which that count went down (keyClosedADialog). The note is dropped once the dispatch is
-   over — a later paste or drop asks the same guard and must not be answered by an old key press. */
-let _keyNow = null, _keyDialogs = 0;
+   over — a later paste or drop asks the same guard and must not be answered by an old key press.
+   A key held down past the repeat delay sends more keydowns of the same press, and by then the dialog
+   is gone: they used to run the editor's shortcuts (a held Escape closed a confirmation, then cleared
+   the selection, then left Edit points). So the key that closed a dialog (or closed one that another
+   then replaced — Continue → the import dialog) is remembered, and its auto-repeats are stopped here,
+   before any handler sees them, until it is let go: one press closes one dialog. A fresh press is
+   never stopped (a missed keyup, when the window lost focus, cannot hold a key back). */
+let _keyNow = null, _keyDialogs = 0, _keyHeld = '', _keyClosedIn = null;
 function openDialogCount() { return document.querySelectorAll('.overlay.open, .ivsav-overlay').length; }
-window.addEventListener('keydown', e => { _keyNow = e; _keyDialogs = openDialogCount(); setTimeout(() => { if (_keyNow === e) _keyNow = null; }, 0); }, true);
+window.addEventListener('keydown', e => {
+  const code = e.code || e.key || '';
+  if (e.repeat && _keyHeld && code === _keyHeld) { e.preventDefault(); e.stopImmediatePropagation(); return; }   // the held key that closed a dialog: its repeats are nobody's
+  if (!e.repeat) _keyHeld = '';
+  _keyNow = e; const n = _keyDialogs = openDialogCount();
+  setTimeout(() => { if (_keyNow === e) _keyNow = null; if (_keyClosedIn === e || openDialogCount() < n) _keyHeld = code; if (_keyClosedIn === e) _keyClosedIn = null; }, 0);
+}, true);
+window.addEventListener('keyup', e => { if (_keyHeld && (e.code || e.key || '') === _keyHeld) _keyHeld = ''; }, true);
+window.addEventListener('blur', () => { _keyHeld = ''; });
 function keyClosedADialog() { return !!_keyNow && openDialogCount() < _keyDialogs; }
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && document.querySelector('.ivsav-overlay')) return;   // the account screen closes itself on Escape — the editor's modal underneath must not
