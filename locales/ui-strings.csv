@@ -2535,12 +2535,12 @@ fontmaker.node_editor.angle_label,Angle°,זווית°,input label,
 fontmaker.node_editor.apply,Apply,החל,button,
 fontmaker.node_editor.contour_del_aria,Delete contour {count},מחיקת קו מתאר {count},contour row aria-label,aria-label only
 fontmaker.node_editor.contour_del_title,Delete this contour,מחק קו מתאר זה,contour row title,
-fontmaker.node_editor.contour_filled_aria,filled,מלא,contour row aria-label,aria-label only
-fontmaker.node_editor.contour_filled_title,Filled shape,צורה מלאה,contour row title,
 fontmaker.node_editor.contour_hide_aria,Hide contour {count} while editing (it still exports),הסתרת קו מתאר {count} תוך כדי עריכה (הוא עדיין מיוצא),contour row aria-label,aria-label only
 fontmaker.node_editor.contour_hide_title,Hide while editing — still exports,הסתר תוך כדי עריכה — עדיין מיוצא,contour row title,
-fontmaker.node_editor.contour_hole_aria,hole,חור,contour row aria-label,aria-label only
-fontmaker.node_editor.contour_hole_title,Hole (counter),חור (חלל פנימי),contour row title,
+fontmaker.node_editor.contour_make_hole_aria,Contour {count} is solid. Make it a hole,קו מתאר {count} מלא. הפכו אותו לחור,contour row button aria-label,
+fontmaker.node_editor.contour_make_hole_title,Solid — press to make it a hole,מלא — לחצו כדי להפוך אותו לחור,contour row button title,
+fontmaker.node_editor.contour_make_solid_aria,Contour {count} is a hole. Make it solid,קו מתאר {count} הוא חור. הפכו אותו למלא,contour row button aria-label,
+fontmaker.node_editor.contour_make_solid_title,Hole — press to make it solid,חור — לחצו כדי להפוך אותו למלא,contour row button title,
 fontmaker.node_editor.contour_row,Contour {count} — {n} pts,קו מתאר {count} — {n} נק׳,contour row label,
 fontmaker.node_editor.contour_select_title,Select this contour's points (Shift adds to the selection),בחר את נקודות קו המתאר הזה (Shift מוסיף לבחירה),contour row title,
 fontmaker.node_editor.contour_show_aria,Show contour {count} while editing (it still exports),הצגת קו מתאר {count} תוך כדי עריכה (הוא עדיין מיוצא),contour row aria-label,aria-label only
@@ -2681,6 +2681,7 @@ fontmaker.grid.on,Grid shown,הרשת מוצגת,status toast,
 fontmaker.help.sc_grid,Show or hide the canvas grid,הצגה או הסתרה של רשת הקנבס,shortcut description,
 fontmaker.node_editor.grid,Grid,רשת,node-bar toggle,
 fontmaker.node_editor.grid_title,Show the canvas grid (Shift + G),הצג את רשת הקנבס (Shift + G),node-bar toggle title,
+fontmaker.node_editor.hole_warn,"Part of this hole is not cutting: a hole only shows where it lies inside the letter, and not over another hole. Where it sticks out, it prints as ink.","חלק מהחור הזה אינו חותך: חור נראה רק במקום שבו הוא נמצא בתוך האות, ולא מעל חור אחר. במקום שבו הוא בולט החוצה, הוא מודפס כדיו.",contour row note,
 fontmaker.panels.adv_grid_hint,"Graph paper across the editing canvas, spaced in <strong>font units</strong> like the rulers &mdash; handy for matching stroke widths and keeping vowels a consistent distance from the baseline. It re-spaces itself as you zoom &mdash; finer divisions on the way in, coarser ones on the way out &mdash; and snapping follows what is on screen. Spacing, the heavier every-Nth line, opacity and <strong>snapping</strong> live in the <span class=""ui"">Grid</span> panel beside the canvas, where you can see them change. Shortcut: <strong>Shift + G</strong>.","נייר משבצות על פני אזור העריכה, במרווחים של <strong>יחידות גופן</strong> כמו הסרגלים &mdash; שימושי להתאמת עוביי קווים ולשמירה על מרחק אחיד של תנועות מקו הבסיס. היא מתאימה את המרווח שלה מחדש ככל שמשנים זום &mdash; חלוקות עדינות יותר בכניסה, גסות יותר ביציאה &mdash; וההצמדה עוקבת אחרי מה שעל המסך. המרווח, הקו המודגש כל N קווים, האטימות וה<strong>הצמדה</strong> נמצאים בפאנל <span class=""ui"">רשת</span> שליד הבד, שם אפשר לראות אותם משתנים. קיצור דרך: <strong>Shift + G</strong>.",advanced hint,html
 fontmaker.panels.adv_grid_label,Grid,רשת,advanced control label,
 fontmaker.panels.adv_grid_title,Show graph-paper grid lines across the editing canvas (Shift + G),הצג קווי רשת על פני אזור העריכה (Shift + G),advanced toggle title,
@@ -3350,6 +3351,8 @@ fontmaker.status.recent_failed,{name} could not be added to Recent: this browser
 fontmaker.status.template_saved,{title} template saved.,תבנית {title} נשמרה.,toast,REVIEW: machine-drafted HE — confirm
 fontmaker.status.building_ufo,Building UFO…,בונה UFO…,toast,
 fontmaker.status.compressing_woff2,Compressing WOFF2…,דוחס WOFF2…,toast,
+fontmaker.status.contour_now_hole,Contour {count} is now a hole.,קו מתאר {count} הוא עכשיו חור.,toast,
+fontmaker.status.contour_now_solid,Contour {count} is now solid.,קו מתאר {count} הוא עכשיו מלא.,toast,
 fontmaker.status.converted_main,Converted U+{cp} to a main glyph — set its width under Letter Metrics.,U+{cp} הומר לגליף ראשי — קבעו את רוחבו תחת מדדי האות.,toast,
 fontmaker.status.copied_contours.one,Copied {count} contour — open another letter's Edit points and press {mod}+V.,הועתק {count} קו מתאר — פתחו את עריכת הנקודות של אות אחרת ולחצו {mod}+V.,toast,plural
 fontmaker.status.copied_contours.other,Copied {count} contours — open another letter's Edit points and press {mod}+V.,הועתקו {count} קווי מתאר — פתחו את עריכת הנקודות של אות אחרת ולחצו {mod}+V.,toast,plural
@@ -5728,6 +5731,7 @@ fontmaker.node_editor.placing_points,Placing points,מציב נקודות,pen st
 fontmaker.node_editor.points_selected.one,{count} point selected,{count} נקודה נבחרה,selection status,plural
 fontmaker.node_editor.points_selected.other,{count} points selected,{count} נקודות נבחרו,selection status,plural
 fontmaker.node_editor.no_points_selected,No points selected,לא נבחרו נקודות,selection status,
+fontmaker.node_editor.placing_shape,Placing a shape,מציב צורה,status bar,
 fontmaker.node_editor.sel_actions,Selection actions,פעולות בחירה,group aria-label,
 fontmaker.node_editor.point_type,Point type,סוג נקודה,group aria-label,
 fontmaker.node_editor.rot_ccw_n,{deg}° ⟲,{deg}° ⟲,button,
@@ -5748,11 +5752,32 @@ fontmaker.node_editor.scale_stems_warn,"Letter set to {pct}% width — but an op
 fontmaker.node_editor.scale_w,Width %,רוחב %,input label,
 fontmaker.node_editor.scale_w_aria,Width percentage — 100 is unchanged,אחוז רוחב — 100 ללא שינוי,input aria-label,aria-label only
 fontmaker.node_editor.segment_type,Segment type,סוג מקטע,group aria-label,
+fontmaker.node_editor.shape_cancel,Cancel,ביטול,button,
+fontmaker.node_editor.shape_cancel_title,Put the shape tool away without adding anything (Esc),הניחו את כלי הצורות בלי להוסיף דבר (Esc),button title,
+fontmaker.node_editor.shape_ellipse,Ellipse,אליפסה,shape button,
+fontmaker.node_editor.shape_ellipse_title,"Ellipse: pick it, then drag on the letter to draw it, or press Place in the middle. Hold Shift for a circle.","אליפסה: בחרו בה, ואז גררו על האות כדי לצייר אותה, או לחצו על ״הצבה באמצע״. החזיקו Shift לעיגול.",button title,
+fontmaker.node_editor.shape_hint_armed,"Drag on the letter to draw it — Shift keeps it square or round, Alt turns snapping off. Or place one in the middle and move it with the arrow keys.","גררו על האות כדי לצייר אותה — Shift שומר עליה ריבועית או עגולה, Alt מבטל את ההצמדה. או הציבו אחת באמצע והזיזו אותה במקשי החצים.",hint while a shape is picked,
+fontmaker.node_editor.shape_hint_armed_hole,"Drag inside the letter to cut the hole — Shift keeps it square or round, Alt turns snapping off. Or place one in the middle of the selected shape and move it with the arrow keys.","גררו בתוך האות כדי לחתוך את החור — Shift שומר עליו ריבועי או עגול, Alt מבטל את ההצמדה. או הציבו אחד באמצע הצורה שנבחרה והזיזו אותו במקשי החצים.",hint while a shape is picked and Hole is on,
+fontmaker.node_editor.shape_hint_idle,"Pick a shape to add it to the letter. With Hole on, the shape is cut out instead.","בחרו צורה כדי להוסיף אותה לאות. כש״חור״ פעיל, הצורה נחתכת מהאות במקום זאת.",hint,
+fontmaker.node_editor.shape_hole,Hole,חור,toggle button,
+fontmaker.node_editor.shape_hole_title,"Hole: the next shape is cut out of the letter instead of added to it, like the middle of ס or ם. A hole only shows where it lies inside the letter.","חור: הצורה הבאה נחתכת מתוך האות במקום להתווסף אליה, כמו האמצע של ס או ם. חור נראה רק במקום שבו הוא נמצא בתוך האות.",button title,
+fontmaker.node_editor.shape_place,Place in the middle,הצבה באמצע,button,
+fontmaker.node_editor.shape_place_title,"Add this shape at a standard size in the middle of the letter (a hole: in the middle of the selected shape). It is selected afterwards, so the arrow keys move it and the Transform fields resize it.","הוסיפו את הצורה בגודל רגיל באמצע האות (חור: באמצע הצורה שנבחרה). לאחר מכן היא מסומנת, כך שמקשי החצים מזיזים אותה ושדות השינוי משנים את גודלה.",button title,
+fontmaker.node_editor.shape_radius,Corner radius,רדיוס הפינה,field label,
+fontmaker.node_editor.shape_radius_aria,"Corner radius of a rounded rectangle, in font units","רדיוס הפינה של מלבן מעוגל, ביחידות גופן",field aria-label,
+fontmaker.node_editor.shape_radius_title,"How round the corners of a rounded rectangle are, in font units. Half the shorter side gives fully round ends.","עד כמה מעוגלות הפינות של מלבן מעוגל, ביחידות גופן. חצי מהצלע הקצרה נותן קצוות עגולים לגמרי.",field title,
+fontmaker.node_editor.shape_rect,Rectangle,מלבן,shape button,
+fontmaker.node_editor.shape_rect_title,"Rectangle: pick it, then drag on the letter to draw it, or press Place in the middle","מלבן: בחרו בו, ואז גררו על האות כדי לצייר אותו, או לחצו על ״הצבה באמצע״",button title,
+fontmaker.node_editor.shape_round,Rounded,מעוגל,shape button (rounded rectangle),
+fontmaker.node_editor.shape_round_title,"Rounded rectangle: pick it, then drag on the letter to draw it, or press Place in the middle. The Corner radius field sets how round the corners are.","מלבן מעוגל: בחרו בו, ואז גררו על האות כדי לצייר אותו, או לחצו על ״הצבה באמצע״. השדה ״רדיוס הפינה״ קובע עד כמה הפינות עגולות.",button title,
+fontmaker.node_editor.shapes_group_aria,Shapes to add to the letter,צורות להוספה לאות,group aria-label,
+fontmaker.node_editor.shapes_summary,Shapes,צורות,disclosure summary,
 fontmaker.node_editor.slant_apply_title,"Slant by the angle entered, from the baseline","הטה בזווית שהוזנה, מקו הבסיס",button title,
 fontmaker.node_editor.slant_aria,"Slant angle in degrees, 0 to 30","זווית הטיה במעלות, מ־0 עד 30",input aria-label,aria-label only
 fontmaker.node_editor.slant_label,Slant°,הטיה°,input label,
 fontmaker.node_editor.slant_slider_aria,"Slant angle, from the baseline — previews live, commits on release; the lean buttons below choose left or right","זווית הטיה, מקו הבסיס — תצוגה חיה, נקבעת בשחרור; כפתורי הנטייה שלמטה בוחרים שמאלה או ימינה",slider aria-label,aria-label only
 fontmaker.node_editor.slant_title,"How far to lean, in degrees. The letter leans from the baseline, so it keeps standing on the line. Choose the direction with Lean left or Lean right. (Inside a font file a lean to the right is written as a negative italic angle.)","בכמה להטות, במעלות. האות נוטה מקו הבסיס, ולכן היא ממשיכה לעמוד על השורה. את הכיוון בוחרים ב«נטייה שמאלה» או ב«נטייה ימינה». (בתוך קובץ גופן נטייה ימינה נכתבת כזווית נטייה שלילית.)",input title,
+fontmaker.node_editor.tip_shape,Tip: drag on the letter to draw the shape · Shift = square or circle · Alt = no snapping · Esc puts the tool away.,טיפ: גררו על האות כדי לצייר את הצורה · Shift = ריבוע או עיגול · Alt = בלי הצמדה · Esc מניח את הכלי.,panel tip,
 fontmaker.node_editor.xform_anchor_note_sel,Changing selected points never moves the nikkud and trop points.,שינוי של נקודות נבחרות אינו מזיז את נקודות הניקוד והטעמים.,panel hint,
 fontmaker.node_editor.xform_anchor_note_whole,"Scaling or slanting the whole glyph, or flipping it left–right, moves its nikkud and trop points with it. Rotating it or flipping it top–bottom does not.","שינוי גודל או הטיה של הגליף כולו, או שיקוף שלו שמאל–ימין, מזיזים איתו את נקודות הניקוד והטעמים. סיבוב או שיקוף מעלה–מטה אינם מזיזים אותן.",panel hint,
 fontmaker.panels.edit_shape_btn,"Edit shape (square, dots & bars)","עריכת צורה (ריבוע, נקודות ומוטות)",button,svg-icon-in-markup
@@ -6081,6 +6106,8 @@ fontmaker.panels.upload_mark_below,Upload an image of this mark below.,העלו 
 fontmaker.panels.trace_base_first,Trace the base letter(s) first to preview this form.,המירו תחילה את אותיות הבסיס לקווי מתאר כדי להציג את הצורה הזו.,Precomposed-form stage caption before the base is traced,REVIEW: HE draft
 fontmaker.panels.bb_scale_title,Scale (Shift = uniform),שינוי גודל (Shift = אחיד),bounding-box corner handle title,REVIEW: HE draft
 fontmaker.panels.bb_scale_axis_title,Scale one axis (Shift = uniform),שינוי גודל בציר אחד (Shift = אחיד),bounding-box edge handle title,REVIEW: HE draft
+fontmaker.panels.build_shapes,Build from shapes,בנייה מצורות,button,
+fontmaker.panels.build_shapes_title,"No outline yet — build the letter from rectangles, ellipses and holes","אין עדיין קו מתאר — בנו את האות ממלבנים, אליפסות וחורים",button title,
 fontmaker.panels.italic_angle,Italic angle (°),זווית הנטייה (°),input label,
 fontmaker.panels.italic_angle_title,"How far the letters lean. The Italic file tells programs this angle, so the text cursor leans with the letters. Leave it empty to use the angle recorded when you slanted the letters. (Inside the font file a lean to the right is written as a negative angle.)","בכמה האותיות נוטות. קובץ הנטוי מוסר לתוכנות את הזווית הזאת, כך שסמן הטקסט נוטה יחד עם האותיות. השאירו ריק כדי להשתמש בזווית שנרשמה כשהטיתם את האותיות. (בתוך קובץ הגופן נטייה ימינה נכתבת כזווית שלילית.)",input title,
 fontmaker.panels.italic_note_letters_left,"Following your letters: {angle}°, leaning left.","לפי האותיות שלכם: {angle}°, נטייה שמאלה.",panel hint,
@@ -6109,6 +6136,8 @@ fontmaker.osfont.rfn_rename_btn,Rename my font,שינוי שם הגופן,export
 fontmaker.osfont.rfn_saveas_blocked,“{rfn}” is reserved by the original font — pick a different name for the copy.,”{rfn}“ הוא שם שמור של הגופן המקורי — בחרו שם אחר לעותק.,save-as-copy status message,param rfn
 fontmaker.help.tab_oslock,Partner fonts,גופני שותפים,help tab name,
 fontmaker.help.body_oslock,"Partner fonts — why the license is locked. Some projects start from an existing open-licensed font shared by a partner like the Open Siddur Project. Your edited font is legally a modified version of that original — and open font licenses (like the SIL Open Font License and the GPL) require modified versions to stay under the same license as the original. That's not a limitation IvritSuite adds; it's the very rule that makes the original free for you to edit in the first place. So on these projects the License box is locked to the original's license, and every export's LICENSE.txt carries the original copyright plus your ""modified work"" line. Why you may need a new name. Many open fonts declare Reserved Font Names — names that only the original may use. A modified version must be renamed so nobody confuses it with the original. If the original reserves names, the Family name you pick can't contain them — add your own name or your school's instead (e.g. ""Kehilla SemiStam""). The Reserved name field shows the original's reserved names, read-only. What actually carries over. Your export is rebuilt by IvritSuite from the letters in the editor: the original's Hebrew letterforms, vowels, cantillation marks, mark positions, its ready-made combined forms (שׁ בּ אַ), Latin letters, punctuation, symbols, line metrics and kerning pairs come along; its hinting and hand-tuned internals don't. The LICENSE.txt records exactly what your version is based on. 💛 The ""made with IvritSuite"" line on these exports is informational only — the original's license terms are the ones that apply, unchanged.","גופני שותפים — למה הרישיון נעול. חלק מהפרויקטים מתחילים מגופן קיים ברישיון פתוח ששותף על ידי שותף כמו פרויקט הסידור הפתוח (the Open Siddur Project). הגופן הערוך שלכם הוא מבחינה משפטית גרסה ששונתה של המקור — ורישיונות גופנים פתוחים (כמו SIL Open Font License ו-GPL) מחייבים שגרסאות ששונו יישארו תחת אותו רישיון כמו המקור. זו אינה מגבלה ש-IvritSuite מוסיף; זהו בדיוק הכלל שהופך את המקור לחופשי לעריכה מלכתחילה. לכן בפרויקטים אלה תיבת הרישיון נעולה לרישיון של המקור, וקובץ ה-LICENSE.txt של כל ייצוא נושא את זכויות היוצרים המקוריות בתוספת שורת ""היצירה ששונתה"" שלכם. למה ייתכן שתצטרכו שם חדש. גופנים פתוחים רבים מכריזים על שמות גופן שמורים — שמות שרק המקור רשאי להשתמש בהם. גרסה ששונתה חייבת לקבל שם חדש כדי שאיש לא יתבלבל בינה לבין המקור. אם המקור שומר שמות, שם המשפחה שתבחרו אינו יכול להכיל אותם — הוסיפו במקום זאת את שמכם או את שם בית הספר (למשל ""קהילה SemiStam""). שדה השם השמור מציג את השמות השמורים של המקור, לקריאה בלבד. מה באמת עובר הלאה. הייצוא שלכם נבנה מחדש על ידי IvritSuite מהאותיות שבעורך: צורות האותיות העבריות, הניקוד, טעמי המקרא, מיקומי הסימנים, הצורות המורכבות המוכנות (שׁ בּ אַ), האותיות הלטיניות, סימני הפיסוק, הסמלים, מידות השורה וזוגות הריווח (קרנינג) של המקור עוברים; ההינטינג והכוונונים הפנימיים שלו אינם עוברים. קובץ ה-LICENSE.txt מתעד בדיוק על מה מבוססת הגרסה שלכם. 💛 שורת ""נוצר עם IvritSuite"" בייצואים אלה היא אינפורמטיבית בלבד — תנאי הרישיון של המקור הם החלים, ללא שינוי.",help tab body,help prose; html-stripped
+fontmaker.help.sc_shape_esc,Put the picked shape away without adding it,להניח את הצורה שנבחרה בלי להוסיף אותה,shortcut description,
+fontmaker.help.sc_shape_square,While drawing a shape: keep it square or round,בזמן ציור צורה: לשמור עליה ריבועית או עגולה,shortcut description,
 fontmaker.ostour.original_fallback,the original font,הגופן המקורי,partner tour — stands in for the font name if a project has lost it,
 fontmaker.ostour.step_1_title,Your font is already here,הגופן שלכם כבר כאן,partner tour step title,
 fontmaker.ostour.step_1_body,"Every letter came across from {font} — already drawn, already spaced, with its vowel positions. Nothing to scan or trace.","כל אות הגיעה מ־{font} — כבר מצוירת, כבר מרווחת, עם מיקומי התנועות שלה. אין מה לסרוק או לעקוב.",partner tour step body,param font
@@ -6238,6 +6267,10 @@ fontmaker.undolabel.apply_alignment_to_n_letters,apply alignment to {n} letters,
 fontmaker.undolabel.apply_nikkud_positioning_to_n_letters,apply nikkud positioning to {n} letters,החלת מיקום הניקוד על {n} אותיות,undo action name; {n} is a count,REVIEW: HE authored S243
 fontmaker.undolabel.add_bar,add bar,הוספת מוט,undo action name,REVIEW: HE authored S243
 fontmaker.undolabel.add_dot,add dot,הוספת נקודה,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.add_ellipse,add ellipse,הוספת אליפסה,undo action name,
+fontmaker.undolabel.add_hole,add hole,הוספת חור,undo action name,
+fontmaker.undolabel.add_rectangle,add rectangle,הוספת מלבן,undo action name,
+fontmaker.undolabel.add_rounded_rectangle,add rounded rectangle,הוספת מלבן מעוגל,undo action name,
 fontmaker.undolabel.bar_shape,bar shape,צורת המוט,undo action name,REVIEW: HE authored S243
 fontmaker.undolabel.center_anchor,center anchor,מרכוז העוגן,undo action name,REVIEW: HE authored S243
 fontmaker.undolabel.center_image,center image,מרכוז התמונה,undo action name,REVIEW: HE authored S243
@@ -6305,6 +6338,8 @@ fontmaker.undolabel.kern_tightness,kern tightness,הידוק הקרנינג,undo
 fontmaker.undolabel.letter_spacing,letter spacing,ריווח האותיות,undo action name,REVIEW: HE authored S243
 fontmaker.undolabel.letter_width_n,letter width {n}%,רוחב האותיות {n}%,undo action name,
 fontmaker.undolabel.line_spacing,line spacing,ריווח השורות,undo action name,REVIEW: HE authored S243
+fontmaker.undolabel.make_hole,make hole,הפיכה לחור,undo action name,
+fontmaker.undolabel.make_solid,make solid,הפיכה למלא,undo action name,
 fontmaker.undolabel.mark_anchor_move,mark anchor move,הזזת עוגן הסימן,undo action name,REVIEW: HE authored S243
 fontmaker.undolabel.mark_anchor_x,mark anchor x,עוגן הסימן x,undo action name,REVIEW: HE authored S243
 fontmaker.undolabel.mark_anchor_y,mark anchor y,עוגן הסימן y,undo action name,REVIEW: HE authored S243
@@ -6359,6 +6394,13 @@ fontmaker.status.upload_all_failed,None of those files could be read as images.,
 fontmaker.status.loaded_photos.one,"Loaded {count} photo — open the letter to align, then trace.","נטענה {count} תמונה — פתחו את האות ליישור, ואז עקבו.",toast,plural; REVIEW: machine-drafted HE — confirm
 fontmaker.status.loaded_photos.other,"Loaded {count} photos — open each letter to align, then trace.","נטענו {count} תמונות — פתחו כל אות ליישור, ואז עקבו.",toast,plural; REVIEW: machine-drafted HE — confirm
 fontmaker.status.nodes_slanted,Slanted {deg}° {dir}.,בוצעה הטיה של {deg}° {dir}.,toast,{dir} = slantall.dir_left / dir_right
+fontmaker.status.shape_added_ellipse,"Ellipse added — it is selected: the arrow keys move it, and the Transform fields resize it.","נוספה אליפסה — היא מסומנת: מקשי החצים מזיזים אותה, ושדות השינוי משנים את גודלה.",toast,
+fontmaker.status.shape_added_hole,"Hole added — it is selected: the arrow keys move it, and the Transform fields resize it.","נוסף חור — הוא מסומן: מקשי החצים מזיזים אותו, ושדות השינוי משנים את גודלו.",toast,
+fontmaker.status.shape_added_rect,"Rectangle added — it is selected: the arrow keys move it, and the Transform fields resize it.","נוסף מלבן — הוא מסומן: מקשי החצים מזיזים אותו, ושדות השינוי משנים את גודלו.",toast,
+fontmaker.status.shape_added_round,"Rounded rectangle added — it is selected: the arrow keys move it, and the Transform fields resize it.","נוסף מלבן מעוגל — הוא מסומן: מקשי החצים מזיזים אותו, ושדות השינוי משנים את גודלו.",toast,
+fontmaker.status.shape_drag_hint,"Drag on the letter to draw the shape, or press Place in the middle.","גררו על האות כדי לצייר את הצורה, או לחצו על ״הצבה באמצע״.",toast,
+fontmaker.status.shape_hole_warn,"Part of it is not cutting: a hole only shows where it lies inside the letter, and not over another hole.","חלק ממנו אינו חותך: חור נראה רק במקום שבו הוא נמצא בתוך האות, ולא מעל חור אחר.",toast fragment (a second sentence),
+fontmaker.status.shape_too_far,That is too far from the letter — the shape was not added.,זה רחוק מדי מהאות — הצורה לא נוספה.,toast,
 fontmaker.status.style_detected,This font is marked {style} — Style was set to {style} (see Font Details).,הגופן הזה מסומן כ{style} — הסגנון הוגדר כ{style} (ראו פרטי הגופן).,toast,{style} = a style option name
 fontmaker.status.upload_leftover.one,{count} photo had nowhere to go — every other letter already has something on it.,נותרה {count} תמונה בלי מקום — לכל שאר האותיות כבר יש משהו.,toast,plural; REVIEW: machine-drafted HE — confirm
 fontmaker.status.upload_leftover.other,{count} photos had nowhere to go — every other letter already has something on it.,נותרו {count} תמונות בלי מקום — לכל שאר האותיות כבר יש משהו.,toast,plural; REVIEW: machine-drafted HE — confirm
