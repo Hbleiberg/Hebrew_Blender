@@ -513,9 +513,17 @@ rebuilds a second tree with `createElementNS`, and only that tree reaches `withS
 every route in — a file upload, a sheet, auto-split, a sheet re-read when a project loads, a paste.
 - **Kept:** `svg`, `g` (`a` is walked as `g`; of a `switch` only its first usable child, as a browser
   renders it — Illustrator puts a `foreignObject` first), `path`, `rect`, `circle`, `ellipse`, `line`,
-  `polygon`, `polyline`; each shape's geometry attributes, `transform`, an `<svg>`'s `viewBox` /
-  `preserveAspectRatio` / `x` `y` `width` `height`, and the three CSS transform properties of an inline
-  `style`. Elements are matched by `localName`, so markup pasted without its `xmlns` still imports.
+  `polygon`, `polyline`; each shape's geometry attributes, an `<svg>`'s `viewBox` /
+  `preserveAspectRatio` / `x` `y` `width` `height`, and where the element is put. Elements are matched
+  by `localName`, so markup pasted without its `xmlns` still imports.
+- **A transform comes through however it was written**, because the page that mounted the raw tree
+  let the browser apply all of them: the `transform` and `transform-origin` presentation attributes
+  are copied as attributes, and `transform`, `transform-origin` and `transform-box` from a matching
+  `<style>` rule (source order) and then from the inline `style` are set on the rebuilt element's own
+  style — so the later one wins there as it does in a browser (`carry` in `svgSanitize`). These three
+  properties and nothing else: a value holding `url(`, `var(`, `expression`, `@` or a backslash is
+  refused (`svgXformValueOk`, asked again of what the CSS parser made of the value), and a refused
+  value, like one that is not valid CSS, counts as not written, so the one under it stays in force.
 - **Dropped:** everything else with its subtree (`script`, `style`, `image`, `use`, `text`,
   `foreignObject`, the non-rendering `defs` / `clipPath` / `mask` / `marker` / `symbol` / `pattern`),
   every `on*` attribute, every `href`, `class`. An element's `id` and `inkscape:label` ride as

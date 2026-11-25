@@ -9917,8 +9917,9 @@ function parseSvgText(text) {               // → the INERT root of a DOMParser
    their geometry attributes and transforms. No script, style, image, use, text or foreignObject, no
    on* attribute, no href, no class, and no id (ids ride as data-fm-id so a foreign id is never live
    in this document). Matching is by localName, so markup pasted without its xmlns still imports.
-   What CSS decided on the original — is this shape shown, is it filled — is worked out here on the
-   inert tree by a four-property cascade (svgOwnStyle), because the stylesheet itself never mounts. */
+   What CSS decided on the original — is this shape shown, is it filled, where is it put — is worked
+   out here on the inert tree (svgOwnStyle for the paint, carry() for the three transform properties),
+   because the stylesheet itself never mounts. */
 const SVG_INK_NS = 'http://www.inkscape.org/namespaces/inkscape';
 const SVG_SHAPE_ATTRS = { path: ['d'], rect: ['x', 'y', 'width', 'height'], circle: ['cx', 'cy', 'r'], ellipse: ['cx', 'cy', 'rx', 'ry'],
   line: ['x1', 'y1', 'x2', 'y2'], polygon: ['points'], polyline: ['points'] };
@@ -9933,6 +9934,7 @@ function svgInlineDecls(el) {                // style="a:b; c:d" → {a:'b', c:'
   if (s) s.split(';').forEach(part => { const i = part.indexOf(':'); if (i > 0) { const k = part.slice(0, i).trim().toLowerCase(), v = part.slice(i + 1).replace(/!\s*important/i, '').trim(); if (k && v) out[k] = v; } });
   return out;
 }
+function svgXformValueOk(v) { return !/url\s*\(|var\s*\(|expression|@|\\/i.test(String(v)); }   // a transform is function names and numbers: never a reference out of the element, a variable, an at-rule — or an escape that could spell one
 function svgStyleRules(root) {               // every <style> rule in source order. The sheets are constructed, read and dropped — never adopted — so no @import, url() or font is fetched
   const rules = [];
   if (typeof CSSStyleSheet !== 'function') return rules;   // no constructable sheets (an older Safari): classes are not read, attributes and inline styles still are
@@ -9963,10 +9965,23 @@ function svgSanitize(root, opts) {           // inert parsed root → { svg: a g
     if (stat.shapes > SVG_PASTE_MAX_SHAPES || stat.subpaths > SVG_PASTE_MAX_SUBPATHS) throw new Error(I18n.t('fontmaker.modals.svg_too_complex'));
   };
   const copy = (src, out, names) => names.forEach(n => { const v = src.getAttribute(n); if (v != null) out.setAttribute(n, v); });
-  const carry = (src, out) => {               // what every kept element takes along: its transform (attribute and CSS) and its names, as data
-    copy(src, out, ['transform']);
+  const xrules = rules.filter(r => SVG_CSS_XFORM.some(p => r.style.getPropertyValue(p)));   // the <style> rules that move something — usually none
+  const carry = (src, out) => {               // what every kept element takes along: where it is put, and its names as data
+    // A transform can be written three ways, and a browser lets the later one win: the presentation
+    // attributes (transform, transform-origin), a <style> rule (source order), the inline style. The
+    // attributes stay attributes and the CSS ones go on the rebuilt element's own style, so the same
+    // one wins here. These three properties and nothing else come through, and never a value that
+    // could reach outside the element (svgXformValueOk). A value that is refused, or that is not
+    // valid CSS, counts as not written — the one under it stays in force, as in a browser.
+    ['transform', 'transform-origin'].forEach(n => { const v = src.getAttribute(n); if (v != null && svgXformValueOk(v)) out.setAttribute(n, v); });
+    const css = {}, valid = (p, v) => { try { return typeof CSS === 'undefined' || !CSS.supports || CSS.supports(p, v); } catch (e) { return false; } };
+    const take = (p, v) => { v = (v || '').trim(); if (v && svgXformValueOk(v) && valid(p, v)) css[p] = v; };
+    xrules.forEach(r => { let hit = false; try { hit = src.matches(r.selectorText); } catch (e) {}
+      if (hit) SVG_CSS_XFORM.forEach(p => take(p, r.style.getPropertyValue(p))); });
     const inl = svgInlineDecls(src);
-    SVG_CSS_XFORM.forEach(p => { if (inl[p]) { try { out.style.setProperty(p, inl[p]); } catch (e) {} } });
+    SVG_CSS_XFORM.forEach(p => take(p, inl[p]));
+    SVG_CSS_XFORM.forEach(p => { if (!css[p]) return;
+      try { out.style.setProperty(p, css[p]); if (!svgXformValueOk(out.style.getPropertyValue(p))) out.style.removeProperty(p); } catch (e) {} });   // asked again of what the CSS parser made of it (an escape is resolved by then)
     const id = src.getAttribute('id'), label = src.getAttributeNS(SVG_INK_NS, 'label') || src.getAttribute('inkscape:label');
     if (id) out.setAttribute('data-fm-id', id);
     if (label) out.setAttribute('data-fm-label', label);
