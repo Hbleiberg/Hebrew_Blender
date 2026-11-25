@@ -23581,10 +23581,10 @@ function glyphRangeError(spec) {   // → a ready-to-show message, or '' when ev
 }
 /* ═══ Font size readout ═══
    Every build of the font is remembered with what it was built from: the project object, the edit count at the moment
-   the spec was read, and the file stem (style and width are part of it). While all three still hold, the size shows
-   beside Export. Nothing here ever starts a build — it only measures the ones the teacher asked for. */
+   the spec was read, the file stem (style and width are part of it) and the font's version (an export stamps a new one
+   without an edit: a UFO export, or a bump rolled back). While all four still hold, the size shows beside Export.
+   Nothing here ever starts a build — it only measures the ones the teacher asked for. */
 let _exportSizeOn = false;
-// The version is part of the mark too: an export stamps a new one without an edit (a UFO export, or a bump rolled back).
 function fmBuildKeep(bytes, gen) { window._lastBuild = { proj: project, gen, stem: fontFileStem(), ver: project.font.version, ref: bytes, ttf: bytes.length, woff2: 0 }; exportSizeSync(); }
 function fmBuildFresh() { const b = window._lastBuild; return !!(b && project && b.proj === project && b.gen === _editGen && b.stem === fontFileStem() && b.ver === project.font.version); }
 function exportSizeSync() {
