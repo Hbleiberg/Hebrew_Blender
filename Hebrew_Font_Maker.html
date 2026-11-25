@@ -6128,6 +6128,19 @@ function shortcutGroups() {
       ['Delete  or  Backspace', t('sc_detect_remove')],
       ['Esc', t('sc_detect_close')],
     ], 'detect'],
+    [g('localfont'), [            // the installed-font picker's own keys (lfKey)
+      ['↑  /  ↓', t('sc_lf_move')],
+      ['Home  /  End', t('sc_lf_ends')],
+      ['PageUp  /  PageDown', t('sc_lf_page')],
+      ['A–Z  /  א–ת', t('sc_lf_type')],
+      ['Enter', t('sc_lf_pick')],
+      ['Esc', t('sc_lf_esc')],
+    ], 'localfont'],
+    [g('kernpairs'), [            // a row of Common pairs chips (kernChipKey)
+      ['←  ↑  →  ↓', t('sc_kp_move')],
+      ['Home  /  End', t('sc_kp_ends')],
+      ['Enter  or  Space', t('sc_kp_load')],
+    ], 'kernpairs'],
   ];
 }
 function scKeysHtml(spec) {

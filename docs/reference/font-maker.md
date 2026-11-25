@@ -850,7 +850,8 @@ its list is a focused `div`, which that guard would not read as typing) reuses t
 scroller is `.lf-list`, a real listbox (`role="listbox"`, `aria-activedescendant`, a `role="group"`
 per family, a `role="option"` per face). `lfKey` on the dialog owns the keys: ↑ ↓ Home End PageUp
 PageDown move the active option, Enter chooses, a printable key pressed in the list moves focus to the
-search box (which then takes the character), and ↑ ↓ Enter in the search box act on the list. **Escape
+search box (which then takes the character), and ↑ ↓ Enter in the search box act on the list (the `?`
+sheet lists them as a dialog-local group, `localfont`, beside Auto-detect review's). **Escape
 and Enter are answered there with `stopPropagation()`**: the dialog closes on them, and a key that
 travelled on to the document would be read by the editor behind it (Escape clears a selection in Edit
 points, Enter places a pen point). With *Has Hebrew* on, a face appears once it is confirmed; the
@@ -1952,7 +1953,7 @@ trop are skipped over — and skips ticked pairs.
   from the saved one (`kernEditSaved`), so walking on never drops a dragged gap.
 - *Keyboard.* Each row is `role="toolbar"` with one Tab stop (the current chip, else the first;
   `kernChipFocus` moves it with focus). `kernChipKey` walks the row with the arrow keys in the page's
-  direction, Home and End, and **stops the event**: the page's arrow-key nudge listens on the document
+  direction, Home and End (rows of the `?` sheet's `kernpairs` group), and **stops the event**: the page's arrow-key nudge listens on the document
   and a focused button does not block it, so without that an arrow on a chip also moves the letter
   open on the stage. A chip is announced by letter name (`kernCpSay`), the value with a real minus
   sign, isolated left-to-right.
