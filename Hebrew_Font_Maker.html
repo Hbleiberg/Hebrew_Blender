@@ -9647,6 +9647,7 @@ async function applyFontImport(file, font, bytes, opts) {
     // Mark shapes (nikkud + trop): replace the built-in shapes with the font's own, like uploaded marks.
     let markHits = 0, tropImported = 0, attachCount = 0, accHits = 0;
     const importedMarks = [];   // [kind, cp] pairs whose shape came from THIS font — the fidelity-check domain
+    const markTrue = new Set(); // the mark stores whose shapes THIS import brought (true shapes: their lean state is reset)
     if (marksAny) {
       let nik = 0, trp = 0;
       if (opts.marksNikkud) NIKKUD_MARKS.forEach(m => { if (importMarkGlyph('nikkud', m.cp, font)) { nik++; importedMarks.push(['nikkud', m.cp]); } });   // NIKKUD_MARKS holds {cp,name,cls} objects — passing the object made String.fromCodePoint throw and abort the whole import
@@ -9659,8 +9660,8 @@ async function applyFontImport(file, font, bytes, opts) {
       // "my vowels import bigger than they were" report. Reset the family that covers the kinds
       // actually replaced; per-form overrides (pc.markScale) are deliberate per-form decisions and
       // src-shipped forms ignore scales entirely, so they stay.
-      if (nik) { project.font.markScale = 1; project.font.dageshScale = 1; project.font.holamScale = 1; project.font.cholamScale = 1; markLeanReset('nikkud'); }
-      if (trp) { project.font.tropScale = 1; markLeanReset('trop'); }
+      if (nik) { project.font.markScale = 1; project.font.dageshScale = 1; project.font.holamScale = 1; project.font.cholamScale = 1; markLeanReset('nikkud'); markTrue.add('nikkud'); }
+      if (trp) { project.font.tropScale = 1; markLeanReset('trop'); markTrue.add('trop'); }
       markHits = nik + trp; tropImported = trp;
       // D1: an imported mark attaches at the source font's own MarkAnchor, not its bbox — only when
       // this import read anchors (markAttach non-null) AND replaced this mark's shape from the same
@@ -9691,7 +9692,7 @@ async function applyFontImport(file, font, bytes, opts) {
         if (keepMine && ex && markStatusOf(ex) === 'traced' && ex.smrSource !== 'import') return;
         if (importMarkGlyph('smrmarks', m.cp, font)) { project.font.smrmarks.custom[m.cp].smrSource = 'import'; nSmrMarks++; importedSmrMarks.push(m.cp); }
       });
-      if (nSmrMarks) { project.font.smrmarks.enabled = true; project.font.smrmarks.mode = 'custom'; project.font.smrMarkScale = 1; markLeanReset('smrmarks'); }   // imported shapes are true-size — the markScale/tropScale reset rule
+      if (nSmrMarks) { project.font.smrmarks.enabled = true; project.font.smrmarks.mode = 'custom'; project.font.smrMarkScale = 1; markLeanReset('smrmarks'); markTrue.add('smrmarks'); }   // imported shapes are true-size — the markScale/tropScale reset rule
       if (smrAttach && anchorsSmr) importedSmrMarks.forEach(cp => { const ma = smrAttach[cp], m = project.font.smrmarks.custom[cp]; if (m && ma && Number.isFinite(ma.x) && Number.isFinite(ma.y)) m.attachAnchor = { x: ma.x, y: ma.y }; });
     }
     // Style prefill: a source font flagged bold (OS/2 fsSelection bit 5, usWeightClass ≥ 600, or
@@ -9699,6 +9700,15 @@ async function applyFontImport(file, font, bytes, opts) {
     // mark it Bold, export" flow lands ready to go. Only when outlines were imported (a marks/anchors-
     // only import keeps the current project's style).
     if (opts.outlines) {
+      // The letters are the imported font's now, so the font-level state a whole-font Scale or Slant left
+      // for the old ones goes with them: the size factor of the seeds (sizeK), and where the marks sit under
+      // a lean (markLean). A kind this import brought is true-shape (reset above); every other kind follows
+      // the imported letters' own lean — placed for it, its shape upright, as a Slant all with the marks box
+      // off would leave it (place = tan of the lean, + = right) — and has no entry when they stand upright.
+      if (project.font.metrics) delete project.font.metrics.sizeK;
+      const lk = Math.round(slantTan(importFontLean(font)) * 1e6) / 1e6, ml = {};
+      if (lk) MARK_STORE_KINDS.forEach(kind => { if (!markTrue.has(kind)) ml[kind] = { place: lk, shape: 0 }; });
+      if (Object.keys(ml).length) project.font.markLean = ml; else delete project.font.markLean;
       try {
         const os2 = font.tables && font.tables.os2, head = font.tables && font.tables.head;
         const srcBold = !!((os2 && (((os2.fsSelection || 0) & 0x20) || (os2.usWeightClass || 0) >= 600)) || (head && ((head.macStyle || 0) & 0x01)));

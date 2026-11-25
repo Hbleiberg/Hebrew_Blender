@@ -952,7 +952,8 @@ go through `gxKLen` / `gxKY`, so a letter traced **after** a rescale is seeded l
 With the guide lines off it stays as it was, even when the marks are resized: a new letter is drawn
 to the guide lines, and those did not move.
 At 1 (absent) every one of them is the integer it always was. It lives in `metrics` so the `metrics`
-undo scope carries it and Reset metrics returns it to 1 with the lines. A new constant that means "a
+undo scope carries it and Reset metrics returns it to 1 with the lines; an import that replaces the
+outlines removes it too (the letters it described are gone). A new constant that means "a
 distance at the standard letter size" goes through the same two helpers.
 
 **Scale all letters** (`gxScaleOp`, `#scaleAllOverlay`, `scaleAll*`) is the first operation: a uniform
@@ -1011,7 +1012,11 @@ and every view and the export read mark shapes only through the public three. Th
 for measurements that need the upright shape — `hatafSplit`, `_metegInk` (so the Auto meteg gap and
 the pairing do not move), and the hataf-meteg splice, which is assembled upright and leaned once at
 the end — and for the mark editor, which shows the upright shape with a one-line note. Importing a
-kind's shapes resets that kind (`markLeanReset` — the `markScale = 1` rule). `markMkmkAnchor` follows
+kind's shapes resets that kind (`markLeanReset` — the `markScale = 1` rule). An import that replaces
+the outlines replaces this state for the other kinds too: they follow the imported letters' own lean
+(`place` = the tangent of the source font's angle, `shape` 0 — what a Slant all with the box off
+leaves; no entry when the font is upright), so built-in marks never stay slid for letters that are
+gone, and an italic font without nikkud of its own gets them placed for its lean. `markMkmkAnchor` follows
 the lean; the import-fidelity predictor measures only freshly imported kinds, whose lean is 0.
 
 **Width** (`gxWidthOp`, `gxWidthPlan`, the dialog's third tool) makes letters narrower or wider:
