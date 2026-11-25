@@ -536,6 +536,22 @@ every route in — a file upload, a sheet, auto-split, a sheet re-read when a pr
 - **`opts.paste`** switches on only the caps (`SVG_PASTE_MAX_*`): a cap must never refuse a sheet a
   saved project already holds.
 
+**The project file is the other way in, and it is as untrusted as the sheet inside it.** The page
+writes an item's numbers into markup — the Letter metrics fields, the Trace sliders and their readout,
+the photo's matrix on the stage, an anchor's X / Y fields, a mark piece's size — so a string in a
+number's place used to reach `innerHTML` whole. `migrateProject` passes every letter of every set,
+every custom glyph, every mark of every store (the accent store too) and every per-letter mark shape
+through `sanitizeItemNumbers`: `advance` / `lsb` / `rsb` become a whole number or "not set" (`null`;
+`0` for a mark's advance); the four trace settings a number inside their slider's range, or the
+default; `transform` six finite numbers or the identity; `captureBox` and `source.cropRect` finite or
+`null`; an outline whose points — or whose curves' points — are not pairs of finite numbers is
+dropped, as a malformed contour always was; an anchor entry or an `attachAnchor` that is not two
+numbers is removed (`seedAnchorsIfNeeded` back-fills a partial set before anything reads it); a mark
+piece without its numbers is left out. A field that is absent stays absent, and a number that is
+already good is not touched, so a normal project loads exactly as it was saved. The paste dialog's
+preview (`svgPasteDrawPreview`, the one `innerHTML` this feature adds) writes every value through
+`Math.round(+v) || 0`: nothing but a number can reach its markup, whatever the project holds.
+
 **`assignSvgContours` is the one commit** for an upload, a crop, an auto-split and a paste, and the
 `udDo` around it carries `withSource` and `withDraw` on every item scope: it replaces `it.source`,
 which a plain scope leaves out of the snapshot (the undo then brought the outline back and left the
