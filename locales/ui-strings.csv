@@ -2985,7 +2985,7 @@ fontmaker.panels.kern_setgap_title,Pairs at 0 do nothing — drag the gap to app
 fontmaker.panels.kern_single_glyph,Single glyph,גליף בודד,kern class option,
 fontmaker.panels.kern_suggest,Suggest pairs,הצע זוגות,button,
 fontmaker.panels.kern_twodir_badge,two directions,שני כיוונים,pair badge: one letter reads right to left and the other left to right,
-fontmaker.panels.kern_twodir_title,"One of these two reads right to left and the other left to right (a Hebrew letter beside a Latin letter or a digit). Text never kerns such a pair, so it is skipped on export.","אחד מהשניים נקרא מימין לשמאל והאחר משמאל לימין (אות עברית לצד אות לטינית או ספרה). זוג כזה אינו מקבל קרנינג בטקסט, ולכן הוא ידולג בייצוא.",badge title; also the line under the pair preview while such a pair is in the editor,
+fontmaker.panels.kern_twodir_title,"One of these two reads right to left and the other left to right (a Hebrew letter beside a Latin letter, a digit or a custom glyph in the Private-Use range). Text never kerns such a pair, so it is skipped on export.","אחד מהשניים נקרא מימין לשמאל והאחר משמאל לימין (אות עברית לצד אות לטינית, ספרה או גליף מותאם בטווח השימוש-הפרטי). זוג כזה אינו מקבל קרנינג בטקסט, ולכן הוא ידולג בייצוא.",badge title; also the line under the pair preview while such a pair is in the editor; a Private-Use custom glyph reads left to right,
 fontmaker.panels.kern_untraced_badge,untraced,ללא מעקב,pair badge,svg-icon-in-markup
 fontmaker.panels.kern_untraced_title,A glyph in this pair has no traced outline — it will be skipped on export.,לגליף בזוג זה אין מתאר עקוב — הוא ידולג בייצוא.,badge title,
 fontmaker.panels.kern_update,Update pair,עדכן זוג,button,

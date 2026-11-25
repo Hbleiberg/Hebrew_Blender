@@ -18908,13 +18908,25 @@ function spacingPreviewLayout() {   // shared by the big preview and the waterfa
    "a number leans R" were both wrong on the first pass and both looked perfectly plausible.
    Returns logical cell indices in LEFT-TO-RIGHT visual order. */
 const BIDI_R = 1, BIDI_L = 2, BIDI_EN = 3, BIDI_NEUTRAL = 4;
+const BIDI_PRIVATE_USE = /\p{Co}/u, BIDI_LETTER = /\p{L}/u;
 function bidiClassOf(cell) {
   if (cell.type !== 'glyph' || !cell.cp) return BIDI_NEUTRAL;          // the space cell, and anything without a code point
   const c = parseInt(cell.cp, 16);
   if (isRtlCp(cell.cp)) return BIDI_R;                                  // Hebrew block + its presentation forms + Phoenician + Imperial Aramaic + Samaritan
   if (c >= 0x30 && c <= 0x39) return BIDI_EN;                          // European digits — they READ left-to-right but LEAN right-to-left (below)
   if (isEng(cell.cp) || isCyr(cell.cp)) return BIDI_L;                 // the same predicates that route a letter to the English / Cyrillic tab
-  return BIDI_NEUTRAL;                                                 // punctuation, symbols, custom glyphs — they take their surroundings
+  // A custom glyph can sit at any code point, and browsers give it that code point's own class. Private
+  // Use (U+E000–F8FF and the two astral planes, where the Custom glyphs tab sends new shapes) is strong
+  // left-to-right, and so is a letter of any other script outside the right-to-left blocks: a run of
+  // them reads left to right, and beside Hebrew they sit in a run of their own. Calling them neutral
+  // drew them the wrong way round here and wrote their kerning for the wrong side of the pair.
+  if (c >= 0 && c <= 0x10FFFF) {
+    const ch = String.fromCodePoint(c);
+    if (BIDI_PRIVATE_USE.test(ch)) return BIDI_L;
+    if (BIDI_LETTER.test(ch)) return ((c >= 0x0590 && c <= 0x08FF) || (c >= 0xFB1D && c <= 0xFDFF) || (c >= 0xFE70 && c <= 0xFEFF)
+      || (c >= 0x10800 && c <= 0x10FFF) || (c >= 0x1E800 && c <= 0x1EFFF)) ? BIDI_R : BIDI_L;   // Arabic, Syriac, Thaana, N'Ko… and the historic RTL scripts are R
+  }
+  return BIDI_NEUTRAL;                                                 // punctuation, symbols, marks — they take their surroundings
 }
 function bidiOrder(cells) {
   const n = cells.length, cls = cells.map(bidiClassOf);
@@ -19474,8 +19486,11 @@ function kernOpticalGap(la, lb) {
 }
 /* Which way a pair is set: 'rtl' (the second letter sits to the LEFT — Hebrew and its sister
    scripts), 'ltr' (to the right — Latin, Cyrillic, digits), or null for two different scripts,
-   which sit in separate runs and are never kerned against each other. Punctuation and custom glyphs
-   take their neighbour's side; two of them count as Hebrew text, as this page's fonts are. */
+   which sit in separate runs and are never kerned against each other. A side reads its direction from
+   bidiClassOf, the one a browser gives it: a custom glyph in Private Use (or at a letter of another
+   script) is left to right, so beside a Hebrew letter it is a pair of two directions. Punctuation and
+   symbols take their neighbour's side; two of them count as Hebrew text, as this page's fonts are —
+   no one value record kerns the right gap both ways round, and buildFEA writes them for Hebrew text. */
 function kernPairDir(aCp, bCp) {
   const side = cp => { const k = bidiClassOf({ type: 'glyph', cp }); return k === BIDI_R ? 'rtl' : (k === BIDI_L || k === BIDI_EN) ? 'ltr' : ''; };
   const a = side(aCp), b = side(bCp);
@@ -22722,6 +22737,9 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLette
   //      changes. This is how ufo2ft and the Hebrew fonts this page imports write RTL kerning, and
   //      hfm_read_kern (which reads the advance) gets the same value back.
   //    · two directions (null): the letters sit in separate runs and are never kerned — no rule.
+  //    A custom glyph has its code point's own direction (Private Use: left to right). Two punctuation
+  //    marks count as right to left: no one value record closes a pair's gap both ways round, and
+  //    in a left-to-right run this one closes the gap before them instead.
   //    baseGlyphNames is the set of glyphs actually built, so a pair on a punct/digit glyph can't
   //    break the build when "Include digits & punctuation" is off (the pair just drops out). ──
   const builtSet = new Set(baseGlyphNames);
