@@ -6463,6 +6463,7 @@ fontmaker.scaleall.refuse_range,At {pct}% these would reach past what a font fil
 fontmaker.scaleall.scope,Apply to,החלה על,fieldset legend,
 fontmaker.scaleall.scope_all,The whole font,הגופן כולו,radio label,
 fontmaker.scaleall.scope_hint,"Kerning, word and line spacing, the guide lines and the size of nikkud and trop belong to the whole font, so they change only when you scale the whole font. A letter's own side spaces still follow the spacing box.","הקרנינג, ריווח המילים והשורות, קווי העזר וגודל הניקוד והטעמים שייכים לגופן כולו, ולכן הם משתנים רק כשמשנים את גודל הגופן כולו. מרווחי הצד של האות עצמה עדיין נקבעים לפי תיבת הריווח.",modal hint,
+fontmaker.scaleall.scope_hint_accents,"An accent such as the one on é is shared by every letter that carries it, so it stays as it is when you change only this letter.","סימן כמו זה שמעל é משותף לכל האותיות שנושאות אותו, ולכן הוא נשאר כמו שהוא כשמשנים רק את האות הזאת.",modal hint,"appended to scope_hint for one Latin letter (Scale, Width)"
 fontmaker.scaleall.scope_letter,Only this letter ({name}),רק האות הזאת ({name}),radio label,
 fontmaker.scaleall.scope_tab,Only the {tab} tab,רק הלשונית {tab},radio label,{tab} = a glyph-set tab name
 fontmaker.scaleall.size,Size (%),גודל (%),input label,

@@ -17939,19 +17939,22 @@ function gxPlan(op, set) {
     tune = tune || {};
     tune.sizes = { markScale: sz(markScale()), dageshScale: sz(dageshScale()), cholamScale: sz(cholamScale()), holamScale: sz(holamScale()), tropScale: sz(tropScale()), smrMarkScale: sz(smrMarkScale()) };
     plan.markSize = sz;
-    // Latin accents have no size setting (they bake at scale 1), so their shape is what gets scaled: an
-    // imported accent in place, a built-in one that actually ships through a scaled custom copy.
-    plan.font.accents = gxAccentPatch(mf, mf);
   }
   /* ── mark width (a width change that also squeezes the marks): one factor per mark kind, applied by the
-        public mark readers about the attach point — no nikkud or trop outline is edited. Latin accents have
-        no such setting, so their shapes are squeezed in place, as a resize does. ── */
+        public mark readers about the attach point — no nikkud or trop outline is edited. ── */
   if (mw != null) {
     const wd = {};
     MARK_STORE_KINDS.forEach(kind => { const r = Math.round(markWideK(kind) * mw * 1e6) / 1e6, c = Math.max(0.25, Math.min(4, r)); if (c !== r) held.add('mark_width'); if (c !== 1) wd[kind] = c; });
     tune = tune || {}; tune.markWide = wd;
-    const acc = gxAccentPatch(mw, 1);
-    if (acc) plan.font.accents = acc;
+  }
+  /* ── Latin accents belong to the Latin letters, not to the nikkud box. An accent has no size or width
+        setting (it bakes into its letter at scale 1), so its SHAPE is what changes — an imported accent in
+        place, a built-in one through a scaled custom copy — by the operation's accentX / accentY, whenever
+        the set holds every letter that carries it: the whole font, or the whole English tab. One letter
+        leaves the shared shape alone. ── */
+  if (all || (set.scope === 'tab' && set.cat === 'english')) {
+    const ax = op.accentX != null ? op.accentX : 1, ay = op.accentY != null ? op.accentY : 1;
+    if (ax !== 1 || ay !== 1) plan.font.accents = gxAccentPatch(ax, ay);
   }
   function gxAccentPatch(ax, ay) {   // → the accent items a mark resize writes, or undefined
     const acc = [], store = (F.accent && F.accent.custom) || {};
@@ -18135,7 +18138,8 @@ function gxScaleOp(pct, o) {   // o: { scope, spacing, marks, name }
     fontX: (all && o.spacing) ? s : null, fontY: (all && o.spacing) ? s : null, markFactor: (all && o.marks) ? s : null,
     // The trop side columns belong to the letters (centre ± the spread), a typed meteg gap to the marks: each
     // follows the size of what it measures, not the spacing box — the seeds (sizeK) stay with the guide lines.
-    tropX: all ? s : null, gapX: (all && o.marks) ? s : null
+    tropX: all ? s : null, gapX: (all && o.marks) ? s : null,
+    accentX: s, accentY: s   // the Latin accents grow and shrink with the Latin letters (gxPlan: only when the set holds all of them)
   };
 }
 /* ── Slant — the engine's second operation: a horizontal shear about the baseline, so letters keep
@@ -18427,7 +18431,8 @@ function gxWidthOp(pct, o) {
     },
     leanScale: all ? k : null,
     fontX: all ? k : null, spaceX: (all && o.spacing) ? s : null, pairX: (all && o.marks) ? s : null, gapX: null,
-    markWide: (all && o.marks) ? s : null, fontY: null, markFactor: null
+    markWide: (all && o.marks) ? s : null, fontY: null, markFactor: null,
+    accentX: s   // the Latin accents are squeezed with the Latin letters, by the typed width as the marks are (gxPlan: only when the set holds all of them)
   };
 }
 function gxwFirstK(set, s, cen) {   // the shapes' factor, first estimate: each letter gets about one stem's worth of width back per unit of squeeze
@@ -18608,7 +18613,8 @@ function scaleAllRender() {
   saStrips();
   const narrow = st.scope !== 'all';
   cfg.opts.forEach((o, i) => { document.getElementById(SA_OPT_IDS[i]).disabled = narrow && o.all; });   // a font-wide choice (a Style, the marks, the kerning) means nothing for one letter
-  document.getElementById('saScopeHint').hidden = !narrow;
+  const sh = document.getElementById('saScopeHint'); sh.hidden = !narrow;
+  if (narrow) sh.textContent = I18n.t(cfg.ns + '.scope_hint') + ((st.scope === 'letter' && st.tool !== 'slant' && st.cat === 'english') ? ' ' + I18n.t('fontmaker.scaleall.scope_hint_accents') : '');   // a resize or width change of one Latin letter leaves its shared accents as they are (a slant leans them with the letter's record)
   const sn = document.getElementById('saStyleNote'), mnote = saMetaNote(saMetaAfter(null));
   sn.hidden = !mnote; if (mnote) sn.textContent = mnote;
   const ap = document.getElementById('saApply'), note = document.getElementById('saNote');

@@ -919,7 +919,11 @@ than the sliders': `MARK_SIZE_MIN`–`MARK_SIZE_MAX` (10–400%) in the setters 
 far as it must to hold the value it finds (`markSizeRange`). Latin accents have no size setting (they
 bake at scale 1), so there the shape *is* scaled: an imported accent in place, a built-in one that
 actually ships through a scaled custom copy created before the undo snapshot (the Generate Bold
-idiom — emptied by undo, it reads as the built-in again).
+idiom — emptied by undo, it reads as the built-in again). An accent belongs to the Latin letters, not
+to the nikkud box: its shape follows the operation's `accentX` / `accentY` whenever the set holds
+every letter that carries it — the whole font, whatever the marks box says, or *Only the English
+tab* — and one letter leaves the shared shape as it is (the dialog's scope hint says so for a Latin
+letter). A slant needs no factor: an accent leans by its own letter's record.
 
 **An operation may stamp a record and carry Font Details fields.** `op.stamp(letter)` returns fields
 to set on every letter the operation changes (`null` removes a key) — still only assignments and
@@ -1079,7 +1083,8 @@ measurements stay unsqueezed and what is built from them is squeezed as one fini
 through the map at the end, and so a meteg gap (typed or Auto) is a distance in unsqueezed mark space
 and is **not** scaled by the engine (`gapX` is null for a width change; the vowel–trop shift, a
 letter-space distance, is — `pairX`). Latin accents have no font-level setting, so their shapes are
-squeezed in place (x only), as a resize does. Importing a kind's shapes resets it with the lean
+squeezed in place (x only, by the typed width), as a resize does and under the same rule — the whole
+font or the English tab, whether or not this box is ticked. Importing a kind's shapes resets it with the lean
 (`markLeanReset`); the mark editor shows the unsqueezed shape with its own one-line note. Squeezed
 marks are not stem-corrected.
 
