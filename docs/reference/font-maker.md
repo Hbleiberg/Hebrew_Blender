@@ -566,8 +566,9 @@ every route in — a file upload, a sheet, auto-split, a sheet re-read when a pr
   `svg_too_complex`. One measurement walks its whole subpath, so a single long one can outlast the
   budget all by itself (a 2 MB path of curves took seconds per call): a sample is not started when
   the subpath's own `getTotalLength` time says it would end past the deadline, and a pasted outline —
-  a subpath, a polygon's points — of more than `SVG_PASTE_MAX_SUBPATH_NUMS` numbers is refused with
-  the same message before anything is measured. `svgPasteParse` gives that message for a `RangeError`
+  a subpath, a polygon's points — of more than `SVG_PASTE_MAX_SUBPATH_NUMS` numbers is refused before
+  anything is measured, with its own message (`svg_outline_too_dense`: one outline with too many points
+  is not "too many shapes"). `svgPasteParse` gives `svg_too_complex` for a `RangeError`
   too (groups nested deeper than the sanitizer's walk can follow), never the engine's own text.
 
 **The project file is the other way in, and it is as untrusted as the sheet inside it.** The page

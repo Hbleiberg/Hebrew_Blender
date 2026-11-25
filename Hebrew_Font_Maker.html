@@ -9970,8 +9970,8 @@ function svgSanitize(root, opts) {           // inert parsed root → { svg: a g
     const d = tag === 'path' ? (src.getAttribute('d') || '') : '';
     stat.subpaths += tag === 'path' ? Math.max(1, (d.match(/[Mm]/g) || []).length) : 1;
     const runs = tag === 'path' ? splitSubpaths(d) : (tag === 'polygon' || tag === 'polyline') ? [src.getAttribute('points') || ''] : [];
-    if (stat.shapes > SVG_PASTE_MAX_SHAPES || stat.subpaths > SVG_PASTE_MAX_SUBPATHS || runs.some(s => svgNumsOver(s, SVG_PASTE_MAX_SUBPATH_NUMS)))
-      throw new Error(I18n.t('fontmaker.modals.svg_too_complex'));
+    if (stat.shapes > SVG_PASTE_MAX_SHAPES || stat.subpaths > SVG_PASTE_MAX_SUBPATHS) throw new Error(I18n.t('fontmaker.modals.svg_too_complex'));
+    if (runs.some(s => svgNumsOver(s, SVG_PASTE_MAX_SUBPATH_NUMS))) throw new Error(I18n.t('fontmaker.modals.svg_outline_too_dense'));   // one outline, not many shapes: its own words
   };
   const copy = (src, out, names) => names.forEach(n => { const v = src.getAttribute(n); if (v != null) out.setAttribute(n, v); });
   const xrules = rules.filter(r => SVG_CSS_XFORM.some(p => r.style.getPropertyValue(p)));   // the <style> rules that move something — usually none
