@@ -10448,75 +10448,104 @@ function svgPasteReplace(l, built) {          // ONE undo step that brings back 
   renderGrids();
   status(I18n.t('fontmaker.status.svgpaste_done', { name: gName(l.name) }));
 }
-/* Adding is a UNION: ink is only ever added. Fonts, and every stage here, fill by the nonzero rule,
-   so the union is simply every contour keeping its own direction — the old ones theirs, the new
-   piece's outers clockwise and its counters counter-clockwise. Two things would spoil that:
-   · a contour lying wholly where the other group's ink already is. A new piece inside the letter adds
-     nothing; an old counter the new ink covers would still punch its hole through that ink. Both are
-     left out — that IS the union.
-   · renestNodeModel, which the point editor runs after a rotate, a delete, a paste. It re-reads each
-     contour's direction from how many other rings hold its FIRST point, so a bar laid across a letter
-     (first corner inside the ink) would turn into a hole — a bite out of the letter — at the first
-     such edit. So a contour the other group touches is made to START on a point that is clear of the
-     other group's ink: one of its own points, else a point put on one of its straight edges (a
-     collinear point moves where a contour starts, not its shape).
-   "Clear" is asked of the point and of four points around it, first 4 units out, then 1: both pieces
-   fitted to the same band touch the same top and bottom lines, so corners sitting exactly ON the
-   other's edge are the common case, and there the next rounding would flip the answer.
-   An old contour the new pieces do not reach is not touched at all. Works on the node model only;
-   returns how many of the new contours remain and whether the outline changed at all. */
-function svgPasteSettle(first) {
-  const cts = nodeModel.contours, rings = cts.map(nodeContourToPoints);
-  const isNew = i => i >= first;
-  const parity = (x, y, i, sameGroup) => {     // how many rings of i's own group (or of the other one) hold this point, mod 2 — i itself never counted
-    let d = 0; const pt = [Math.round(x), Math.round(y)];
-    for (let j = 0; j < rings.length; j++) if (j !== i && (isNew(j) === isNew(i)) === sameGroup && rings[j].length >= 3 && pointInPoly(pt, rings[j])) d++;
-    return d % 2;
-  };
-  const base = cts.map((ct, i) => !ct.nodes.length ? 0 : isNew(i) ? (ct.winding === 'ccw' ? 1 : 0) : parity(ct.nodes[0].x, ct.nodes[0].y, i, true));   // an old contour keeps whatever nesting it has today
-  const clear = (x, y, i) => parity(x, y, i, false) === 0 && parity(x, y, i, true) === base[i];
-  const sure = (x, y, i, r) => clear(x, y, i) && clear(x - r, y, i) && clear(x + r, y, i) && clear(x, y - r, i) && clear(x, y + r, i);
-  const seat = (ct, i, r) => {                 // index of a node that is sure at radius r — put in on a straight edge when no existing node is — or -1
-    const nodes = ct.nodes; let k = nodes.findIndex(nd => sure(nd.x, nd.y, i, r));
-    if (k >= 0) return k;
-    for (let a = 0; a < nodes.length; a++) {
-      const A = nodes[a], B = nodes[(a + 1) % nodes.length]; if (A.out || B.in) continue;   // a curved segment is left whole
-      const steps = Math.min(64, Math.max(2, Math.ceil(Math.hypot(B.x - A.x, B.y - A.y) / 8)));
-      for (let q = 1; q < steps; q++) {
-        const x = Math.round(A.x + (B.x - A.x) * q / steps), y = Math.round(A.y + (B.y - A.y) * q / steps);
-        if ((x === Math.round(A.x) && y === Math.round(A.y)) || (x === Math.round(B.x) && y === Math.round(B.y)) || !sure(x, y, i, r)) continue;
-        nodes.splice(a + 1, 0, { x, y, in: null, out: null, type: 'corner' }); return a + 1;
-      }
+/* Adding is a UNION: ink is only ever added. Fonts, and every stage here, fill by the nonzero rule.
+   The letter and the artwork are each wound one way round (solids clockwise, counters the other
+   way, so the winding is zero or to one side everywhere), and then the union is simply every
+   contour of both, each in its own direction: the sum is nonzero exactly where either one is.
+   Nothing has to be cut, moved or re-seated for that. The one thing that would spoil it is the
+   AUTOMATIC nesting rule — renestNodeModel re-deciding a contour's direction from how many other
+   rings hold its first point, at the next rotate, delete or paste: a bar laid across a letter would
+   turn into a hole. So adding makes the letter a KEPT one (dirSet on every contour, see
+   renestNodeModel), whose directions are never re-decided:
+   · the contours that are there go through nodeKeepAll() BEFORE the new ones join — it keeps the
+     fill, and it turns a letter drawn the other way round (a CFF import) into this file's
+     convention, so both groups are wound alike;
+   · every new contour joins flagged, running the way its label says;
+   · no start point is moved, no point is put in, and no solid of the letter is ever taken out.
+   Two things are decided by asking points "is this ink?" (svgWinder), never by a rule about where a
+   contour starts:
+   · "this artwork adds nothing" — of the artwork as a whole: nowhere does it have ink where the
+     letter has none (svgPasteAddsInk). No change, and no undo step. In doubt, it is added.
+   · a COUNTER of the letter that the new ink covers completely cuts nothing any more. It is taken
+     out, so the Contours list is not left with a dead hole — but only when taking it out cannot
+     change the fill (svgPasteDeadHoles). In doubt it stays, and the fill is right either way.
+   One limit: a hole that sticks out of its own group's ink (the Contours list already says such a
+   hole is not cutting) is wound the other way round where it sticks out, and ink of the other group
+   laid over that spot cancels it. */
+function svgWinder(rings) {                   // → (x, y) → the signed winding number of these rings there: a clockwise ring holds a point at +1, a counter-clockwise one at −1
+  const E = gxwEdges(rings), at = gxwBins(E);
+  return (x, y) => { const B = at(y); let w = 0; for (let i = 0; i < B.length; i++) { const e = B[i]; if ((e[1] > y) !== (e[3] > y) && e[0] + (y - e[1]) * (e[2] - e[0]) / (e[3] - e[1]) < x) w += e[3] > e[1] ? 1 : -1; } return w; };
+}
+function svgPasteAddsInk(oldRings, newRings) {   // is there a point where the artwork has ink and the letter has none?
+  const Wo = svgWinder(oldRings), Wn = svgWinder(newRings);
+  const adds = (x, y) => Wn(x, y) !== 0 && Wo(x, y) === 0;
+  let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+  for (const R of newRings) for (let i = 0; i < R.length; i++) {   // beside the artwork's own outline: every 6 units along each edge, a little to each side (never ON an edge — pieces fitted to one band share its top and bottom lines)
+    const a = R[i], b = R[(i + 1) % R.length], dx = b[0] - a[0], dy = b[1] - a[1], len = Math.hypot(dx, dy);
+    if (a[0] < x0) x0 = a[0]; if (a[0] > x1) x1 = a[0]; if (a[1] < y0) y0 = a[1]; if (a[1] > y1) y1 = a[1];
+    if (!len) continue;
+    const ox = -dy / len * 0.7, oy = dx / len * 0.7, steps = Math.max(1, Math.ceil(len / 6));
+    for (let q = 0; q < steps; q++) { const t = (q + 0.5) / steps, x = a[0] + dx * t, y = a[1] + dy * t; if (adds(x + ox, y + oy) || adds(x - ox, y - oy)) return true; }
+  }
+  const w = x1 - x0, h = y1 - y0; if (!(w > 0 && h > 0)) return true;   // nothing to measure: in doubt, add
+  const step = Math.max(Math.min(6, Math.sqrt(w * h / 2200)), Math.sqrt(w * h / 200000));   // a grid over the artwork's box: about 6 units apart, never fewer than 2,000 points (and no more than 200,000)
+  for (let y = y0 + step * 0.37; y < y1; y += step) for (let x = x0 + step * 0.31; x < x1; x += step) if (adds(x, y)) return true;
+  return false;
+}
+/* The letter's counters that the artwork's ink covers completely → their indices. Asked after the
+   keep step, so a counter is a counter-clockwise ring. A counter goes only on proof: the artwork's
+   outline neither crosses it nor comes inside it, and at every point asked — just inside its edge
+   all the way round, and on a grid across it — there is ink of the artwork, wound as a solid, and
+   the fill is the same with the counter as without it. */
+function svgPasteDeadHoles(oldRings, newRings) {
+  const dead = [], Wo = svgWinder(oldRings), Wn = svgWinder(newRings);
+  oldRings.forEach((H, i) => {
+    if (H.length < 3 || !(signedArea(H) > 0)) return;
+    const Wh = svgWinder([H]);
+    for (const R of newRings) { if (R.some(p => Wh(p[0], p[1]) !== 0) || contoursOverlap(H, R)) return; }
+    let seen = 0, x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+    const same = (x, y) => {                  // true / false inside the counter, null outside it
+      const hw = Wh(x, y); if (!hw) return null;
+      const nw = Wn(x, y), tot = Wo(x, y) + nw;   // (Wo counts the counter itself; tot − hw is the letter and the artwork without it)
+      seen++; return nw > 0 && (tot !== 0) === (tot - hw !== 0);
+    };
+    for (let k = 0; k < H.length; k++) {      // a counter runs counter-clockwise: its inside is on the left of travel
+      const a = H[k], b = H[(k + 1) % H.length], dx = b[0] - a[0], dy = b[1] - a[1], len = Math.hypot(dx, dy);
+      if (a[0] < x0) x0 = a[0]; if (a[0] > x1) x1 = a[0]; if (a[1] < y0) y0 = a[1]; if (a[1] > y1) y1 = a[1];
+      if (!len) continue;
+      const steps = Math.max(1, Math.ceil(len / 6));
+      for (let q = 0; q < steps; q++) { const t = (q + 0.5) / steps; if (same(a[0] + dx * t - dy / len * 0.7, a[1] + dy * t + dx / len * 0.7) === false) return; }
     }
-    return -1;
-  };
-  const gone = [];
-  cts.forEach((ct, i) => {
-    if (ct.nodes.length < 3) return;
-    const s0 = ct.nodes[0];
-    if (isNew(i) ? sure(s0.x, s0.y, i, 4)                                                    // already starts somewhere safe
-                 : [[0, 0], [-4, 0], [4, 0], [0, -4], [0, 4]].every(o => parity(s0.x + o[0], s0.y + o[1], i, false) === 0)) return;   // the new pieces are nowhere near this old contour's start
-    let k = seat(ct, i, 4); if (k < 0) k = seat(ct, i, 1);
-    if (k < 0) { gone.push(i); return; }
-    if (k > 0) ct.nodes = ct.nodes.slice(k).concat(ct.nodes.slice(0, k));
+    const step = Math.min(6, Math.sqrt((x1 - x0) * (y1 - y0) / 400));
+    if (!(step > 0)) return;
+    for (let y = y0 + step * 0.37; y < y1; y += step) for (let x = x0 + step * 0.31; x < x1; x += step) if (same(x, y) === false) return;
+    if (seen) dead.push(i);
   });
-  let kept = cts.length - first, oldGone = 0;
-  gone.sort((p, q) => q - p).forEach(i => { cts.splice(i, 1); if (i >= first) kept--; else oldGone++; });
-  return { kept, changed: kept > 0 || oldGone > 0 };   // a piece that only fills a counter leaves no contour of its own behind, and still changed the letter
+  return dead;
 }
 function svgPasteAdd(l, built) {              // the pieces join the outline that is there — through the node model, like pasted points
   _setWorkMode('nodes');                      // Edit points is the one step that always shows the outline itself (Align shows a photo or the strokes)
   buildNodeModel(l); nodeSel.clear(); _hiddenContours.clear();
-  const first = nodeModel.contours.length;
-  built.contours.forEach(c => nodeModel.contours.push({ winding: c.winding, nodes: c.points.map(p => ({ x: p[0], y: p[1], in: null, out: null, type: 'corner' })) }));
-  const { kept, changed } = svgPasteSettle(first);   // on the model only — nothing of the project has changed yet
-  if (!changed) {                             // every new piece lies inside ink that is already there: no change, so no undo step either
-    buildNodeModel(l); renderStage(); renderControls();
+  const fresh = built.contours.map(c => {     // flagged, and running the way the label says: the label only names a direction, the points' order is what fills
+    const ct = { winding: c.winding === 'ccw' ? 'ccw' : 'cw', dirSet: true, nodes: c.points.map(p => ({ x: p[0], y: p[1], in: null, out: null, type: 'corner' })) };
+    const a = signedArea(c.points);
+    if (ct.winding === 'ccw' ? a < 0 : a > 0) reverseNodeContour(ct);
+    return ct;
+  });
+  const newRings = fresh.map(nodeContourToPoints);
+  if (!svgPasteAddsInk(nodeModel.contours.map(nodeContourToPoints), newRings)) {   // asked of the model only — nothing of the project has changed, so no undo step either
+    renderStage(); renderControls();
     status(I18n.t('fontmaker.status.svgpaste_adds_nothing', { name: gName(l.name) }));
     return;
   }
-  const from = nodeModel.contours.length - kept;
-  udDo([{ t: 'item', kind: 'letter', cp: l.codepoint }], 'add SVG — ' + l.name, () => { if (nodeKept()) nodeModel.contours.forEach(ct => { ct.dirSet = true; }); writeThroughRebuild(l); });   // every contour keeps its direction (no renest here: the union above is the nonzero fill of exactly these)
+  let from = 0;
+  udDo([{ t: 'item', kind: 'letter', cp: l.codepoint }], 'add SVG — ' + l.name, () => {
+    nodeKeepAll();                            // before the new contours join: the letter's own direction is read without them
+    svgPasteDeadHoles(nodeModel.contours.map(nodeContourToPoints), newRings).sort((p, q) => q - p).forEach(i => nodeModel.contours.splice(i, 1));
+    from = nodeModel.contours.length;
+    fresh.forEach(ct => nodeModel.contours.push(ct));
+    writeThroughRebuild(l);                   // no renest: the union is the nonzero fill of exactly these contours, each as it runs
+  });
   for (let ci = from; ci < nodeModel.contours.length; ci++) nodeModel.contours[ci].nodes.forEach((nd, ni) => nodeSel.add(nodeKey(ci, ni)));
   renderGrids(); renderStage(); renderControls();
   status(I18n.t('fontmaker.status.svgpaste_added', { name: gName(l.name) }));
@@ -13948,8 +13977,8 @@ function reverseNodeContour(ct) {
    the NODE contour so curves survive). The exporter consumes physical point order, so orientation
    fixes must actually reverse the nodes, not just relabel. Remaps nodeSel indices on reversal.
    A letter is either AUTOMATIC (no contour carries dirSet — every contour is decided here by how
-   many other rings hold its first point, on every call) or KEPT (a shape was added, or a contour
-   switched by hand: every contour carries dirSet). In a kept letter a flagged contour is never
+   many other rings hold its first point, on every call) or KEPT (a shape or pasted artwork was
+   added, or a contour switched by hand: every contour carries dirSet). In a kept letter a flagged contour is never
    re-decided: it is only made to run the way its label says (a mirror flip reverses every contour;
    a rectangle dragged inside out reverses one), and a contour that arrives without the flag (pen,
    paste) is decided once by the nesting rule and then flagged. Nesting cannot be the rule there: a
