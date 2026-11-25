@@ -18779,12 +18779,16 @@ function kernExpanded() {
   rows.forEach(k => { if (single(k)) out.set(k.left[0] + '|' + k.right[0], k.value); });   // a specific pair wins — the last one if doubled
   return out;
 }
-function kernPreviewValue(firstCp, secondCp) {   // big-sample preview: the in-progress edit wins (live), else saved pairs
+function kernPreviewValue(firstCp, secondCp) {   // both previews: the in-progress edit wins (live), else saved pairs
   const e = kernEdit;
   if (e) { const L = kernSideCps(e.left), R = kernSideCps(e.right);
-    if (L.includes(firstCp) && R.includes(secondCp))
-      return (L.length === 1 && R.length === 1) ? (e.value|0)          // the pair being edited shows live
-        : (kernSpecific(firstCp, secondCp) || (e.value|0)); }          // a group being edited never hides a saved specific pair
+    if (L.includes(firstCp) && R.includes(secondCp)) {
+      if (L.length > 1 || R.length > 1) return kernSpecific(firstCp, secondCp) || (e.value|0);   // a group being edited never hides a saved specific pair
+      // The pair being edited shows live — except at 0 with no real value of its own saved. A pair at
+      // 0 is no rule at all, so the font gives the two letters whatever a group pair gives them, and
+      // drawing 0 would show the group's kerning as removed for this one pair when nothing can do that.
+      if ((e.value|0) || kernSpecific(firstCp, secondCp)) return e.value|0;
+    } }
   return kernEffective(firstCp, secondCp);
 }
 function _spacingCellMarks(cell) {   // place a glyph cell's stacked nikkud together — precomposed-aware, faithful to the exported font
@@ -19302,7 +19306,9 @@ function renderKernPreview() {
   const lb = project.letters.find(x => x.codepoint === kernSideCps(e.right)[0]);
   const wa = la ? effLetterAdvance(la) : effLetterAdvance(null);
   const wb = lb ? effLetterAdvance(lb) : effLetterAdvance(null);
-  const gap = Math.max(-200, Math.min(200, e.value|0));
+  // a specific pair is drawn at the value the big sample gives it (kernPreviewValue), so the two previews agree
+  // on a pair they both show — at 0 under a group pair that is the group's kerning; a group side shows the slider's value
+  const gap = Math.max(-200, Math.min(200, (e.left.cls || e.right.cls) ? (e.value|0) : kernPreviewValue(e.left.cp, e.right.cp)));
   const total = wa + gap + wb;
   const cell = (l, w, pen) => (l && l.contours)
     ? `<path d="${glyphPathAt(l.contours, pen, 0, l.curves)}" fill="currentColor"/>`
@@ -19364,7 +19370,9 @@ function addOrUpdateKernPair() {
     else project.font.kerning.push({ left, right, value: e.value });
   });
   renderKerningSection();
-  status(I18n.t(e.value ? 'fontmaker.status.kern_pair_saved' : 'fontmaker.status.kern_pair_saved_zero'));
+  // saved at 0 = no rule of its own: when a group pair covers the two letters, its kerning is what the font applies — say so
+  const underGroup = !e.value && left.length === 1 && right.length === 1 && kernEffective(left[0], right[0]);
+  status(I18n.t(e.value ? 'fontmaker.status.kern_pair_saved' : underGroup ? 'fontmaker.status.kern_pair_saved_zero_group' : 'fontmaker.status.kern_pair_saved_zero'));
 }
 function deleteKernPair(i) { udDo([{t:'kerning'}], 'delete kerning pair', () => { (project.font.kerning||[]).splice(i, 1); }); renderKerningSection(); }
 function loadKernPair(i) {

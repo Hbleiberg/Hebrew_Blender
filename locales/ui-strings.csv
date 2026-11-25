@@ -3499,6 +3499,7 @@ fontmaker.status.shape_applied_all,Shape applied to all letters.,הצורה הו
 fontmaker.status.shape_applied_one,Shape applied to this letter.,הצורה הוחלה על האות הזו.,mark editor toast,
 fontmaker.status.kern_pair_saved,Kerning pair saved.,זוג הריווח נשמר.,kerning editor toast,
 fontmaker.status.kern_pair_saved_zero,Pair saved at 0 — set a non-zero gap to apply it.,הזוג נשמר עם 0 — קבעו מרווח שונה מאפס כדי להחיל אותו.,kerning editor toast,
+fontmaker.status.kern_pair_saved_zero_group,Pair saved at 0 — the kerning of a letter group still applies to this pair.,הזוג נשמר עם 0 — הקרנינג של קבוצת אותיות עדיין חל על הזוג הזה.,kerning editor toast when a pair made with a kern class (letter group) covers the two letters,
 fontmaker.status.template_font_loaded,Template font “{name}” loaded.,"גופן התבנית ""{name}"" נטען.",toast,
 fontmaker.status.tile_aria,{name} — {status},{name} — {status},tile aria-label,aria-label only
 fontmaker.status.trace_first,Trace at least one letter first.,עקבו קודם אחר אות אחת לפחות.,toast,
