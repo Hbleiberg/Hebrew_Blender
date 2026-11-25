@@ -1000,7 +1000,9 @@ The record is **cleared** where an outline is replaced from outside (`importLett
 then stamps the source font's own lean; `assignSvgContours`; a new photo, crop or auto-split;
 Center image; clearing punctuation) and **copied** where an outline is copied (Copy outline,
 duplicate glyph, convert wide form, points pasted into an empty letter — the points clipboard
-carries its letter's record; pasted onto an outline, the target's own record stays). An outline
+carries its letter's record, and on a letter with a picture of its own (`photoOwn`) the lean of
+that picture's placement waits as `l.photoSlant` for its next trace (`setOutlineSlant`); pasted onto
+an outline, the target's own record stays). An outline
 emptied by hand (Clear outline, deleting every contour in Edit points) loses its record when no
 photo and no strokes are left to lean (`clearLeanIfBare`; a photo's matrix is still sheared, so a
 photo letter keeps it). *Apply alignment to other letters* copies a picture's placement, never an

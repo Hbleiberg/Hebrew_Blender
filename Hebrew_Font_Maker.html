@@ -15645,7 +15645,7 @@ function pasteNodes() {
         type: nd.type })) };
       if (src.dirSet === true) ct.dirSet = true;             // (renest below makes it run the way its label says)
       nodeModel.contours.push(ct); });
-    if (!first && curKind === 'letter') setLetterSlant(l, nodeClipboard.slant);   // into an empty letter the copied outline brings its lean record (Copy outline's rule); added to an outline, the letter's own record stays
+    if (!first && curKind === 'letter') setOutlineSlant(l, nodeClipboard.slant);   // into an empty letter the copied outline brings its lean record (Copy outline's rule; a picture of the letter's own keeps its lean for its next trace); added to an outline, the letter's own record stays
     renestNodeModel(); writeThroughRebuild(l);
   });
   nodeSel.clear(); _hiddenContours.clear();           // contour indices changed — session-only visibility resets
@@ -21790,6 +21790,17 @@ function photoSlantTake(l) {   // a trace from the picture has just replaced the
   setLetterSlant(l, photoLean(l));
   delete l.photoSlant;
 }
+function photoOwn(l) {   // the letter is traced from a picture of its own through its placement (not a vector glyph, not a drawing)
+  return !!(l && l.source && l.source.dataUrl) && !isVectorGlyph(l) && !(l.draw && Array.isArray(l.draw.strokes) && l.draw.strokes.length);
+}
+/* An outline from elsewhere (pasted points) brings its own record; on a letter with a picture of its own
+   the placement's lean then waits for the next trace, as after Apply alignment. Inside the caller's udDo. */
+function setOutlineSlant(l, deg) {
+  const lean = photoOwn(l) ? photoLean(l) : null;
+  setLetterSlant(l, deg);
+  if (lean == null) return;
+  if (lean === letterSlant(l)) delete l.photoSlant; else l.photoSlant = lean;
+}
 function uprightContours(l) {   // the letter's contours with its lean taken out (the same array when it has none)
   const k = letterLeanK(l); if (!k || !l.contours) return l.contours;
   const b = effMetrics().baseline;
@@ -27820,7 +27831,7 @@ function applyAlignDo(){
       l.transform = src.transform.slice();   // a picture's placement only, never an outline: every record keeps describing the outline its letter has
       // A letter with a photo of its own takes the placement's lean for its NEXT trace (photoSlantTake);
       // one with no photo of its own (an outline pasted, built, imported or drawn) gets nothing.
-      if (!(l.source && l.source.dataUrl) || isVectorGlyph(l) || (l.draw && Array.isArray(l.draw.strokes) && l.draw.strokes.length)) return;
+      if (!photoOwn(l)) return;
       if (!(l.contours && l.contours.length)) { setLetterSlant(l, lean); delete l.photoSlant; }   // nothing traced yet: the record is what the next trace gives
       else if (lean === letterSlant(l)) delete l.photoSlant;
       else l.photoSlant = lean;
