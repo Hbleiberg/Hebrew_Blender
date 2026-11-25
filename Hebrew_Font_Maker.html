@@ -10739,9 +10739,12 @@ async function lfOpen(target) {               // called straight from the button
     status(I18n.t(err && err.name === 'SecurityError' ? 'fontmaker.status.localfont_blocked' : denied ? 'fontmaker.status.localfont_denied' : 'fontmaker.status.localfont_none'));
     return;
   }
-  const items = Array.from(fonts).map(fd => ({ fd, family: lfClean(String(fd.family || ''), 120), style: lfClean(String(fd.style || ''), 80),
-    full: lfClean(String(fd.fullName || fd.family || ''), 160), ps: lfClean(String(fd.postscriptName || ''), 120) }))
-    .filter(it => it.family || it.full);
+  // A full name that cleans to nothing (white space, control characters, a lone U+FEFF) falls back to the
+  // family, then to the PostScript name — after the cleaning, not before it: the font is still listed
+  // under a name, and that name is what its licence record is kept under (lfStampInstalled).
+  const items = Array.from(fonts).map(fd => { const family = lfClean(String(fd.family || ''), 120), ps = lfClean(String(fd.postscriptName || ''), 120);
+      return { fd, family, style: lfClean(String(fd.style || ''), 80), full: lfClean(String(fd.fullName || ''), 160) || family || ps, ps }; })
+    .filter(it => it.full);
   items.forEach(it => { it.family = it.family || it.full; it.search = (it.family + ' ' + it.full + ' ' + it.style + ' ' + it.ps).toLowerCase(); it.heb = _lfHebCache.has(it.ps) ? _lfHebCache.get(it.ps) : undefined; });
   items.sort((a, b) => a.family.localeCompare(b.family) || a.full.localeCompare(b.full));
   _lf = { target: target === 'reference' ? 'reference' : 'import', items, gen: Date.now(), obs: null, faces: [], active: null, choosing: false,
@@ -10929,9 +10932,14 @@ function lfCleanSource(o) {
   return s.name ? s : null;
 }
 function lfStampInstalled(file) {
-  const src = lfCleanSource(file && file.hfmInstalled);
-  if (!src || !project || project.osFont) return;
-  project.font.license = 'unset'; project.font.sourceFont = src;
+  const inst = file && file.hfmInstalled;
+  if (!inst || typeof inst !== 'object' || !project || project.osFont) return;
+  // The stamp follows where the file came from (the picker's mark), never what the font is called: a
+  // record whose name cleans to nothing is kept under the file's name, and with no name anywhere the
+  // licence is still "not chosen yet" — only the note about the source font is left out.
+  const src = lfCleanSource(inst) || lfCleanSource({ name: String(file.name || ''), copyright: inst.copyright, license: inst.license, licenseUrl: inst.licenseUrl });
+  project.font.license = 'unset';
+  if (src) project.font.sourceFont = src; else delete project.font.sourceFont;
   syncMetaToForm(); markDirty();
 }
 function syncSourceFontNote() {               // Font Details: the "not chosen yet" option and what the source font says about itself
