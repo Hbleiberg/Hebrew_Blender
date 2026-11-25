@@ -345,7 +345,8 @@ load, cleared again when a library is missing.
 
 ### Undo / dirty / autosave contract — the big one
 **Never mutate `project` directly.** Route every mutation through `udDo(scopes, label, fn)`
-(scopes: `{t:'item',kind,cp}`, `'spacing'`, `'kerning'`, `'kernClasses'`, `'metrics'`, `'guides'`,
+(scopes: `{t:'item',kind,cp}`, `'spacing'`, `'kerning'`, `'kernClasses'`, `'kernChecked'` (the Common
+pairs ticks), `'metrics'`, `'guides'`,
 `{t:'precomp',target}`, `'tropTune'` — the font-level mark tuning: spread, pairing, meteg gap, mark
 nudges, the six mark sizes, the marks' placement / lean under a slanted font (`markLean`) and their
 width factor (`markWide`) — and
@@ -824,7 +825,7 @@ afresh at commit time, never from a preview's copy.
   each sheet's `fitScale` (a letter boxed from that sheet later must arrive at the new size).
 - *Untouched on purpose:* `handEdited` (one exception: a keep-stems width change marks a **photo**
   letter hand-edited, below), the placement flags, `savedAnchors`, `source`, `kernClasses` (members,
-  not lengths), a wide form's `widthScale` (a ratio), `markNudge` (vertical only).
+  not lengths), `kernChecked` (pair keys, not lengths), a wide form's `widthScale` (a ratio), `markNudge` (vertical only).
 - *Session state the commit resets:* `lastSavedAnchors` (also on undo / redo of the entry —
   `gxAfterHistory`), `_rawTrace`, `_fidelityLast` (the import report measures against the source
   font's bytes and its Apply would write the old positions back), `_hiddenContours`, the node model.
@@ -1289,6 +1290,78 @@ stays in **logical (reading) order** whichever way it is drawn, because that is 
 `kern` feature wants; only the drawing flips. `setKernGlyph` refreshes both captions in place, for
 the same reason it refreshes the Add/Update button rather than re-rendering: a full rebuild would
 drop focus mid-typing, and typing a Latin letter can flip the pair's direction.
+
+### Kerning and Common pairs
+
+**Storage.** `project.font.kerning = [{left:[cp…], right:[cp…], value}]`, always in logical (reading)
+order; a side with one code point is a specific pair, with more it is a group ("class") pair.
+`project.font.kernClasses` holds the user's named groups. `project.font.kernChecked` holds the Common
+pairs ticks as `'first|second'` keys.
+
+**One reader for "what kerning does this pair get": `kernEffective(first, second)`.** It follows
+`emitKern` (the export) rule for rule: a specific pair with a real value wins — the last one if the
+list holds it twice — a pair at 0 is no rule at all, so a group pair that covers the two letters
+shows through, and among group pairs the first in the list. `kernSpecific` is the first half alone.
+The big sample (`kernPreviewValue`) and the chips read it, so neither can disagree with the exported
+font. In `kernPreviewValue` the pair being edited still shows live; a *group* being edited never hides
+a saved specific pair. A new reader of kerning calls `kernEffective`, never walks the list itself.
+
+**Measuring a gap: `kernVisualGap(la, lb)`.** `kernOpticalGap(a, b)` scans both outlines every 20
+units and returns the smallest clearance, and it assumes its **second** argument sits to the
+**left** — right for Hebrew. `kernPairDir(a, b)` says how a pair is set (`'rtl'`, `'ltr'`, or `null`
+for two different scripts, which sit in separate runs and never kern; punctuation and custom glyphs
+take their neighbour's side), and `kernVisualGap` hands the letters to `kernOpticalGap` the right
+way round. Call `kernVisualGap`; `kernOpticalGap` directly is only right for a pair known to be
+Hebrew. The gap ignores the pair's own kerning and includes Letter spacing (`effLetterAdvance`).
+*Suggest pairs* (`suggestKernPairs`) uses it, treats a space in the sample as a break, and skips
+ticked pairs.
+
+**The Common pairs block** (`renderKernCommon()` → `#kernCommon`, inside `#kerningBody`).
+- *The Hebrew list is generated.* `KERN_COMMON_HE` (`[first, second, count]`, top 60) sits between
+  the `kern-pairs:start` / `kern-pairs:end` markers and is written only by
+  `node scripts/build-kern-pairs.mjs` from `data/hebrew_words.json` (each different `bare` spelling
+  once; marks skipped over; anything else breaks a pair; ties by code point). `--check` exits 1 when
+  the block differs from what the data builds. There is no CI here, so `--check` is run by hand, and
+  after any edit of that data file. A rewrite of the block is an edit of a precached page.
+- *The Latin list is hand-kept:* `KERN_COMMON_LATIN`, in its usual order, shown only while
+  `project.font.addEnglishLetters` is on. It is not scored — its order is the priority.
+- *Ranking* (`kernCommonLists()`): Hebrew pairs by count × min(200, |Auto-tightness target −
+  `kernVisualGap`|), ties by frequency. The gap is the un-kerned one on purpose: a chip keeps its
+  place while the teacher works along the row. A pair with a letter that has no outline
+  (`kernCpTraced`) is left out. The first `KERN_CHIPS_SHOWN` show; *Show all* (`_kernMore`, session
+  state) shows the rest. The block re-renders with the section, when a letter is typed into the pair
+  boxes (`setKernGlyph`), and on the `change` of the Auto-tightness and Letter spacing sliders.
+- *States:* `kerned` (`kernEffective` is not 0 — a group pair counts), else `checked` (ticked), else
+  `plain`. Kerned wins over checked, and the tick stays underneath.
+- *The tick* is written only by `kernFineToggle()` — one `udDo` over `'kerning'` + `'kernChecked'`
+  (ticking also removes a row left at 0 for that pair, which would otherwise sit in Your pairs asking
+  for a gap). The toggle is `aria-disabled`, with the reason as its title and as the status line when
+  pressed, for a pair that is not listed, a pair that is kerned, or a Gap slider that is not at 0
+  (`kernFineSync()` keeps that last one current in place while the slider moves; a ticked pair can
+  always be unticked). `migrateProject` keeps only well-formed keys, once each, capped;
+  `applyFontImport` clears the list when it replaces the outlines. Nothing else touches it:
+  re-tracing a letter leaves ticks as it leaves kerning values, the glyph transform engine does not
+  need to know (keys do not scale), and ticks never reach the font.
+- *A chip* loads its pair with `kernChipLoad` — the saved row's value, else what a group pair gives
+  it — which writes `kernEdit` only. *Next unreviewed pair* (`kernNextUnreviewed`) walks the Hebrew
+  list then the Latin one from the pair in the editor to the next `plain` chip, wraps, opens *Show
+  all* when that chip is hidden, and refuses — saying so — while the editor holds a gap that differs
+  from the saved one (`kernEditSaved`), so walking on never drops a dragged gap.
+- *Keyboard.* Each row is `role="toolbar"` with one Tab stop (the current chip, else the first;
+  `kernChipFocus` moves it with focus). `kernChipKey` walks the row with the arrow keys in the page's
+  direction, Home and End, and **stops the event**: the page's arrow-key nudge listens on the document
+  and a focused button does not block it, so without that an arrow on a chip also moves the letter
+  open on the stage. A chip is announced by letter name (`kernCpSay`), the value with a real minus
+  sign, isolated left-to-right.
+
+**Keyboard focus in the Spacing tab: `fkKeep(rootId, fn)`.** `renderKerningSection` and
+`renderSpacingPanel` rebuild their markup wholesale, which drops focus to `<body>`. Both are wrappers
+that run their `…Now` twin inside `fkKeep`, which remembers the focused control's `data-fk` key and
+focuses its rebuilt twin — looked up again after the rebuild, because `renderSpacingPanel` replaces
+`#kerningBody` itself. Undo from a focused Kerning control comes through the outer one. Keys in use:
+`kp:<first|second>` (chips), `kp:fine`, `kp:next`, `kp:more`, `kp:add`, `kp:suggest`, `kpd:<row>` (a
+row's delete button, so deleting by keyboard lands on the next row). `renderControls` keeps its own
+copy of the same idea for the left column.
 
 ### QA Check grid (`#qaOverlay`)
 `qaBuild()` counts flagged cells per tab into `qaResult.counts` (the tab badges) and `qaResult.total`
