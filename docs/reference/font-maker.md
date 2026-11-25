@@ -573,50 +573,59 @@ validated against the closed set on read. Validation is inline (the `aria-live` 
   an upload lands on the placement step.
 - **Add** (`svgPasteAdd`) is a union, and goes through the node model like a point paste. It lands in
   Edit points — the one step that always shows the outline itself. Every stage fills nonzero, and the
-  letter and the artwork are each wound one way round, so the union is simply every contour of both,
-  each in its own direction: the sum is nonzero exactly where either one is. Nothing is cut, moved or
-  re-seated for it. What would spoil it is the automatic nesting rule re-deciding a direction at the
-  next rotate, delete or paste (a bar laid across a letter would turn into a hole), so **an add makes
+  letter and the artwork are each wound to one side (zero or more everywhere: solids +1, their
+  counters back to zero), so the union is simply every contour of both, each in its own direction:
+  the sum is nonzero exactly where either one is. Nothing is cut, moved or re-seated for it, and no
+  contour changes between solid and hole. What would spoil it is the automatic nesting rule
+  re-deciding a direction at the next rotate, delete or paste (a bar laid across a letter would
+  turn into a hole), so **an add makes
   the letter a kept one** (*Shapes, holes and kept directions*): the contours that are there go
   through `nodeKeepAll()` first — it keeps the fill and turns a letter drawn the other way round into
   this file's convention, so both groups are wound alike — and then every new contour joins flagged,
   running the way its label says. No start point is moved, no point is inserted, and no solid of the
   letter is ever removed; the added contours are the selection afterwards.
+  - **The artwork is read one SVG shape at a time** (`svgWindByShape`): `svgPasteParse` keeps, beside
+    each loop, the index of the shape (`path`, `rect`, `circle`…) it came from, and `svgPasteBuild`
+    passes it to `svgLoopsToContours` for Add only — a value of the dialog's, never of the project.
+    The plain import nests every loop against every other, so a shape whose first point lies inside
+    another, separate shape becomes that shape's hole: a T drawn as two rectangles imports with a
+    notch where they overlap, the part of its stem outside the bar is wound the wrong way round, and
+    laid over a letter that part cancelled the letter's ink. In the SVG itself one shape painted over
+    another never cuts it. So for Add each shape's loops are nested among that shape's loops only:
+    its outer +1, its own counters back to zero, and the shapes together are their union — a ring
+    with a bar across it is a ring with a bar, a T of two rectangles a T with no notch. Within one
+    shape the nesting stands, with one exception: a loop read as the hole of a loop it sticks out of
+    (`svgSticksOut` — a corner or the middle of an edge strictly outside it, or a proper crossing;
+    touching it, a shared corner or a shared stretch of edge does not count) is no counter of it and
+    is read as a solid, so a T drawn as one path of two rectangles is a T too. The dialog's preview
+    draws these same contours, so what it shows for Add is what Go makes; switching to Replace
+    redraws it with the plain reading.
   - Everything else is decided by asking points "is this ink?" (`svgWinder`, a signed winding
     number), never by a rule about where a contour starts. **The artwork adds nothing** — asked of
     the artwork as a whole (`svgPasteAddsInk`): nowhere does it have ink where the letter has none,
     tried beside its own outline (a little to each side of every edge, never on one: pieces fitted to
     the same band share its top and bottom lines) and on a grid over its box. Then nothing changes
     and no undo entry is made.
-  - **Where the sum would cancel ink** (`svgPasteJoin`, after the keep step). Each group stays to one
-    side only while its holes lie inside its own ink; a hole that sticks out is wound the other way
-    round there, and over ink of the other group the two cancel. It is asked at points where the
-    two boxes meet — a grid about 6 units apart, a little to each side of every edge, and a finer
-    grid across each small counter — against the union, old fill OR new fill. Three mends, each a
-    change that keeps every contour running the way its label says:
-    - a **counter of the letter** with the artwork's ink at every point asked inside it is taken out
-      when the sum then has ink at all of them. That cannot change the union; it keeps the Contours
-      list free of a dead hole, and it is what stops a hole of a kept letter lying outside its ink
-      (shown as ink, and flagged as not cutting) from cancelling the artwork laid over it.
-    - a **hole of the artwork** that cancels the letter's ink is turned round and joins as a solid —
-      together with any other hole of the artwork whose overlap with it the turn would cancel. That
-      is how a pasted drawing made of overlapping shapes arrives: the importer reads a shape whose
-      first point lies inside another as its hole (a T drawn as two rectangles is a bar and a hole
-      sticking out of it), and over the letter the part that sticks out cancelled the letter's ink.
-      A turn is made only where it mends points and makes no point that was right wrong: first
-      only where nothing else changes, so the union stays exact; then, for what is still
-      cancelled, where the only other change is ink where the artwork's own shapes overlap — the
-      drawing as its shapes paint it, rather than the notch the importer's reading leaves there.
-      The letter's ink is never what gives way.
-    - a **hole of the letter that cuts nothing** — one of a kept letter lying outside its ink, which
-      shows as ink, or one over two of its solids — is turned into a solid when the artwork's ink
-      would cancel it, alone or together with the artwork's holes above it: as a solid it is the
-      same ink, so the letter's fill is unchanged. A hole of the letter that cuts is never turned.
-  - One case is left as it was: a hole of the letter that pokes out of its ink *and* cuts it, with
-    the artwork over the part that pokes out — turning it would fill what it cuts, so the ink that
-    part showed is cancelled under the artwork. The Contours list already flags such a hole as not
-    cutting before the add (and so it does when an earlier add left a hole of the artwork poking out
-    that cancelled nothing then).
+  - **The letter's holes** (`svgPasteDeadHoles`, after the keep step). The one place a letter's
+    winding goes below zero is a hole lying outside its ink — it shows as ink, and the Contours list
+    notes it as not cutting — and the artwork laid over it would cancel that. A hole of the letter,
+    such a one or a counter, that the artwork's ink covers completely is taken out: the artwork has
+    ink at every point asked inside it — a little inside its edge all the way round, on a grid across
+    it (about 6 units apart, at least 400 points), and a little to each side of every edge of the
+    artwork near it, where a gap in the artwork would show. That cannot change the union, and no
+    dead hole is left in the Contours list. It goes only if the sum still has ink at all those
+    points once it is gone (two holes of the letter lying over each other, one covered and one not,
+    would otherwise cancel each other's ink; then they go one at a time, each only where it can).
+  - **Limits, left for a follow-up.** A hole of the letter only partly covered stays: where the
+    artwork lies over its part outside the letter's ink, that ink is cancelled — and so it is over
+    the part of a hole that pokes out of the letter's ink and cuts it too. The Contours list flags
+    both before the add. Within one SVG shape, two loops that lie inside the same outer and cross
+    each other (a θ drawn as a single path, its bar inside the ring) are both read as holes: where
+    they overlap the shape winds below zero, and over the letter's ink it cancels that ink there.
+    Drawn as separate shapes (a ring and a bar) they join exactly. And **Replace**, the upload, a
+    sheet's crop and auto-split, the code box's Replace and a drop keep the plain import's reading
+    across shapes: a shape lying inside another, separate shape is still read as its hole, so a T
+    drawn as two overlapping rectangles imports with a notch where they overlap.
   - QA's outline scan still reports a piece laid across a counter (an outer/hole crossing): the fill
     is right under the nonzero rule, the note is about engines that fill by even-odd.
 
