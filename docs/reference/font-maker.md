@@ -1360,8 +1360,9 @@ Script and three binary properties allow. R: the page's own right-to-left sets, 
 EN: the European digits. Strong — R inside Unicode's other right-to-left blocks (`isRtlBlockCp`), L
 outside them: a letter, a letter number, a spacing mark, an alphabetic symbol (the circled letters),
 every Private Use code point (the range the Custom glyphs tab recommends) and an unassigned one
-(not a noncharacter or default-ignorable); and, outside those blocks, a script's own digits
-(Devanagari, Thai…). That is the
+(not a noncharacter or default-ignorable, and not in the Currency Symbols block, U+20A0–20CF, whose
+unassigned code points default to the weak European terminator and stay neutral); and, outside
+those blocks, a script's own digits (Devanagari, Thai…). That is the
 class a browser gives those code points, which matters because a custom glyph can sit at any of
 them: three custom glyphs read left to right even inside Hebrew text. Punctuation, most symbols,
 marks and spaces are the neutrals. Where the reading falls short — all rare for a custom glyph: a
@@ -1419,9 +1420,11 @@ was; a pair of two directions gets no rule. A group whose letters mix directions
 case, since every pair is written by itself. A pair of two neutrals (punctuation marks, most
 symbols) is written for Hebrew text: no one value record closes a pair's own gap in both directions,
 and in a left-to-right run the record a right-to-left pair needs closes the gap before the pair
-instead. A known limit: two left-to-right letters of different scripts — a Private Use custom glyph
-beside a Latin letter, as Latin beside Cyrillic — are written and shown as kerned, but a browser
-shapes the two in separate script runs and applies nothing.
+instead. A known limit: two letters of one direction but different scripts — a Private Use custom
+glyph or a circled letter beside a Latin letter, Latin beside Cyrillic, a Hebrew letter beside an
+Arabic-block custom glyph — are written and shown as kerned, but a browser shapes the two in
+separate script runs and applies nothing; and Chromium never kerns the Roman numerals (U+2160…) or
+an unassigned right-to-left code point, even beside one of their own.
 `hfm_read_kern` reads a pair by its advance, so an exported font re-imports with the same values; when a font holds more rows than the import limit
 (`KERN_IMPORT_CAP`), it first folds glyph pairs that share a value back into group rows — per first
 glyph, then first glyphs with the same folded row — so a font this page exported from group pairs

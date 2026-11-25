@@ -18923,8 +18923,9 @@ const BIDI_R = 1, BIDI_L = 2, BIDI_EN = 3, BIDI_NEUTRAL = 4;
    wrote its kerning for the gap before the pair. Strong: a letter (L*), a letter number (Nl), a spacing
    mark (Mc), an alphabetic symbol (the circled letters), every Private Use code point (U+E000–F8FF and
    the two astral planes, where the Custom glyphs tab sends new shapes) and an unassigned one that is
-   not a noncharacter or default-ignorable (Unicode's default class for those is strong too) — R inside
-   the right-to-left blocks, L outside them — and, outside those blocks, a script's own digits
+   not a noncharacter or default-ignorable (Unicode's default class for those is strong too, except in
+   the Currency Symbols block, U+20A0–20CF, where it is the weak European terminator, so those stay
+   neutral here) — R inside the right-to-left blocks, L outside them — and, outside those blocks, a script's own digits
    (Devanagari, Thai…; inside them, digits are Arabic numbers, not strong). The page's own
    right-to-left sets are R whole (isRtlCp); the European digits are EN. Everything else is neutral: punctuation, most symbols, marks, spaces. What that misses, all
    rare for a custom glyph: a few symbol blocks a browser sets left to right (Braille, the APL symbols,
@@ -18937,6 +18938,7 @@ function cpBidiClass(hex) {
   if (!(c >= 0 && c <= 0x10FFFF)) return BIDI_NEUTRAL;
   if (isRtlCp(hex)) return BIDI_R;                                      // Hebrew block + its presentation forms + Phoenician + Imperial Aramaic + Samaritan
   if (c >= 0x30 && c <= 0x39) return BIDI_EN;                          // European digits — they READ left-to-right but LEAN right-to-left (bidiOrder)
+  if (c >= 0x20A0 && c <= 0x20CF) return BIDI_NEUTRAL;                // Currency Symbols: every assigned one is a currency sign (ET) and the unassigned rest defaults to ET too — weak, which this reading keeps neutral
   const ch = String.fromCodePoint(c), rtl = isRtlBlockCp(c);
   if (BIDI_STRONG.test(ch)) return rtl ? BIDI_R : BIDI_L;
   return !rtl && BIDI_SCRIPT_DIGIT.test(ch) ? BIDI_L : BIDI_NEUTRAL;   // neutrals take their surroundings
@@ -19507,9 +19509,11 @@ function kernOpticalGap(la, lb) {
    letter of another script, an unassigned code point…) is left to right, so beside a Hebrew letter it
    is a pair of two directions. Neutrals (punctuation, most symbols) take their neighbour's side; two
    of them count as Hebrew text, as this page's fonts are — no one value record kerns the right gap
-   both ways round, and buildFEA writes them for Hebrew text. Two left-to-right sides of different
-   scripts (a Private Use glyph beside a Latin letter, Latin beside Cyrillic) count as 'ltr', though a
-   browser shapes them in separate runs and applies nothing — a known limit. */
+   both ways round, and buildFEA writes them for Hebrew text. Two sides of one direction but different
+   scripts (a Private Use glyph or a circled letter beside a Latin letter, Latin beside Cyrillic, a
+   Hebrew letter beside an Arabic-block glyph) count as that direction, though a browser shapes them in
+   separate runs and applies nothing — a known limit, as are the Roman numerals (U+2160…) and the
+   unassigned right-to-left code points, which Chromium never kerns at all. */
 function kernPairDir(aCp, bCp) {
   const side = cp => { const k = cpBidiClass(cp); return k === BIDI_R ? 'rtl' : (k === BIDI_L || k === BIDI_EN) ? 'ltr' : ''; };
   const a = side(aCp), b = side(bCp);
