@@ -1878,7 +1878,15 @@ of the value follows `kernPairDir`: a left-to-right pair is the bare value (the 
 advance); a right-to-left pair is placement **and** advance on the first glyph, `<v 0 v 0>` — an
 advance change alone would move the letter *before* the pair and leave the pair's own gap as it
 was; a pair of two directions gets no rule. A group whose letters mix directions needs no special
-case, since every pair is written by itself. A pair of two neutrals (punctuation marks, most
+case, since every pair is written by itself. **Pointed text kerns like plain text**, as the sample
+shows it: the feature's first statement is `lookupflag IgnoreMarks;`, so a vowel, a trop mark or a
+dagesh between the two letters no longer hides the pair, and a mark attached to the first letter of
+a right-to-left pair moves with it. The flag is written at feature level, where it ends with the
+block (feaLib carries a flag out of a named lookup block, not out of a feature), and nothing but
+GDEF follows the block. A letter typed with a mark that `ccmp` folds into one glyph (בּ, שׁ, וֹ, וּ, a
+letter's own mark shape, שּׁ, ײַ) is a glyph the shaper kerns by its own name, so the emitter writes
+every pair of the letter for that composed glyph too, first or second in the pair; a rule written
+for the form's own code point wins. A pair of two neutrals (punctuation marks, most
 symbols) is written for Hebrew text: no one value record closes a pair's own gap in both directions,
 and in a left-to-right run the record a right-to-left pair needs closes the gap before the pair
 instead. A known limit: two letters of one direction but different scripts — a Private Use custom
