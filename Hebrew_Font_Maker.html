@@ -13224,6 +13224,7 @@ async function _drawCommitNow(advance) {
   if (curKind !== 'letter' || curLetter() !== l) return;
   let n = null;
   udDo([{ t: 'item', kind: 'letter', cp, withSource: true, withDraw: true }], 'draw letter — ' + l.name, () => {
+    if (l.source.kind !== 'draw') delete l.photoSlant;   // the strokes replace a picture and its placement: that lean was the picture's (photoLean)
     l.source.kind = 'draw'; l.source.dataUrl = url; l.source.cropRect = null; l.source.sheetId = null;
     l.transform = [SC, 0, 0, SC, fx(fr.x0), fy(fr.y1)];   // canvas px land 1:1 in font units
     l.captureBox = null;
@@ -21779,11 +21780,17 @@ function setLetterSlant(l, deg) { const d = Math.max(-60, Math.min(60, Math.roun
    placement carries is the lean of its next trace. Apply alignment can give a letter a placement that
    leans differently while it keeps the outline traced from the old one: the record keeps describing that
    outline, and the placement's lean waits in l.photoSlant (degrees, the record's convention) until the
-   next trace from the picture makes it the record. Absent on every other letter. A drawing never has
-   one: its raster leans as its strokes do, which its record already says. */
-function photoLean(l) {   // the lean a letter's placement matrix carries
-  const v = l ? +l.photoSlant : NaN, drawn = !!(l && l.draw && Array.isArray(l.draw.strokes) && l.draw.strokes.length);
-  return (l && l.photoSlant != null && Number.isFinite(v) && !drawn) ? v : letterSlant(l);
+   next trace from the picture makes it the record. A drawing (strokes whose next Save traces them) has
+   one only while an outline from elsewhere — pasted points, Copy outline — stands in for the trace of
+   its strokes: their raster leans as they do, and that lean waits here for the next Save, as a
+   picture's does (Clear outline drops a drawing's raster, never its strokes). Absent on every other
+   letter; strokes not yet saved over a picture ignore the picture's (their Save replaces the picture,
+   and _drawCommitNow drops it). */
+function strokesOwn(l) { return !!(l && l.draw && Array.isArray(l.draw.strokes) && l.draw.strokes.length); }
+function drawingOwn(l) { return strokesOwn(l) && !(l.source && l.source.dataUrl && l.source.kind !== 'draw'); }   // strokes whose next Save traces them: a saved drawing, or strokes over no picture — not strokes still waiting to replace one
+function photoLean(l) {   // the lean a letter's next trace gives: its placement matrix's, or a saved drawing's strokes'
+  const v = l ? +l.photoSlant : NaN;
+  return (l && l.photoSlant != null && Number.isFinite(v) && (!strokesOwn(l) || drawingOwn(l))) ? v : letterSlant(l);
 }
 function photoSlantTake(l) {   // a trace from the picture has just replaced the outline — inside the caller's udDo or burst
   if (!l || l.photoSlant == null) return;
@@ -21793,10 +21800,11 @@ function photoSlantTake(l) {   // a trace from the picture has just replaced the
 function photoOwn(l) {   // the letter is traced from a picture of its own through its placement (not a vector glyph, not a drawing)
   return !!(l && l.source && l.source.dataUrl) && !isVectorGlyph(l) && !(l.draw && Array.isArray(l.draw.strokes) && l.draw.strokes.length);
 }
-/* An outline from elsewhere (pasted points) brings its own record; on a letter with a picture of its own
-   the placement's lean then waits for the next trace, as after Apply alignment. Inside the caller's udDo. */
+/* An outline from elsewhere (pasted points, Copy outline) brings its own record; on a letter with a
+   picture of its own the placement's lean then waits for the next trace, as after Apply alignment, and on
+   a saved drawing its strokes' lean does (the next Save traces them again). Inside the caller's udDo. */
 function setOutlineSlant(l, deg) {
-  const lean = photoOwn(l) ? photoLean(l) : null;
+  const lean = (photoOwn(l) || drawingOwn(l)) ? photoLean(l) : null;
   setLetterSlant(l, deg);
   if (lean == null) return;
   if (lean === letterSlant(l)) delete l.photoSlant; else l.photoSlant = lean;
@@ -26896,7 +26904,7 @@ function migrateProject(data) {
     if (l.curves != null && !(Array.isArray(l.curves) && l.curves.every(cv => cv == null || (_isObj(cv) && Array.isArray(cv.start) && Array.isArray(cv.segments))))) l.curves = null;
     ['anchors', 'savedAnchors', 'markShapes', 'captureBox'].forEach(k => { if (l[k] != null && !_isObj(l[k])) l[k] = null; });
     if (l.slant != null) { const _s = +l.slant; if (Number.isFinite(_s) && _s !== 0 && Math.abs(_s) <= 60) l.slant = Math.round(_s * 10) / 10; else delete l.slant; }   // the lean record: junk means "upright"
-    if (l.photoSlant != null) { const _p = +l.photoSlant; if (Number.isFinite(_p) && Math.abs(_p) <= 60 && l.source && l.source.dataUrl) l.photoSlant = Math.round(_p * 10) / 10; else delete l.photoSlant; }   // a placement's lean waiting for the next trace (photoLean): only beside a picture
+    if (l.photoSlant != null) { const _p = +l.photoSlant; if (Number.isFinite(_p) && Math.abs(_p) <= 60 && ((l.source && l.source.dataUrl) || (l.draw && Array.isArray(l.draw.strokes) && l.draw.strokes.length))) l.photoSlant = Math.round(_p * 10) / 10; else delete l.photoSlant; }   // a placement's (or a drawing's strokes') lean waiting for the next trace (photoLean): only beside a picture or strokes
   });
   // ensure all 27 letters exist & fields present (forward-compatible)
   // One item per code point. A save can still carry two at one cp — a custom glyph added where a letter

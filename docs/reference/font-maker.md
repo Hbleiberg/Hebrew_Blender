@@ -1003,7 +1003,10 @@ duplicate glyph, convert wide form, points pasted into an empty letter — the p
 carries its letter's record; pasted onto an outline, the target's own record stays). When Copy
 outline or a paste gives a letter with a picture of its own (`photoOwn`) a record of its new outline,
 the lean of that picture's placement waits as `l.photoSlant` for its next trace (`setOutlineSlant`);
-a copied drawing replaces the picture, and nothing waits. An outline
+so does the strokes' lean of a drawing (`drawingOwn`: strokes whose next Save traces them — Clear
+outline drops a drawing's raster, never its strokes), and the next Save takes it. A copied drawing
+replaces the picture, and nothing waits; strokes saved over a picture for the first time drop the
+picture's waiting lean (`_drawCommitNow`). An outline
 emptied by hand (Clear outline, deleting every contour in Edit points) loses its record when no
 photo and no strokes are left to lean (`clearLeanIfBare`; a photo's matrix is still sheared, so a
 photo letter keeps it). *Apply alignment to other letters* copies a picture's placement, never an
