@@ -930,7 +930,11 @@ written — and remembers each one's two values on the undo entry (`gxMeta`, a l
 the other value back **only while the field is still what the operation left it at**, so a choice the
 teacher made since is never overwritten. These fields are metadata — outside every undo scope — so
 every non-form writer of one calls `syncMetaToForm()`: `onMetaChange` reads the values back from the
-form, and is called as a flush by Save-as and the cloud save.
+form, and is called as a flush by Save-as and the cloud save. **Generate Bold** is not an engine
+operation, but the Style it sets rides the same record: its undo entry is marked `gx` and carries
+`gxMeta` for `style`, so `gxAfterHistory` puts the Style back with the letters — a slant and a bold
+undone in turn end on the Regular's Style, form and file name, and redo returns each. An operation
+that sets one of these fields with a change records it this way, never by a bare assignment.
 
 **Findings.** *Refuse* (nothing changes): a coordinate, anchor, pin, advance, kerning value or guide
 line past `GX_COORD_MAX`; a pen stroke past the loader's −2000…3000; a glyph that would lose every

@@ -17784,6 +17784,7 @@ function boldGenApply() {
   const scopes = letters.map(l => ({ t: 'item', kind: 'letter', cp: l.codepoint }))
     .concat(markCps.map(([kind, cp]) => ({ t: 'item', kind, cp })))
     .concat(srcForms.map(pc => ({ t: 'precomp', target: pc.target })));
+  const top0 = undoStack[undoStack.length - 1];
   udDo(scopes, 'generate bold', () => {
     srcForms.forEach(pc => { delete pc.src; delete pc.srcDagesh; });
     letters.forEach(l => {
@@ -17797,7 +17798,15 @@ function boldGenApply() {
     if (markCps.some(m => m[0] === 'nikkud')) project.font.nikkud.mode = 'custom';
     if (markCps.some(m => m[0] === 'trop')) project.font.trop.mode = 'custom';
   });
-  if (S > 0) { project.font.style = fontStyleMake(true, fontIsItalic()); syncMetaToForm(); }   // meta field — not undo-covered, like all meta edits (an Italic made bolder is the Bold Italic)
+  if (S > 0) {   // an Italic made bolder is the Bold Italic. The Style is a meta field, outside every undo scope, so the entry carries its two values the way a gx entry does (gxMeta): undo / redo put the other one back while the field is still what this left it at (gxAfterHistory) — without that, undoing a slant and this left an upright Regular named Bold Italic
+    const io = GX_META.style, before = io.get(project.font), after = fontStyleMake(true, fontIsItalic());
+    if (before !== after) {
+      io.put(project.font, after);
+      const top = undoStack[undoStack.length - 1];
+      if (top && top !== top0) { top.gx = true; top.gxMeta = [{ key: 'style', before, after: io.get(project.font) }]; }
+      syncMetaToForm();
+    }
+  }
   if (workMode === 'nodes') { nodeModel = null; nodeSel.clear(); }
   boldGenClose();
   renderGrids(); renderStage(); renderControls();
