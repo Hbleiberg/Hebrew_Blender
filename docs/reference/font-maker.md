@@ -1074,10 +1074,15 @@ marks are not stem-corrected.
 affected nodes' box, as before. A whole-glyph **scale or horizontal flip** (nothing selected, no
 contour hidden) also maps `l.anchors` and the pins about that pivot in the same undo step
 (`xformMappedAnchors`; on a flip the left / right columns keep their sides and a side column's pin
-keeps its mirrored offset). A rotation, a vertical flip and any selection leave them alone — an
+keeps its mirrored offset). A whole-glyph **scale or slant** carries, through the same pivot map and
+rounded, what the letter's composed forms place for themselves — `pc.anchor` (its `auto` flag rides
+along) and `pc.holam` of every form whose base is this letter, the list the engine builds for a
+letter (`xformFormsBase` / `xformMappedForms`; `xformFormsFollow` says when) — and the matching
+`precomp` scopes join the letter's in the one `udDo` or slider burst; a flip leaves them, since a
+shin dot keeps its side. A rotation, a vertical flip and any selection leave all of these alone — an
 "above" point must stay above, and part of a letter is not the letter. The live slider keeps the
-pre-drag anchors in `_xformBase` and re-maps from them each tick, so a release at neutral still
-leaves zero undo entries. **The gesture is settled on release, not on `change`:** a range input whose
+pre-drag anchors and placements in `_xformBase` and re-maps from them each tick, so a release at
+neutral still leaves zero undo entries. **The gesture is settled on release, not on `change`:** a range input whose
 drag ends on the value it started from fires `input` and no `change`, so each slider also calls
 `xformCommit` from its pointerup, pointercancel, keyup and blur (`XF_END`; the neutral branch is the
 cancel, and a second call finds no snapshot). **A snapshot never outlives its gesture:** it records

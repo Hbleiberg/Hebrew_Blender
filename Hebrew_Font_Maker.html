@@ -15766,6 +15766,34 @@ function xformAnchorsTooFar(r) {
   const far = o => !!o && Object.keys(o).some(k => o[k] && (Math.abs(o[k].x) > GX_COORD_MAX || Math.abs(o[k].y) > GX_COORD_MAX));
   return far(r.anchors) || far(r.markAnchors);
 }
+/* …and a whole-glyph SCALE or SLANT carries what the letter's composed forms place for themselves:
+   pc.anchor (the dot placed on שׁ / שׂ, a holam on vav, a placed accent — its `auto` flag rides along)
+   and pc.holam of every form whose base is this letter, through the same pivot map, rounded — the
+   list the engine builds for a letter (gxPlan, composed forms). A form with no placement of its own
+   reads the letter's anchors and follows by itself. Not on a flip: a shin dot keeps its side.
+   xformFormsBase → [{ target, set }], a copy of the placements as they are (the live slider maps
+   from it each tick); every write is a new object — the precomp undo snapshot shares nothing. */
+function xformFormsFollow(kind) { return (kind === 'scale' || kind === 'scale2' || kind === 'slant') && xformWhole(); }
+function xformFormsBase(l) {
+  const ok = p => !!p && Number.isFinite(p.x) && Number.isFinite(p.y), out = [];
+  (project.precomposed || []).forEach(pc => {
+    if (precompBaseCp(pc) !== l.codepoint) return;
+    const set = {};
+    ['anchor', 'holam'].forEach(key => { if (ok(pc[key])) set[key] = JSON.parse(JSON.stringify(pc[key])); });
+    if (Object.keys(set).length) out.push({ target: pc.target, set });
+  });
+  return out;
+}
+function xformMappedForms(base, m, piv) {                    // base: xformFormsBase's list (never mutated) → the mapped list
+  return base.map(f => {
+    const set = {};
+    for (const key in f.set) { const p = f.set[key]; set[key] = Object.assign({}, p, { x: Math.round(piv.cx + m.a * (p.x - piv.cx) + m.b * (p.y - piv.cy)), y: Math.round(piv.cy + m.c * (p.x - piv.cx) + m.d * (p.y - piv.cy)) }); }
+    return { target: f.target, set };
+  });
+}
+function xformPutForms(list) { list.forEach(f => { const pc = getPrecomp(f.target); if (pc) Object.assign(pc, JSON.parse(JSON.stringify(f.set))); }); }
+function xformFormScopes(list) { return list.map(f => ({ t: 'precomp', target: f.target })); }
+function xformFormsTooFar(list) { return list.some(f => Object.keys(f.set).some(key => Math.abs(f.set[key].x) > GX_COORD_MAX || Math.abs(f.set[key].y) > GX_COORD_MAX)); }
 function applyXformToKeys(keys, m) {                         // affine about the keys' anchor-bbox center; → count of nodes mapped
   const piv = xformPivot(keys, m);
   if (!piv) return 0;
@@ -15788,12 +15816,14 @@ function transformSelectedNodes(kind, angleDeg) {            // button / number-
   if (!piv) return;
   const whole = xformWhole();
   const anch = xformAnchorsFollow(kind) ? xformMappedAnchors(l, m, piv, kind === 'fliph') : null;
+  const forms = xformFormsFollow(kind) ? xformMappedForms(xformFormsBase(l), m, piv) : [];
   const carry = (kind === 'slant' && whole) ? xformSlantCarry(l, xformCarryBase(l), m.deg) : null;
-  if (xformOutOfRange(piv, m) || (anch && xformAnchorsTooFar(anch)) || (carry && carry.drawOut)) { status(I18n.t('fontmaker.status.xform_too_big')); return; }   // refused whole: nothing written, no undo entry
+  if (xformOutOfRange(piv, m) || (anch && xformAnchorsTooFar(anch)) || xformFormsTooFar(forms) || (carry && carry.drawOut)) { status(I18n.t('fontmaker.status.xform_too_big')); return; }   // refused whole: nothing written, no undo entry
   const lean = whole ? xformSlantAfter(kind, angleDeg, letterSlant(l)) : null;
-  udDo([xformScope(l, kind)], m.label + l.name, () => {
+  udDo([xformScope(l, kind)].concat(xformFormScopes(forms)), m.label + l.name, () => {
     if (!applyXformToKeys(keys, m)) return;                  // stale keys resolved to nothing — udPush drops the no-op slice
     if (anch) xformPutAnchors(l, anch);
+    xformPutForms(forms);
     if (carry) xformPutCarry(l, carry);
     if (lean != null) setLetterSlant(l, lean);
     renestNodeModel(); writeThroughRebuild(l);               // flips reverse winding; a transformed subset can change nesting
@@ -15871,11 +15901,12 @@ function xformLive(kind, v) {
     const keys = nodeSel.size ? [...nodeSel] : _flatNodeKeys();
     if (!keys.length) return;                                // blank glyph — nothing to transform
     udFlushPending();                                        // this gesture gets a burst of its own: one left open by another slider would swallow the entry, and a pending nudge would come out after it
-    udBurstBegin([xformScope(l, kind)], XF_KINDS[kind].label + l.name);
+    const forms = xformFormsFollow(kind) ? xformFormsBase(l) : [];   // …and what its composed forms place for themselves (the dot on שׁ), re-mapped from this copy each tick
+    udBurstBegin([xformScope(l, kind)].concat(xformFormScopes(forms)), XF_KINDS[kind].label + l.name);
     _xformBase = { kind, ik: curKind, cp: curCp, burst: _burst, keys, model: JSON.parse(JSON.stringify(nodeModel)), sel: new Set(nodeSel), val: XF_KINDS[kind].neutral,
                    whole: xformWhole(), carry: xformCarryBase(l),   // the letter's photo, strokes and lean record as they were — re-derived from these, never compounded
                    // a whole-glyph scale carries the anchors and pins: keep the pre-drag pair, re-map it from scratch each tick
-                   anch: xformAnchorsFollow(kind) ? JSON.parse(JSON.stringify({ anchors: l.anchors || null, markAnchors: l.markAnchors || null })) : null };
+                   anch: xformAnchorsFollow(kind) ? JSON.parse(JSON.stringify({ anchors: l.anchors || null, markAnchors: l.markAnchors || null })) : null, forms };
   }
   let val = _XFORM_CLAMP[kind](v);
   nodeModel = JSON.parse(JSON.stringify(_xformBase.model));  // reset to the pre-drag snapshot, re-apply at the new value
@@ -15883,13 +15914,16 @@ function xformLive(kind, v) {
   let m = xformMatrix(kind, val);                            // null at neutral (0° / 100%) → identity preview
   const piv = xformPivot(_xformBase.keys, m);
   let anch = (m && piv && _xformBase.anch) ? xformMappedAnchors(_xformBase.anch, m, piv, false) : null;
-  if (m && piv && (xformOutOfRange(piv, m) || (anch && xformAnchorsTooFar(anch)))) {   // past what a font can hold — stay at the last good value
+  let forms = (m && piv) ? xformMappedForms(_xformBase.forms, m, piv) : _xformBase.forms;
+  if (m && piv && (xformOutOfRange(piv, m) || (anch && xformAnchorsTooFar(anch)) || xformFormsTooFar(forms))) {   // past what a font can hold — stay at the last good value
     val = _xformBase.val; m = xformMatrix(kind, val);
     anch = (m && _xformBase.anch) ? xformMappedAnchors(_xformBase.anch, m, piv, false) : null;
+    forms = m ? xformMappedForms(_xformBase.forms, m, piv) : _xformBase.forms;
   }
   _xformBase.val = val;
   if (m) applyXformToKeys(_xformBase.keys, m);               // same keys every tick ⇒ same bbox pivot every tick
   if (_xformBase.anch) xformPutAnchors(l, anch || JSON.parse(JSON.stringify(_xformBase.anch)));
+  xformPutForms(forms);
   if (kind === 'slant' && _xformBase.whole && Array.isArray(_xformBase.carry.transform)) {   // the photo behind the outline leans live; strokes are settled once, at commit
     const k = m ? m.b : 0;
     l.transform = k ? M.mul(gxStageMatrix([1, k, 0, 1, -k * effMetrics().baseline, 0]), _xformBase.carry.transform) : _xformBase.carry.transform.slice();
