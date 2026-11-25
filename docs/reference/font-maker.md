@@ -1077,7 +1077,17 @@ contour hidden) also maps `l.anchors` and the pins about that pivot in the same 
 keeps its mirrored offset). A rotation, a vertical flip and any selection leave them alone — an
 "above" point must stay above, and part of a letter is not the letter. The live slider keeps the
 pre-drag anchors in `_xformBase` and re-maps from them each tick, so a release at neutral still
-leaves zero undo entries. The sliders run from one table of kinds (`XF_KINDS`: neutral value, undo
+leaves zero undo entries. **The gesture is settled on release, not on `change`:** a range input whose
+drag ends on the value it started from fires `input` and no `change`, so each slider also calls
+`xformCommit` from its pointerup, pointercancel, keyup and blur (`XF_END`; the neutral branch is the
+cancel, and a second call finds no snapshot). **A snapshot never outlives its gesture:** it records
+its item and its undo burst, and `xformLive` drops one that belongs to another item or whose burst
+is no longer the open one instead of restoring it (`xformStale`). `xformDrop` takes an unreleased
+preview back — the burst cancelled, never committed, because a burst pushed without `xformCommit`'s
+own settling is half a transform — and runs from `udFlushPending` (so before a step or letter
+change, undo / redo, a dialog), from `gxCommit`, and `udClear` forgets the snapshot with the
+project. A gesture also opens with `udFlushPending`, so it never rides a burst another slider left
+open. The sliders run from one table of kinds (`XF_KINDS`: neutral value, undo
 label, readout, done-message), and the pivot comes from the map itself (`xformPivot(keys, m)` — a
 slant pivots on the baseline through `m.py`), so the nodes, the range check and the anchors can never
 use different ones. A whole-glyph **slant** also carries the letter's photo and pen strokes
@@ -1088,7 +1098,8 @@ thickness*** (`xformStemsOn`, `xformWidthStems`) is not a node-model transform a
 engine's width operation for this one letter — the advance and side bearings follow, the pivot is the
 glyph origin, one undo step — offered only for the whole glyph with the pen off; Height and Keep
 proportions are switched off while its box is ticked, and it settles any open slider burst first
-(`_xformBase = null` — a stale base would write the old model back over the result).
+(`udFlushPending`, before the plan is made — a snapshot left behind would write the old model back
+over the result).
 
 ### Font styles — Regular, Bold, Italic, Bold Italic — and width names
 `project.font.style` is one of `regular | bold | italic | bolditalic`, and **`FONT_STYLES` is the only
