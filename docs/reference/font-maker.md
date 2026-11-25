@@ -1077,22 +1077,37 @@ corner or tangle a noisy outline.
   an upright side of the cover; the two still meet. A joint that comes apart all the same is the
   guarantee's (below): the letter is stretched plainly and named.
 
-  **The curves follow the polygon's holds** (`moveCurve`): a held ring's curve is first cut where its
-  polygon's holds begin and end (the polygon point is found on the curve that runs its way, so the
-  two sides of a hairline are not confused; `gxwAt`, `gxwCut`). A cut node takes the shift the step
-  already gave that point of the curve, so a cut alone changes nothing. Then a node where the polygon
-  is held goes where the held polygon is — across the edge where a hold ends, blended into the
-  curve's own place — and its handles go with it. A curve therefore bends only where its polygon
-  bends, and never holds what the polygon let go. Two kinds of ring are never asked and
+  **A hold is spent inside its cover** (exits). Walking out along the outline from a held point, the
+  place where the outline starts to show — no other ink a quarter unit outside it, and none within a
+  unit and a half beside it, the rule of `shows` — gets a point of its own (an exit) on the step's own
+  edge there. The exit and all the outline beyond it keep the step's own place; the hold blends out
+  along the buried stretch between (a buried point on the way takes its share by length). So a hold
+  never bends outline that shows: the arch of an n, the end of u's bowl, the bowl of ø under the
+  slash ship exactly as the step makes them, and join the stroke they run into within the room that
+  stroke gave up. A held point whose outline starts to show right at it (no buried stretch on that
+  side) keeps the straight blend to its neighbour.
+
+  **The curves follow the polygon's holds** (`moveCurve`): each control point carries its own
+  sideways shift (a handle rides with its end point). A held ring's curve is cut where its polygon's
+  holds begin, end or change — its exits included — each control point's shift cut exactly with it,
+  so a cut alone changes nothing (the polygon point is found on the curve that runs its way, among
+  the segments around it, so the two sides of a hairline are not confused; `gxwAt`, `gxwCut`). Then
+  a node where the polygon is held goes where the held polygon is — toward an exit, blended into the
+  curve's own place — and its handles go with it. Where the step leaves a gap between an exit and the
+  cover (the stem's side moved away from the arch that runs into it), the piece of curve from the exit
+  to the held point crosses it as one smooth bend: it leaves the exit the way the outline arrives
+  there and turns round into the stroke (handles a third of the way across), so there is no shelf or
+  kink where the step's outline ends. Two kinds of ring are never asked and
   come out exactly as before: one with no ring of its own direction near it — every ordinary letter,
   point for point — and one with less than a third of its outline showing (a fill-in at a joint: held
   in its two covers it would be stretched into a web across the joint; left alone it thins away as
   the joint opens, and is reported as lost detail when it goes). What a held end still costs: the
-  outline beside it that is not upright bends near the joint — the arch of an n leaving its stem,
-  the end of u's bowl at its stem, the bowl of ø where the slash crosses it, the foot of an arm that
-  ends a few units into a diagonal: a few units at 115%, up to about a dozen at 150% — and a buried
-  run moved as one piece can show a little past a narrower part of its cover (æ's a-stem in the e's
-  counter at 150%).
+  room the stem gave up has to be crossed, so where the step leaves a gap there (the arch of n, m and
+  h, the bowl of þ, a's bowl from 130%) the outline differs from the step's own across that room —
+  a smooth bend, nothing beyond it; the outline beside a gap is the step's own, including the bend
+  the step itself gives an edge whose far end is a buried point it corrects as a stroke side (the
+  end of u's bowl rising into its stem); and a buried run moved as one piece can show a little past a
+  narrower part of its cover (æ's a-stem in the e's counter at 150%).
 - *The guarantee — a letter never leaves the step in more pieces than it came in (`gxwPieces`,
   `gxwApart`).* For every letter of more than one contour `gxWidthOp` counts the pieces of ink
   before and after: the connected parts of the nonzero fill on slices one unit apart, counted twice
