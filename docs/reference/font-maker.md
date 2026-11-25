@@ -516,9 +516,17 @@ rebuilds a second tree with `createElementNS`, and only that tree reaches `withS
 every route in — a file upload, a sheet, auto-split, a sheet re-read when a project loads, a paste.
 - **Kept:** `svg`, `g` (`a` is walked as `g`; of a `switch` only its first usable child, as a browser
   renders it — Illustrator puts a `foreignObject` first), `path`, `rect`, `circle`, `ellipse`, `line`,
-  `polygon`, `polyline`; each shape's geometry attributes, `transform`, an `<svg>`'s `viewBox` /
-  `preserveAspectRatio` / `x` `y` `width` `height`, and the three CSS transform properties of an inline
-  `style`. Elements are matched by `localName`, so markup pasted without its `xmlns` still imports.
+  `polygon`, `polyline`; each shape's geometry attributes, an `<svg>`'s `viewBox` /
+  `preserveAspectRatio` / `x` `y` `width` `height`, and where the element is put. Elements are matched
+  by `localName`, so markup pasted without its `xmlns` still imports.
+- **A transform comes through however it was written**, because the page that mounted the raw tree
+  let the browser apply all of them: the `transform` and `transform-origin` presentation attributes
+  are copied as attributes, and `transform`, `transform-origin` and `transform-box` from a matching
+  `<style>` rule (source order) and then from the inline `style` are set on the rebuilt element's own
+  style — so the later one wins there as it does in a browser (`carry` in `svgSanitize`). These three
+  properties and nothing else: a value holding `url(`, `var(`, `expression`, `@` or a backslash is
+  refused (`svgXformValueOk`, asked again of what the CSS parser made of the value), and a refused
+  value, like one that is not valid CSS, counts as not written, so the one under it stays in force.
 - **Dropped:** everything else with its subtree (`script`, `style`, `image`, `use`, `text`,
   `foreignObject`, the non-rendering `defs` / `clipPath` / `mask` / `marker` / `symbol` / `pattern`),
   every `on*` attribute, every `href`, `class`. An element's `id` and `inkscape:label` ride as
@@ -529,15 +537,69 @@ every route in — a file upload, a sheet, auto-split, a sheet re-read when a pr
   adopted, so nothing is fetched; without constructable sheets the classes are simply not read), then
   the inline `style`. `fill`, `stroke` and `visibility` inherit. The old `getComputedStyle` filter on the
   mounted clone is gone: page CSS could hide a shape through it.
-- **One reading for every route.** A shape whose fill resolves to `none` (or a `line`, which encloses
-  nothing whatever its fill says) is left out and counted in `skipped` — every caller says how many
-  (`svgSkippedNote`), and an SVG with nothing but strokes gets its own plain error. `display:none` on a
-  group hides its whole subtree, so a hidden layer does not import. `svgInkLoops` drops a loop that
-  encloses nothing before any fit measures its box. A sheet is re-parsed when its project loads
-  (`cacheSvgSheet`), so these readings apply to a saved sheet's next crop or auto-split too — letters
-  already assigned keep the contours they have.
-- **`opts.paste`** switches on only the caps (`SVG_PASTE_MAX_*`): a cap must never refuse a sheet a
-  saved project already holds.
+- **One reading for every route, decided once per document.** A filled shape is an outline. A shape
+  drawn with a stroke and no fill (its fill resolves to `none`, or its `fill-opacity` to 0) is an
+  outline only when it is closed — `svgShapeCloses`: a `rect`, `circle`, `ellipse` or `polygon`, or a
+  `path` whose every subpath ends in `Z` — and only when nothing in the document is filled. Artwork
+  drawn as outlines (a pen tool's default look, a sheet of letters drawn that way) then imports as the
+  lines it draws, the way it did before the sanitizer existed. Beside a filled shape the same stroke
+  is a frame or a guide around the letter — read as an outline it would turn the letter into a solid
+  block — so there it is left out and counted in `skipped`. An open stroke (a `line`, a `polyline`, a
+  path with an open subpath) is always left out and counted, and a shape with neither fill nor stroke
+  is nothing at all. Every caller says how many were left out (`svgSkippedNote`), and an SVG in which
+  nothing can become an outline gets its own plain error (a closed shape needs a fill; Outline Stroke
+  is for an open line). `display:none` on a group hides its whole subtree, so a hidden layer does not
+  import. `svgInkLoops` drops a loop that encloses nothing before any fit measures its box. A sheet is
+  re-parsed when its project loads (`cacheSvgSheet`), so these readings apply to a saved sheet's next
+  crop or auto-split too — letters already assigned keep the contours they have.
+- **Each subpath is measured from where it really starts.** `elementToLoops` measures every subpath of
+  a path as a path of its own (so a counter stays a contour of its own), but a relative `m` that opens
+  a later subpath is relative to where the one before it left the pen — that one's start again after a
+  `Z` — which is the relative path data Inkscape writes; measured alone it was read from 0,0 and the
+  counter landed elsewhere. `svgSubpathsAbs` opens each such subpath with the absolute `M` the browser
+  reached instead (`svgPathEnd` reads where an open subpath ends; the pairs after the first stay
+  relative lines). A path whose later subpaths open with `M` is measured exactly as written.
+- **`opts.paste`** switches on the caps (`SVG_PASTE_MAX_*`, counted over the shapes that are kept)
+  and a time budget, and nothing else: neither may ever refuse an uploaded file or a sheet a saved
+  project already holds. The caps bound the size, not the time — a shape costs up to 600
+  measurements, so a sheet or an illustration pasted by mistake stayed under every cap and held the
+  tab for minutes. `parseSvgEntries` therefore gives a pasted read `SVG_PASTE_BUDGET_MS` (about four
+  seconds) for the sanitizer pass and the measuring together; `svgBudgetCheck` is asked at every
+  element, every subpath and before every sample, and past the deadline the read stops with
+  `svg_too_complex`. One measurement walks its whole subpath, so a single long one can outlast the
+  budget all by itself (a 2 MB path of curves took seconds per call): a sample is not started when
+  the subpath's own `getTotalLength` time says it would end past the deadline, and a pasted outline —
+  a subpath, a polygon's points — of more than `SVG_PASTE_MAX_SUBPATH_NUMS` numbers is refused before
+  anything is measured, with its own message (`svg_outline_too_dense`: one outline with too many points
+  is not "too many shapes"). `svgPasteParse` gives `svg_too_complex` for a `RangeError`
+  too (groups nested deeper than the sanitizer's walk can follow), never the engine's own text.
+
+**The project file is the other way in, and it is as untrusted as the sheet inside it.** The page
+writes an item's numbers into markup — the Letter metrics fields, the Trace sliders and their readout,
+the photo's matrix on the stage, an anchor's X / Y fields, a mark piece's size — so a string in a
+number's place used to reach `innerHTML` whole. `migrateProject` passes every letter of every set,
+every custom glyph, every mark of every store (the accent store too) and every per-letter mark shape
+through `sanitizeItemNumbers`: `advance` / `lsb` / `rsb` become a whole number or "not set" (`null`;
+`0` for a mark's advance); the four trace settings a number inside their slider's range, or the
+default; `transform` six finite numbers or the identity; `captureBox` and `source.cropRect` finite or
+`null`; an outline whose points — or whose curves' points — are not pairs of finite numbers is
+dropped, as a malformed contour always was; an anchor entry or an `attachAnchor` that is not two
+numbers is removed (`seedAnchorsIfNeeded` back-fills a partial set before anything reads it); a mark
+piece without its numbers is left out. A combined form (`project.precomposed`) goes through
+`sanitizePrecompNumbers`, for the X / Y fields and the Dot size and Width sliders of *Special &
+precomposed forms*: its `anchor` and `holam` are two finite numbers, rounded (the placement check's
+`auto` mark kept), or `null` — the form follows its letter again; `markScale`, `widthScale` and
+`defWidth` a finite number inside their slider's range, or "not set". A form the source font drew
+whole keeps its curves (`src.curves`, which reach the stage, the form tiles and the font verbatim)
+only while every point in them is two finite numbers (`sanitizePrecompSrc`); otherwise its rounded
+polygons are used, as for a set that does not match its contours. The project's own four opacities —
+the template letter's (`template.opacity`) and the photo's in Align and in Trace and the outline's
+(`view.imgOpacityAlign`, `imgOpacityTrace`, `glyphOpacity`), which the stage writes as `opacity=` /
+`fill-opacity=` — are a number inside their sliders' 0–1, or the default. A field that is absent stays
+absent (an opacity takes its default), and a number that is already good is not touched, so a normal
+project loads exactly as it was saved. The paste dialog's
+preview (`svgPasteDrawPreview`, the one `innerHTML` this feature adds) writes every value through
+`Math.round(+v) || 0`: nothing but a number can reach its markup, whatever the project holds.
 
 **`assignSvgContours` is the one commit** for an upload, a crop, an auto-split and a paste, and the
 `udDo` around it carries `withSource` and `withDraw` on every item scope: it replaces `it.source`,
@@ -556,9 +618,14 @@ every *Copy outline…* button and in the point editor's nothing-selected stack 
 `svgFromDataTransfer` reads, in order, `image/svg+xml`, an SVG file item, `text/plain` that
 `isProbablySvg` accepts, and `text/html` holding an `<svg>` (taken out through an inert HTML parse,
 `svgTextFromHtml` — also the second try for markup too loose for XML). `svgPasteStageOk()` is the one
-gate: a project, nothing in `udShortcutBlocked()`, no open overlay, no tour, a letter's stage showing
+gate: a project, nothing in `udShortcutBlocked(true)`, no open overlay, no tour, a letter's stage showing
 (not a `cat-settings` tab, not a combined form's placement), no drag or stroke in flight, no file still
-being read. Letters only; a mark selected gets a toast.
+being read. Letters only; a mark selected gets a toast. Where the focus sits is not part of that gate
+(the `true` skips the shortcut guard's "typing somewhere" rule, which for key shortcuts rightly covers
+every input): the paste listener asks the focused field itself, `svgFieldTakesPaste` — a text area, an
+editable region or an input one types in keeps the paste; a slider, a checkbox, a radio or a button,
+which keep the focus after the mouse has used them, do not — and a drop, aimed with the pointer, does
+not ask at all.
 
 One dialog (`#svgPasteOverlay`, listed in `udShortcutBlocked`), one `udDo`. The target letter is pinned
 when the dialog opens. The size choices are `svgPasteFitChoices(cp)` and their bands `svgPasteSpan`:
@@ -568,7 +635,11 @@ the difference from an upload, whose `svgSpanFor` puts a tail at −30 % of the 
 reaches the descender line itself. The choice is remembered per device in `hebrewFontMaker_uiPrefs`
 — `svgPasteFit` for ordinary letters, `svgPasteFitDesc` for letters with a tail, `svgPasteMode` — and
 validated against the closed set on read. Validation is inline (the `aria-live` note and
-`aria-disabled` on Insert); nothing is ever raised over the dialog.
+`aria-disabled` on Insert); nothing is ever raised over the dialog. The code box is read
+`SVG_PASTE_TYPE_MS` (300 ms) after the last keystroke — a read is synchronous and can take seconds —
+and a text is read once (`st.readText`): the box losing focus and Insert read at once, but only a
+text newer than the last read (`st.stale`), so Insert never acts on an older one. Past
+`SVG_PASTE_LIVE_CHARS` the box is read only then.
 
 - **Replace** (`svgPasteReplace`) is `assignSvgContours` with one difference: the advance is the ink
   plus both default margins with the ink centred (an upload seats the ink at the default left margin).

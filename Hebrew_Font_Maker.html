@@ -9289,8 +9289,12 @@ function sanitizePrecompSrc(pc) {
     }).filter(Boolean) : []).filter(c => c.length >= 3) : [];
     const adv = num(s.advance);
     if (!cs.length || adv == null || adv < 0 || adv > 10000) return null;
+    // the curves ride verbatim to the stage, the form tiles and the font: their points are pairs of finite numbers, or the polygons above are used (a string here threw out of the load)
+    const pt = p => Array.isArray(p) && p.length >= 2 && Number.isFinite(p[0]) && Number.isFinite(p[1]);
+    const curveOk = cv => cv == null || (typeof cv === 'object' && pt(cv.start) && Array.isArray(cv.segments)
+      && cv.segments.every(sg => sg && typeof sg === 'object' && Array.isArray(sg.pts) && sg.pts.length >= (sg.type === 'cubic' ? 3 : 1) && sg.pts.every(pt)));
     return { contours: cs, advance: adv,
-             curves: (Array.isArray(s.curves) && s.curves.length === cs.length) ? s.curves : null };
+             curves: (Array.isArray(s.curves) && s.curves.length === cs.length && s.curves.every(curveOk)) ? s.curves : null };
   };
   if (!pc) return;
   const s = clean(pc.src);
@@ -9923,8 +9927,9 @@ function parseSvgText(text) {               // → the INERT root of a DOMParser
    their geometry attributes and transforms. No script, style, image, use, text or foreignObject, no
    on* attribute, no href, no class, and no id (ids ride as data-fm-id so a foreign id is never live
    in this document). Matching is by localName, so markup pasted without its xmlns still imports.
-   What CSS decided on the original — is this shape shown, is it filled — is worked out here on the
-   inert tree by a four-property cascade (svgOwnStyle), because the stylesheet itself never mounts. */
+   What CSS decided on the original — is this shape shown, is it filled, where is it put — is worked
+   out here on the inert tree (svgOwnStyle for the paint, carry() for the three transform properties),
+   because the stylesheet itself never mounts. */
 const SVG_INK_NS = 'http://www.inkscape.org/namespaces/inkscape';
 const SVG_SHAPE_ATTRS = { path: ['d'], rect: ['x', 'y', 'width', 'height'], circle: ['cx', 'cy', 'r'], ellipse: ['cx', 'cy', 'rx', 'ry'],
   line: ['x1', 'y1', 'x2', 'y2'], polygon: ['points'], polyline: ['points'] };
@@ -9933,12 +9938,15 @@ const SVG_GROUP_TAGS = { svg: 1, g: 1, a: 1, switch: 1 };                       
 const SVG_STYLE_PROPS = ['display', 'visibility', 'fill', 'stroke', 'fill-opacity'];
 const SVG_CSS_XFORM = ['transform', 'transform-origin', 'transform-box'];
 const SVG_PASTE_MAX_CHARS = 2000000, SVG_PASTE_MAX_SHAPES = 3000, SVG_PASTE_MAX_SUBPATHS = 4000;   // pasted artwork only (opts.paste) — a cap must never refuse a sheet a saved project already holds
+const SVG_PASTE_BUDGET_MS = 4000;           // …and how long reading it may take (svgBudgetCheck): the caps bound the size, not the time
+const SVG_PASTE_MAX_SUBPATH_NUMS = 20000;   // …and how many numbers one outline (a subpath, a polygon's points) may hold: every measurement of it walks all of it, so one alone could outlast the budget
 const SVG_IMPORT_FLAGS = ['engSource', 'cyrSource', 'phnSource', 'aramSource', 'smrSource'];   // "this letter came with the imported font", one per glyph set
 function svgInlineDecls(el) {                // style="a:b; c:d" → {a:'b', c:'d'}, by hand: an element of an inert document may have no .style at all
   const out = {}, s = el.getAttribute('style');
   if (s) s.split(';').forEach(part => { const i = part.indexOf(':'); if (i > 0) { const k = part.slice(0, i).trim().toLowerCase(), v = part.slice(i + 1).replace(/!\s*important/i, '').trim(); if (k && v) out[k] = v; } });
   return out;
 }
+function svgXformValueOk(v) { return !/url\s*\(|var\s*\(|expression|@|\\/i.test(String(v)); }   // a transform is function names and numbers: never a reference out of the element, a variable, an at-rule — or an escape that could spell one
 function svgStyleRules(root) {               // every <style> rule in source order. The sheets are constructed, read and dropped — never adopted — so no @import, url() or font is fetched
   const rules = [];
   if (typeof CSSStyleSheet !== 'function') return rules;   // no constructable sheets (an older Safari): classes are not read, attributes and inline styles still are
@@ -9960,12 +9968,35 @@ function svgOwnStyle(el, rules) {            // the properties this element sets
   return o;
 }
 function svgSanitize(root, opts) {           // inert parsed root → { svg: a geometry-only tree safe to mount, skipped: how many stroke-only shapes were left out }
-  const o = opts || {}, rules = svgStyleRules(root), stat = { shapes: 0, subpaths: 0, skipped: 0 };
+  const o = opts || {}, rules = svgStyleRules(root), stat = { shapes: 0, subpaths: 0, skipped: 0, filled: 0 };
+  const outlines = [];                        // closed shapes drawn with a stroke and no fill — kept or left out together, once the whole document has been read
+  const count = (src, tag) => {               // the caps are for pasted artwork only — they must never refuse a sheet a saved project already holds
+    if (!o.paste) return;
+    stat.shapes++;
+    const d = tag === 'path' ? (src.getAttribute('d') || '') : '';
+    stat.subpaths += tag === 'path' ? Math.max(1, (d.match(/[Mm]/g) || []).length) : 1;
+    const runs = tag === 'path' ? splitSubpaths(d) : (tag === 'polygon' || tag === 'polyline') ? [src.getAttribute('points') || ''] : [];
+    if (stat.shapes > SVG_PASTE_MAX_SHAPES || stat.subpaths > SVG_PASTE_MAX_SUBPATHS) throw new Error(I18n.t('fontmaker.modals.svg_too_complex'));
+    if (runs.some(s => svgNumsOver(s, SVG_PASTE_MAX_SUBPATH_NUMS))) throw new Error(I18n.t('fontmaker.modals.svg_outline_too_dense'));   // one outline, not many shapes: its own words
+  };
   const copy = (src, out, names) => names.forEach(n => { const v = src.getAttribute(n); if (v != null) out.setAttribute(n, v); });
-  const carry = (src, out) => {               // what every kept element takes along: its transform (attribute and CSS) and its names, as data
-    copy(src, out, ['transform']);
+  const xrules = rules.filter(r => SVG_CSS_XFORM.some(p => r.style.getPropertyValue(p)));   // the <style> rules that move something — usually none
+  const carry = (src, out) => {               // what every kept element takes along: where it is put, and its names as data
+    // A transform can be written three ways, and a browser lets the later one win: the presentation
+    // attributes (transform, transform-origin), a <style> rule (source order), the inline style. The
+    // attributes stay attributes and the CSS ones go on the rebuilt element's own style, so the same
+    // one wins here. These three properties and nothing else come through, and never a value that
+    // could reach outside the element (svgXformValueOk). A value that is refused, or that is not
+    // valid CSS, counts as not written — the one under it stays in force, as in a browser.
+    ['transform', 'transform-origin'].forEach(n => { const v = src.getAttribute(n); if (v != null && svgXformValueOk(v)) out.setAttribute(n, v); });
+    const css = {}, valid = (p, v) => { try { return typeof CSS === 'undefined' || !CSS.supports || CSS.supports(p, v); } catch (e) { return false; } };
+    const take = (p, v) => { v = (v || '').trim(); if (v && svgXformValueOk(v) && valid(p, v)) css[p] = v; };
+    xrules.forEach(r => { let hit = false; try { hit = src.matches(r.selectorText); } catch (e) {}
+      if (hit) SVG_CSS_XFORM.forEach(p => take(p, r.style.getPropertyValue(p))); });
     const inl = svgInlineDecls(src);
-    SVG_CSS_XFORM.forEach(p => { if (inl[p]) { try { out.style.setProperty(p, inl[p]); } catch (e) {} } });
+    SVG_CSS_XFORM.forEach(p => take(p, inl[p]));
+    SVG_CSS_XFORM.forEach(p => { if (!css[p]) return;
+      try { out.style.setProperty(p, css[p]); if (!svgXformValueOk(out.style.getPropertyValue(p))) out.style.removeProperty(p); } catch (e) {} });   // asked again of what the CSS parser made of it (an escape is resolved by then)
     const id = src.getAttribute('id'), label = src.getAttributeNS(SVG_INK_NS, 'label') || src.getAttribute('inkscape:label');
     if (id) out.setAttribute('data-fm-id', id);
     if (label) out.setAttribute('data-fm-label', label);
@@ -9973,6 +10004,7 @@ function svgSanitize(root, opts) {           // inert parsed root → { svg: a g
   const walk = (src, parentOut, inh) => {
     const tag = src.localName;
     if (!SVG_GROUP_TAGS[tag] && !SVG_SHAPE_ATTRS[tag]) return;          // everything else, with its whole subtree, is not rebuilt
+    svgBudgetCheck(o);                                                  // a paste's time budget covers this pass too (every element is matched against every <style> rule)
     const own = svgOwnStyle(src, rules);
     if (/^none$/i.test(own.display || '')) return;                      // display:none hides the whole subtree (a hidden layer); the rest inherit
     const st = { visibility: own.visibility || inh.visibility, fill: own.fill || inh.fill, stroke: own.stroke || inh.stroke, 'fill-opacity': own['fill-opacity'] || inh['fill-opacity'] };
@@ -9991,25 +10023,76 @@ function svgSanitize(root, opts) {           // inert parsed root → { svg: a g
     }
     if (/^(hidden|collapse)$/i.test(st.visibility || '')) return;
     const unfilled = tag === 'line' || /^none$/i.test(st.fill || '') || parseFloat(st['fill-opacity']) === 0;   // a <line> encloses nothing whatever its fill says
-    if (unfilled) { if (st.stroke && !/^none$/i.test(st.stroke)) stat.skipped++; return; }   // a stroke with nothing inside it is not an outline; an unpainted shape is nothing at all
-    if (o.paste) {                                                      // the caps are for pasted artwork only — they must never refuse a sheet a saved project already holds
-      stat.shapes++;
-      stat.subpaths += tag === 'path' ? Math.max(1, ((src.getAttribute('d') || '').match(/[Mm]/g) || []).length) : 1;
-      if (stat.shapes > SVG_PASTE_MAX_SHAPES || stat.subpaths > SVG_PASTE_MAX_SUBPATHS) throw new Error(I18n.t('fontmaker.modals.svg_too_complex'));
-    }
+    const outline = unfilled && svgShapeCloses(src);                    // drawn with a stroke only, and closed: an outline — if the whole artwork is drawn that way (decided below)
+    if (unfilled) {
+      if (!st.stroke || /^none$/i.test(st.stroke)) return;              // an unpainted shape is nothing at all
+      if (!outline) { stat.skipped++; return; }                         // an open line encloses nothing: never an outline
+    } else { stat.filled++; count(src, tag); }
     const out = document.createElementNS(SVG_NS, tag);
     copy(src, out, SVG_SHAPE_ATTRS[tag]);
     carry(src, out);
     parentOut.appendChild(out);
+    if (outline) outlines.push({ src, tag, out });
   };
   const svg = walk(root, null, {}) || document.createElementNS(SVG_NS, 'svg');   // a root that is display:none imports as nothing
+  // One decision for the whole document. Artwork with nothing filled in it is drawn as outlines (a pen
+  // tool's default look, a sheet of letters drawn that way): each closed stroke-only shape is the
+  // outline it draws. Beside a filled shape the same stroke is a frame or a guide around the letter —
+  // read as an outline it would turn the letter into a solid block — so there it is left out and counted.
+  if (stat.filled) { outlines.forEach(p => p.out.remove()); stat.skipped += outlines.length; }
+  else outlines.forEach(p => count(p.src, p.tag));
   return { svg, skipped: stat.skipped };
+}
+function svgShapeCloses(el) {                // does this shape draw a closed outline? a rect, circle, ellipse or polygon always does; a path when every one of its subpaths ends in Z; a line or a polyline never
+  const tag = el.localName;
+  if (tag === 'rect' || tag === 'circle' || tag === 'ellipse' || tag === 'polygon') return true;
+  if (tag !== 'path') return false;
+  const subs = splitSubpaths((el.getAttribute('d') || '').trim());
+  return subs.length > 0 && subs.every(s => /[Zz][\s,]*$/.test(s));
 }
 function splitSubpaths(d) {                 // split a path's d at each M/m so holes stay separate closed contours
   if (!d) return [];
   const out = []; const re = /[Mm][^Mm]*/g; let m;
   while ((m = re.exec(d))) out.push(m[0]);
   return out.length ? out : [d];
+}
+/* splitSubpaths for measuring. A relative `m` that opens a later subpath is relative to where the one
+   before it left the pen — that one's start again after a Z — which is the relative path data Inkscape
+   writes: "m 10,10 h 100 … z m 20,20 …" draws a counter 20 units inside the outer shape. elementToLoops
+   measures each subpath as a path of its own, where that `m` would be read from 0,0 and the counter
+   would land somewhere else, so each later subpath that opens with `m` opens here with the absolute M
+   the browser reached instead (the pairs after its first stay relative lines). */
+function svgSubpathsAbs(d) {
+  const subs = splitSubpaths(d);
+  if (!subs.some((s, i) => i > 0 && s[0] === 'm')) return subs;          // the usual case: every later subpath says where it starts
+  const open = /^[Mm][\s,]*([-+]?(?:\d*\.\d+|\d+\.?)(?:[eE][-+]?\d+)?)[\s,]*([-+]?(?:\d*\.\d+|\d+\.?)(?:[eE][-+]?\d+)?)/;
+  let px = 0, py = 0;
+  return subs.map((s, i) => {
+    const m = open.exec(s); if (!m) return s;                              // no opening point: nothing of it is drawn
+    const rel = i > 0 && s[0] === 'm', sx = (rel ? px : 0) + +m[1], sy = (rel ? py : 0) + +m[2];
+    let out = s;
+    if (rel) { const rest = s.slice(m[0].length); out = 'M' + sx + ' ' + sy + (/^[\s,]*[-+.\d]/.test(rest) ? ' l' + rest.replace(/^[\s,]+/, ' ') : rest); }
+    if (i + 1 < subs.length && subs[i + 1][0] === 'm') [px, py] = /[Zz][\s,]*$/.test(s) ? [sx, sy] : svgPathEnd(out);   // where the next one starts from
+    return out;
+  });
+}
+function svgPathEnd(s) {                     // where a run of path data leaves the pen (from 0,0): its last segment's end, or its subpath's start after a Z — read as a browser reads it, up to the first thing that is not path data
+  const NUM = /[\s,]*([-+]?(?:\d*\.\d+|\d+\.?)(?:[eE][-+]?\d+)?)/y, FLAG = /[\s,]*([01])/y, CMD = /[\s,]*([MmLlHhVvCcSsQqTtAaZz])/y;
+  const ARGS = { m: 2, l: 2, t: 2, h: 1, v: 1, c: 6, s: 4, q: 4, a: 7 };
+  let i = 0, cmd = '', x = 0, y = 0, sx = 0, sy = 0;
+  const take = re => { re.lastIndex = i; const r = re.exec(s); if (r) i = re.lastIndex; return r ? r[1] : null; };
+  for (;;) {
+    const c = take(CMD);
+    if (c) cmd = c; else if (!cmd || cmd === 'z' || cmd === 'Z') break;  // the end, or numbers with no command to repeat
+    const k = cmd.toLowerCase(), rel = cmd === k;
+    if (k === 'z') { x = sx; y = sy; continue; }
+    const a = [];
+    for (let j = 0; j < ARGS[k]; j++) { const v = take(k === 'a' && (j === 3 || j === 4) ? FLAG : NUM); if (v == null) return [x, y]; a.push(+v); }   // an arc's two flags are one digit each, and may be written together
+    const ox = rel ? x : 0, oy = rel ? y : 0;
+    if (k === 'h') x = ox + a[0]; else if (k === 'v') y = oy + a[0]; else { x = ox + a[a.length - 2]; y = oy + a[a.length - 1]; }
+    if (k === 'm') { sx = x; sy = y; cmd = rel ? 'l' : 'L'; }             // more pairs after a moveto are lines
+  }
+  return [x, y];
 }
 function rectToD(el) {
   const x = +el.getAttribute('x') || 0, y = +el.getAttribute('y') || 0, w = +el.getAttribute('width') || 0, h = +el.getAttribute('height') || 0;
@@ -10033,10 +10116,19 @@ function polyToD(el, close) {
   let d = `M${n[0]} ${n[1]}`; for (let i = 2; i + 1 < n.length; i += 2) d += `L${n[i]} ${n[i + 1]}`;
   return d + (close ? 'Z' : '');
 }
-function elementToLoops(el, rootScreenCTM) {            // one renderable element → contours [[ [x,y]... ]] in root (viewBox) user units, y-down
+function svgBudgetCheck(o, ahead) {         // pasted artwork is read against the clock (o.deadline, set by parseSvgEntries for opts.paste only): past it the read stops with a message, instead of a tab that does not answer. `ahead`: what the next step is known to cost, so a step that would end past the deadline is not started
+  if (o && o.deadline && performance.now() + (ahead || 0) > o.deadline) throw new Error(I18n.t('fontmaker.modals.svg_too_complex'));
+}
+function svgNumsOver(s, max) {              // does this run of path data (or of points) hold more than `max` numbers? Counting stops there; a number takes at least one character
+  if (!s || s.length <= max) return false;
+  const re = /[-+]?(?:\d*\.\d+|\d+\.?)(?:[eE][-+]?\d+)?/g; let n = 0;
+  while (re.exec(s)) if (++n > max) return true;
+  return false;
+}
+function elementToLoops(el, rootScreenCTM, opts) {      // one renderable element → contours [[ [x,y]... ]] in root (viewBox) user units, y-down
   const tag = el.localName;
   let dList;
-  if (tag === 'path') dList = splitSubpaths(el.getAttribute('d') || '');
+  if (tag === 'path') dList = svgSubpathsAbs(el.getAttribute('d') || '');
   else if (tag === 'rect') dList = [rectToD(el)];
   else if (tag === 'circle' || tag === 'ellipse') dList = [ellipseToD(el)];
   else if (tag === 'line') dList = [lineToD(el)];
@@ -10047,18 +10139,23 @@ function elementToLoops(el, rootScreenCTM) {            // one renderable elemen
   const parent = el.parentNode, loops = [];
   dList.forEach(d => {
     if (!d) return;
+    svgBudgetCheck(opts);
     const p = document.createElementNS(SVG_NS, 'path'); p.setAttribute('d', d);
     parent.appendChild(p);
-    let len = 0; try { len = p.getTotalLength(); } catch (e) {}
-    if (len > 0.5) {
-      const n = Math.max(12, Math.min(600, Math.round(len / SVG_SAMPLE_PX))), pts = [];
-      for (let i = 0; i < n; i++) {
-        let pt = null; try { pt = p.getPointAtLength(len * i / n); } catch (e) {}
-        if (pt) pts.push(ctm ? [ctm.a * pt.x + ctm.c * pt.y + ctm.e, ctm.b * pt.x + ctm.d * pt.y + ctm.f] : [pt.x, pt.y]);
+    try {
+      let len = 0; const t0 = performance.now();
+      try { len = p.getTotalLength(); } catch (e) {}
+      const each = performance.now() - t0;                              // what one measurement of this subpath costs: each point below walks all of it again
+      if (len > 0.5) {
+        const n = Math.max(12, Math.min(600, Math.round(len / SVG_SAMPLE_PX))), pts = [];
+        for (let i = 0; i < n; i++) {
+          svgBudgetCheck(opts, each);                                   // one long subpath is slow to measure all by itself: a measurement that would end past the deadline is not started
+          let pt = null; try { pt = p.getPointAtLength(len * i / n); } catch (e) {}
+          if (pt) pts.push(ctm ? [ctm.a * pt.x + ctm.c * pt.y + ctm.e, ctm.b * pt.x + ctm.d * pt.y + ctm.f] : [pt.x, pt.y]);
+        }
+        if (pts.length >= 3) loops.push(pts);
       }
-      if (pts.length >= 3) loops.push(pts);
-    }
-    p.remove();
+    } finally { p.remove(); }
   });
   return loops;
 }
@@ -10068,12 +10165,16 @@ function loopsBBox(loops) {
   return { x: minX, y: minY, w: maxX - minX, h: maxY - minY };
 }
 function parseSvgEntries(text, opts) {      // { entries:[{id,label,loops,bbox}], viewBox, skipped } — the source of truth for import
+  // Pasted artwork gets a time budget as well as the caps: a shape costs up to 600 measurements, so a
+  // sheet or an illustration pasted by mistake stayed far under every cap and still held the tab for
+  // minutes. A file upload and a sheet a project already holds are never refused for taking long.
+  if (opts && opts.paste) opts = Object.assign({}, opts, { deadline: performance.now() + SVG_PASTE_BUDGET_MS });
   const clean = svgSanitize(parseSvgText(text), opts);   // only the rebuilt, geometry-only tree is mounted; hidden shapes and non-rendering definitions are already gone from it
   return withSvgHost(clean.svg, svg => {
     const rootCTM = svg.getScreenCTM() || svg.getCTM();
     const entries = [];
     svg.querySelectorAll('path,rect,circle,ellipse,line,polygon,polyline').forEach(el => {
-      const loops = elementToLoops(el, rootCTM);
+      const loops = elementToLoops(el, rootCTM, opts);
       if (!loops.length) return;
       const id = el.getAttribute('data-fm-id') || '';
       entries.push({ id, label: el.getAttribute('data-fm-label') || id, loops, bbox: loopsBBox(loops) });
@@ -10240,7 +10341,7 @@ function finalizeCropSvg(l, parsed, im, rect, csh) {
 
 /* ════════ SVG paste — the clipboard, a file dropped on the canvas, and the "Paste SVG code…" box ════════
    Three ways in, one way through: each ends in svgPasteParse (the sanitizing parser, with the caps
-   only pasted artwork gets; stroke-only shapes left out and counted), then ONE dialog (how to size it,
+   and the time budget only pasted artwork gets; open strokes left out and counted), then ONE dialog (how to size it,
    and Replace or Add when the letter already has an outline), then ONE udDo. None of it looks at
    project.font.svgUpload — that setting only decides what the upload zones accept.
    Replace is an SVG upload (assignSvgContours) with the ink centred in an advance of its own. Add is
@@ -10249,8 +10350,10 @@ const SVG_POINTS_MARKER = 'ivritsuite-fontmaker:points';   // what Copy (points)
 const SVG_PASTE_FITS = ['height', 'desc', 'xheight', 'keep'];
 const SVG_PASTE_MAX_COORD = 16000;                          // half the font format's ±32767 (glyphRangeError) — room for an advance and for marks around it
 const SVG_PASTE_LIVE_CHARS = 200000;                        // the code box re-reads as you type up to here; past it, when the box loses focus or Insert is pressed
-let _svgPaste = null;          // the open dialog's state: { cp, code, parsed:{loops,bb,shapes,skipped}|null, err, built }
+const SVG_PASTE_TYPE_MS = 300;                              // …and it re-reads this long after the last keystroke, not on each one
+let _svgPaste = null;          // the open dialog's state: { cp, code, parsed:{loops,bb,shapes,skipped}|null, err, built, readText: the code box text that was last read, stale: the box holds a newer one }
 let _svgPasteBusy = false;     // a dropped or pasted file is still being read
+let _svgPasteTypeTimer = 0;    // the code box's pending read
 let _ptPasteTimer = 0, _ptPasteFiredAt = 0;
 
 function svgTextFromHtml(html) {             // HTML that wraps an <svg> (a Figma or browser copy; markup too loose for XML) → that svg as XML. Parsed inert: nothing loads, nothing runs
@@ -10271,8 +10374,13 @@ function svgFromDataTransfer(dt) {           // what a clipboard or a drop holds
   if (/<svg[\s>]/i.test(s)) return { html: s };
   return files.some(x => /^image\//i.test(x.type || '')) ? { image: true } : null;
 }
-function svgPasteStageOk() {                 // is a letter's stage what the teacher is looking at, with nothing in flight?
-  if (!project || udShortcutBlocked() || _svgPasteBusy || _tourActive) return false;
+function svgFieldTakesPaste(el) {            // would a paste go INTO this element? A text area, an editable region, an input one types in — not a slider, a checkbox, a radio, a button, a colour or a file picker, which keep the focus after the mouse has used them and can take no paste
+  if (!el) return false;
+  if (el.tagName === 'TEXTAREA' || el.isContentEditable) return true;
+  return el.tagName === 'INPUT' && !/^(range|checkbox|radio|button|submit|reset|color|file|image|hidden)$/i.test(el.type || '');
+}
+function svgPasteStageOk() {                 // is a letter's stage what the teacher is looking at, with nothing in flight? (Where the focus sits is not asked here: the paste listener asks it of the field itself, and a drop is aimed with the pointer)
+  if (!project || udShortcutBlocked(true) || _svgPasteBusy || _tourActive) return false;
   if (document.querySelector('.overlay.open')) return false;
   if (document.body.classList.contains('cat-settings') || precompTarget) return false;   // Font details / Spacing / Advanced, or a combined form on the placement stage: the letter is not what is showing
   return !(tDrag || eDrag || metricDrag || guideDrag || nodeDrag || drawGesture);
@@ -10282,11 +10390,16 @@ function svgPasteParse(text) {               // → { loops, bb, shapes, skipped
   let t = String(text || '').replace(/^﻿/, '').trim();
   if (t.length > SVG_PASTE_MAX_CHARS) throw new Error(I18n.t('fontmaker.modals.svg_too_big'));
   let parsed;
-  try { parsed = parseSvgEntries(t, { paste: true }); }
-  catch (e) {                                // not well-formed XML: an HTML wrapper, or loose markup. One more try through the HTML parser
-    const alt = e && e.svgSyntax ? svgTextFromHtml(t) : '';
-    if (!alt) throw e;
-    parsed = parseSvgEntries(alt, { paste: true });
+  try {
+    try { parsed = parseSvgEntries(t, { paste: true }); }
+    catch (e) {                              // not well-formed XML: an HTML wrapper, or loose markup. One more try through the HTML parser
+      const alt = e && e.svgSyntax ? svgTextFromHtml(t) : '';
+      if (!alt) throw e;
+      parsed = parseSvgEntries(alt, { paste: true });
+    }
+  } catch (e) {                              // groups nested deeper than the walk can follow: the engine's own words ("Maximum call stack size exceeded") are not a message for a teacher
+    if (e instanceof RangeError || (e && e.name === 'InternalError')) throw new Error(I18n.t('fontmaker.modals.svg_too_complex'));
+    throw e;
   }
   const loops = svgInkLoops(parsed.entries.reduce((a, en) => a.concat(en.loops), [])), bb = loopsBBox(loops);
   if (!loops.length || !isFinite(bb.x) || !(bb.h > 0) || !(bb.w > 0))
@@ -10322,21 +10435,22 @@ function svgPasteMode() {
   const g = document.getElementById('svgPasteModeGroup'); if (!g || g.hidden) return 'replace';
   const r = g.querySelector('input:checked'); return r && r.value === 'add' ? 'add' : 'replace';
 }
-function svgPasteDrawPreview(st) {           // a small picture of the result. Every number in it is ours (font units after the fit) — nothing of the pasted markup is drawn
+function svgPasteDrawPreview(st) {           // a small picture of the result. Nothing of the pasted markup is drawn, and nothing but a number is written: every value passes n() on its way in (a letter's width comes from the project file — a string there once reached this markup whole)
   const el = document.getElementById('svgPastePrev'); if (!el) return;
   const l = project.letters.find(x => x.codepoint === st.cp); if (!l) { el.innerHTML = ''; return; }
+  const n = v => Math.round(+v) || 0;
   const m = effMetrics(), band = glyphBand(st.cp), mode = svgPasteMode(), b = st.built;
   const old = (mode === 'add' && l.contours) ? l.contours : null;
-  const adv = (b && mode !== 'add') ? Math.round(b.inkL + b.inkR) : letterAdvance(l);
-  let x0 = 0, x1 = adv, y0 = Math.min(m.descender, m.baseline), y1 = Math.max(band.top, m.letterTop);
-  const grow = cs => cs.forEach(c => c.points.forEach(p => { if (p[0] < x0) x0 = p[0]; if (p[0] > x1) x1 = p[0]; if (p[1] < y0) y0 = p[1]; if (p[1] > y1) y1 = p[1]; }));
+  const adv = n((b && mode !== 'add') ? b.inkL + b.inkR : letterAdvance(l));
+  let x0 = 0, x1 = adv, y0 = Math.min(n(m.descender), n(m.baseline)), y1 = Math.max(n(band.top), n(m.letterTop));
+  const grow = cs => cs.forEach(c => c.points.forEach(p => { const x = n(p[0]), y = n(p[1]); if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }));
   if (b) grow(b.contours); if (old) grow(old);
   const pad = Math.max(20, Math.round((y1 - y0) * 0.06)); x0 -= pad; x1 += pad; y0 -= pad; y1 += pad;
-  const d = cs => cs.map(c => 'M' + c.points.map(p => Math.round(p[0]) + ' ' + (-Math.round(p[1]))).join('L') + 'Z').join('');
-  const line = (y, cls) => `<line class="svgp-guide${cls}" x1="${x0}" x2="${x1}" y1="${-y}" y2="${-y}"/>`;
+  const d = cs => cs.map(c => 'M' + c.points.map(p => n(p[0]) + ' ' + (-n(p[1]))).join('L') + 'Z').join('');
+  const line = (y, cls) => `<line class="svgp-guide${cls}" x1="${x0}" x2="${x1}" y1="${-n(y)}" y2="${-n(y)}"/>`;
   el.setAttribute('viewBox', `${x0} ${-y1} ${x1 - x0} ${y1 - y0}`);
   el.innerHTML = `<rect class="svgp-adv" x="0" y="${-y1}" width="${Math.max(1, adv)}" height="${y1 - y0}"/>`
-    + band.lines.map(ln => line(Math.round(ln[0]), '')).join('') + line(Math.round(m.baseline), ' base')
+    + band.lines.map(ln => line(ln[0], '')).join('') + line(m.baseline, ' base')
     + (old ? `<path class="svgp-old" d="${d(old)}"/>` : '') + (b ? `<path class="svgp-new" d="${d(b.contours)}"/>` : '');
 }
 function svgPasteRefresh() {                 // the dialog's one re-read: build for the chosen size and mode, then the summary, the note, the button and the picture
@@ -10359,10 +10473,13 @@ function svgPasteRefresh() {                 // the dialog's one re-read: build 
   document.getElementById('svgPasteGo').setAttribute('aria-disabled', st.built ? 'false' : 'true');
   svgPasteDrawPreview(st);
 }
-function svgPasteReadCode() {                // the code box → st.parsed or st.err
+function svgPasteReadCode() {                // the code box → st.parsed or st.err. A text is read once: the same text again (the box losing focus after the typing pause already read it, Insert after that) costs nothing
   const st = _svgPaste; if (!st) return;
+  clearTimeout(_svgPasteTypeTimer); _svgPasteTypeTimer = 0;
   const t = document.getElementById('svgPasteText').value;
-  st.parsed = null; st.err = ''; st.stale = false;
+  st.stale = false;
+  if (st.readText === t) return;
+  st.readText = t; st.parsed = null; st.err = '';
   if (t.trim()) {
     if (!isProbablySvg(null, t)) st.err = I18n.t('fontmaker.modals.svgpaste_not_svg');
     else { try { st.parsed = svgPasteParse(t); } catch (e) { st.err = (e && e.message) || String(e); } }
@@ -10371,9 +10488,15 @@ function svgPasteReadCode() {                // the code box → st.parsed or st
 }
 function svgPasteCodeInput(settled) {        // oninput (settled false) and onchange (true)
   const st = _svgPaste; if (!st || !st.code) return;
-  const big = document.getElementById('svgPasteText').value.length > SVG_PASTE_LIVE_CHARS;
-  if (big && !settled) { st.parsed = null; st.err = ''; st.stale = true; svgPasteRefresh(); document.getElementById('svgPasteGo').setAttribute('aria-disabled', 'false'); return; }   // a very long paste is read once, on Insert or when the box loses focus — not on every keystroke
-  svgPasteReadCode();
+  clearTimeout(_svgPasteTypeTimer); _svgPasteTypeTimer = 0;
+  if (settled) { svgPasteReadCode(); return; }                        // the box lost focus: read now
+  const t = document.getElementById('svgPasteText').value;
+  if (t === st.readText) { st.stale = false; return; }                // back at the text already read
+  st.stale = true;                                                    // Insert reads it first (svgPasteCommit), so the button never acts on an older text
+  if (t.length > SVG_PASTE_LIVE_CHARS) { st.readText = undefined; st.parsed = null; st.err = ''; svgPasteRefresh(); document.getElementById('svgPasteGo').setAttribute('aria-disabled', 'false'); return; }   // a very long paste is read once, on Insert or when the box loses focus
+  // Reading is synchronous and can take seconds for a large drawing, so it waits for a pause in the
+  // typing instead of running on every keystroke.
+  _svgPasteTypeTimer = setTimeout(() => { _svgPasteTypeTimer = 0; if (_svgPaste === st) svgPasteReadCode(); }, SVG_PASTE_TYPE_MS);
 }
 function svgPasteOpenDialog(st) {
   const l = project.letters.find(x => x.codepoint === st.cp); if (!l) return;
@@ -10398,7 +10521,7 @@ function svgPasteOpenDialog(st) {
     if (tgt && _svgPaste === st) tgt.focus();
   }, 0);
 }
-function closeSvgPaste() { _svgPaste = null; aCloseModal('svgPasteOverlay'); }
+function closeSvgPaste() { clearTimeout(_svgPasteTypeTimer); _svgPasteTypeTimer = 0; _svgPaste = null; aCloseModal('svgPasteOverlay'); }
 function svgPasteKey(e) {                     // Enter confirms from a radio (a button keeps its own Enter, the code box its line break)
   if (e.key !== 'Enter' || e.isComposing) return;
   const tg = e.target && e.target.tagName;
@@ -10543,8 +10666,7 @@ function svgMarkPointsCopied() {              // best effort, inside the Copy ge
 document.addEventListener('paste', e => {
   const late = Date.now() - _ptPasteFiredAt < 1500;        // the fallback already pasted the points for this keypress
   clearTimeout(_ptPasteTimer); _ptPasteTimer = 0;
-  const ae = document.activeElement;
-  if (ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA' || ae.isContentEditable)) return;   // typing somewhere — the paste is the field's
+  if (svgFieldTakesPaste(document.activeElement)) return;   // typing somewhere — the paste is the field's. A slider or a checkbox that still has the focus is not "typing": the paste used to vanish there without a word
   if (late || !svgPasteStageOk()) return;
   const got = svgFromDataTransfer(e.clipboardData);
   if (got && !got.image) {
@@ -20660,12 +20782,14 @@ function wireDrop(id, cb, multi) {
     const f = fs[0]; if (f) cb(f); });
 }
 
-/* shared guard for global shortcuts: ignore while typing, a modal is open, or no project */
-function udShortcutBlocked() {
+/* shared guard for global shortcuts: ignore while typing, a modal is open, or no project.
+   `ownFocusRule`: the caller decides about the focused field itself (the SVG paste: only a field that
+   takes text keeps a paste — svgFieldTakesPaste — where a key shortcut must also stay off a slider). */
+function udShortcutBlocked(ownFocusRule) {
   if (!project) return true;
   if (keyClosedADialog()) return true;   // this very key press just closed a dialog: it was the dialog's, not a shortcut's
   const ae = document.activeElement;
-  if (ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA' || ae.isContentEditable)) return true;
+  if (!ownFocusRule && ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA' || ae.isContentEditable)) return true;
   if (document.getElementById('askOverlay')?.classList.contains('open')) return true;
   if (document.querySelector('.ivsav-overlay')) return true;   // the account screen (js/ivrit-saves.js) is open over the editor
   if (document.getElementById('helpOverlay')?.classList.contains('open')) return true;
@@ -26915,6 +27039,58 @@ function sanitizeMarkAnchors(l) {   // fidelity pins from a loaded save are untr
   }
   if (clean) l.markAnchors = clean; else delete l.markAnchors;
 }
+/* The numbers an item carries — a letter of any set, a custom glyph, a mark of any store, a letter's own
+   mark shape. A project file is untrusted text, and every one of these is later written into markup
+   (the Letter metrics fields and the trace readout, the Trace sliders, the photo's matrix on the stage,
+   an anchor's X / Y fields, a dot's size field) or into a measurement: a string in a number's place
+   reached innerHTML whole, as markup, and ran. So each one that is PRESENT becomes a finite number — in
+   the range its own control keeps where it has one — or the field's own "not set"; a number that is
+   already good is not touched, and an absent field stays absent (migrateProject's backfills give a
+   letter what it needs). `noAdvance` is what an unusable width becomes: null on a letter
+   (letterAdvance then answers with the default), 0 on a mark. */
+function sanitizeItemNumbers(it, noAdvance) {
+  const fin = v => typeof v === 'number' && Number.isFinite(v);
+  const num = v => { const n = (typeof v === 'number' || (typeof v === 'string' && v.trim() !== '')) ? +v : NaN; return Number.isFinite(n) ? n : null; };   // "450" from a hand-edited file is still 450
+  const isObj = v => !!v && typeof v === 'object' && !Array.isArray(v);
+  const has = (o, keys) => isObj(o) && keys.every(k => fin(o[k]));
+  const pt = p => Array.isArray(p) && p.length >= 2 && fin(p[0]) && fin(p[1]);
+  ['advance', 'lsb', 'rsb'].forEach(k => { if (it[k] != null) { const n = num(it[k]); it[k] = n == null ? (k === 'advance' ? noAdvance : null) : Math.round(n); } });
+  [['binThreshold', 0, 255, 128], ['epsilon', 0, 100, 6], ['cornerAngle', 0, 90, 32], ['lineWeight', 10, 250, 70]].forEach(a => {   // the Trace sliders
+    if (it[a[0]] != null) { const n = num(it[a[0]]); it[a[0]] = n == null ? a[3] : Math.max(a[1], Math.min(a[2], n)); } });
+  if (it.transform != null && !(Array.isArray(it.transform) && it.transform.length === 6 && it.transform.every(fin))) it.transform = [1, 0, 0, 1, 0, 0];   // the photo's matrix is written out with join()
+  if (it.captureBox != null && !has(it.captureBox, ['x0', 'y0', 'x1', 'y1'])) it.captureBox = null;
+  if (isObj(it.source) && it.source.cropRect != null && !has(it.source.cropRect, ['x', 'y', 'w', 'h'])) it.source.cropRect = null;
+  // an outline is points of two numbers, and the curves that ride it are points too — one that is not drops the outline (the rule migrateProject has for a malformed contour)
+  if (it.contours != null && !(Array.isArray(it.contours) && it.contours.every(c => isObj(c) && Array.isArray(c.points) && c.points.every(pt)))) { it.contours = null; it.curves = null; }
+  if (it.curves != null && !(Array.isArray(it.curves) && it.curves.every(cv => cv == null || (isObj(cv) && pt(cv.start) && Array.isArray(cv.segments)
+        && cv.segments.every(s => isObj(s) && Array.isArray(s.pts) && s.pts.length >= (s.type === 'cubic' ? 3 : 1) && s.pts.every(pt)))))) it.curves = null;
+  ['anchors', 'savedAnchors'].forEach(k => { const a = it[k]; if (!isObj(a)) return;      // a point that is not two numbers goes; seedAnchorsIfNeeded fills a partial set before anything reads it
+    Object.keys(a).forEach(key => { if (a[key] != null && !has(a[key], ['x', 'y'])) delete a[key]; }); });
+  if (it.attachAnchor != null && !has(it.attachAnchor, ['x', 'y'])) delete it.attachAnchor;
+  if (it.pieces != null) it.pieces = Array.isArray(it.pieces)                              // the mark editor's dots and bars; ensureMarkPieces rebuilds a missing list
+    ? it.pieces.filter(p => isObj(p) && (p.type === 'dot' ? ['cx', 'cy', 'r'] : ['x0', 'y0', 'x1', 'y1']).every(k => fin(p[k]))) : null;
+}
+/* The same rule for a combined form's own numbers (project.precomposed): where its dot sits (`anchor`),
+   where a holam after שׁ / שׂ attaches (`holam`), its dot size and a wide form's width. The X / Y fields
+   and the Dot size and Width sliders of "Special & precomposed forms" are built from them as markup, and
+   the export bakes them. A placement is two finite numbers, rounded (every anchor coordinate is rounded
+   at the source), else null — the form follows its letter again; a size is a finite number kept in its
+   slider's range, else "not set" (null; a defWidth that is not a number goes, and the wide tab seeds it). */
+function sanitizePrecompNumbers(pc) {
+  const fin = v => typeof v === 'number' && Number.isFinite(v);
+  ['anchor', 'holam'].forEach(k => {
+    const a = pc[k]; if (a == null) return;
+    if (!(typeof a === 'object' && fin(a.x) && fin(a.y))) { pc[k] = null; return; }
+    const out = { x: Math.round(a.x), y: Math.round(a.y) };
+    if (k === 'anchor' && a.auto === true) out.auto = true;   // the placement check's own fix, which a font import may take back
+    pc[k] = out;
+  });
+  [['markScale', MARK_SIZE_MIN, MARK_SIZE_MAX], ['widthScale', 1, 2.5], ['defWidth', 1, 2.5]].forEach(([k, lo, hi]) => {
+    if (pc[k] == null) return;
+    if (fin(pc[k])) pc[k] = Math.max(lo, Math.min(hi, pc[k]));
+    else if (k === 'defWidth') delete pc[k]; else pc[k] = null;
+  });
+}
 function migrateProject(data) {
   // An .hfm / autosave / recents blob is untrusted: a collection of the wrong shape (a string where an
   // array belongs, a null entry, a number for a sub-block) used to throw out of the load with no status,
@@ -26931,6 +27107,8 @@ function migrateProject(data) {
     if (l.curves != null && !(Array.isArray(l.curves) && l.curves.every(cv => cv == null || (_isObj(cv) && Array.isArray(cv.start) && Array.isArray(cv.segments))))) l.curves = null;
     ['anchors', 'savedAnchors', 'markShapes', 'captureBox'].forEach(k => { if (l[k] != null && !_isObj(l[k])) l[k] = null; });
     if (l.slant != null) { const _s = +l.slant; if (Number.isFinite(_s) && _s !== 0 && Math.abs(_s) <= 60) l.slant = Math.round(_s * 10) / 10; else delete l.slant; }   // the lean record: junk means "upright"
+    sanitizeItemNumbers(l, null);              // width, margins, trace settings, the photo matrix, anchors, every coordinate: numbers or "not set" — they are all written into markup later
+    if (l.markShapes) Object.keys(l.markShapes).forEach(cp => { if (_isObj(l.markShapes[cp])) sanitizeItemNumbers(l.markShapes[cp], 0); });   // a letter's own mark shapes are mark items
   });
   // ensure all 27 letters exist & fields present (forward-compatible)
   // One item per code point. A save can still carry two at one cp — a custom glyph added where a letter
@@ -27059,13 +27237,18 @@ function migrateProject(data) {
   // gave that letter a NaN transform — a scale that is not a finite positive number goes, and the letter fits as before.
   data.combinedSheets.forEach(s => { if (!(Number.isFinite(s.fitScale) && s.fitScale > 0)) delete s.fitScale; });
   data.precomposed =Array.isArray(data.precomposed) ? data.precomposed.filter(_isObj) : PRECOMPOSED.map(p => ({...p}));
-  data.precomposed.forEach(pc => { if (pc.anchor === undefined) pc.anchor = null; if (pc.holam === undefined) pc.holam = null; });   // per-form mark anchor + holam-attach override
+  data.precomposed.forEach(pc => { if (pc.anchor === undefined) pc.anchor = null; if (pc.holam === undefined) pc.holam = null; sanitizePrecompNumbers(pc); });   // per-form mark anchor + holam-attach override — and its numbers are numbers (a string here reached the form's X / Y fields as markup)
   data.precomposed.forEach(sanitizePrecompSrc);   // a form outline taken whole from a source font — shape-checked because it becomes glyph data verbatim
+  // The four opacity sliders (the template letter, the photo in Align and in Trace, the outline) are
+  // written into the stage's markup as opacity= / fill-opacity=, so each is a number in the 0–1 its
+  // setter keeps, else the default — a string there reached innerHTML whole and ran.
+  const _opacity = (v, d) => { const n = (typeof v === 'number' || (typeof v === 'string' && v.trim() !== '')) ? +v : NaN; return Number.isFinite(n) ? Math.max(0, Math.min(1, n)) : d; };
   if (!_isObj(data.template)) data.template = { font:"'Noto Sans Hebrew', sans-serif", opacity:0.35, showOverlay:true };
+  data.template.opacity = _opacity(data.template.opacity, 0.35);
   data.template.customFonts = _objs(data.template.customFonts);   // uploaded tracing fonts (bytes) persist here; one picked from the installed fonts persists as a name
   data.template.customFonts.forEach(cf => { if (cf.local !== undefined && !(typeof cf.local === 'string' && LF_PS_RE.test(cf.local))) delete cf.local; });   // the name goes inside local("…"): only the strict pattern
   if (!_isObj(data.view)) data.view = { imgOpacityAlign:0.92, imgOpacityTrace:0.28, glyphOpacity:1.0 };
-  ['imgOpacityAlign','imgOpacityTrace','glyphOpacity'].forEach((k,i)=>{ if(data.view[k]==null) data.view[k]=[0.92,0.28,1.0][i]; });
+  ['imgOpacityAlign','imgOpacityTrace','glyphOpacity'].forEach((k,i)=>{ data.view[k] = _opacity(data.view[k], [0.92,0.28,1.0][i]); });
   if (data.view.snapGuides == null) data.view.snapGuides = true;   // node-drag snapping — absent = ON
   if (!data.guides || typeof data.guides !== 'object') data.guides = { show: true, items: [] };   // project-wide drawing guides
   data.guides.items = _objs(data.guides.items);
@@ -27188,7 +27371,7 @@ function migrateProject(data) {
       if (a && Number.isFinite(a.x) && Number.isFinite(a.y)) m.attachAnchor = { x: Math.round(a.x), y: Math.round(a.y) };
       else delete m.attachAnchor;
     });
-    MARK_STORE_KINDS.forEach(cat => { const c = data.font[cat].custom; Object.keys(c).forEach(k => { if (!_isObj(c[k])) delete c[k]; }); });   // a mark entry is an object with a source — anything else is dropped
+    MARK_STORE_KINDS.forEach(cat => { const c = data.font[cat].custom; Object.keys(c).forEach(k => { if (!_isObj(c[k])) delete c[k]; else sanitizeItemNumbers(c[k], 0); }); });   // a mark entry is an object with a source — anything else is dropped — and its numbers are numbers (the same rule as a letter's)
     data.font.customMarks.mode = 'custom';
     if (!data.font.accent || typeof data.font.accent !== 'object') data.font.accent = { mode: 'custom', custom: {} };
     if (!data.font.accent.custom || typeof data.font.accent.custom !== 'object') data.font.accent.custom = {};
@@ -27199,6 +27382,7 @@ function migrateProject(data) {
     Object.keys(data.font.accent.custom).forEach(cp => {
       const m = data.font.accent.custom[cp];
       if (!LATIN_ACCENTS[cp] || !m || typeof m !== 'object') { delete data.font.accent.custom[cp]; return; }
+      sanitizeItemNumbers(m, 0);               // the accent store is not in MARK_STORE_KINDS
       m.cls = LATIN_ACCENTS[cp].cls;
       m.designMode = (m.designMode === 'editor') ? 'editor' : 'upload';
       const a = m.attachAnchor;
