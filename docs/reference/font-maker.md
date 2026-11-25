@@ -582,20 +582,41 @@ validated against the closed set on read. Validation is inline (the `aria-live` 
   this file's convention, so both groups are wound alike — and then every new contour joins flagged,
   running the way its label says. No start point is moved, no point is inserted, and no solid of the
   letter is ever removed; the added contours are the selection afterwards.
-  - Two things are decided by asking points "is this ink?" (`svgWinder`, a signed winding number),
-    never by a rule about where a contour starts. **The artwork adds nothing** — asked of the artwork
-    as a whole (`svgPasteAddsInk`): nowhere does it have ink where the letter has none, tried beside
-    its own outline (a little to each side of every edge, never on one: pieces fitted to the same
-    band share its top and bottom lines) and on a grid over its box. Then nothing changes and no undo
-    entry is made. **A counter of the letter that the new ink covers completely** cuts nothing any
-    more and is taken out, so the Contours list keeps no dead hole (`svgPasteDeadHoles`) — only on
-    proof: the artwork's outline neither crosses the counter nor comes inside it, and at every point
-    asked, just inside its edge and across it, the fill is the same with the counter as without. In
-    doubt the artwork is added and the counter stays; the fill is right either way.
-  - One limit: a hole that sticks out of its own group's ink is wound the other way round where it
-    sticks out, and ink of the other group laid over that spot cancels it. The Contours list already
-    flags such a hole in a letter as not cutting; in pasted artwork it comes from overlapping shapes,
-    which the importer reads by nesting.
+  - Everything else is decided by asking points "is this ink?" (`svgWinder`, a signed winding
+    number), never by a rule about where a contour starts. **The artwork adds nothing** — asked of
+    the artwork as a whole (`svgPasteAddsInk`): nowhere does it have ink where the letter has none,
+    tried beside its own outline (a little to each side of every edge, never on one: pieces fitted to
+    the same band share its top and bottom lines) and on a grid over its box. Then nothing changes
+    and no undo entry is made.
+  - **Where the sum would cancel ink** (`svgPasteJoin`, after the keep step). Each group stays to one
+    side only while its holes lie inside its own ink; a hole that sticks out is wound the other way
+    round there, and over ink of the other group the two cancel. It is asked at points where the
+    two boxes meet — a grid about 6 units apart, a little to each side of every edge, and a finer
+    grid across each small counter — against the union, old fill OR new fill. Two mends, each a
+    change that keeps every contour running the way its label says:
+    - a **counter of the letter** with the artwork's ink at every point asked inside it is taken out
+      when the sum then has ink at all of them. That cannot change the union; it keeps the Contours
+      list free of a dead hole, and it is what stops a hole of a kept letter lying outside its ink
+      (shown as ink, and flagged as not cutting) from cancelling the artwork laid over it.
+    - a **hole of the artwork** that cancels the letter's ink is turned round and joins as a solid —
+      together with any other hole of the artwork whose overlap with it the turn would cancel. That
+      is how a pasted drawing made of overlapping shapes arrives: the importer reads a shape whose
+      first point lies inside another as its hole (a T drawn as two rectangles is a bar and a hole
+      sticking out of it), and over the letter the part that sticks out cancelled the letter's ink.
+      First a turn is made only where nothing changes but the points it mends, so the union stays
+      exact; then, for what is still cancelled, wherever it mends more points than it spoils. The
+      only other change that second round can bring is ink where the artwork's own shapes overlap —
+      the drawing as its shapes paint it, rather than the notch the importer's reading leaves there.
+      The letter's ink is never what gives way.
+    - a **hole of the letter that cuts nothing** — one of a kept letter lying outside its ink, which
+      shows as ink, or one over two of its solids — is turned into a solid when the artwork's ink
+      would cancel it, alone or together with the artwork's holes above it: as a solid it is the
+      same ink, so the letter's fill is unchanged. A hole of the letter that cuts is never turned.
+  - One case is left as it was: a hole of the letter that pokes out of its ink *and* cuts it, with
+    the artwork over the part that pokes out — turning it would fill what it cuts, so the ink that
+    part showed is cancelled under the artwork. The Contours list already flags such a hole as not
+    cutting before the add (and so it does when an earlier add left a hole of the artwork poking out
+    that cancelled nothing then).
   - QA's outline scan still reports a piece laid across a counter (an outer/hole crossing): the fill
     is right under the nonzero rule, the note is about engines that fill by even-odd.
 

@@ -10462,16 +10462,17 @@ function svgPasteReplace(l, built) {          // ONE undo step that brings back 
      convention, so both groups are wound alike;
    · every new contour joins flagged, running the way its label says;
    · no start point is moved, no point is put in, and no solid of the letter is ever taken out.
-   Two things are decided by asking points "is this ink?" (svgWinder), never by a rule about where a
-   contour starts:
+   Everything else is decided by asking points "is this ink?" (svgWinder), never by a rule about
+   where a contour starts:
    · "this artwork adds nothing" — of the artwork as a whole: nowhere does it have ink where the
      letter has none (svgPasteAddsInk). No change, and no undo step. In doubt, it is added.
-   · a COUNTER of the letter that the new ink covers completely cuts nothing any more. It is taken
-     out, so the Contours list is not left with a dead hole — but only when taking it out cannot
-     change the fill (svgPasteDeadHoles). In doubt it stays, and the fill is right either way.
-   One limit: a hole that sticks out of its own group's ink (the Contours list already says such a
-   hole is not cutting) is wound the other way round where it sticks out, and ink of the other group
-   laid over that spot cancels it. */
+   · where the two do not each stay to one side — a hole that sticks out of its own group's ink is
+     wound the other way round there — the sum can cancel ink of the other group. svgPasteJoin finds
+     those places and mends them: a counter of the letter that the artwork's ink covers completely
+     is taken out (that cannot alter the union), a hole of the artwork that cancels the letter's ink
+     is turned into a solid (the union stays exact where that can be done; where it cannot, the only
+     other change is ink where the artwork's own shapes overlap — the letter keeps its ink), and so
+     is a hole of the letter lying outside its ink, where that changes nothing else. */
 function svgWinder(rings) {                   // → (x, y) → the signed winding number of these rings there: a clockwise ring holds a point at +1, a counter-clockwise one at −1
   const E = gxwEdges(rings), at = gxwBins(E);
   return (x, y) => { const B = at(y); let w = 0; for (let i = 0; i < B.length; i++) { const e = B[i]; if ((e[1] > y) !== (e[3] > y) && e[0] + (y - e[1]) * (e[2] - e[0]) / (e[3] - e[1]) < x) w += e[3] > e[1] ? 1 : -1; } return w; };
@@ -10492,36 +10493,138 @@ function svgPasteAddsInk(oldRings, newRings) {   // is there a point where the a
   for (let y = y0 + step * 0.37; y < y1; y += step) for (let x = x0 + step * 0.31; x < x1; x += step) if (adds(x, y)) return true;
   return false;
 }
-/* The letter's counters that the artwork's ink covers completely → their indices. Asked after the
-   keep step, so a counter is a counter-clockwise ring. A counter goes only on proof: the artwork's
-   outline neither crosses it nor comes inside it, and at every point asked — just inside its edge
-   all the way round, and on a grid across it — there is ink of the artwork, wound as a solid, and
-   the fill is the same with the counter as without it. */
-function svgPasteDeadHoles(oldRings, newRings) {
-  const dead = [], Wo = svgWinder(oldRings), Wn = svgWinder(newRings);
-  oldRings.forEach((H, i) => {
-    if (H.length < 3 || !(signedArea(H) > 0)) return;
-    const Wh = svgWinder([H]);
-    for (const R of newRings) { if (R.some(p => Wh(p[0], p[1]) !== 0) || contoursOverlap(H, R)) return; }
-    let seen = 0, x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
-    const same = (x, y) => {                  // true / false inside the counter, null outside it
-      const hw = Wh(x, y); if (!hw) return null;
-      const nw = Wn(x, y), tot = Wo(x, y) + nw;   // (Wo counts the counter itself; tot − hw is the letter and the artwork without it)
-      seen++; return nw > 0 && (tot !== 0) === (tot - hw !== 0);
-    };
-    for (let k = 0; k < H.length; k++) {      // a counter runs counter-clockwise: its inside is on the left of travel
-      const a = H[k], b = H[(k + 1) % H.length], dx = b[0] - a[0], dy = b[1] - a[1], len = Math.hypot(dx, dy);
-      if (a[0] < x0) x0 = a[0]; if (a[0] > x1) x1 = a[0]; if (a[1] < y0) y0 = a[1]; if (a[1] > y1) y1 = a[1];
-      if (!len) continue;
-      const steps = Math.max(1, Math.ceil(len / 6));
-      for (let q = 0; q < steps; q++) { const t = (q + 0.5) / steps; if (same(a[0] + dx * t - dy / len * 0.7, a[1] + dy * t + dx / len * 0.7) === false) return; }
+/* How the letter and the artwork join → { dead, turn, turnOld }: the letter's counters to take out,
+   and the artwork's and the letter's holes to turn round into solids (indices into each group).
+   Asked after the keep step, so a hole of either group is a counter-clockwise ring. The aim is the
+   union, old fill OR new fill, at every point asked: a grid where the two boxes meet (about 6 units
+   apart, at least 2,000 points), points a little to each side of every edge there, and a finer
+   grid across each small counter. Only there can the sum come out wrong — elsewhere one of the two
+   has no ink — and only where a winding below zero meets one above: so only a group with a hole in
+   it can need any change.
+   · dead — a counter of the letter with the artwork's ink at every point asked inside it, so that
+     taking it out cannot change the union; it is taken out when the sum then has ink at all of
+     them. A dead counter in the Contours list cuts nothing, and a hole of a kept letter that lies
+     outside its ink (and shows as ink) would cancel the artwork laid over it.
+   · turn — a hole of the artwork that cancels ink of the letter. Pasted drawings are often made of
+     overlapping shapes, and the importer reads a shape whose first point lies inside another as its
+     hole; where it sticks out of the other shape it is wound the other way round, and over the
+     letter it cancels the letter's ink. Turned round it is a solid — together with any other hole
+     of the artwork whose overlap with it the turn would cancel (two shapes can each be the other's
+     "hole"). First wherever nothing changes but the points it mends: the union is then exact. Then,
+     for what is still cancelled, wherever it mends more points than it spoils; the only other
+     change it may bring is ink in the artwork's own overlap — the drawing as its shapes paint it —
+     so the letter's ink is kept.
+   · turnOld — a hole of the letter that cuts nothing (a hole of a kept letter lying outside its
+     ink shows as ink; one over two of its solids leaves ink), so that as a solid it is the same
+     ink: turned when the artwork's ink would cancel it, alone or with the artwork's holes above.
+   What is still wrong after that is a hole of the LETTER that pokes out of its ink and cuts it too,
+   under the artwork's ink: turning it would fill what it cuts. The Contours list flags such a hole
+   as not cutting before the add. */
+function svgPasteJoin(oldRings, newRings) {
+  const out = { dead: [], turn: [], turnOld: [] }, hole = R => R.length >= 3 && signedArea(R) > 0;
+  const oldHole = oldRings.map(hole), newHole = newRings.map(hole);
+  if (!oldHole.some(Boolean) && !newHole.some(Boolean)) return out;   // both wound to one side everywhere: the sum is the union already
+  const bo = polysBounds(oldRings), bn = polysBounds(newRings);
+  const Z = [Math.max(bo.minX, bn.minX) - 1, Math.max(bo.minY, bn.minY) - 1, Math.min(bo.maxX, bn.maxX) + 1, Math.min(bo.maxY, bn.maxY) + 1];
+  if (!(Z[2] > Z[0] && Z[3] > Z[1])) return out;                    // side by side
+  const meets = b => !(b.maxX < Z[0] || b.minX > Z[2] || b.maxY < Z[1] || b.minY > Z[3]);
+  const O = { rings: oldRings, box: oldRings.map(R => polysBounds([R])), isHole: oldHole, cand: oldRings.map(() => false), S: [], list: out.turnOld };
+  const N = { rings: newRings, box: newRings.map(R => polysBounds([R])), isHole: newHole, cand: newRings.map(() => false), S: [], list: out.turn };
+  for (let grow = true; grow; ) {                                    // the holes that can matter: where the two meet, or over one of those (turned round, a hole changes its group's winding all across it, so its whole box is asked)
+    grow = false;
+    for (const G of [O, N]) G.box.forEach((b, j) => {
+      if (G.cand[j] || !G.isHole[j] || !meets(b)) return;
+      G.cand[j] = grow = true;
+      Z[0] = Math.min(Z[0], b.minX - 1); Z[1] = Math.min(Z[1], b.minY - 1); Z[2] = Math.max(Z[2], b.maxX + 1); Z[3] = Math.max(Z[3], b.maxY + 1);
+    });
+  }
+  const X = [], Y = [], put = (x, y) => { if (x >= Z[0] && x <= Z[2] && y >= Z[1] && y <= Z[3]) { X.push(x); Y.push(y); } };
+  const grid = (x0, y0, x1, y1, step) => { for (let y = y0 + step * 0.37; y < y1; y += step) for (let x = x0 + step * 0.31; x < x1; x += step) put(x, y); };
+  const beside = R => {                                              // every 6 units along each edge, 0.7 units to each side (never ON an edge)
+    if (!meets(polysBounds([R]))) return;
+    for (let i = 0; i < R.length; i++) {
+      const a = R[i], b = R[(i + 1) % R.length], dx = b[0] - a[0], dy = b[1] - a[1], len = Math.hypot(dx, dy); if (!len) continue;
+      const ox = -dy / len * 0.7, oy = dx / len * 0.7, steps = Math.max(1, Math.ceil(len / 6));
+      for (let q = 0; q < steps; q++) { const t = (q + 0.5) / steps, x = a[0] + dx * t, y = a[1] + dy * t; put(x + ox, y + oy); put(x - ox, y - oy); }
     }
-    const step = Math.min(6, Math.sqrt((x1 - x0) * (y1 - y0) / 400));
-    if (!(step > 0)) return;
-    for (let y = y0 + step * 0.37; y < y1; y += step) for (let x = x0 + step * 0.31; x < x1; x += step) if (same(x, y) === false) return;
-    if (seen) dead.push(i);
+  };
+  const zw = Z[2] - Z[0], zh = Z[3] - Z[1], step = Math.max(Math.min(6, Math.sqrt(zw * zh / 2200)), Math.sqrt(zw * zh / 200000));
+  grid(Z[0], Z[1], Z[2], Z[3], step);
+  oldRings.forEach(beside); newRings.forEach(beside);
+  oldRings.forEach((H, i) => {                                       // a small counter gets a grid of its own (about 400 points)
+    if (!oldHole[i]) return; const b = polysBounds([H]), hs = Math.sqrt((b.maxX - b.minX) * (b.maxY - b.minY) / 400);
+    if (hs > 0 && hs < step && meets(b)) grid(b.minX, b.minY, b.maxX, b.maxY, hs);
   });
-  return dead;
+  const n = X.length, Wo = svgWinder(oldRings), Wn = svgWinder(newRings), wo = new Int32Array(n), wn = new Int32Array(n), want = new Uint8Array(n);
+  for (let i = 0; i < n; i++) { wo[i] = Wo(X[i], Y[i]); wn[i] = Wn(X[i], Y[i]); want[i] = (wo[i] || wn[i]) ? 1 : 0; }
+  const C = 32, gw = Math.ceil(zw / C) + 1, gh = Math.ceil(zh / C) + 1, cells = new Array(gw * gh), cell = (x, y) => Math.min(gh - 1, Math.max(0, Math.floor((y - Z[1]) / C))) * gw + Math.min(gw - 1, Math.max(0, Math.floor((x - Z[0]) / C)));
+  for (let i = 0; i < n; i++) { const k = cell(X[i], Y[i]); (cells[k] || (cells[k] = [])).push(i); }
+  const within = R => {                                              // [sample, R's own winding there, …] for the samples inside ring R
+    const b = polysBounds([R]), W = svgWinder([R]), got = [], c0 = cell(b.minX, b.minY), c1 = cell(b.maxX, b.maxY);
+    for (let cy = Math.floor(c0 / gw); cy <= Math.floor(c1 / gw); cy++) for (let cx = c0 % gw; cx <= c1 % gw; cx++) {
+      const L = cells[cy * gw + cx]; if (!L) continue;
+      for (const i of L) { const k = W(X[i], Y[i]); if (k) got.push(i, k); }
+    }
+    return got;
+  };
+  oldRings.forEach((H, hi) => {
+    if (!oldHole[hi]) return;
+    const b = polysBounds([H]); if (b.minX < bn.minX || b.maxX > bn.maxX || b.minY < bn.minY || b.maxY > bn.maxY) return;   // the artwork cannot cover it
+    const D = within(H); if (!D.length) return;
+    for (let q = 0; q < D.length; q += 2) { const i = D[q]; if (!wn[i] || !(wo[i] - D[q + 1] + wn[i])) return; }
+    for (let q = 0; q < D.length; q += 2) wo[D[q]] -= D[q + 1];
+    out.dead.push(hi); O.cand[hi] = false;
+  });
+  const lost = i => want[i] && !(wo[i] + wn[i]);
+  let left = 0; for (let i = 0; i < n; i++) if (lost(i)) left++;
+  if (!left) return out;
+  O.w = wo; N.w = wn;
+  const mark = new Uint8Array(n), inside = (G, j) => G.S[j] || (G.S[j] = within(G.rings[j]));
+  for (const G of [O, N]) { G.d = new Int32Array(n); G.inK = new Uint8Array(G.rings.length); }
+  O.cand = O.cand.map((c, j) => {                                    // a hole of the letter is turned only where that leaves the letter's own fill as it is: where it cuts nothing (outside the ink, or over two solids)
+    if (!c) return false;
+    const T = inside(O, j); for (let q = 0; q < T.length; q += 2) { const a = wo[T[q]]; if ((a !== 0) !== (a - 2 * T[q + 1] !== 0)) return false; }
+    return T.length > 0;
+  });
+  const tryTurn = (G0, j0, strict) => {                              // turn the seed — and with it every hole, of either group, whose overlap with it the turn would cancel → how many points it mends, net (0: not done)
+    const K = [], touched = [];
+    const take = (G, j) => { K.push([G, j]); G.inK[j] = 1; const T = inside(G, j); for (let q = 0; q < T.length; q += 2) { const i = T[q]; if (!mark[i]) { mark[i] = 1; touched.push(i); } G.d[i] -= 2 * T[q + 1]; } };   // turned round, a ring's own winding changes sign
+    let fix, hurt, more;
+    take(G0, j0);
+    for (;;) {
+      fix = hurt = more = 0;
+      for (const i of touched) {
+        const now = wo[i] + wn[i], then = now + O.d[i] + N.d[i]; mark[i] = 1;
+        if (want[i]) { if (!now && then) fix++; else if (now && !then) { hurt++; mark[i] = 2; } } else if (then) more++;
+      }
+      if (!hurt) break;
+      const next = [];
+      for (const G of [O, N]) G.cand.forEach((c, j) => {
+        if (!c || G.inK[j]) return;
+        const T = inside(G, j); for (let q = 0; q < T.length; q += 2) if (mark[T[q]] === 2) { next.push([G, j]); return; }
+      });
+      if (!next.length) break;
+      next.forEach(k => take(k[0], k[1]));
+    }
+    const ok = fix > 0 && (strict ? !hurt && !more : hurt < fix);   // ("more" can only be the artwork's: a turn of the letter's hole leaves the letter's fill as it is)
+    for (const i of touched) { if (ok) { wo[i] += O.d[i]; wn[i] += N.d[i]; } O.d[i] = N.d[i] = 0; mark[i] = 0; }
+    K.forEach(([G, j]) => { G.inK[j] = 0; if (ok) { G.cand[j] = false; G.list.push(j); } });
+    return ok ? fix - hurt : 0;
+  };
+  // Exact first: a turn that changes nothing but the points it mends. Then by points mended, where the only other change is the artwork's ink in its own overlaps.
+  for (const strict of [true, false]) {
+    for (let again = true; again && left; ) {
+      again = false;
+      for (const G of [O, N]) G.cand.forEach((c, j) => {
+        if (!c || !left) return;
+        const T = inside(G, j); let any = false;
+        for (let q = 0; q < T.length && !any; q += 2) any = lost(T[q]);
+        if (!any) return;
+        const got = tryTurn(G, j, strict); if (got) { left -= got; again = true; }
+      });
+    }
+  }
+  return out;
 }
 function svgPasteAdd(l, built) {              // the pieces join the outline that is there — through the node model, like pasted points
   _setWorkMode('nodes');                      // Edit points is the one step that always shows the outline itself (Align shows a photo or the strokes)
@@ -10541,7 +10644,10 @@ function svgPasteAdd(l, built) {              // the pieces join the outline tha
   let from = 0;
   udDo([{ t: 'item', kind: 'letter', cp: l.codepoint }], 'add SVG — ' + l.name, () => {
     nodeKeepAll();                            // before the new contours join: the letter's own direction is read without them
-    svgPasteDeadHoles(nodeModel.contours.map(nodeContourToPoints), newRings).sort((p, q) => q - p).forEach(i => nodeModel.contours.splice(i, 1));
+    const join = svgPasteJoin(nodeModel.contours.map(nodeContourToPoints), newRings);
+    join.turn.forEach(j => { reverseNodeContour(fresh[j]); fresh[j].winding = 'cw'; });   // a hole of the artwork that would cancel the letter's ink joins as a solid
+    join.turnOld.forEach(i => { nodeTurnContour(nodeModel.contours[i], i); nodeModel.contours[i].winding = 'cw'; });   // a hole of the letter that cuts nothing, under the artwork: the same ink, wound as a solid
+    join.dead.sort((p, q) => q - p).forEach(i => nodeModel.contours.splice(i, 1));
     from = nodeModel.contours.length;
     fresh.forEach(ct => nodeModel.contours.push(ct));
     writeThroughRebuild(l);                   // no renest: the union is the nonzero fill of exactly these contours, each as it runs
