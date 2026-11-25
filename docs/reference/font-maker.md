@@ -256,7 +256,11 @@ itself. `khSyncStatic` writes attributes and the caps only; it is safe to run at
   `aria-keyshortcuts` stays (a keyboard may be attached to a tablet).
 - A cap must never change a row: `.kh` has a negative block margin so a button is not taller for
   it, the bar's icons-only layout (`#nodeBar.nb-tight`) drops the on-button caps, and the Draw
-  tools use the corner. Measure a new site with the caps hidden and shown.
+  tools use the corner. Above the icons-only width the Edit points bar drops them by measurement:
+  `nodeBarFitCheck()` (run by every render of the bar, the window's resize, the splitters and a UI
+  font arriving) sets `#nodeBar.nb-nocaps` whenever the bar is taller with the caps than without
+  them — a fixed width cannot know the language or how wide the side panels were dragged. Measure a
+  new site with the caps hidden and shown.
 - A greyed-out button is faded with `opacity`, which would fade a pop-up inside it and make the
   button a layer the following content paints over. So a pop-up host rises on hover / focus
   (`z-index`), and `.tbtn.ghost[data-kh-pop]:disabled` / `.ctl-btn[data-kh-pop]:disabled` fade

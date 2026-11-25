@@ -912,6 +912,7 @@ header{--kin-pt:10px;--kin-pb:10px;--kin-gap:14px;}   /* this header's block pad
       background: var(--white); border: 1px solid var(--border); border-radius: 7px; box-shadow: 0 3px 10px rgba(0,0,0,0.28); white-space: nowrap; visibility: hidden; opacity: 0; }
     [data-kh-pop]:hover > .kh-pop, [data-kh-pop]:focus-visible > .kh-pop { visibility: visible; opacity: 1; transition: opacity 0.12s linear 0.3s, visibility 0s linear 0.3s; }
     #nodeBar.nb-tight .kh:not(.kh-pop) { display: none; }   /* the bar's icons-only layout */
+    #nodeBar.nb-nocaps .kh:not(.kh-pop) { display: none; }  /* nodeBarFitCheck measured that the caps would cost the bar a row */
   }
   /* The size of the font as last built, beside Export — present only while that build is still this project's font.
      It is out of the toolbar's flow: its slot is placed after the Export group, so it coming and going can never re-wrap
@@ -15142,7 +15143,17 @@ function nodeBarFitCheck() {   // JS width check — the center column resizes v
   // user actually sees is the narrower of the two, so labels collapse on that
   const w = Math.min((host || bar).clientWidth, document.documentElement.clientWidth || Infinity);
   bar.classList.toggle('nb-tight', w > 0 && w < 500);
+  // The keys on Select / Marquee / Pen must never cost the bar a row. Above the icons-only width they are dropped by
+  // measurement, not by a fixed width: whenever the bar has more rows with them than without (both languages, any
+  // column width the splitters leave). Two forced layouts, only while the bar is shown.
+  bar.classList.remove('nb-nocaps');
+  if (!bar.classList.contains('nb-tight') && bar.offsetHeight) {
+    const withCaps = bar.offsetHeight;
+    bar.classList.add('nb-nocaps');
+    if (!(withCaps > bar.offsetHeight)) bar.classList.remove('nb-nocaps');
+  }
 }
+if (document.fonts && document.fonts.addEventListener) document.fonts.addEventListener('loadingdone', () => nodeBarFitCheck());   // a UI font arriving changes the labels' widths
 function nodeStatusCoords(pt) {   // rAF-throttled #nsCoords writer; pt = [x,y] in font units, null clears
   if (!document.body.classList.contains('mode-nodes')) return;   // chrome hidden ⇒ no rAF, no DOM work
   _nsPt = pt;
