@@ -18631,7 +18631,7 @@ function scaleAllRender() {
   const narrow = st.scope !== 'all';
   cfg.opts.forEach((o, i) => { document.getElementById(SA_OPT_IDS[i]).disabled = narrow && o.all; });   // a font-wide choice (a Style, the marks, the kerning) means nothing for one letter
   const sh = document.getElementById('saScopeHint'); sh.hidden = !narrow;
-  if (narrow) sh.textContent = I18n.t(cfg.ns + '.scope_hint') + ((st.scope === 'letter' && st.tool !== 'slant' && st.cat === 'english') ? ' ' + I18n.t('fontmaker.scaleall.scope_hint_accents') : '');   // a resize or width change of one Latin letter leaves its shared accents as they are (a slant leans them with the letter's record)
+  if (narrow) sh.textContent = I18n.t(cfg.ns + '.scope_hint') + ((st.scope === 'letter' && st.tool !== 'slant' && st.cat === 'english' && engSupportsAccents(st.cp)) ? ' ' + I18n.t('fontmaker.scaleall.scope_hint_accents') : '');   // a resize or width change of one Latin letter that carries accents leaves the shared accents as they are (a slant leans them with the letter's record); an accented form taken whole from a font has its accent in its own outline
   const sn = document.getElementById('saStyleNote'), mnote = saMetaNote(saMetaAfter(null));
   sn.hidden = !mnote; if (mnote) sn.textContent = mnote;
   const ap = document.getElementById('saApply'), note = document.getElementById('saNote');

@@ -925,7 +925,9 @@ idiom — emptied by undo, it reads as the built-in again). An accent belongs to
 to the nikkud box: its shape follows the operation's `accentX` / `accentY` whenever the set holds
 every letter that carries it — the whole font, whatever the marks box says, or *Only the English
 tab* — and one letter leaves the shared shape as it is (the dialog's scope hint says so for a Latin
-letter). A slant needs no factor: an accent leans by its own letter's record.
+letter that carries accents, `engSupportsAccents`; an accented form taken whole from a font has its
+accent in its own outline, so it changes with it and gets no such hint). A slant needs no factor: an
+accent leans by its own letter's record.
 
 **An operation may stamp a record and carry Font Details fields.** `op.stamp(letter)` returns fields
 to set on every letter the operation changes (`null` removes a key) — still only assignments and
