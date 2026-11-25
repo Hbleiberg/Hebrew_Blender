@@ -669,16 +669,45 @@ over.
 project: for a file that carries `hfmInstalled`, in a project that is not partner-locked, it sets
 `project.font.license = 'unset'` and `project.font.sourceFont = { name, copyright, license,
 licenseUrl }`, then `syncMetaToForm()` — without that the form still says OFL and the next
-`onMetaChange()` (any Font Details keystroke, every save) writes it back. Font metadata is outside
-undo, and so is a font import; this rides with it. `#license` has a hidden `unset` option shown only
-while active (the `os-passthrough` idiom, but the menu stays enabled), and `syncSourceFontNote()`
-(called from `syncOsFontLock`, so `applyI18n` re-runs it) fills `#srcFontNote` with the source font's
-words through `textContent`. Nothing may leave the computer while the licence is unset:
-`licenseUnsetGate()` stops `exportFont()`, `saveCurrentToMyFonts()` (which builds a font without
-passing `exportFont`) and `fmSendFont()`, offering `exportJumpToLicense`. Preview PDF stays available.
-And no fallback can say OFL: `LICENSES.unset` and `licenseText()`'s `'unset'` case exist for that.
-`migrateProject` keeps `'unset'`, and shape-checks and caps `sourceFont` (`lfCleanSource`). An uploaded
-font **file** is unchanged: no notice, licence untouched.
+`onMetaChange()` (any Font Details keystroke, every save) writes it back. The stamp follows the
+picker's mark, never the font's name: the list already falls back, after `lfClean`, from a full name
+that cleans to nothing to the family and then the PostScript name, a record whose name is still blank
+is kept under the file's name, and with no name anywhere the licence is still set (only `sourceFont` is
+left out). Font metadata is outside undo, and so is a font import; this rides with it. `#license` has a
+hidden `unset` option shown only while active (the `os-passthrough` idiom, but the menu stays enabled),
+and `syncSourceFontNote()` (called from `syncOsFontLock`, so `applyI18n` re-runs it, and from
+`onMetaChange()` whenever the licence changes, so the reminder goes as soon as one is chosen in the
+menu) fills `#srcFontNote` with the source font's words through `textContent`.
+
+*Chosen* means `licenseChosen()`: the licence is a key of `LICENSES` other than `unset`. Anything else
+— `unset`, empty, a key this page does not know — is *not chosen yet*: the gate stops on it and the note
+says so, and `onMetaChange()` never overwrites such a key with the blank menu's `""`. `migrateProject`
+keeps `'unset'`, shape-checks and caps `sourceFont` (`lfCleanSource`), and in a project that is not
+partner-locked and has a `sourceFont`, turns an empty or unknown licence into `'unset'` (an older page
+version has no `unset` option and writes the field back empty); without a `sourceFont` an empty licence
+still heals to OFL.
+
+**No built font leaves the computer while no licence is chosen:** `licenseUnsetGate()` stops
+`exportFont()`, `saveCurrentToMyFonts()` (which builds a font without passing `exportFont`) and
+`fmSendFont()`, offering `exportJumpToLicense` — at the click, and again at the moment the spec is read,
+after the wait for the engine (`doExport`, before its version bump, and `buildFontBytes(true)` for My
+Fonts and Send), because the page stays live during that wait. While such a build is in flight
+(`_fontOut`), no font import can start: `fontImportHeld()` answers the picker's button and
+`uploadSourceFont` with one status line. Send reuses the last build only if it was made under the
+project's current licence (`_lastFontLic`). Preview PDF stays available (its build is ungated, and its
+bytes stay in the page). And no fallback can say OFL: `LICENSES.unset` and `licenseText()`'s `'unset'`
+case exist for that. **The project itself is not a font and is outside the gate on purpose:** Save
+Project to the computer, a save to the account and the account autosave carry the project — the
+installed font's outlines and `sourceFont` included — with the licence unset (holding back the autosave
+would put a teacher's work at risk). An uploaded font **file** is unchanged: no notice, licence
+untouched.
+
+**A partner-locked project takes no letters from an installed font.** Its licence is the partner's and
+its menu is locked, so nothing in it could become *not chosen yet*: `lfOpen('import')` refuses before
+the browser is asked for the list (`lfLettersRefused`, one status line naming the partner font),
+`uploadSourceFont` refuses a file that carries `hfmInstalled` the same way, and `lfLicenseNotice` prints
+the "the licence becomes Not chosen yet" line only where that happens. The same font as a **reference**
+stays allowed: it is stored by name and never shipped.
 
 **Reference target: by name, never by bytes.** `lfUseAsReference` registers
 `new FontFace(fam, 'local("<PostScript name>")')` and stores `{ name, fam, family, local }` in
