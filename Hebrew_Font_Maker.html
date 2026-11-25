@@ -15865,8 +15865,9 @@ function xformWidthStems(pct) {
   const res = gxWidthPlan(pct, { scope: 'letter', stems: true, spacing: false, marks: false, name: l.name }, { scope: 'letter', cp: l.codepoint, cat: _drawCatOf(l.codepoint) });
   if (gxRefused(res.plan) || !res.plan.scopes.length) { status(gxRefusalText(res.plan, 'width', pct) || I18n.t('fontmaker.scaleall.note_nothing')); return; }
   const warn = res.plan.warn.closed.length > 0, stretched = res.plan.warn.stretched.length > 0;   // stretched: the stem step would have pulled this letter apart, so the plan gave it the plain stretch
+  const wide = res.k > GXW_WIDE;   // the strokes kept, everything else in the letter stretched more than twice
   if (!gxCommit(res.plan, null)) return;
-  status(I18n.t(stretched ? 'fontmaker.node_editor.scale_stems_stretched' : warn ? 'fontmaker.node_editor.scale_stems_warn' : 'fontmaker.widthall.applied_letter', { pct }));
+  status(I18n.t(stretched ? 'fontmaker.node_editor.scale_stems_stretched' : warn ? 'fontmaker.node_editor.scale_stems_warn' : wide ? 'fontmaker.node_editor.scale_stems_wide' : 'fontmaker.widthall.applied_letter', { pct }));
 }
 /* Live transform sliders — the fillet/reduce burst idiom, but for a RELATIVE op: the slider value
    is the total rotation/scale since drag start (reset-from-base each tick), and it snaps back to
@@ -18185,6 +18186,7 @@ function gxSlantOp(deg, o) {   // o: { scope, marks, name }
 const GXW_MIN = 50, GXW_MAX = 150, GXW_PRESETS = [85, 92, 100, 108, 115];
 const GXW_WIN = 8;            // a polygon's direction at a vertex is read over this much outline, so a noisy tracing does not jitter
 const GXW_LOCAL_MAX = 1500;   // above this many points a letter uses its one stem value for every edge (the per-edge look-across is quadratic)
+const GXW_WIDE = 2;           // a shapes' factor above this (one narrow letter, nearly all stroke, widened on its own) stretches everything but its strokes to more than twice its width: the dialog and Edit points say so
 function gxwMedian(a) { if (!a.length) return null; const b = a.slice().sort((x, y) => x - y), m = b.length >> 1; return b.length % 2 ? b[m] : (b[m - 1] + b[m]) / 2; }
 function gxwEdges(rings) {   // every non-flat edge: [x1, y1, x2, y2, ring, the index of its first point in that ring]
   const E = [];
@@ -18833,8 +18835,8 @@ function scaleAllScan() {
     if (was == null || Math.abs(was - res.k) > 1e-9) saStrips();
   }
   const ap = document.getElementById('saApply'), note = document.getElementById('saNote');
-  const bad = gxRefused(plan), empty = !plan.scopes.length;
-  note.className = 'hint' + ((bad || plan.warn.closed.length || plan.warn.stretched.length) ? ' warn' : '');
+  const bad = gxRefused(plan), empty = !plan.scopes.length, wide = st.tool === 'width' && st.opt[0] && res.k > GXW_WIDE;
+  note.className = 'hint' + ((bad || plan.warn.closed.length || plan.warn.stretched.length || wide) ? ' warn' : '');
   if (bad) note.textContent = gxRefusalText(plan, st.tool, st.val);
   else if (empty) note.textContent = I18n.t('fontmaker.scaleall.note_nothing');
   else {
@@ -18842,6 +18844,7 @@ function scaleAllScan() {
     if (res.ratio != null && st.opt[0]) parts.push(I18n.t('fontmaker.widthall.note_ratio', { pct: Math.abs(res.ratio * 100 - Math.round(res.ratio * 100)) < 0.15 ? Math.round(res.ratio * 100) : Math.round(res.ratio * 1000) / 10 }));
     if (plan.warn.closed.length) parts.push(I18n.t('fontmaker.widthall.warn_closed', { names: gxNames(plan.warn.closed) }));
     if (plan.warn.stretched.length) parts.push(I18n.t('fontmaker.widthall.warn_stretched', { names: gxNames(plan.warn.stretched) }));
+    if (wide) parts.push(I18n.t('fontmaker.widthall.warn_wide', { pct: st.val }));
     if (plan.warn.lost.length) parts.push(I18n.t('fontmaker.scaleall.warn_lost', { names: gxNames(plan.warn.lost) }));
     if (plan.warn.off.length) parts.push(I18n.t('fontmaker.scaleall.warn_off', { names: gxNames(plan.warn.off) }));
     if (plan.warn.held.length) parts.push(I18n.t('fontmaker.scaleall.warn_held', { things: plan.warn.held.map(t => I18n.t('fontmaker.scaleall.held_' + t)).join(', ') }));

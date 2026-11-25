@@ -1097,8 +1097,11 @@ corner or tangle a noisy outline.
   twice (`gxWidthPlan`; `plan.adv` is the total advance before and after). The dialog's note says
   what the text becomes. `k` below 0.2 is the `narrow` refusal (no room left for the strokes). There
   is no upper bound: a factor above 2 is one narrow letter whose ink is nearly all stem being widened
-  on its own — only its side spaces grow — and a result that leaves the coordinate range is the
-  plan's own refusal.
+  on its own, and a result that leaves the coordinate range is the plan's own refusal. Above
+  `GXW_WIDE` (2) everything in that letter but its strokes — its side spaces, and any dot, accent or
+  curl it has — is stretched to more than twice its width, so the dialog adds a warn-styled sentence
+  (`widthall.warn_wide`) and Edit points its own status line (`node_editor.scale_stems_wide`); the
+  change is still offered.
 - *The `closed` finding — gap columns.* No height moved, so the same horizontal slice cuts the letter
   before and after: every gap between two runs of ink (a counter, or the space between two strokes)
   is followed slice by slice as a column and matched to what is left of it. A column is reported when
