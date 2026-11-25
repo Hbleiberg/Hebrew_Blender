@@ -2788,6 +2788,8 @@ html[lang="he"] .tp-label{letter-spacing:normal;text-transform:none;}
 
     <div class="wiz-foot">
       <span id="wizNextNote" class="wiz-note" aria-live="polite" hidden data-i18n="fontmaker.wizard.next_need_name_author">Enter a font name and author to continue.</span>
+      <!-- Filled by wizardOsFinish (textContent) when a font being built to leave the computer holds the partner import back -->
+      <span id="wizHoldNote" class="wiz-note" aria-live="polite" hidden></span>
       <div class="mbtns">
         <button class="tbtn ghost" id="wizBack" onclick="wizardBack()" data-i18n="fontmaker.wizard.back" hidden>Back</button>
         <button class="tbtn" id="wizNext" onclick="wizardNext()" data-i18n="fontmaker.wizard.next">Next</button>
@@ -20856,7 +20858,8 @@ let _exportPreparing = false;  // true while a click-to-export is waiting on the
    gate let through at the click, so two things hold while such a build is in flight (_fontOut counts
    them): the gate is asked AGAIN at the moment the spec is read, after the awaits (doExport, and
    buildFontBytes(true) for the other two); and no font import can start (fontImportHeld — the picker's
-   button and uploadSourceFont ask it), so the build never reads a half-imported project. */
+   button and uploadSourceFont ask it; the partner wizard's Create, wizardOsFinish, reads _fontOut and
+   says it in the wizard), so the build never reads a half-imported project. */
 let _fontOut = 0;
 function fontImportHeld() {
   if (!_fontOut) return false;
@@ -27316,6 +27319,7 @@ function wizardShowStep(n, focusEl){
   document.getElementById('wizBack').hidden = (n === 1);
   document.getElementById('wizNext').hidden = (n === 3);
   document.getElementById('wizCreate').hidden = (n !== 3);
+  document.getElementById('wizHoldNote').hidden = true;   // wizardOsFinish's "still being built" line belongs to the press that showed it
   if (os) wizardValidateOs(); else wizardValidateStep1();
   // Focus the step's first control (the checked radio for the tile/segment steps) after
   // aOpenModal's own setTimeout(0) focus pass — the openShortcuts precedent.
@@ -27531,7 +27535,13 @@ function wizardOsCancel(){
   wizardOpen(back);
 }
 async function wizardOsFinish(){
+  const hold = document.getElementById('wizHoldNote'); hold.hidden = true;
   if (!wizardValidateOs()) { wizardShowStep(2); try { document.getElementById('wizOsName').focus(); } catch (e) {} return; }
+  // A font being built to leave the computer (an export, a save to My Fonts or a send still waiting on
+  // the engine) reads the project when the engine arrives: this import would replace it under that build,
+  // half-imported. It waits, like the file and installed-font imports (fontImportHeld), and says so here
+  // in the wizard — the status line sits behind it. Nothing has changed yet; the wizard keeps every answer.
+  if (_fontOut) { hold.textContent = I18n.t('fontmaker.oswizard.wait_build', { btn: I18n.t('fontmaker.wizard.create') }); hold.hidden = false; return; }
   const ctx = _osStartCtx, e = ctx.entry;
   const name = document.getElementById('wizOsName').value.trim();
   const author = document.getElementById('wizOsAuthor').value.trim();

@@ -6168,6 +6168,7 @@ fontmaker.oswizard.name_prefill,{font} (modified),{font} (modified),step-2 name 
 fontmaker.oswizard.name_ph_rfn,A new name of your own — e.g. add your school's name,"שם חדש משלכם — למשל, הוסיפו את שם בית הספר",step-2 name placeholder when reserved names force a rename,
 fontmaker.oswizard.need_name_author,Enter a font name and your name to continue.,הזינו שם לגופן ואת שמכם כדי להמשיך.,step-2 inline validation,
 fontmaker.oswizard.rfn_note,"The original's license reserves “{rfn}” (reserved names: {names}) — pick a name that doesn't include it, e.g. your school's name or your own.","רישיון המקור שומר את ”{rfn}“ (שמות שמורים: {names}) — בחרו שם שאינו כולל אותו, למשל שם בית הספר או שמכם.",step-2 inline validation on a reserved-name collision,"params rfn, names"
+fontmaker.oswizard.wait_build,Your current font is still being built. Press “{btn}” again when that is done.,הגופן הנוכחי שלכם עדיין נבנה. לחצו שוב על ”{btn}“ כשהבנייה תסתיים.,"note in the wizard's foot when Create font is pressed while an export, a save to My Fonts or a send of the current font is still waiting on the engine; nothing changed",param btn = the Create font button's label
 fontmaker.oswizard.author_label,Your name (contributor),השם שלכם (יופיע כתורם),step-2 field label,
 fontmaker.oswizard.orig_author,Original author,היוצר המקורי,step-2 read-only row label,
 fontmaker.oswizard.step3_title,Step 3 of 3 — What to include,שלב 3 מתוך 3 — מה לכלול,partner wizard step heading,

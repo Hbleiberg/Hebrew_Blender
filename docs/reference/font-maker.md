@@ -693,7 +693,9 @@ still heals to OFL.
 after the wait for the engine (`doExport`, before its version bump, and `buildFontBytes(true)` for My
 Fonts and Send), because the page stays live during that wait. While such a build is in flight
 (`_fontOut`), no font import can start: `fontImportHeld()` answers the picker's button and
-`uploadSourceFont` with one status line. Send reuses the last build only if it was made under the
+`uploadSourceFont` with one status line, and the starting-font wizard's *Create font*
+(`wizardOsFinish`, which would replace the project under that build) changes nothing and says so in
+the wizard's foot (`#wizHoldNote`), keeping every answer for the next press. Send reuses the last build only if it was made under the
 project's current licence and file name (`_lastFontLic`, `_lastFontStem`) — both read with the spec,
 never at the download: `doExport` waits on its shaping check with the page live, so a licence chosen
 or a rename made meanwhile leaves that build stale for Send, and what ships beside that export (the
