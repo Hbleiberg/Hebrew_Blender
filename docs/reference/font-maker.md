@@ -707,7 +707,10 @@ the new outline) and a `*Source: 'import'` flag (`SVG_IMPORT_FLAGS` — a later 
 would otherwise overwrite the letter). Anchors are re-seeded. One Ctrl+Z restores all of it.
 
 **Paste, drop and the code box** (the *SVG paste* block) put artwork into the open letter whatever
-`project.font.svgUpload` says — that setting only decides what the upload zones accept. Three ways in:
+`project.font.svgUpload` says — that setting only decides what the upload zones accept, so the hints
+an SVG letter shows (`svg_outline_hint` on Trace, `align_svg_hint_missing` on an emptied one) name
+*Add Letters* only while it is on; with it off a letter is pointed back to a paste or a drop
+(the `*_paste` keys). Three ways in:
 the document `paste` listener, `wireStageDrop` on `.stage-wrap` (files only; any other file is told
 where it belongs instead of navigating the browser away), and the *Paste SVG code…* buttons beside
 every *Copy outline…* button and in the point editor's nothing-selected stack (`openSvgPasteCode`).

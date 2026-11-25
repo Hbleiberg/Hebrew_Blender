@@ -20817,7 +20817,9 @@ function renderAlignUnder(U, l) {
   } else if (isSvg) {
     hint = `<div class="hint">${ l.contours
       ? _pT('align_svg_hint_loaded', 'Imported from SVG — no tracing needed. Set the <b>Width &amp; margins</b> below, then go to <b>Nikkud</b> to place the vowels.')
-      : _pT('align_svg_hint_missing', 'Upload an SVG for this glyph under <b>Add Letters</b> on the left.') }</div>`;
+      : (svgUploadOn() || curKind !== 'letter')   // with SVG uploading off, Add Letters takes photos: a pasted letter comes back the way it came in
+      ? _pT('align_svg_hint_missing', 'Upload an SVG for this glyph under <b>Add Letters</b> on the left.')
+      : _pT('align_svg_hint_missing_paste', 'Paste an SVG for this letter, or drop an SVG file on the canvas.') }</div>`;
   }
   U.innerHTML = hint;   // the step's buttons live under the canvas — see renderAlignStageBelow
 }
@@ -20867,7 +20869,9 @@ function renderTraceLeft(L, l) {
   if (l.source && l.source.kind === 'svg') {   // imported vector — no raster trace controls, but allow point editing
     L.innerHTML = pending + `
       <div class="ws-side-title">${I18n.t('fontmaker.panels.outline_title', {name: esc(gName(l.name))})}</div>
-      <div class="hint">${_pT('svg_outline_hint', 'Imported from SVG — no tracing needed. Fine-tune the shape with <b>Edit points</b>, or re-upload under <b>Add Letters</b> to replace it.')}</div>
+      <div class="hint">${(svgUploadOn() || curKind !== 'letter')   // with SVG uploading off, Add Letters takes photos: a pasted letter is replaced the way it came in
+        ? _pT('svg_outline_hint', 'Imported from SVG — no tracing needed. Fine-tune the shape with <b>Edit points</b>, or re-upload under <b>Add Letters</b> to replace it.')
+        : _pT('svg_outline_hint_paste', 'Imported from SVG — no tracing needed. Fine-tune the shape with <b>Edit points</b>, or replace it by pasting another SVG or dropping an SVG file on the canvas.')}</div>
       <div class="ctl-row">
         ${ l.contours ? '' : `<button class="ctl-btn primary hi-btn" onclick="drawWithPen()" title="${esc(I18n.t('fontmaker.panels.draw_pen_title'))}">${ICON_PENCIL_SM}${I18n.t('fontmaker.panels.draw_pen')}</button><button class="ctl-btn" onclick="buildWithShapes(event)" title="${esc(I18n.t('fontmaker.panels.build_shapes_title'))}">${I18n.t('fontmaker.panels.build_shapes')}</button>` }
         <button class="ctl-btn" onclick="clearTrace()">${I18n.t('fontmaker.panels.clear')}</button>
