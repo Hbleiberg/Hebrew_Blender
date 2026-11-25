@@ -382,13 +382,15 @@ The size of the font is shown in two places, and neither ever starts a build.
 - **Beside the Export button** (`#exportSize`, also the button's `aria-describedby`): the size of
   the last build, for the picked format, **only while that build is still this project's font**.
   Every build — `buildFontBytes()` (Preview PDF, Send, Save to My Fonts) and `doExport` — calls
-  `fmBuildKeep(bytes, gen)`, which stores `window._lastBuild = { proj, gen, stem, ref, ttf, woff2 }`:
+  `fmBuildKeep(bytes, gen)`, which stores `window._lastBuild = { proj, gen, stem, ver, ref, ttf, woff2 }`:
   the `project` object, the edit count read **together with the spec** (`_editGen`, bumped by
-  `markDirty()`), and the file stem. `fmBuildFresh()` is true while all three still hold;
-  `exportSizeSync()` shows or empties the readout and is called by `fmBuildKeep`, by `markDirty`
-  (only while the readout is showing), by `onExportFormatChange` and by `udClear` (a project just
-  arrived or left). The WOFF2 size is known only after a WOFF2 was made from that same build
-  (`ref === bytes`); the zip and the UFO show nothing.
+  `markDirty()`), the file stem and the font's version (an export stamps a new version without an
+  edit — a UFO export, or a bump rolled back by a Cancel). `fmBuildFresh()` is true while all four
+  still hold; `exportSizeSync()` shows or empties the readout and is called by `fmBuildKeep`, by
+  `markDirty` (only while the readout is showing), by `onExportFormatChange`, by the export's
+  version setter and by `udClear` (a project just arrived or left — which also drops a build that
+  belongs to another project object). The WOFF2 size is known only after a WOFF2 was made from that
+  same build (`ref === bytes`); the zip and the UFO show nothing.
 - **Out of the toolbar's flow.** The readout sits in `.export-size-slot`, positioned after the Export
   group (`.tb-export` is its containing block, `pointer-events: none`), so it coming and going
   cannot re-wrap the toolbar — in the flow it tipped a row in and out and the editor jumped under the
@@ -401,12 +403,18 @@ The size of the font is shown in two places, and neither ever starts a build.
   check (window width, language, the sign-in pip, the engine badge, a font arriving), and
   `exportSizeSync` runs it after every text change.
 
-Three things to keep:
+Four things to keep:
 - The edit count is read with `buildFontSpec()`, not when the bytes come back: the export awaits
   the shaping check and the WOFF2 package after the build, and an edit made meanwhile must leave
-  the build an old one.
+  the build an old one. The same count tells the Exported ✓ screen whether to mark the project
+  clean: `offerSaveToMyFonts(…, gen)` calls `markClean()` only if nothing was edited after the
+  export read its spec — an edit made while it waited is not in the file and stays unsaved.
 - The export's own version bump does not go through `markDirty`, so a finished export keeps its
   readout; an undo does (it is an edit of the project), so an old number never returns.
+- Freshness rests on `markDirty()` being called by everything that changes the font. The placement
+  step's carry-over (`maybeInheritAnchors`, run when a letter is opened there) writes anchors
+  outside `udDo`, so it calls `markDirty()` itself when it moved one (still no undo step: the
+  carry-over is part of opening the letter).
 - When the readout is hidden its text **and its title** are removed. A hidden element still
   describes the button it is `aria-describedby` for, and with no text the browser falls back to
   the title — which would tell a screen reader "nothing has changed since" about a font that has.

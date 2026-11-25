@@ -4470,7 +4470,9 @@ function updateUndoButtons() {   // top-toolbar + node-bar twins (bar buttons ex
     if (to) { focused.tabIndex = -1; to.tabIndex = 0; to.focus(); }   // keep the one-tab-stop roving invariant
   }
 }
-function udClear() { undoStack = []; redoStack = []; _udNudge = null; _burst = null; updateUndoButtons(); exportSizeSync();   /* a project just arrived or left: the size beside Export was another one's */ }
+function udClear() { undoStack = []; redoStack = []; _udNudge = null; _burst = null; updateUndoButtons();
+  if (window._lastBuild && window._lastBuild.proj !== project) window._lastBuild = null;   // another project's build: let it (and that project) go
+  exportSizeSync();   /* a project just arrived or left: the size beside Export was another one's */ }
 
 function blankLetter(L) {
   const it = {
@@ -19678,18 +19680,24 @@ function maybeInheritAnchors(l) {
   if (!!lastSavedAnchors.smrAboveR !== smrMarkBase(l)) return;   // placement carries within a family only: a Samaritan letter's anchors always hold the columns, a Hebrew letter's never do
   const ibb = l.contours ? glyphBBox(l.contours, true, letterMeta(l.codepoint)) : null;
   const floatUp = !!(ibb && Math.round(ibb.minY) > gxKY(120));   // yod-like: body floats well above the baseline
+  let moved = false;
   ['below','above','center','tropAbove','tropBelow','tropAboveL','tropAboveR','tropBelowL','tropBelowR','smrAboveR','smrAbove','smrAboveL'].forEach(k => {
     const s = lastSavedAnchors[k];
     if (s && l.anchors[k]) {
-      l.anchors[k].x = s.x;
+      const a = l.anchors[k], x0 = a.x, y0 = a.y;
+      a.x = s.x;
       // Carry the source letter's vertical level — but a floating letter keeps its own ink-relative
       // below/tropBelow so its nikkud stays tucked under the body instead of dropping to the baseline.
-      if (!(floatUp && (k === 'below' || k === 'tropBelow' || k === 'tropBelowL' || k === 'tropBelowR'))) l.anchors[k].y = s.y;
+      if (!(floatUp && (k === 'below' || k === 'tropBelow' || k === 'tropBelowL' || k === 'tropBelowR'))) a.y = s.y;
+      if (a.x !== x0 || a.y !== y0) moved = true;
     }
   });
   anchorInheritedFrom.set(l, lastSavedAnchors);
   l.placementInherited = true;                               // carried over from the previous letter — distinct from a hand-confirmed ✓; review & confirm (or adjust) to clear it
   l.savedAnchors = JSON.parse(JSON.stringify(l.anchors));
+  // The carried placement is project data: a moved anchor changes the font (autosave, the size beside Export). Still no
+  // undo step — the carry-over is part of opening the letter, and confirming or adjusting it is the edit the teacher makes.
+  if (moved) markDirty();
   renderLetterGrid();
   renderStage();   // redraw the canvas at the inherited coords so the mark doesn't "jump" on the first nudge
 }
@@ -23543,8 +23551,9 @@ function glyphRangeError(spec) {   // → a ready-to-show message, or '' when ev
    the spec was read, and the file stem (style and width are part of it). While all three still hold, the size shows
    beside Export. Nothing here ever starts a build — it only measures the ones the teacher asked for. */
 let _exportSizeOn = false;
-function fmBuildKeep(bytes, gen) { window._lastBuild = { proj: project, gen, stem: fontFileStem(), ref: bytes, ttf: bytes.length, woff2: 0 }; exportSizeSync(); }
-function fmBuildFresh() { const b = window._lastBuild; return !!(b && project && b.proj === project && b.gen === _editGen && b.stem === fontFileStem()); }
+// The version is part of the mark too: an export stamps a new one without an edit (a UFO export, or a bump rolled back).
+function fmBuildKeep(bytes, gen) { window._lastBuild = { proj: project, gen, stem: fontFileStem(), ver: project.font.version, ref: bytes, ttf: bytes.length, woff2: 0 }; exportSizeSync(); }
+function fmBuildFresh() { const b = window._lastBuild; return !!(b && project && b.proj === project && b.gen === _editGen && b.stem === fontFileStem() && b.ver === project.font.version); }
 function exportSizeSync() {
   const el = document.getElementById('exportSize'); if (!el) return;
   const fmt = (document.getElementById('exportFormat') || {}).value || 'ttf';
@@ -23873,7 +23882,7 @@ async function doExport(fmt) {
   window._lastFellBack = [];   // reset per export so a prior run's faceted-glyph warning never leaks (esp. into the UFO path)
   window._lastGateSkipped = false;   // reset per export — set only when marks were enabled but the shaping check couldn't run
   const _prevVersion = project.font.version;
-  const _setVersion = (val) => { project.font.version = val; const el = document.getElementById('fontVersion'); if (el) el.value = val; };
+  const _setVersion = (val) => { project.font.version = val; const el = document.getElementById('fontVersion'); if (el) el.value = val; exportSizeSync(); };   // a build stamped with another version is not this font
   try {
     // If the engine isn't ready yet, show phased progress on the button itself.
     if (!pyodide) { _exportPreparing = true; _setPyoPhase(_pyoPhase === 'idle' ? 'download' : _pyoPhase); }
@@ -23899,6 +23908,7 @@ async function doExport(fmt) {
     // UFO is a source format — built straight from the spec (cubic curves + anchors); no TTF/shaping gate.
     if (fmt === 'ufo') {
       status(I18n.t('fontmaker.status.building_ufo'), true);
+      const _gen = _editGen;   // read with the spec: an edit made while the export runs is not in the file, so it stays unsaved
       const spec = buildUfoSpec();
       pyodide.globals.set('hfm_spec_json', JSON.stringify(spec));
       const ures = JSON.parse(pyodide.runPython('hfm_build_ufo(hfm_spec_json)'));
@@ -23907,7 +23917,7 @@ async function doExport(fmt) {
         downloadBlob(new Blob([zb], {type:'application/zip'}), spec.ufoName + '.ufo.zip'); }
       status(window.I18n ? I18n.t('fontmaker.status.exported_ufo', {name: spec.ufoName})
                       : 'Exported ' + spec.ufoName + '.ufo.zip ✓ (UFO source — cubic curves, anchors & features.fea)');
-      offerSaveToMyFonts();
+      offerSaveToMyFonts(false, _gen);
       return;
     }
 
@@ -23935,10 +23945,10 @@ async function doExport(fmt) {
       askModal(I18n.t('fontmaker.modals.shaping_fail_title'),
         `<span class="warn">${gate.msg}</span><br><br>` + I18n.t('fontmaker.modals.shaping_fail_body'),
         [ {label:I18n.t('fontmaker.modals.cancel'), cls:'ghost', onClick: () => _setVersion(_prevVersion) },   // no download happened — don't ratchet the version per retry
-          {label:I18n.t('fontmaker.modals.download_anyway'), onClick: () => finishDownload(bytes, gate && gate.skipped, fmt).then(done => { if (!done) _setVersion(_prevVersion); }) } ]);
+          {label:I18n.t('fontmaker.modals.download_anyway'), onClick: () => finishDownload(bytes, gate && gate.skipped, fmt, _gen).then(done => { if (!done) _setVersion(_prevVersion); }) } ]);
       return;
     }
-    if (!await finishDownload(bytes, gate && gate.skipped, fmt)) _setVersion(_prevVersion);   // WOFF2/zip failure = no file shipped → roll the bump back
+    if (!await finishDownload(bytes, gate && gate.skipped, fmt, _gen)) _setVersion(_prevVersion);   // WOFF2/zip failure = no file shipped → roll the bump back
   } catch (err) {
     console.error(err); status(''); _setVersion(_prevVersion);
     askModal(I18n.t('fontmaker.modals.export_error_title'), '<span class="warn">'+(err && err.message || err)+'</span>', [{label:I18n.t('fontmaker.modals.ok')}]);
@@ -23947,7 +23957,7 @@ async function doExport(fmt) {
     if (_exportPreparing) { _exportPreparing = false; onExportFormatChange(); }
   }
 }
-async function finishDownload(bytes, gateSkipped, fmt) {   // resolves true only when a file actually shipped — callers roll the version bump back on false
+async function finishDownload(bytes, gateSkipped, fmt, gen) {   // resolves true only when a file actually shipped — callers roll the version bump back on false; gen = the edit count read with the spec
   fmt = fmt || 'ttf';
   const fam = fontFileStem();   // family base + '-Bold' for the bold style — no Regular/Bold file collisions
   window._lastFontBytes = bytes; window._lastFontStem = fontFileStem();   // for Send to IvritSuite (stem = freshness stamp)
@@ -23957,7 +23967,7 @@ async function finishDownload(bytes, gateSkipped, fmt) {   // resolves true only
     downloadBlob(new Blob([bytes], {type:'font/ttf'}), fam + '.ttf');
     status(window.I18n ? I18n.t(gateSkipped ? 'fontmaker.status.exported_ttf_skipped' : 'fontmaker.status.exported_ttf', {name: fam})
                     : 'Exported ' + fam + '.ttf' + (gateSkipped ? ' (shaping check skipped)' : ' ✓'));
-    offerSaveToMyFonts(true);   // single-file → offer LICENSE.txt reliably from the success screen
+    offerSaveToMyFonts(true, gen);   // single-file → offer LICENSE.txt reliably from the success screen
     return true;
   }
   // WOFF2 / TTF+WOFF2 zip — re-flavour the just-built TTF through fontTools (brotli loaded on demand)
@@ -23973,7 +23983,7 @@ async function finishDownload(bytes, gateSkipped, fmt) {   // resolves true only
       window._lastExport = { kind: 'woff2', size: woff2.length };
       downloadBlob(new Blob([woff2], {type:'font/woff2'}), fam + '.woff2');
       status(I18n.t('fontmaker.status.exported_woff2', {name: fam}));
-      offerSaveToMyFonts(true);   // single-file → offer LICENSE.txt reliably from the success screen
+      offerSaveToMyFonts(true, gen);   // single-file → offer LICENSE.txt reliably from the success screen
       return true;
     }
     // ttfwoff2 → one zip: both fonts + a paste-ready @font-face + the licence
@@ -23989,7 +23999,7 @@ async function finishDownload(bytes, gateSkipped, fmt) {   // resolves true only
       downloadBlob(new Blob([zb], {type:'application/zip'}), fam + '.zip'); }
     status(window.I18n ? I18n.t('fontmaker.status.exported_zip', {name: fam})
                     : 'Exported ' + fam + '.zip ✓ (TTF + WOFF2 + @font-face CSS + LICENSE)');
-    offerSaveToMyFonts();
+    offerSaveToMyFonts(false, gen);
     return true;
   } catch (err) {
     console.error(err); status('');
@@ -24507,8 +24517,10 @@ async function saveCurrentToMyFonts(bytes) {
     askModal(I18n.t('fontmaker.modals.couldnt_save_title'), '<span class="warn">' + esc(e && e.message || String(e)) + '</span>', [{ label: I18n.t('fontmaker.modals.ok') }]);
   }
 }
-function offerSaveToMyFonts(licenseSeparate) {   // post-export success screen (called after every successful export, any format)
-  markClean();   // a successful export is a safe checkpoint → drop the unsaved-work breadcrumb
+function offerSaveToMyFonts(licenseSeparate, gen) {   // post-export success screen (called after every successful export, any format)
+  // A successful export is a safe checkpoint → drop the unsaved-work breadcrumb — but only if nothing was edited after the
+  // export read its spec (gen): an edit made while it waited on the engine is not in the file and must stay unsaved.
+  if (gen === undefined || gen === _editGen) markClean();
   const dl = window._lastDownload;   // snapshot now — the LICENSE button below overwrites it
   const dlFile = dl ? new File([dl.blob], dl.name, {type: dl.blob.type}) : null;
   const canShareFile = !!dlFile && fmCanShareFiles([dlFile]);   // Safari/iOS: the share sheet is the file exit ("Save to Files") where the download is invisible
