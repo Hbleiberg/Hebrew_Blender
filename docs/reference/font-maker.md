@@ -227,17 +227,32 @@ handler goes through the real setters (`setMarkEnabled`, `setAdd*`, `setInputMod
 
 ### Shortcut keys on buttons — the `KH` table
 
-A button that has a keyboard shortcut shows it. `KH` (beside `modKey()`) is the one table: an entry
+The buttons whose shortcut is in `KH` show it. `KH` (beside `modKey()`) is the one table: an entry
 per shortcut, each a list of combinations written with `mod` for the platform's modifier
 (`undo: ['mod+Z']`, `redo: ['mod+Shift+Z', 'mod+Y']`, `drawLine: ['L']`, `nodeSelect: ['Escape']`).
-Three readers, and no title, hint, dialog or toast types a Ctrl or ⌘ by hand: a string that names a
-key takes `{keys}` from `khTitle(id)` — the buttons' own titles, and the prose that tells the
-teacher how to undo (`khTitle('undo')`: Trace all, Save all drawings, Clear all on the Punctuation
-tab, the Draw step's hint, the re-trace / clear / Clear-all dialogs, the Punctuation toast, the
-out-of-range build error). A few older strings name a modifier through `{mod}` (`modKey()`), which
-switches the same way (delete contour, copied contours, Reduce points, Paste SVG code). Two still
-type a key that is not Ctrl: the Help tab's "Ctrl/⌘-Z" names both, and "Next unfinished letter"
-spells `Shift + ]` (its bidi isolates keep the bracket from mirroring in Hebrew).
+Three readers, and a key in the table is typed nowhere else: every string that names one takes it
+from `khTitle(id)` through a placeholder (`{keys}`, or a named one where a sentence names two) —
+the buttons' own titles; the prose that tells the teacher how to undo (`khTitle('undo')`: Trace
+all, Save all drawings, Clear all on the Punctuation tab, the Draw step's hint, Reduce points, the
+re-trace / clear / delete-contour / delete-outline / Clear-all dialogs, the Punctuation toast, the
+out-of-range build error) or paste (`khTitle('paste')`: Paste SVG code, the copied-contours toast);
+the Edit points tips and lines (Marquee's M and Esc, the shape tool's Esc, the pen's Esc and the
+empty contour list's P); and the Draw legend's D / L / V / S / E. A `data-i18n-html` string cannot
+take a placeholder (`check-i18n` Check C), so the Advanced rulers and grid hints do not name their
+key: the checkbox above each shows it and its title names it. Change a key in the table and every
+one of these follows.
+
+Three places spell the table's keys themselves: the cheat sheet (`shortcutGroups()`, the full list —
+its rows and group titles, such as "Pen — draw a contour (P)"), the Help tab's prose ("Ctrl/⌘-Z",
+which names both modifiers) and the About tab's changelog (history, left as it was written). A
+shortcut that is not in the table is typed where a string names it: the drag and click modifiers
+(Shift, Alt), the arrows, Enter, Delete and Backspace, the Esc that clears a stroke selection or
+cancels a crop box, and the keys of a few older controls that name their own key in their title
+and have no entry: the points panel's Delete ("Delete or
+Backspace", and the Del / Shift+Del beside the Delete menu's items), Delete contour, its `?` button,
+Next unfinished letter (`Shift + ]` — its bidi isolates keep the bracket from mirroring in Hebrew)
+and the Draw panel's brush and eraser size sliders (`[ / ]`). A change to one of those keys is a
+search through the CSV and the page.
 
 | Reader | Gives | Used for |
 |---|---|---|

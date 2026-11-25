@@ -2239,12 +2239,12 @@ html[lang="he"] .tp-label{letter-spacing:normal;text-transform:none;}
           <div>
             <div class="ctl-label" style="margin-bottom:6px;" data-i18n="fontmaker.panels.adv_rulers_label">Rulers</div>
             <label class="chk" title="Show rulers along the top and left of the editing canvas ({keys})" data-i18n-title="fontmaker.panels.adv_rulers_title"><input type="checkbox" id="showRulersChk" data-kh="rulers" checked onchange="setRulersShown(this.checked)" aria-label="Show rulers along the top and left of the editing canvas ({keys})" data-i18n-aria-label="fontmaker.panels.adv_rulers_title"> <span data-i18n="fontmaker.panels.adv_show_rulers">Show canvas rulers</span></label>
-            <div class="hint" data-i18n-html="fontmaker.panels.adv_rulers_hint">Numbered rulers along the top and left of the editing canvas, measured in <strong>font units</strong> &mdash; zero sits at the letter's origin and on the baseline. A marker on each ruler follows your pointer, and the corner box shows the zoom (click it to snap back to 100%). <strong>Drag off a ruler</strong> onto the canvas to drop a new guide. Shortcut: <strong>Shift + R</strong>.</div>
+            <div class="hint" data-i18n-html="fontmaker.panels.adv_rulers_hint">Numbered rulers along the top and left of the editing canvas, measured in <strong>font units</strong> &mdash; zero sits at the letter's origin and on the baseline. A marker on each ruler follows your pointer, and the corner box shows the zoom (click it to snap back to 100%). <strong>Drag off a ruler</strong> onto the canvas to drop a new guide.</div>
           </div>
           <div>
             <div class="ctl-label" style="margin-bottom:6px;" data-i18n="fontmaker.panels.adv_grid_label">Grid</div>
             <label class="chk" title="Show graph-paper grid lines across the editing canvas ({keys})" data-i18n-title="fontmaker.panels.adv_grid_title"><input type="checkbox" id="showGridChk" data-kh="grid" checked onchange="setGridShown(this.checked)" aria-label="Show graph-paper grid lines across the editing canvas ({keys})" data-i18n-aria-label="fontmaker.panels.adv_grid_title"> <span data-i18n="fontmaker.panels.adv_show_grid">Show canvas grid</span></label>
-            <div class="hint" data-i18n-html="fontmaker.panels.adv_grid_hint">Graph paper across the editing canvas, spaced in <strong>font units</strong> like the rulers &mdash; handy for matching stroke widths and keeping vowels a consistent distance from the baseline. It re-spaces itself as you zoom &mdash; finer divisions on the way in, coarser ones on the way out &mdash; and snapping follows what is on screen. Spacing, the heavier every-Nth line, opacity and <strong>snapping</strong> live in the <span class="ui">Grid</span> panel beside the canvas, where you can see them change. Shortcut: <strong>Shift + G</strong>.</div>
+            <div class="hint" data-i18n-html="fontmaker.panels.adv_grid_hint">Graph paper across the editing canvas, spaced in <strong>font units</strong> like the rulers &mdash; handy for matching stroke widths and keeping vowels a consistent distance from the baseline. It re-spaces itself as you zoom &mdash; finer divisions on the way in, coarser ones on the way out &mdash; and snapping follows what is on screen. Spacing, the heavier every-Nth line, opacity and <strong>snapping</strong> live in the <span class="ui">Grid</span> panel beside the canvas, where you can see them change.</div>
           </div>
         </div>
       </div>
@@ -5938,9 +5938,11 @@ const IS_MAC = /Mac|iPhone|iPad|iPod/.test((navigator.platform || '') + ' ' + (n
 function modKey() { return IS_MAC ? '⌘' : 'Ctrl'; }
 /* ═══ Shortcut keys on buttons ═══
    One table for every key a button shows; `mod` is ⌘ on a Mac and Ctrl elsewhere, and the first combination of an
-   entry is the one shown. A button never types its key by hand: the caps on it (khHtml), the key in its title
-   (khTitle) and what assistive tech is told (khAria) all read this table, so the three cannot disagree. The cheat
-   sheet (shortcutGroups) stays the full list of shortcuts; this is only the ones that have a button. */
+   entry is the one shown. A button in this table never types its key by hand: the caps on it (khHtml), the key in its
+   title (khTitle) and what assistive tech is told (khAria) all read this table, so the three cannot disagree — and no
+   other string types one of these keys either (a tip, a hint, a dialog or a toast that names one passes khTitle in a
+   placeholder). The cheat sheet (shortcutGroups) stays the full list of shortcuts and spells its own keys; this is only
+   the ones that have a button. */
 const KH = {
   undo: ['mod+Z'], redo: ['mod+Shift+Z', 'mod+Y'],
   copy: ['mod+C'], paste: ['mod+V'], selectAll: ['mod+A'],
@@ -11738,14 +11740,15 @@ function renderLegend() {
   if (workMode === 'draw') {
     const key = _drawTool === 'erase' ? 'legend_erase' : _drawTool === 'line' ? 'legend_line'
               : _drawTool === 'move' ? 'legend_move' : _drawTool === 'stamp' ? 'legend_stamp' : 'legend';
+    const keys = ['drawDraw', 'drawLine', 'drawMove', 'drawStamp', 'drawErase'].map(khTitle).join(' / ');   // the five tools' keys, from KH
     const fall = {
-      legend: 'Draw with a pen, finger, or mouse · D / L / V / S / E switch tools · Save runs the tracer',
+      legend: 'Draw with a pen, finger, or mouse · {keys} switch tools · Save runs the tracer'.replace('{keys}', keys),
       legend_erase: 'Sculpt rubs away just the ink under the eraser · Partial cuts a stroke in two · Whole stroke removes one in a touch',
       legend_line: 'Press and drag to place a straight stroke · hold Shift to snap to 0° / 45° / 90°',
       legend_move: 'Drag a stroke to move it · drag empty space to select several · Delete removes them',
       legend_stamp: 'Tap to place the stamp · size follows Brush size · placed parts are normal strokes',
     }[key];
-    el.innerHTML = `<span>${esc(_drawT(key, fall))}</span>`;
+    el.innerHTML = `<span>${esc(_drawT(key, fall, { keys }))}</span>`;
     return;
   }
   if (workMode === 'anchors') {
@@ -15562,7 +15565,7 @@ function contoursPanelHTML() {
     <summary>${I18n.t('fontmaker.node_editor.contours_summary', { count: nodeModel.contours.length })}</summary>
     <div class="hint" style="margin:4px 0;">${I18n.t('fontmaker.node_editor.contours_hint')}</div>
     ${ nodeModel.contours.length ? `<div class="ctl-row" style="margin:0 0 6px;"><button class="ctl-btn" onclick="clearTrace()">${I18n.t('fontmaker.panels.clear_outline')}</button></div>` : '' }
-    ${rows || `<div class="hint">${I18n.t('fontmaker.node_editor.contours_empty')}</div>`}
+    ${rows || `<div class="hint">${I18n.t('fontmaker.node_editor.contours_empty', {keys: khTitle('nodePen')})}</div>`}
   </details>`;
 }
 function doNodeDelete() {
@@ -15592,10 +15595,10 @@ function confirmAndDeleteContours(doomedIn) {         // shared confirm rules: s
   const pts = doomed.reduce((s, ci) => s + nodeModel.contours[ci].nodes.length, 0);
   const run = () => _deleteContoursNow(l, doomed, empties);
   if (empties) askModal(I18n.t('fontmaker.modals.delete_outline_title'),
-    I18n.t('fontmaker.modals.delete_outline_body', {name: `<b>${esc(l.name)}</b>`, mod: modKey()}),
+    I18n.t('fontmaker.modals.delete_outline_body', {name: `<b>${esc(l.name)}</b>`, keys: khTitle('undo')}),
     [ {label:I18n.t('fontmaker.modals.cancel'), cls:'ghost'}, {label:I18n.t('fontmaker.modals.delete_all'), onClick: run} ]);
   else if (big) askModal(I18n.t('fontmaker.modals.delete_contour_title'),
-    I18n.t(doomed.length === 1 ? 'fontmaker.modals.delete_contour_body.one' : 'fontmaker.modals.delete_contour_body.other', {count: doomed.length, pts: pts, name: `<b>${esc(l.name)}</b>`, mod: modKey()}),
+    I18n.t(doomed.length === 1 ? 'fontmaker.modals.delete_contour_body.one' : 'fontmaker.modals.delete_contour_body.other', {count: doomed.length, pts: pts, name: `<b>${esc(l.name)}</b>`, keys: khTitle('undo')}),
     [ {label:I18n.t('fontmaker.modals.cancel'), cls:'ghost'}, {label:I18n.t('fontmaker.modals.delete'), onClick: run} ]);
   else run();   // small specks delete without friction
 }
@@ -15655,7 +15658,7 @@ function copySelectedNodes() {
   if (!contours.length) { status(I18n.t('fontmaker.status.copy_min_points')); return false; }
   nodeClipboard = { sourceCp: curCp, pastes: 0, contours };
   svgMarkPointsCopied();                                     // the system clipboard now says "points", so artwork copied earlier does not win the next paste
-  status(I18n.t(contours.length === 1 ? 'fontmaker.status.copied_contours.one' : 'fontmaker.status.copied_contours.other', {count: contours.length, mod: modKey()}));
+  status(I18n.t(contours.length === 1 ? 'fontmaker.status.copied_contours.one' : 'fontmaker.status.copied_contours.other', {count: contours.length, keys: khTitle('paste')}));
   renderControls();                                          // enable the Paste button
   return true;
 }
@@ -15939,7 +15942,7 @@ function xformCommit(kind) {
   renderGrids(); renderStage(); renderControls(); syncItalicRow();
 }
 function nodeEditPanelHTML(l) {
-  const cnt = nodeSel.size, M = modKey();
+  const cnt = nodeSel.size;
   const dis = cnt ? '' : 'disabled';   // still used by the Round-corners Apply button
   const dis2 = cnt >= 2 ? '' : 'disabled';
   const totalPts = nodeModel ? nodeModel.contours.reduce((t, ct) => t + ct.nodes.length, 0) : 0;   // Reduce-points readout
@@ -15950,16 +15953,16 @@ function nodeEditPanelHTML(l) {
   const tip = _penMode
     ? I18n.t('fontmaker.node_editor.tip_pen')
     : _shapeTool
-    ? I18n.t('fontmaker.node_editor.tip_shape')
+    ? I18n.t('fontmaker.node_editor.tip_shape', {keys: khTitle('shapeCancel')})
     : _marqueeMode
-    ? I18n.t('fontmaker.node_editor.tip_marquee')
+    ? I18n.t('fontmaker.node_editor.tip_marquee', {marquee_keys: khTitle('nodeMarquee'), select_keys: khTitle('nodeSelect')})
     : cnt
     ? I18n.t('fontmaker.node_editor.tip_selected')
     : I18n.t('fontmaker.node_editor.tip_default');
   // zone 3 — contextual: pen status, or the selection-state action set (hidden, not disabled, when empty)
   const ctx = _penMode
     ? `<div class="npnl-ctx" role="group" aria-label="${esc(I18n.t('fontmaker.node_editor.mode_pen'))}">
-    <div class="npnl-pen-lines">${I18n.t('fontmaker.node_editor.pen_lines')}</div>
+    <div class="npnl-pen-lines">${I18n.t('fontmaker.node_editor.pen_lines', {keys: khTitle('penCancel')})}</div>
     <button class="ctl-btn hi-btn npnl-pen-cancel" onclick="togglePenMode()" title="${esc(I18n.t('fontmaker.node_editor.pen_cancel_title', {keys: khTitle('penCancel')}))}" aria-keyshortcuts="${khAria('penCancel')}"><svg class="hi hi-sm hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg>${I18n.t('fontmaker.node_editor.pen_cancel')}</button>
   </div>`
     : cnt === 0
@@ -15967,7 +15970,7 @@ function nodeEditPanelHTML(l) {
     <div class="npnl-stack">
       <button class="ctl-btn" onclick="selectAllNodes()" title="${esc(I18n.t('fontmaker.node_editor.select_all_title', {keys: khTitle('selectAll')}))}" aria-keyshortcuts="${khAria('selectAll')}">${I18n.t('fontmaker.node_editor.select_all')}${khHtml('selectAll')}</button>
       <button class="ctl-btn" onclick="pasteNodes()" title="${esc(I18n.t('fontmaker.node_editor.paste_title', {keys: khTitle('paste')}))}" aria-keyshortcuts="${khAria('paste')}" ${nodeClipboard ? '' : 'disabled'}>${I18n.t('fontmaker.node_editor.paste')}${khHtml('paste')}</button>
-      <button class="ctl-btn" onclick="openSvgPasteCode()" title="${esc(I18n.t('fontmaker.panels.paste_svg_code_title', {mod: M}))}">${I18n.t('fontmaker.panels.paste_svg_code')}</button>
+      <button class="ctl-btn" onclick="openSvgPasteCode()" title="${esc(I18n.t('fontmaker.panels.paste_svg_code_title', {keys: khTitle('paste')}))}">${I18n.t('fontmaker.panels.paste_svg_code')}</button>
       <button class="ctl-btn" onclick="doRemoveSpecks()" title="${esc(I18n.t('fontmaker.node_editor.remove_specks_title'))}">${I18n.t('fontmaker.node_editor.remove_specks')}</button>
     </div>
   </div>`
@@ -16069,7 +16072,7 @@ function nodeEditPanelHTML(l) {
       <button class="ctl-btn" onclick="reduceApply()" title="${esc(I18n.t('fontmaker.node_editor.reduce_apply_title'))}">${I18n.t('fontmaker.node_editor.apply')}</button>
     </div>
     <div class="hint" style="margin:4px 0 0;"><span id="reducePtsV" class="readout">${I18n.t('fontmaker.node_editor.reduce_count_now', {count: totalPts})}</span></div>
-    <div class="hint" style="margin:4px 0 0;">${I18n.t('fontmaker.node_editor.reduce_hint', {mod: M})}</div>
+    <div class="hint" style="margin:4px 0 0;">${I18n.t('fontmaker.node_editor.reduce_hint', {keys: khTitle('undo')})}</div>
   </details>
   ${contoursPanelHTML()}
   <div class="npnl-tip">
@@ -19786,7 +19789,7 @@ function renderAlignLeft(L, l) {
     html += `<hr class="ctl-divider">
     <div class="ctl-row" style="flex-wrap:wrap;">
       <button class="ctl-btn hi-btn" onclick="openCopyOutline()" title="${esc(I18n.t('fontmaker.panels.copy_outline_title'))}">${ICON_COPY_SM}${I18n.t('fontmaker.panels.copy_outline')}</button>
-      <button class="ctl-btn" onclick="openSvgPasteCode()" title="${esc(I18n.t('fontmaker.panels.paste_svg_code_title', {mod: modKey()}))}">${I18n.t('fontmaker.panels.paste_svg_code')}</button>
+      <button class="ctl-btn" onclick="openSvgPasteCode()" title="${esc(I18n.t('fontmaker.panels.paste_svg_code_title', {keys: khTitle('paste')}))}">${I18n.t('fontmaker.panels.paste_svg_code')}</button>
       ${ l.contours ? `<button class="ctl-btn" onclick="clearTrace()">${I18n.t('fontmaker.panels.clear_outline')}</button>` : '' }
     </div>`;
   }
@@ -19873,7 +19876,7 @@ function renderTraceLeft(L, l) {
         ${ l.contours ? '' : `<button class="ctl-btn primary hi-btn" onclick="drawWithPen()" title="${esc(I18n.t('fontmaker.panels.draw_pen_title'))}">${ICON_PENCIL_SM}${I18n.t('fontmaker.panels.draw_pen')}</button><button class="ctl-btn" onclick="buildWithShapes(event)" title="${esc(I18n.t('fontmaker.panels.build_shapes_title'))}">${I18n.t('fontmaker.panels.build_shapes')}</button>` }
         <button class="ctl-btn" onclick="clearTrace()">${I18n.t('fontmaker.panels.clear')}</button>
         <button class="ctl-btn hi-btn" onclick="openCopyOutline()" title="${esc(I18n.t('fontmaker.panels.copy_outline_title'))}">${ICON_COPY_SM}${I18n.t('fontmaker.panels.copy_outline')}</button>
-      <button class="ctl-btn" onclick="openSvgPasteCode()" title="${esc(I18n.t('fontmaker.panels.paste_svg_code_title', {mod: modKey()}))}">${I18n.t('fontmaker.panels.paste_svg_code')}</button>
+      <button class="ctl-btn" onclick="openSvgPasteCode()" title="${esc(I18n.t('fontmaker.panels.paste_svg_code_title', {keys: khTitle('paste')}))}">${I18n.t('fontmaker.panels.paste_svg_code')}</button>
         <span id="traceInfo" class="readout">${ l.contours ? _pT('trace_info', `${l.contours.length} contour(s) · adv ${l.advance}`, {count: l.contours.length, adv: l.advance}) : _pT('trace_info_no_ink', 'no ink detected') }</span>
       </div>`;
     return;
@@ -19899,7 +19902,7 @@ function renderTraceLeft(L, l) {
       <button class="ctl-btn" onclick="clearTrace()">${I18n.t('fontmaker.panels.clear')}</button>
       ${ l.contours ? '' : `<button class="ctl-btn hi-btn" onclick="drawWithPen()" title="${esc(I18n.t('fontmaker.panels.draw_pen_title2'))}">${ICON_PENCIL_SM}${I18n.t('fontmaker.panels.draw_pen')}</button><button class="ctl-btn" onclick="buildWithShapes(event)" title="${esc(I18n.t('fontmaker.panels.build_shapes_title'))}">${I18n.t('fontmaker.panels.build_shapes')}</button>` }
       <button class="ctl-btn hi-btn" onclick="openCopyOutline()" title="${esc(I18n.t('fontmaker.panels.copy_outline_title'))}">${ICON_COPY_SM}${I18n.t('fontmaker.panels.copy_outline')}</button>
-      <button class="ctl-btn" onclick="openSvgPasteCode()" title="${esc(I18n.t('fontmaker.panels.paste_svg_code_title', {mod: modKey()}))}">${I18n.t('fontmaker.panels.paste_svg_code')}</button>
+      <button class="ctl-btn" onclick="openSvgPasteCode()" title="${esc(I18n.t('fontmaker.panels.paste_svg_code_title', {keys: khTitle('paste')}))}">${I18n.t('fontmaker.panels.paste_svg_code')}</button>
       <span id="traceInfo" class="readout">${ l.contours ? _pT('trace_info', `${l.contours.length} contour(s) · adv ${l.advance}`, {count: l.contours.length, adv: l.advance}) : _pT('trace_info_no_ink', 'no ink detected') }</span>
     </div>
     <div class="hint">${_pT('trace_hint', 'Lower <b>threshold</b> captures lighter ink; higher <b>detail</b> hugs the ink more closely (more nodes). <b>Corners</b> sets how sharp a turn must be to stay a crisp corner — slide right to round more of them into smooth curves. Counters (ס, ם, ע) punch out automatically. Turn on <b>Outline only</b> for hollow “bubble” letters — <b>line weight</b> sets the ring thickness.')}</div>`;
@@ -20113,7 +20116,7 @@ function renderDrawLeft(L, l) {
       <button class="ctl-btn" id="drawTidyBtn" onclick="drawTidyStrokes()" title="${esc(_drawT('tidy_title', 'Straighten strokes that are nearly straight and snap loose ends onto a guide — one press, one undo'))}" ${nStrokes?'':'disabled'}>${_drawT('tidy', 'Tidy strokes')}</button>
       <button class="ctl-btn" onclick="drawClearCurrent()" ${nStrokes?'':'disabled'}>${_drawT('clear', 'Clear letter')}</button>
       <button class="ctl-btn hi-btn" onclick="openCopyOutline()" title="${esc(I18n.t('fontmaker.panels.copy_outline_title'))}">${ICON_COPY_SM}${I18n.t('fontmaker.panels.copy_outline')}</button>
-      <button class="ctl-btn" onclick="openSvgPasteCode()" title="${esc(I18n.t('fontmaker.panels.paste_svg_code_title', {mod: modKey()}))}">${I18n.t('fontmaker.panels.paste_svg_code')}</button>
+      <button class="ctl-btn" onclick="openSvgPasteCode()" title="${esc(I18n.t('fontmaker.panels.paste_svg_code_title', {keys: khTitle('paste')}))}">${I18n.t('fontmaker.panels.paste_svg_code')}</button>
       <span class="readout">${nStrokes ? _drawT(nStrokes === 1 ? 'stroke_count.one' : 'stroke_count.other', nStrokes + (nStrokes === 1 ? ' stroke' : ' strokes'), { count: nStrokes }) : ''}</span>
     </div>
     <div class="hint">${_drawT('hint', 'Draw over the gray reference with a pen, finger, or mouse. Each stroke can be undone with ' + khTitle('undo') + '. Save runs the tracer — fine-tune Detail and Corners in step 2.', { keys: khTitle('undo') })}</div>`;
