@@ -19447,9 +19447,12 @@ function kernVisualGap(la, lb) {
 }
 function setKernTarget(v) { udBurstBegin([{t:'spacing'}], 'kern tightness'); fontSpacing().kernTarget = Math.max(-40, Math.min(160, +v||0)); const s = document.getElementById('kernTgtV'); if (s) s.textContent = fontSpacing().kernTarget; }
 function suggestKernPairs() {
+  // U+0591–U+05C7 is the marks AND four punctuation signs that stand BETWEEN letters — maqaf, paseq, sof pasuq,
+  // nun hafukha. They are not skipped over like a mark: each is a break, the rule scripts/build-kern-pairs.mjs uses.
+  const isBreak = c => c === 0x20 || c === 0xA0 || c === 0x0A || c === 0x05BE || c === 0x05C0 || c === 0x05C3 || c === 0x05C6;
   const cps = [...(fontSpacing().sample || '')]
-    .map(ch => ch.codePointAt(0)).filter(c => !(c>=0x0591 && c<=0x05C7) && !SMR_MARK_INTS.has(c))        // base letters only (drop the Hebrew and Samaritan marks)
-    .map(c => (c === 0x20 || c === 0xA0 || c === 0x0A) ? null : c.toString(16).toUpperCase().padStart(4,'0'));   // a space stays as a break: the letters either side of it are not a pair
+    .map(ch => ch.codePointAt(0)).filter(c => isBreak(c) || (!(c>=0x0591 && c<=0x05C7) && !SMR_MARK_INTS.has(c)))   // base letters only (drop the Hebrew and Samaritan marks)
+    .map(c => isBreak(c) ? null : c.toString(16).toUpperCase().padStart(4,'0'));   // a space or one of those signs stays as a break: the letters either side of it are not a pair
   const target = kernTargetGap(), MIN_CLEAR = 10, EPS = 6;
   const seen = new Set(), cand = [];
   for (let i = 0; i < cps.length - 1; i++) {
