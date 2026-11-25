@@ -5148,13 +5148,16 @@ function _tabKeydown(e, tab) {
 }
 
 /* Modal dialogs: focus the first control, trap Tab inside, Escape to close, return focus to opener. */
-let _activeModal = null;   // { id, close, opener }
+let _activeModal = null;   // { id, close, opener } — the dialog on top: the one the trap below serves
+let _modalsUnder = [];     // the dialogs a newer one was opened over, oldest first; the top one of them gets the trap back when the newer one closes
 function _focusables(el) {
   return [...el.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])')]
     .filter(n => !n.disabled && n.offsetParent !== null);
 }
 function aOpenModal(id, closeFn) {
   const ov = document.getElementById(id); if (!ov) return;
+  _modalsUnder = _modalsUnder.filter(m => m.id !== id);
+  if (_activeModal && _activeModal.id !== id && document.getElementById(_activeModal.id)?.classList.contains('open')) _modalsUnder.push(_activeModal);   // opened over a dialog that stays open: remember it
   _activeModal = { id, close: closeFn || (() => aCloseModal(id)), opener: document.activeElement };
   // Every .overlay shares one z-index, so DOM order decides which paints on top — a modal opened OVER an
   // open one that sits later in the page (Help from the wizard's license "?", which the user saw as Help
@@ -5177,12 +5180,24 @@ function aCloseModal(id) {
   // to the main region (APG: the invoking element, or failing that a sensible place in the page).
   if (ret && ret !== document.body && ret.focus) { try { ret.focus(); } catch (e) {} }
   else { const m = document.getElementById('mainContent'); if (m) { try { m.focus(); } catch (e) {} } }
-  // _activeModal is a single slot: a modal stacked over the onboarding wizard (help via the
-  // license "?", the template-PDF failure askModal) steals it, and closing that modal would
-  // leave the still-open wizard with no Escape/Tab trap — hand it back.
-  if (id !== 'wizardOverlay' && document.getElementById('wizardOverlay')?.classList.contains('open')) wizardRearmTrap();
-  // Same single-slot hand-back for the starting-font picker (its load-failure askModal and the license "?" help stack over it).
-  if (id !== 'osPickOverlay' && id !== 'wizardOverlay' && document.getElementById('osPickOverlay')?.classList.contains('open')) _activeModal = { id: 'osPickOverlay', close: osPickClose, opener: _osPickOpener };
+  // _activeModal is a single slot, and a dialog opened over another one takes it. When that dialog
+  // closes, the one still open underneath gets the slot back (Escape and the Tab trap are its again) —
+  // a confirmation raised over My Fonts used to leave My Fonts with neither, so the next Escape went to
+  // the editor behind it. The newest dialog still open wins; one closed out of turn is simply dropped.
+  _modalsUnder = _modalsUnder.filter(m => m.id !== id);
+  while (!_activeModal && _modalsUnder.length) { const m = _modalsUnder.pop(); if (document.getElementById(m.id)?.classList.contains('open')) _activeModal = m; }
+  // The two dialogs whose close function and opener change while they are open re-arm themselves with
+  // the current ones — unless a third dialog is still open above them and has just been given the slot:
+  const theirs = !_activeModal || _activeModal.id === 'wizardOverlay' || _activeModal.id === 'osPickOverlay';
+  // a modal stacked over the onboarding wizard (help via the license "?", the template-PDF failure askModal)…
+  if (theirs && id !== 'wizardOverlay' && document.getElementById('wizardOverlay')?.classList.contains('open')) wizardRearmTrap();
+  // …and over the starting-font picker (its load-failure askModal and the license "?" help stack over it).
+  if (theirs && id !== 'osPickOverlay' && id !== 'wizardOverlay' && document.getElementById('osPickOverlay')?.classList.contains('open')) _activeModal = { id: 'osPickOverlay', close: osPickClose, opener: _osPickOpener };
+  // The keyboard belongs inside the dialog that is now on top: if the focus just returned to something
+  // outside it (the closed dialog was opened from the page, or its opener is gone), bring it in —
+  // Enter or Space on a toolbar button behind an open dialog would press that button.
+  const top = _activeModal && document.getElementById(_activeModal.id);
+  if (top && top.classList.contains('open') && !top.contains(document.activeElement)) { const f = _focusables(top); try { (f[0] || top.querySelector('[tabindex="-1"]') || top).focus(); } catch (e) {} }
 }
 /* A key press that closes a dialog belongs to that dialog — it is not also a shortcut. A dialog
    closes in the middle of the key's own dispatch (the trap below on Escape; a dialog's own handler on
@@ -20585,23 +20600,23 @@ function wireDrop(id, cb, multi) {
     const f = fs[0]; if (f) cb(f); });
 }
 
-/* shared guard for global shortcuts: ignore while typing, a modal is open, or no project */
+/* shared guard for global shortcuts: ignore while typing, a modal is open, or no project.
+   ANY open dialog refuses — every `.overlay` in the page is a modal over the whole workspace, so no
+   key pressed on one may reach the editor behind it: focus on a dialog's button or list is not typing,
+   and undo, the arrow nudges, Delete and pen-mode Enter used to act on the letter under the shortcuts
+   sheet, My Fonts, Apply alignment and every other dialog that an id list had not caught up with. A new
+   dialog is covered by being an .overlay; nothing has to be added here.
+   The one exception is the Edit-shape window (#markEditOverlay), which needs the editor's keys: its
+   undo and redo arrive through the global Ctrl+Z handler (the `meActive` branch — a working-copy undo
+   that never touches the project), and Shift+G / Shift+R toggle the grid and rulers its stage shares.
+   A dialog raised over it (a confirmation, Help) refuses like any other. */
 function udShortcutBlocked() {
   if (!project) return true;
   if (keyClosedADialog()) return true;   // this very key press just closed a dialog: it was the dialog's, not a shortcut's
   const ae = document.activeElement;
   if (ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA' || ae.isContentEditable)) return true;
-  if (document.getElementById('askOverlay')?.classList.contains('open')) return true;
   if (document.querySelector('.ivsav-overlay')) return true;   // the account screen (js/ivrit-saves.js) is open over the editor
-  if (document.getElementById('helpOverlay')?.classList.contains('open')) return true;
-  if (document.getElementById('qaOverlay')?.classList.contains('open')) return true;
-  if (document.getElementById('adOverlay')?.classList.contains('open')) return true;
-  if (document.getElementById('scaleAllOverlay')?.classList.contains('open') || document.getElementById('boldGenOverlay')?.classList.contains('open')) return true;   // a whole-font change is being previewed — undo and nudges must not change the letters under the preview
-  if (document.getElementById('svgPasteOverlay')?.classList.contains('open')) return true;   // focus on one of its buttons is not typing — undo, nudges and Delete must not reach the letter behind it
-  if (document.getElementById('localFontOverlay')?.classList.contains('open')) return true;   // its listbox is a focused div, not a field: arrows, Delete and undo must not reach the editor behind it
-  if (document.getElementById('wizardOverlay')?.classList.contains('open')) return true;   // esp. cancellable mode — Ctrl+Z must not mutate the project behind it
-  if (document.getElementById('osPickOverlay')?.classList.contains('open')) return true;   // the starting-font picker sits in the same slot as the wizard
-  if (document.getElementById('importProgressOverlay')?.classList.contains('open')) return true;   // an import is mid-flight — no undo/redo into a half-imported project
+  if (document.querySelector('.overlay.open:not(#markEditOverlay)')) return true;
   return false;
 }
 /* Ctrl/Cmd+Z = undo · Ctrl/Cmd+Shift+Z or Ctrl+Y = redo */

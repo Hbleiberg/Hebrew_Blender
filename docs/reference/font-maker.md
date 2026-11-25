@@ -177,6 +177,12 @@ handler goes through the real setters (`setMarkEnabled`, `setAdd*`, `setInputMod
   on top; `aOpenModal` therefore lifts a modal opened over another open one to one layer above the highest
   open `.overlay` (an inline `z-index` that `aCloseModal` clears). Without it, Help opened from the wizard's
   license "?" (and Shortcuts reached from that Help) painted beneath the wizard, which sits later in the page.
+  `_activeModal` is a single slot — the dialog on top. `aOpenModal` remembers the dialog it opens over
+  (`_modalsUnder`), and `aCloseModal` hands the slot back to the newest one still open, so Escape and the
+  Tab trap serve the dialog underneath again (a confirmation over My Fonts used to leave My Fonts with
+  neither); the wizard and the starting-font picker also re-arm themselves with their current close
+  function, unless a third dialog is still open above them. If the focus then sits outside the dialog
+  that got the slot back, it is moved to that dialog's first control.
 - **Confirmations**: `askModal(title, bodyHtml, buttons)` with `[{label, cls:'ghost'?, onClick}]`.
   `#askOverlay` sits one z-index layer above the other `.overlay`s, so a confirmation raised over the
   wizard, help, QA, My Fonts or mobile-warn overlay is the one under the pointer.
@@ -203,9 +209,17 @@ handler goes through the real setters (`setMarkEnabled`, `setAdd*`, `setInputMod
 - **Escaping**: use `esc()` (escapes all five metacharacters, including `'`). This is the
   canonical helper across the suite; the older `escapeHtml()` (which didn't escape `'`) was
   removed and all its call sites migrated to `esc()`.
-- **Global keyboard shortcuts**: start the handler with the `udShortcutBlocked()` guard (blocks
-  while typing or when ask/help/QA overlays are open), and register the shortcut in BOTH the `?`
-  cheat sheet (`shortcutGroups()`) and the triggering button's `title=` tooltip.
+- **Global keyboard shortcuts**: start the handler with the `udShortcutBlocked()` guard, and register
+  the shortcut in BOTH the `?` cheat sheet (`shortcutGroups()`) and the triggering button's `title=`
+  tooltip. The guard refuses while there is no project, while typing (an `input`, a `textarea`,
+  editable content), while the account screen is up, and while **any** `.overlay` is open — it asks
+  the page, not a list of ids, so a new dialog is covered by being an `.overlay` (focus on a dialog's
+  button or list is not typing: undo, the arrow nudges, Delete and pen-mode Enter used to act on the
+  letter behind the shortcuts sheet, My Fonts and Apply alignment). The census of the page's overlays
+  shows one that needs the editor's keys and is therefore let through: the **Edit-shape window**
+  (`#markEditOverlay`) — its undo and redo arrive through the global Ctrl+Z handler (the `meActive`
+  branch, a working-copy undo that never touches the project), and Shift+G / Shift+R toggle the grid
+  and the rulers its stage shares. A dialog raised over it refuses like any other.
 - **A key press that closes a dialog is the dialog's, not a shortcut's.** A dialog closes in the
   middle of the key's own dispatch — the modal trap on Escape, a dialog's own handler on Enter — and
   the handlers that run afterwards for that same key find no dialog and focus back on the opener, so
@@ -218,8 +232,7 @@ handler goes through the real setters (`setMarkEnabled`, `setAdd*`, `setInputMod
   returns true for it — so every shortcut handler is covered through the guard it already starts
   with, whatever key closed the dialog and whichever handler closed it. The note is dropped when the
   dispatch is over (a paste or a drop asks the same guard a moment later and must not be refused by
-  an old key press), and a key that closes nothing is not affected: the guard still lets keys through
-  to an open window that is not on its list, which the Edit-shape window's own undo relies on.
+  an old key press), and a key that closes nothing is not affected by it.
 
 ### Shortcut keys on buttons — the `KH` table
 
@@ -619,8 +632,8 @@ aligned, checksums and `head.checkSumAdjustment` recomputed. `lfNames` reads nam
 English, then any Unicode record, then Mac Roman), capped and stripped of control characters
 (`lfClean`). A face over `LF_MAX_BYTES` is not opened.
 
-**The picker** (`#localFontOverlay`, in `udShortcutBlocked` — its list is a focused `div`, which that
-guard does not read as typing) reuses the Starting Fonts picker's sheet CSS with one difference: its
+**The picker** (`#localFontOverlay`, an `.overlay`, so `udShortcutBlocked` refuses while it is open —
+its list is a focused `div`, which that guard would not read as typing) reuses the Starting Fonts picker's sheet CSS with one difference: its
 scroller is `.lf-list`, a real listbox (`role="listbox"`, `aria-activedescendant`, a `role="group"`
 per family, a `role="option"` per face). `lfKey` on the dialog owns the keys: ↑ ↓ Home End PageUp
 PageDown move the active option, Enter chooses, a printable key pressed in the list moves focus to the
