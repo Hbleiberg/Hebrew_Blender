@@ -18750,10 +18750,12 @@ function glyphPathAt(cs, dx, yo, curves) {
 /* The kerning a pair gets in the exported font, in logical/reading order (first then second); 0 if
    none. A specific pair (one glyph each side) with a real value wins — the LAST one if the list
    holds it twice — and a pair at 0 is no rule at all, so a group pair that covers the two letters
-   shows through; among group pairs, the first in the list. The export writes these values and
-   nothing else — one glyph pair at a time, from kernExpanded() below, which applies the same rules
-   in one pass — and the big sample and the Common pairs chips read this one function, so neither
-   can disagree with the font. */
+   shows through; among group pairs, the first in the list. Two letters that are set in different
+   directions (kernPairDir is null — a Hebrew letter beside a Latin letter or a digit) sit in
+   separate runs of text and are never kerned, whatever the list says: 0. The export writes these
+   values and nothing else — one glyph pair at a time, from kernExpanded() below, which applies the
+   same rules in one pass — and the big sample and the Common pairs chips read this one function, so
+   neither can disagree with the font. */
 function kernSpecific(firstCp, secondCp) {       // the specific pair's own value; 0 if none or at 0
   let v = 0;
   for (const k of fontKerning())
@@ -18761,6 +18763,7 @@ function kernSpecific(firstCp, secondCp) {       // the specific pair's own valu
   return v;
 }
 function kernEffective(firstCp, secondCp) {
+  if (kernPairDir(firstCp, secondCp) === null) return 0;
   const v = kernSpecific(firstCp, secondCp); if (v) return v;
   for (const k of fontKerning())
     if (k && k.value && ((k.left||[]).length > 1 || (k.right||[]).length > 1) && (k.left||[]).includes(firstCp) && (k.right||[]).includes(secondCp)) return k.value;
@@ -18775,11 +18778,12 @@ function kernExpanded() {
   const out = new Map(), rows = fontKerning().filter(k => k && k.value);
   const single = k => (k.left||[]).length === 1 && (k.right||[]).length === 1;
   rows.forEach(k => { if (single(k)) return;                                  // group pairs: the first in the list keeps the pair
-    (k.left||[]).forEach(a => (k.right||[]).forEach(b => { const key = a + '|' + b; if (!out.has(key)) out.set(key, k.value); })); });
-  rows.forEach(k => { if (single(k)) out.set(k.left[0] + '|' + k.right[0], k.value); });   // a specific pair wins — the last one if doubled
+    (k.left||[]).forEach(a => (k.right||[]).forEach(b => { const key = a + '|' + b; if (!out.has(key) && kernPairDir(a, b) !== null) out.set(key, k.value); })); });
+  rows.forEach(k => { if (single(k) && kernPairDir(k.left[0], k.right[0]) !== null) out.set(k.left[0] + '|' + k.right[0], k.value); });   // a specific pair wins — the last one if doubled
   return out;
 }
 function kernPreviewValue(firstCp, secondCp) {   // both previews: the in-progress edit wins (live), else saved pairs
+  if (kernPairDir(firstCp, secondCp) === null) return 0;   // two directions: never kerned, so not even the gap being dragged shows
   const e = kernEdit;
   if (e) { const L = kernSideCps(e.left), R = kernSideCps(e.right);
     if (L.includes(firstCp) && R.includes(secondCp)) {
@@ -19067,7 +19071,13 @@ function kernSideBuilt(cps){ return (cps||[]).some(kernCpTraced); }             
 function kernPairReason(k){                                                         // '' = will export; else why it won't
   if (!k || !k.value) return 'set a gap';
   if (!kernSideBuilt(k.left) || !kernSideBuilt(k.right)) return 'untraced glyph';
+  if (!k.left.some(a => k.right.some(b => kernPairDir(a, b) !== null))) return 'two directions';   // no two of its letters are ever kerned against each other (a group that mixes directions still holds real pairs)
   return '';
+}
+function kernDirNoteSync() {   // the line under the pair preview: why the Gap slider moves nothing for a pair whose two letters are set in different directions
+  const n = document.getElementById('kernDirNote'); if (!n) return;
+  const p = kernEditPair(), off = !p || kernPairDir(p.a, p.b) !== null;
+  n.hidden = off; n.textContent = off ? '' : I18n.t('fontmaker.panels.kern_twodir_title');
 }
 
 /* ════════ Common pairs — the chips above "Your pairs" ════════
@@ -19252,8 +19262,14 @@ function renderKerningSectionNow() {
   pairs.forEach((k, i) => {
     const reason = kernPairReason(k); if (!reason) nReady++;
     const active = sameSet(kernSideCps(e.left), k.left||[]) && sameSet(kernSideCps(e.right), k.right||[]);
+    const badgeTitle = reason==='untraced glyph' ? _pT('kern_untraced_title', 'A glyph in this pair has no traced outline — it will be skipped on export.')
+      : reason==='two directions' ? I18n.t('fontmaker.panels.kern_twodir_title')
+      : _pT('kern_setgap_title', 'Pairs at 0 do nothing — drag the gap to apply.');
+    const badgeText = reason==='untraced glyph' ? ICON_WARN_SM + _pT('kern_untraced_badge', 'untraced')
+      : reason==='two directions' ? I18n.t('fontmaker.panels.kern_twodir_badge')
+      : _pT('kern_setgap_badge', 'set a gap');
     const badge = reason
-      ? `<span style="font-size:0.62rem;padding:1px 5px;border-radius:4px;white-space:nowrap;background:${reason==='untraced glyph'?'rgba(190,90,90,0.18)':'rgba(150,150,150,0.18)'};color:${reason==='untraced glyph'?'#c0392b':'var(--muted)'};" title="${esc(reason==='untraced glyph'?_pT('kern_untraced_title', 'A glyph in this pair has no traced outline — it will be skipped on export.'):_pT('kern_setgap_title', 'Pairs at 0 do nothing — drag the gap to apply.'))}">${reason==='untraced glyph'?ICON_WARN_SM + _pT('kern_untraced_badge', 'untraced'):_pT('kern_setgap_badge', 'set a gap')}</span>`
+      ? `<span style="font-size:0.62rem;padding:1px 5px;border-radius:4px;white-space:nowrap;background:${reason==='untraced glyph'?'rgba(190,90,90,0.18)':'rgba(150,150,150,0.18)'};color:${reason==='untraced glyph'?'#c0392b':'var(--muted)'};" title="${esc(badgeTitle)}">${badgeText}</span>`
       : '';
     rows += `<div class="readline" style="cursor:pointer;gap:8px;align-items:center;${active?'background:rgba(201,146,42,0.14);border-radius:5px;':''}" onclick="loadKernPair(${i})" title="${esc(window.I18n ? I18n.t('fontmaker.panels.kern_click_edit') : 'Click to edit')}">
       <span style="font-family:var(--heb-font);font-size:1.05rem;">${esc(kernSideLabel(k.left||[]))}<span style="color:var(--muted);font-size:0.7rem;font-family:inherit;"> · </span>${esc(kernSideLabel(k.right||[]))}</span>
@@ -19269,6 +19285,7 @@ function renderKerningSectionNow() {
     <div class="hint" style="margin-top:3px;">${I18n.t('fontmaker.panels.kern_reading_hint')}</div>
     <svg id="kernPreviewSvg" role="img" aria-label="${esc(I18n.t('fontmaker.aria.kern_preview'))}" style="width:100%;height:auto;max-height:120px;margin-top:8px;"></svg>
     ${(e.left.cls||e.right.cls) ? `<div class="hint" style="margin-top:-2px;font-size:0.7rem;">${I18n.t('fontmaker.panels.kern_preview_note')}</div>` : ''}
+    <div class="hint" id="kernDirNote" aria-live="polite" style="margin-top:-2px;font-size:0.7rem;" hidden></div>
     <div class="inline" style="margin-top:2px;">${I18n.t('fontmaker.panels.kern_gap')} <input type="range" min="-200" max="200" step="5" value="${e.value}" oninput="setKernValue(this.value)" aria-label="${esc(I18n.t('fontmaker.panels.kern_gap'))}"> <span id="kernV" class="readout" dir="ltr">${e.value>0?'+':''}${e.value|0}</span></div>
     <div class="ctl-row" style="margin-top:6px;">
       <button id="kernAddBtn" class="ctl-btn primary" data-fk="kp:add" onclick="addOrUpdateKernPair()">${isUpdate?I18n.t('fontmaker.panels.kern_update'):I18n.t('fontmaker.panels.kern_add')}</button>
@@ -19278,8 +19295,9 @@ function renderKerningSectionNow() {
     <div class="hint" style="margin-top:4px;">${_pT('kern_autotightness_hint', 'Negative = tighter, positive = looser (font units). “Suggest pairs” seeds an even starting gap toward <b>Auto-tightness</b> (lower = tighter), measured <b>optically</b> so overhanging letters tuck in; Preview PDF shows it shaped in full.')}</div>
     <div id="kernCommon"></div>
     <div class="ctl-label" style="margin-top:14px;">${I18n.t('fontmaker.kernpairs.your_pairs')}</div>
-    ${pairs.length ? `<div class="hint" style="margin-top:-2px;">${_pT(pairs.length === 1 ? 'kern_export_summary.one' : 'kern_export_summary.other', nReady + ' of ' + pairs.length + ' pair' + (pairs.length > 1 ? 's' : '') + ' will be exported.', { ready: nReady, total: pairs.length })}${nReady<pairs.length?' '+_pT('kern_export_skip', 'Pairs marked “⚠ untraced” or “set a gap” are skipped.'):''}</div><div style="margin-top:4px;">${rows}</div>` : '<div class="hint" style="margin-top:-2px;">'+esc(I18n.t('fontmaker.panels.kern_no_pairs'))+'</div>'}
+    ${pairs.length ? `<div class="hint" style="margin-top:-2px;">${_pT(pairs.length === 1 ? 'kern_export_summary.one' : 'kern_export_summary.other', nReady + ' of ' + pairs.length + ' pair' + (pairs.length > 1 ? 's' : '') + ' will be exported.', { ready: nReady, total: pairs.length })}${nReady<pairs.length?' '+_pT('kern_export_skip', 'Pairs marked “⚠ untraced”, “set a gap” or “two directions” are skipped.'):''}</div><div style="margin-top:4px;">${rows}</div>` : '<div class="hint" style="margin-top:-2px;">'+esc(I18n.t('fontmaker.panels.kern_no_pairs'))+'</div>'}
     ${kernClassManagerHTML()}`;
+  kernDirNoteSync();
   renderKernCommon();
   renderKernPreview();
   renderSpacingPreview();   // keep the big multi-line sample in sync with every kerning add/update/delete
@@ -19340,6 +19358,7 @@ function setKernGlyph(which, v) {
   renderKernCommon();       // …and moves the chips' "current" mark (the typed-in box is outside that block, so it keeps focus)
   ['left','right'].forEach(w => { const c = document.getElementById('kernCap-' + w);   // typing a Latin letter can flip the pair's direction
     if (c) c.textContent = kernSideCaption(w); });                                     // in place, for the same reason the button below is
+  kernDirNoteSync();                                                                   // …or make it a pair of two directions, which is never kerned
   const btn = document.getElementById('kernAddBtn');        // refresh label without re-rendering (keeps input focus)
   // fontmaker.panels.kern_update / kern_add have shipped translated since the panel landed; the
   // ternary here just never asked for them.
