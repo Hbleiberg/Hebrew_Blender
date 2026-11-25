@@ -14133,10 +14133,20 @@ function nodeTurnContour(ct, i) {                     // reverse contour i of th
    boxes do not meet, or — points just inside each are outside the other, and their outlines do not
    cross. That is proof of standing apart, not a nesting decision: when it cannot be shown, the
    direction is what counts. One reading for the Contours rows, holeTroubles and nodeKeepAll, so the
-   three cannot disagree. */
+   three cannot disagree. The proof costs a sweep over the edges and one look across each ring's
+   inside points, so the last answer is kept by content: the rows and holeTroubles ask about the
+   same outline on every render. */
+let _rolesLast = null;
 function contourRoles(rings, kept) {
   const A = rings.map(R => R.length >= 3 ? signedArea(R) : 0);
   if (kept) return { reversed: false, holes: A.map(a => a > 0) };
+  const key = JSON.stringify(rings);
+  if (_rolesLast && _rolesLast.key === key) return { reversed: _rolesLast.reversed, holes: _rolesLast.holes.slice() };
+  const r = contourRolesRead(rings, A);
+  _rolesLast = { key, reversed: r.reversed, holes: r.holes.slice() };
+  return r;
+}
+function contourRolesRead(rings, A) {                 // contourRoles for an automatic letter
   let big = 0; A.forEach(a => { if (Math.abs(a) > Math.abs(big)) big = a; });
   const reversed = big > 0, pad = 2, ins = [];
   const B = rings.map(R => { const b = [Infinity, Infinity, -Infinity, -Infinity]; R.forEach(p => { if (p[0] < b[0]) b[0] = p[0]; if (p[1] < b[1]) b[1] = p[1]; if (p[0] > b[2]) b[2] = p[0]; if (p[1] > b[3]) b[3] = p[1]; }); return b; });
@@ -14150,11 +14160,42 @@ function contourRoles(rings, kept) {
     }
     return (ins[i] = out);
   };
+  let crossing = null;
+  const cross = (i, j) => {                           // contoursOverlap's answer for the pair, from one sweep across x over every ring's edges: only edges of two rings whose boxes meet are put to segIntersect
+    const n = rings.length;
+    if (!crossing) {
+      crossing = new Set(); const all = [], on = [];
+      rings.forEach((R, r) => { if (R.length >= 3) R.forEach((p, k) => { const q = R[(k + 1) % R.length]; all.push([Math.min(p[0], q[0]), Math.max(p[0], q[0]), Math.min(p[1], q[1]), Math.max(p[1], q[1]), p, q, r]); }); });
+      all.sort((u, v) => u[0] - v[0]);
+      for (const e of all) {
+        for (let k = on.length - 1; k >= 0; k--) {
+          const f = on[k];
+          if (f[1] < e[0]) { on[k] = on[on.length - 1]; on.pop(); continue; }   // ends before this one starts: done with it
+          if (f[6] === e[6] || f[3] < e[2] || f[2] > e[3]) continue;
+          const key = Math.min(e[6], f[6]) * n + Math.max(e[6], f[6]);
+          if (!crossing.has(key) && segIntersect(e[4], e[5], f[4], f[5])) crossing.add(key);
+        }
+        on.push(e);
+      }
+    }
+    return crossing.has(Math.min(i, j) * n + Math.max(i, j));
+  };
+  let HE = null, HB = null; const held = [];
+  const holders = i => {                              // the other rings that hold one of ring i's inside points — pointInPoly's own test, put to every ring's edges at once (binned by height)
+    if (held[i]) return held[i];
+    if (!HE) { HE = []; rings.forEach((R, r) => { if (R.length < 3) return; for (let k = 0, m = R.length - 1; k < R.length; m = k++) if (R[k][1] !== R[m][1]) HE.push([R[k][0], R[k][1], R[m][0], R[m][1], r]); }); HB = gxwBins(HE); }
+    const got = new Set();
+    for (const p of inside(i)) {
+      const odd = new Set(), x = p[0], y = p[1];
+      for (const e of HB(y)) if (((e[1] > y) !== (e[3] > y)) && (x < (e[2] - e[0]) * (y - e[1]) / ((e[3] - e[1]) || 1e-9) + e[0])) { if (odd.has(e[4])) odd.delete(e[4]); else odd.add(e[4]); }
+      odd.forEach(r => { if (r !== i) got.add(r); });
+    }
+    return (held[i] = got);
+  };
   const clear = (i, j) => {
     const a = B[i], b = B[j];
     if (b[0] > a[2] + pad || b[2] < a[0] - pad || b[1] > a[3] + pad || b[3] < a[1] - pad) return true;
-    const pi = inside(i), pj = inside(j);
-    return pi.length > 0 && pj.length > 0 && !pi.some(p => pointInPoly(p, rings[j])) && !pj.some(p => pointInPoly(p, rings[i])) && !contoursOverlap(rings[i], rings[j]);
+    return inside(i).length > 0 && inside(j).length > 0 && !holders(i).has(j) && !holders(j).has(i) && !cross(i, j);
   };
   const alone = i => rings.every((R, j) => j === i || R.length < 3 || clear(i, j));
   return { reversed, holes: A.map((a, i) => (reversed ? a < 0 : a > 0) && !alone(i)) };
