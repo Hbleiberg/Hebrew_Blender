@@ -8303,7 +8303,7 @@ async function prepImageForItem(it, file) {
     it.binThreshold = binThreshold;
     it.transform = transform;
     it.contours = null; it.anchors = null;
-    delete it.slant;                                  // a new picture is upright until somebody slants it
+    delete it.slant; delete it.photoSlant;            // a new picture is upright until somebody slants it
   };
 }
 async function uploadForCurrent(file) {
@@ -8545,7 +8545,7 @@ async function finalizeCrop(l, stageBox) {
   l.thresholdUserSet = false;
   l.binThreshold = autoThresholdFor(cim, true);
   l.transform = (K && ink) ? sheetFitTransform(ink, l.codepoint, K) : defaultFitTransform(cim, l.codepoint);
-  l.contours = null; l.anchors = null; delete l.slant;
+  l.contours = null; l.anchors = null; delete l.slant; delete l.photoSlant;
   renderGrids(); renderStage(); renderControls();
   status(I18n.t('fontmaker.status.area_selected', {name: gName(l.name)}));
 }
@@ -9141,7 +9141,7 @@ async function adApply() {
       l.source.cropRect = p.rect; l.source.dataUrl = p.url; l.source.sheetId = sheetId;
       l.transform = (K && p.ink && p.ink.h > 0) ? sheetFitTransform(p.ink, l.codepoint, K)   // the sheet's proportions: yod stays small, a final keeps its tail
                                                 : defaultFitTransform(imgCache[p.url], l.codepoint);
-      l.contours = null; l.anchors = null; delete l.slant;    // the fields finalizeCrop clears (curves untouched — parity)
+      l.contours = null; l.anchors = null; delete l.slant; delete l.photoSlant;    // the fields finalizeCrop clears (curves untouched — parity)
       l.flattenLighting = true; l.thresholdUserSet = false; l.binThreshold = p.th;
     });
   });
@@ -9766,6 +9766,7 @@ async function applyFontImport(file, font, bytes, opts) {
     // Mark shapes (nikkud + trop): replace the built-in shapes with the font's own, like uploaded marks.
     let markHits = 0, tropImported = 0, attachCount = 0, accHits = 0;
     const importedMarks = [];   // [kind, cp] pairs whose shape came from THIS font — the fidelity-check domain
+    const markTrue = new Set(); // the mark stores whose shapes THIS import brought (true shapes: their lean state is reset)
     if (marksAny) {
       let nik = 0, trp = 0;
       if (opts.marksNikkud) NIKKUD_MARKS.forEach(m => { if (importMarkGlyph('nikkud', m.cp, font)) { nik++; importedMarks.push(['nikkud', m.cp]); } });   // NIKKUD_MARKS holds {cp,name,cls} objects — passing the object made String.fromCodePoint throw and abort the whole import
@@ -9778,8 +9779,8 @@ async function applyFontImport(file, font, bytes, opts) {
       // "my vowels import bigger than they were" report. Reset the family that covers the kinds
       // actually replaced; per-form overrides (pc.markScale) are deliberate per-form decisions and
       // src-shipped forms ignore scales entirely, so they stay.
-      if (nik) { project.font.markScale = 1; project.font.dageshScale = 1; project.font.holamScale = 1; project.font.cholamScale = 1; markLeanReset('nikkud'); }
-      if (trp) { project.font.tropScale = 1; markLeanReset('trop'); }
+      if (nik) { project.font.markScale = 1; project.font.dageshScale = 1; project.font.holamScale = 1; project.font.cholamScale = 1; markLeanReset('nikkud'); markTrue.add('nikkud'); }
+      if (trp) { project.font.tropScale = 1; markLeanReset('trop'); markTrue.add('trop'); }
       markHits = nik + trp; tropImported = trp;
       // D1: an imported mark attaches at the source font's own MarkAnchor, not its bbox — only when
       // this import read anchors (markAttach non-null) AND replaced this mark's shape from the same
@@ -9810,7 +9811,7 @@ async function applyFontImport(file, font, bytes, opts) {
         if (keepMine && ex && markStatusOf(ex) === 'traced' && ex.smrSource !== 'import') return;
         if (importMarkGlyph('smrmarks', m.cp, font)) { project.font.smrmarks.custom[m.cp].smrSource = 'import'; nSmrMarks++; importedSmrMarks.push(m.cp); }
       });
-      if (nSmrMarks) { project.font.smrmarks.enabled = true; project.font.smrmarks.mode = 'custom'; project.font.smrMarkScale = 1; markLeanReset('smrmarks'); }   // imported shapes are true-size — the markScale/tropScale reset rule
+      if (nSmrMarks) { project.font.smrmarks.enabled = true; project.font.smrmarks.mode = 'custom'; project.font.smrMarkScale = 1; markLeanReset('smrmarks'); markTrue.add('smrmarks'); }   // imported shapes are true-size — the markScale/tropScale reset rule
       if (smrAttach && anchorsSmr) importedSmrMarks.forEach(cp => { const ma = smrAttach[cp], m = project.font.smrmarks.custom[cp]; if (m && ma && Number.isFinite(ma.x) && Number.isFinite(ma.y)) m.attachAnchor = { x: ma.x, y: ma.y }; });
     }
     // Style prefill: a source font flagged bold (OS/2 fsSelection bit 5, usWeightClass ≥ 600, or
@@ -9818,6 +9819,15 @@ async function applyFontImport(file, font, bytes, opts) {
     // mark it Bold, export" flow lands ready to go. Only when outlines were imported (a marks/anchors-
     // only import keeps the current project's style).
     if (opts.outlines) {
+      // The letters are the imported font's now, so the font-level state a whole-font Scale or Slant left
+      // for the old ones goes with them: the size factor of the seeds (sizeK), and where the marks sit under
+      // a lean (markLean). A kind this import brought is true-shape (reset above); every other kind follows
+      // the imported letters' own lean — placed for it, its shape upright, as a Slant all with the marks box
+      // off would leave it (place = tan of the lean, + = right) — and has no entry when they stand upright.
+      if (project.font.metrics) delete project.font.metrics.sizeK;
+      const lk = Math.round(slantTan(importFontLean(font)) * 1e6) / 1e6, ml = {};
+      if (lk) MARK_STORE_KINDS.forEach(kind => { if (!markTrue.has(kind)) ml[kind] = { place: lk, shape: 0 }; });
+      if (Object.keys(ml).length) project.font.markLean = ml; else delete project.font.markLean;
       try {
         // …and one flagged italic (fsSelection bit 0 or macStyle bit 1 — never a declared angle alone) its Italic.
         const idn = importFontIdentity(font);
@@ -13603,6 +13613,7 @@ async function _drawCommitNow(advance) {
   if (curKind !== 'letter' || curLetter() !== l) return;
   let n = null;
   udDo([{ t: 'item', kind: 'letter', cp, withSource: true, withDraw: true }], 'draw letter — ' + l.name, () => {
+    if (l.source.kind !== 'draw') delete l.photoSlant;   // the strokes replace a picture and its placement: that lean was the picture's (photoLean)
     l.source.kind = 'draw'; l.source.dataUrl = url; l.source.cropRect = null; l.source.sheetId = null;
     l.transform = [SC, 0, 0, SC, fx(fr.x0), fy(fr.y1)];   // canvas px land 1:1 in font units
     l.captureBox = null;
@@ -16076,7 +16087,7 @@ function confirmAndDeleteContours(doomedIn) {         // shared confirm rules: s
 }
 function _deleteContoursNow(l, doomed, empties) {
   udDo([itemScope()], (empties ? 'delete outline — ' : 'delete contour — ') + l.name, () => {
-    if (empties) { l.contours = null; l.curves = null; _rawTrace = null; l.handEdited = false; }   // mirror _clearTraceNow (advance + anchors kept)
+    if (empties) { l.contours = null; l.curves = null; _rawTrace = null; l.handEdited = false; clearLeanIfBare(l); }   // mirror _clearTraceNow (advance + anchors kept)
     else { doomed.forEach(ci => nodeModel.contours.splice(ci, 1)); renestNodeModel(); writeThroughRebuild(l); }   // a hole whose parent died re-nests as filled
   });
   nodeSel.clear(); _hiddenContours.clear();           // contour indices changed — session-only visibility resets
@@ -16128,7 +16139,7 @@ function copySelectedNodes() {
     contours.push((len === n && ct.dirSet === true) ? { nodes, winding: ct.winding, dirSet: true } : { nodes });   // a whole contour whose role was chosen keeps it through the paste
   });
   if (!contours.length) { status(I18n.t('fontmaker.status.copy_min_points')); return false; }
-  nodeClipboard = { sourceCp: curCp, pastes: 0, contours };
+  nodeClipboard = { sourceCp: curCp, pastes: 0, contours, slant: letterSlant(curItem()) };   // the points lean as their letter does
   svgMarkPointsCopied();                                     // the system clipboard now says "points", so artwork copied earlier does not win the next paste
   status(I18n.t(contours.length === 1 ? 'fontmaker.status.copied_contours.one' : 'fontmaker.status.copied_contours.other', {count: contours.length, keys: khTitle('paste')}));
   renderControls();                                          // enable the Paste button
@@ -16149,6 +16160,7 @@ function pasteNodes() {
         type: nd.type })) };
       if (src.dirSet === true) ct.dirSet = true;             // (renest below makes it run the way its label says)
       nodeModel.contours.push(ct); });
+    if (!first && curKind === 'letter') setOutlineSlant(l, nodeClipboard.slant);   // into an empty letter the copied outline brings its lean record (Copy outline's rule; a picture of the letter's own keeps its lean for its next trace); added to an outline, the letter's own record stays
     renestNodeModel(); writeThroughRebuild(l);
   });
   nodeSel.clear(); _hiddenContours.clear();           // contour indices changed — session-only visibility resets
@@ -16266,15 +16278,18 @@ function xformTurnNote(l, kind, deg) {                       // after the outlin
 }
 /* …and a whole-glyph SLANT carries the letter's photo and pen strokes, exactly as the engine does
    (gxLetterPatch), so a later re-trace or one more stroke agrees with the record. `base` is the letter
-   as it was before the transform. → { transform?, captureBox?, draw?, drawSig?, drawOut } */
+   as it was before the transform. The lean a photo's placement waits to give its next trace
+   (l.photoSlant) takes the same shear, as the engine's stamp does. → { transform?, captureBox?, draw?,
+   drawSig?, photoSlant?, drawOut } */
 function xformSlantCarry(l, base, deg) {
-  const k = slantTan(deg), b = effMetrics().baseline;
-  const r = gxLetterPatch(Object.assign({}, l, base), { T: [1, k, 0, 1, -k * b, 0], keepLsb: true }, null), out = { drawOut: r.drawOut };
+  const k = slantTan(deg), b = effMetrics().baseline, was = Object.assign({}, l, base);
+  const r = gxLetterPatch(was, { T: [1, k, 0, 1, -k * b, 0], keepLsb: true }, null), out = { drawOut: r.drawOut };
   ['transform', 'captureBox', 'draw', 'drawSig'].forEach(key => { if (key in r.set) out[key] = r.set[key]; });
+  if (base.photoSlant != null) out.photoSlant = slantCompose(photoLean(was), deg);
   return out;
 }
-function xformCarryBase(l) { return JSON.parse(JSON.stringify({ transform: l.transform, captureBox: l.captureBox || null, draw: l.draw || null, drawSig: l.drawSig == null ? null : l.drawSig, slant: letterSlant(l) })); }
-function xformPutCarry(l, c) { ['transform', 'captureBox', 'draw', 'drawSig'].forEach(key => { if (key in c) l[key] = c[key]; }); }
+function xformCarryBase(l) { return JSON.parse(JSON.stringify({ transform: l.transform, captureBox: l.captureBox || null, draw: l.draw || null, drawSig: l.drawSig == null ? null : l.drawSig, slant: letterSlant(l), photoSlant: l.photoSlant == null ? null : l.photoSlant })); }
+function xformPutCarry(l, c) { ['transform', 'captureBox', 'draw', 'drawSig', 'photoSlant'].forEach(key => { if (key in c) l[key] = c[key]; }); }
 function xformScope(l, kind) {   // a slant that carries pen strokes must snapshot them too (draw is outside a plain item scope)
   return (kind === 'slant' && xformWhole() && l.draw && l.draw.strokes && l.draw.strokes.length) ? Object.assign(itemScope(), { withDraw: true }) : itemScope();
 }
@@ -16666,6 +16681,7 @@ function finalizeFromRaw(l, rawLoops) {
     .filter(c => c.length >= 3 && Math.abs(signedArea(c)) > 80);
   const out = assignWindingByNesting(contours);   // even nesting depth = outer (cw), odd = hole (ccw)
   l.contours = out.length ? out : null;
+  photoSlantTake(l);                              // the outline now leans as the picture's placement does (Apply alignment may have changed it)
   if (out.length) {
     const fitErr = Math.max(l.epsilon || 0, 1.5);                 // tie fit tightness to the Detail (ε) slider, with a floor
     const cornerDeg = (l.cornerAngle != null ? l.cornerAngle : 32);
@@ -16738,8 +16754,17 @@ function _clearTraceNow() {
   udDo([Object.assign(itemScope(), dropRaster ? { withSource: true } : {})], 'clear trace — ' + it.name, () => {
     it.contours = null; it.curves = null; _rawTrace = null;
     if (dropRaster) it.source.dataUrl = null;
+    clearLeanIfBare(it);
     renderGrids(); renderStage(); renderControls();
   });
+}
+/* An outline emptied by hand leaves nothing that leans unless a picture or strokes remain (a photo's
+   matrix is still sheared, a drawing's strokes still lean): with neither, the lean record goes too, so
+   a shape built there next is measured and seeded as the upright shape it is. Inside the caller's udDo. */
+function clearLeanIfBare(l) {
+  if (!l || (l.contours && l.contours.length)) return;
+  if ((l.source && l.source.dataUrl) || (l.draw && Array.isArray(l.draw.strokes) && l.draw.strokes.length)) return;
+  delete l.slant;
 }
 /* ε change — instant: re-simplify the cached loops (or recompute if the cache is stale). */
 function liveDetail(v) {   // slider 0–100 reads as "detail"; ε is the inverse (100 = closest trace)
@@ -16906,12 +16931,12 @@ function seedAnchorsIfNeeded(l) { if (!l.anchors) seedAnchors(l); else { ensureN
    the source (feaLib rejects a fraction). */
 const SMR_SIDE_FRAC = 0.39;
 function smrAnchorSeed(l) {   // pure: the three column points for a Samaritan letter (ensureSmrAnchors and qaAnchors share it)
-  const hasInk = !!(l.contours && l.contours.length);
-  const x0 = hasInk ? letterInkLeft(l) : 0, x1 = hasInk ? letterInkRight(l) : (l.advance != null ? l.advance : Math.round(gxKY(LETTER_TOP) * 0.7));
+  const hasInk = !!(l.contours && l.contours.length), ue = hasInk ? uprightExtent(l) : null;   // a slanted letter is seeded on its upright shape, then the points are leaned with it (seedAnchors' rule)
+  const x0 = hasInk ? Math.round(ue.minX) : 0, x1 = hasInk ? Math.round(ue.maxX) : (l.advance != null ? l.advance : Math.round(gxKY(LETTER_TOP) * 0.7));
   const mid = Math.round((x0 + x1) / 2), off = Math.round(Math.max(0, x1 - x0) * SMR_SIDE_FRAC);
-  const maxY = hasInk ? glyphBBox(l.contours, true, letterMeta(l.codepoint)).maxY : gxKY(LETTER_TOP);
+  const maxY = hasInk ? glyphBBox(uprightContours(l), true, letterMeta(l.codepoint)).maxY : gxKY(LETTER_TOP);
   const y = (l.anchors && l.anchors.above) ? l.anchors.above.y : Math.max(gxKY(ANCHOR_Y.above), Math.round(maxY) + gxKLen(40));
-  return { smrAboveR: { x: mid + off, y }, smrAbove: { x: mid, y }, smrAboveL: { x: mid - off, y } };
+  return leanAnchorSet({ smrAboveR: { x: mid + off, y }, smrAbove: { x: mid, y }, smrAboveL: { x: mid - off, y } }, letterLeanK(l));
 }
 function ensureSmrAnchors(l) {   // back-fill the columns on a mark-bearing Samaritan letter (a save from before the family, a fresh seed); idempotent
   if (!smrMarkBase(l) || !l.anchors) return;
@@ -17208,7 +17233,8 @@ function precompTakesHolam(pc) { return !!pc && pc.base === '05E9' && (pc.mark =
 function precompHolamAnchor(pc) {
   if (pc.holam && pc.holam.x != null) return pc.holam;   // user override
   const a = precompAnchor(pc);                            // tracks any dot-position override too
-  return { x: a.x - gxKLen(120), y: a.y + gxKLen(55) };
+  const base = project.letters.find(l => l.codepoint === precompBaseCp(pc)), dy = gxKLen(55);
+  return { x: a.x - gxKLen(120) + Math.round(letterLeanK(base) * dy), y: a.y + dy };   // the 55 units of height lean with the letter
 }
 function precompMarkScale(pc) {
   if (catOfCp(pc.mark) === 'accent') return 1;                           // Latin accents are pre-sized — no per-form scaling
@@ -18472,12 +18498,14 @@ function gxPlan(op, set) {
   const fX = (all && op.fontX != null && op.fontX !== 1) ? op.fontX : null;
   const fY = (all && op.fontY != null && op.fontY !== 1) ? op.fontY : null;
   const mf = (all && op.markFactor != null && op.markFactor !== 1) ? op.markFactor : null;
-  // The horizontal factor has four audiences. fontX is letter geometry (the default side bearings, the trop
-  // side-column spread, vertical user guides); spacing and kerning (spaceX), the vowel–trop pair shift
-  // (pairX) and a typed meteg gap (gapX) follow it unless the operation names them — a width change scales
-  // letter geometry always, the spacing by an option, the pair shift only when it squeezes the marks.
+  // The horizontal factor has five audiences. fontX is letter geometry (the default side bearings, vertical
+  // user guides); the trop side-column spread (tropX), spacing and kerning (spaceX), the vowel–trop pair
+  // shift (pairX) and a typed meteg gap (gapX) follow it unless the operation names them — a width change
+  // scales letter geometry always, the spacing by an option, the pair shift only when it squeezes the
+  // marks; a resize scales the trop spread with the letters and the meteg gap with the marks, whatever
+  // its spacing box says.
   const grp = key => { const v = op[key] !== undefined ? op[key] : op.fontX; return (all && v != null && v !== 1) ? v : null; };
-  const fS = grp('spaceX'), fP = grp('pairX'), fG = grp('gapX');
+  const fT = grp('tropX'), fS = grp('spaceX'), fP = grp('pairX'), fG = grp('gapX');
   const mw = (all && op.markWide != null && op.markWide !== 1) ? op.markWide : null;
   const plan = { label: op.label, items: [], precomp: [], font: {}, scopes: [], count: 0, adv: { before: 0, after: 0 },
                  refuse: { range: [], gone: [], draw: [], mirror: false, narrow: op.refuse === 'narrow' }, warn: { lost: [], off: [], held: [], closed: [], stretched: [] } };
@@ -18490,8 +18518,8 @@ function gxPlan(op, set) {
   { // A side trop column still at its default follows the font's spread: the new one when the spread scales,
     // the same one when it does not (one letter, one tab) — mapped on its own it would stop following the slider.
     const prev = F.tropSideOffset != null ? F.tropSideOffset : TROP_POS_SHIFT;
-    if (fX != null) {
-      const raw = Math.round(prev * fX), next = Math.max(0, Math.min(600, raw));
+    if (fT != null) {
+      const raw = Math.round(prev * fT), next = Math.max(0, Math.min(600, raw));
       tune = { tropSideOffset: next };
       if (next === raw) ctx.trop = { prev, next }; else held.add('trop_spread');   // clamped → the columns are simply mapped, not re-tied
     } else ctx.trop = { prev, next: prev };
@@ -18542,19 +18570,22 @@ function gxPlan(op, set) {
     tune = tune || {};
     tune.sizes = { markScale: sz(markScale()), dageshScale: sz(dageshScale()), cholamScale: sz(cholamScale()), holamScale: sz(holamScale()), tropScale: sz(tropScale()), smrMarkScale: sz(smrMarkScale()) };
     plan.markSize = sz;
-    // Latin accents have no size setting (they bake at scale 1), so their shape is what gets scaled: an
-    // imported accent in place, a built-in one that actually ships through a scaled custom copy.
-    plan.font.accents = gxAccentPatch(mf, mf);
   }
   /* ── mark width (a width change that also squeezes the marks): one factor per mark kind, applied by the
-        public mark readers about the attach point — no nikkud or trop outline is edited. Latin accents have
-        no such setting, so their shapes are squeezed in place, as a resize does. ── */
+        public mark readers about the attach point — no nikkud or trop outline is edited. ── */
   if (mw != null) {
     const wd = {};
     MARK_STORE_KINDS.forEach(kind => { const r = Math.round(markWideK(kind) * mw * 1e6) / 1e6, c = Math.max(0.25, Math.min(4, r)); if (c !== r) held.add('mark_width'); if (c !== 1) wd[kind] = c; });
     tune = tune || {}; tune.markWide = wd;
-    const acc = gxAccentPatch(mw, 1);
-    if (acc) plan.font.accents = acc;
+  }
+  /* ── Latin accents belong to the Latin letters, not to the nikkud box. An accent has no size or width
+        setting (it bakes into its letter at scale 1), so its SHAPE is what changes — an imported accent in
+        place, a built-in one through a scaled custom copy — by the operation's accentX / accentY, whenever
+        the set holds every letter that carries it: the whole font, or the whole English tab. One letter
+        leaves the shared shape alone. ── */
+  if (all || (set.scope === 'tab' && set.cat === 'english')) {
+    const ax = op.accentX != null ? op.accentX : 1, ay = op.accentY != null ? op.accentY : 1;
+    if (ax !== 1 || ay !== 1) plan.font.accents = gxAccentPatch(ax, ay);
   }
   function gxAccentPatch(ax, ay) {   // → the accent items a mark resize writes, or undefined
     const acc = [], store = (F.accent && F.accent.custom) || {};
@@ -18590,7 +18621,7 @@ function gxPlan(op, set) {
   }
   if (tune) plan.font.tune = tune;
   /* ── letters ── */
-  const specs = {};
+  const specs = {}, bare = new Set();
   gxLetterSet(set).forEach(l => {
     const spec = gxSpec(op, l);
     if (spec === 'mirror') { plan.refuse.mirror = true; return; }
@@ -18605,6 +18636,10 @@ function gxPlan(op, set) {
     if (r.closed) plan.warn.closed.push(nm);
     if (spec.stretched) plan.warn.stretched.push(nm);   // the operation gave this letter its plain map in place of the one it was asked for (a width's stem step that would pull the letter apart)
     if (r.set.contours && r.set.advance != null) { plan.adv.before += letterAdvance(l); plan.adv.after += r.set.advance; }   // what the text's length becomes
+    // An operation that only leans (op.skipBare) leaves out a letter with nothing to lean — no outline, no
+    // photo matrix, no strokes. Such a letter may still carry anchors an export seeded on it; sheared, and
+    // with a record stamped, the letter drawn there next would be measured and seeded as if it leaned.
+    if (op.skipBare && !(r.set.contours || r.set.transform || r.set.draw)) { bare.add(l.codepoint); return; }
     if (!Object.keys(r.set).length) return;
     const it = { l, set: r.set };
     // An operation may stamp a record on every letter it changes (the slant keeps each letter's lean):
@@ -18618,7 +18653,7 @@ function gxPlan(op, set) {
   (project.precomposed || []).forEach(pc => {
     const spec = specs[precompBaseCp(pc)], w = {}, nm = precompName(pc);
     if (spec && spec !== 'mirror') {
-      ['anchor', 'holam'].forEach(key => {
+      if (!bare.has(precompBaseCp(pc)) || precompSrcOutline(pc)) ['anchor', 'holam'].forEach(key => {   // a dot placed over a letter left out stays with that letter; a form the source font drew whole is ink of its own
         const p = pc[key];
         if (p && Number.isFinite(p.x) && Number.isFinite(p.y)) { const q = gxRPt(spec.TA || spec.T, [p.x, p.y]); big(q[0], nm); big(q[1], nm); w[key] = Object.assign({}, p, { x: q[0], y: q[1] }); }   // other keys (anchor.auto) ride along
       });
@@ -18734,7 +18769,11 @@ function gxScaleOp(pct, o) {   // o: { scope, spacing, marks, name }
       if (!Number.isFinite(x0)) return { T: [s, 0, 0, s, 0, b * (1 - s)], advance: l.advance, keepRsb: true };
       return { T: [s, 0, 0, s, x0 * (1 - s), b * (1 - s)], advance: l.advance != null ? Math.round(l.advance + (s - 1) * (x1 - x0)) : null, keepRsb: true };
     },
-    fontX: (all && o.spacing) ? s : null, fontY: (all && o.spacing) ? s : null, markFactor: (all && o.marks) ? s : null
+    fontX: (all && o.spacing) ? s : null, fontY: (all && o.spacing) ? s : null, markFactor: (all && o.marks) ? s : null,
+    // The trop side columns belong to the letters (centre ± the spread), a typed meteg gap to the marks: each
+    // follows the size of what it measures, not the spacing box — the seeds (sizeK) stay with the guide lines.
+    tropX: all ? s : null, gapX: (all && o.marks) ? s : null,
+    accentX: s, accentY: s   // the Latin accents grow and shrink with the Latin letters (gxPlan: only when the set holds all of them)
   };
 }
 /* ── Slant — the engine's second operation: a horizontal shear about the baseline, so letters keep
@@ -18744,7 +18783,12 @@ function gxSlantOp(deg, o) {   // o: { scope, marks, name }
   return {
     label: o.scope === 'letter' ? 'slant letter — ' + o.name : 'slant letters',
     affine() { return { T: [1, k, 0, 1, -k * b, 0], keepLsb: true }; },   // x' = x + k·(y − baseline); a stored left margin is a width, not a point
-    stamp(l) { const d = slantCompose(letterSlant(l), deg); return { slant: d || null }; },
+    stamp(l) {
+      const d = slantCompose(letterSlant(l), deg), st = { slant: d || null };
+      if (l.photoSlant != null) st.photoSlant = slantCompose(photoLean(l), deg);   // the photo's matrix leans by the same shear, so the lean its next trace gives does too
+      return st;
+    },
+    skipBare: true,   // a letter nobody has drawn yet has nothing to lean: no record, its seed anchors left as they are
     lean: all ? k : 0, markShape: !!(all && o.marks),
     fontX: null, fontY: null, markFactor: null
   };
@@ -19271,6 +19315,7 @@ function gxWidthOp(pct, o) {
     },
     stamp(l) {
       const st = { slant: slantDegOf(slantTan(letterSlant(l)) * k) || null };   // a lean is a tangent: it narrows with the letter
+      if (l.photoSlant != null) st.photoSlant = slantDegOf(slantTan(photoLean(l)) * k);   // and so does the lean a photo's placement waits to give (its matrix is squeezed by the same k)
       const kept = (stems && l.contours && l.contours.length) ? step(l) : null;
       if (kept && kept.t != null && !kept.apart) {
         if (l.lsb != null) st.lsb = Math.max(0, Math.round(l.lsb * k));           // a stored left margin is a width (the affine carries the stem shift)
@@ -19282,7 +19327,8 @@ function gxWidthOp(pct, o) {
     },
     leanScale: all ? k : null,
     fontX: all ? k : null, spaceX: (all && o.spacing) ? s : null, pairX: (all && o.marks) ? s : null, gapX: null,
-    markWide: (all && o.marks) ? s : null, fontY: null, markFactor: null
+    markWide: (all && o.marks) ? s : null, fontY: null, markFactor: null,
+    accentX: s   // the Latin accents are squeezed with the Latin letters, by the typed width as the marks are (gxPlan: only when the set holds all of them)
   };
 }
 function gxwFirstK(set, s, cen) {   // the shapes' factor, first estimate: each letter gets about one stem's worth of width back per unit of squeeze
@@ -19463,7 +19509,8 @@ function scaleAllRender() {
   saStrips();
   const narrow = st.scope !== 'all';
   cfg.opts.forEach((o, i) => { document.getElementById(SA_OPT_IDS[i]).disabled = narrow && o.all; });   // a font-wide choice (a Style, the marks, the kerning) means nothing for one letter
-  document.getElementById('saScopeHint').hidden = !narrow;
+  const sh = document.getElementById('saScopeHint'); sh.hidden = !narrow;
+  if (narrow) sh.textContent = I18n.t(cfg.ns + '.scope_hint') + ((st.scope === 'letter' && st.tool !== 'slant' && st.cat === 'english' && engSupportsAccents(st.cp)) ? ' ' + I18n.t('fontmaker.scaleall.scope_hint_accents') : '');   // a resize or width change of one Latin letter that carries accents leaves the shared accents as they are (a slant leans them with the letter's record); an accented form taken whole from a font has its accent in its own outline
   const sn = document.getElementById('saStyleNote'), mnote = saMetaNote(saMetaAfter(null));
   sn.hidden = !mnote; if (mnote) sn.textContent = mnote;
   const ap = document.getElementById('saApply'), note = document.getElementById('saNote');
@@ -21284,7 +21331,7 @@ function renderAnchorLeft(L, l) {
       <div class="hint" style="font-size:0.7rem;text-align:center;">${_pT('halign_hint', 'Sets where <b>' + esc(tName) + '</b> sits across every letter. Position tweaks belong to the column (Left / Center / Right) — and stay with it if you switch sides.', { name: '<b>' + esc(tName) + '</b>' })}</div>
       <div class="ctl-row" style="margin-top:6px;align-items:center;gap:6px;">
         <span style="font-size:0.72rem;color:var(--muted);white-space:nowrap;">${I18n.t('fontmaker.panels.default_spread')}</span>
-        <input type="range" id="tropSpread" min="0" max="500" step="10" value="${tOff}" oninput="setTropSideOffset(this.value)" onchange="udSliderCommit('tropSpread')" style="flex:1;" aria-label="${esc(I18n.t('fontmaker.panels.default_spread'))}">
+        <input type="range" id="tropSpread" min="0" max="${Math.max(500, Math.ceil(tOff))}" step="10" value="${tOff}" oninput="setTropSideOffset(this.value)" onchange="udSliderCommit('tropSpread')" style="flex:1;" aria-label="${esc(I18n.t('fontmaker.panels.default_spread'))}">
         <span id="tropSpreadV" class="readout">${tOff}</span>
       </div>
       <div class="hint" style="font-size:0.7rem;text-align:center;">${_pT('default_spread_hint', 'Default distance Left/Right marks shift from center, on all letters (per-letter tweaks come after).')}</div>
@@ -21440,7 +21487,7 @@ function renderAnchorStageBelow(SB, l) {
   SB.innerHTML = `
     <div class="size-slider-col">
       <div class="size-slider-line"><label>${isTrop?I18n.t('fontmaker.panels.trop_size'):I18n.t('fontmaker.panels.nikkud_size')}</label> <input type="range" ${markSizeRange(sizePct, 40, 180)} step="5" value="${sizePct}" oninput="${sizeFn}(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.nikkud_size'))}"> <span id="markScaleV" class="readout">${sizePct}%</span></div>
-      ${isTrop?'':`<div class="size-slider-line"><label>${I18n.t('fontmaker.panels.holam_size')}</label> <input type="range" min="30" max="180" step="5" value="${holPct}" oninput="setHolamScale(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.holam_size'))}"> <span id="holamScaleV" class="readout">${holPct}%</span></div>
+      ${isTrop?'':`<div class="size-slider-line"><label>${I18n.t('fontmaker.panels.holam_size')}</label> <input type="range" ${markSizeRange(holPct, 30, 180)} step="5" value="${holPct}" oninput="setHolamScale(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.holam_size'))}"> <span id="holamScaleV" class="readout">${holPct}%</span></div>
       <div class="size-slider-line"><label>${I18n.t('fontmaker.panels.dagesh_size')}</label> <input type="range" ${markSizeRange(dagPct, 40, 180)} step="5" value="${dagPct}" oninput="setDageshScale(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.dagesh_size'))}"> <span id="dageshScaleV" class="readout">${dagPct}%</span></div>
       ${isVav?`<div class="size-slider-line"><label>${I18n.t('fontmaker.panels.holam_vav_size')}</label> <input type="range" ${markSizeRange(cholPct, 40, 180)} step="5" value="${cholPct}" oninput="setCholamScale(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.holam_vav_size'))}"> <span id="cholamScaleV" class="readout">${cholPct}%</span></div>`:''}`}
       ${isTrop?'':`<div class="hint" style="font-size:0.7rem;">${I18n.t('fontmaker.panels.size_hint')}${isVav?' '+I18n.t('fontmaker.panels.size_hint_vav'):''}</div>`}
@@ -21525,7 +21572,7 @@ function snapFit() {   // "Center" button — fit to the glyph height, then cent
     const wFont = bandH * im.width / im.height;       // scaled width, in font units
     const cx = (effLetterAdvance(l) - wFont) / 2;     // center that width within the glyph's advance
     l.transform = [k,0,0,k, fx(cx), fy(b.top)];
-    l.contours=null; l.curves=null; l.anchors=null; delete l.slant; renderStage(); });   // the picture is set upright again, so the lean record goes with the old matrix
+    l.contours=null; l.curves=null; l.anchors=null; delete l.slant; delete l.photoSlant; renderStage(); });   // the picture is set upright again, so the lean record goes with the old matrix
 }
 function wireDrop(id, cb, multi) {
   const el = document.getElementById(id); if (!el) return;
@@ -22736,6 +22783,39 @@ function fontSlantInfo() {   // → { lean, n (drawn letters), differ (how many 
    or seeds on the UN-LEANED shape and then leans the result. Every helper is the identity at 0. */
 function letterLeanK(l) { return slantTan(letterSlant(l)); }
 function setLetterSlant(l, deg) { const d = Math.max(-60, Math.min(60, Math.round((+deg || 0) * 10) / 10)); if (d) l.slant = d; else delete l.slant; }   // inside the caller's udDo — it is a field of the item
+/* A photo letter's outline is traced from its picture through its placement matrix, so the lean that
+   placement carries is the lean of its next trace. Apply alignment can give a letter a placement that
+   leans differently while it keeps the outline traced from the old one: the record keeps describing that
+   outline, and the placement's lean waits in l.photoSlant (degrees, the record's convention) until the
+   next trace from the picture makes it the record. A drawing (strokes whose next Save traces them) has
+   one only while an outline from elsewhere — pasted points, Copy outline — stands in for the trace of
+   its strokes: their raster leans as they do, and that lean waits here for the next Save, as a
+   picture's does (Clear outline drops a drawing's raster, never its strokes). Absent on every other
+   letter; strokes not yet saved over a picture ignore the picture's (their Save replaces the picture,
+   and _drawCommitNow drops it). */
+function strokesOwn(l) { return !!(l && l.draw && Array.isArray(l.draw.strokes) && l.draw.strokes.length); }
+function drawingOwn(l) { return strokesOwn(l) && !(l.source && l.source.dataUrl && l.source.kind !== 'draw'); }   // strokes whose next Save traces them: a saved drawing, or strokes over no picture — not strokes still waiting to replace one
+function photoLean(l) {   // the lean a letter's next trace gives: its placement matrix's, or a saved drawing's strokes'
+  const v = l ? +l.photoSlant : NaN;
+  return (l && l.photoSlant != null && Number.isFinite(v) && (!strokesOwn(l) || drawingOwn(l))) ? v : letterSlant(l);
+}
+function photoSlantTake(l) {   // a trace from the picture has just replaced the outline — inside the caller's udDo or burst
+  if (!l || l.photoSlant == null) return;
+  setLetterSlant(l, photoLean(l));
+  delete l.photoSlant;
+}
+function photoOwn(l) {   // the letter is traced from a picture of its own through its placement (not a vector glyph, not a drawing)
+  return !!(l && l.source && l.source.dataUrl) && !isVectorGlyph(l) && !(l.draw && Array.isArray(l.draw.strokes) && l.draw.strokes.length);
+}
+/* An outline from elsewhere (pasted points, Copy outline) brings its own record; on a letter with a
+   picture of its own the placement's lean then waits for the next trace, as after Apply alignment, and on
+   a saved drawing its strokes' lean does (the next Save traces them again). Inside the caller's udDo. */
+function setOutlineSlant(l, deg) {
+  const lean = (photoOwn(l) || drawingOwn(l)) ? photoLean(l) : null;
+  setLetterSlant(l, deg);
+  if (lean == null) return;
+  if (lean === letterSlant(l)) delete l.photoSlant; else l.photoSlant = lean;
+}
 function uprightContours(l) {   // the letter's contours with its lean taken out (the same array when it has none)
   const k = letterLeanK(l); if (!k || !l.contours) return l.contours;
   const b = effMetrics().baseline;
@@ -27968,6 +28048,7 @@ function migrateProject(data) {
     if (l.curves != null && !(Array.isArray(l.curves) && l.curves.every(cv => cv == null || (_isObj(cv) && Array.isArray(cv.start) && Array.isArray(cv.segments))))) l.curves = null;
     ['anchors', 'savedAnchors', 'markShapes', 'captureBox'].forEach(k => { if (l[k] != null && !_isObj(l[k])) l[k] = null; });
     if (l.slant != null) { const _s = +l.slant; if (Number.isFinite(_s) && _s !== 0 && Math.abs(_s) <= 60) l.slant = Math.round(_s * 10) / 10; else delete l.slant; }   // the lean record: junk means "upright"
+    if (l.photoSlant != null) { const _p = +l.photoSlant; if (Number.isFinite(_p) && Math.abs(_p) <= 60 && ((l.source && l.source.dataUrl) || (l.draw && Array.isArray(l.draw.strokes) && l.draw.strokes.length))) l.photoSlant = Math.round(_p * 10) / 10; else delete l.photoSlant; }   // a placement's (or a drawing's strokes') lean waiting for the next trace (photoLean): only beside a picture or strokes
     sanitizeItemNumbers(l, null);              // width, margins, trace settings, the photo matrix, anchors, every coordinate: numbers or "not set" — they are all written into markup later
     if (l.markShapes) Object.keys(l.markShapes).forEach(cp => { if (_isObj(l.markShapes[cp])) sanitizeItemNumbers(l.markShapes[cp], 0); });   // a letter's own mark shapes are mark items
   });
@@ -28923,8 +29004,17 @@ function applyAlignDo(){
   const cps = [...document.querySelectorAll('#applyAlignList .aa-cp:checked')].map(c => c.value);
   const targets = cps.map(cp => project.letters.find(l => l.codepoint === cp)).filter(Boolean);
   if (!targets.length) { closeApplyAlign(); return; }
+  const lean = photoLean(src);   // the lean the copied placement carries
   udDo(targets.map(l => ({ t:'item', kind:'letter', cp:l.codepoint })), 'apply alignment to ' + targets.length + ' letters', () => {
-    targets.forEach(l => { l.transform = src.transform.slice(); setLetterSlant(l, letterSlant(src)); });   // a leaned picture matrix carries its lean record
+    targets.forEach(l => {
+      l.transform = src.transform.slice();   // a picture's placement only, never an outline: every record keeps describing the outline its letter has
+      // A letter with a photo of its own takes the placement's lean for its NEXT trace (photoSlantTake);
+      // one with no photo of its own (an outline pasted, built, imported or drawn) gets nothing.
+      if (!photoOwn(l)) return;
+      if (!(l.contours && l.contours.length)) { setLetterSlant(l, lean); delete l.photoSlant; }   // nothing traced yet: the record is what the next trace gives
+      else if (lean === letterSlant(l)) delete l.photoSlant;
+      else l.photoSlant = lean;
+    });
     renderGrids(); renderStage(); renderControls();
   });
   closeApplyAlign();
@@ -29001,9 +29091,11 @@ function copyOutlineDo(){
   udDo([Object.assign(itemScope(), carryDraw ? { withSource: true, withDraw: true } : {})], 'copy outline from ' + src.name, () => {
     t.contours = clone(src.contours);
     t.curves   = clone(src.curves);
-    setLetterSlant(t, letterSlant(src));           // the copied outline brings its lean record
+    if (carryDraw) setLetterSlant(t, letterSlant(src));   // the copied outline brings its lean record
+    else setOutlineSlant(t, letterSlant(src));     // …and a picture of the target's own keeps its lean for its next trace
     t.handEdited = false;                          // a fresh copy → node-edit/re-trace warnings reset
     if (carryDraw) {
+      delete t.photoSlant;                         // the drawing replaces the picture and its placement
       t.draw = clone(src.draw);
       t.source.kind = src.source.kind; t.source.dataUrl = src.source.dataUrl; t.source.cropRect = null; t.source.sheetId = null;
       t.transform = src.transform.slice();

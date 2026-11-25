@@ -1109,9 +1109,11 @@ One engine applies a geometric change to many glyphs in **one** undo step. A new
   lists it in `warn.stretched`).
 - `fontX` / `fontY` are the factors for font-wide horizontal / vertical lengths (`null` = leave them);
   `markFactor` is the uniform factor for mark size (`null` = leave marks). The horizontal factor has
-  four audiences, each following `fontX` unless the operation names it: letter geometry (`fontX`
-  itself — the default side bearings, the trop side-column spread, vertical user guides), spacing and
-  kerning (`spaceX`), the vowel–trop pair shift (`pairX`), a typed meteg gap (`gapX`).
+  five audiences, each following `fontX` unless the operation names it: letter geometry (`fontX`
+  itself — the default side bearings, vertical user guides), the trop side-column spread (`tropX`),
+  spacing and kerning (`spaceX`), the vowel–trop pair shift (`pairX`), a typed meteg gap (`gapX`).
+  A resize names two of them after what they measure, whatever its spacing box says: the spread
+  follows the letters (`tropX` = the size), the meteg gap the marks (`gapX` = `markFactor`).
 - `lean` / `markShape` (a slant), `leanScale` (a width change narrows a lean with the letters),
   `markWide` (the marks' width factor) and `refuse` (the operation cannot be done at all at this
   amount) are described with the operations that use them.
@@ -1172,11 +1174,19 @@ six settings (`markScale`, `dageshScale`, `cholamScale`, `holamScale`, `tropScal
 and every per-form `pc.markScale` — exact for built-in and custom marks alike, and `markNudge` needs
 no change (it is added before the multiplier). That is why the **stored** mark-size range is wider
 than the sliders': `MARK_SIZE_MIN`–`MARK_SIZE_MAX` (10–400%) in the setters and
-`sanitizeFontNumbers`, while each slider keeps its 40–180 (a form's dot 30–200) and stretches only as
-far as it must to hold the value it finds (`markSizeRange`). Latin accents have no size setting (they
+`sanitizeFontNumbers`, while each slider keeps its 40–180 (Holam size 30–180, a form's dot 30–200)
+and stretches only as far as it must to hold the value it finds (`markSizeRange`). The trop Default
+spread slider (0–500) stretches the same way up to the spread's stored limit of 600, so a scaled
+spread is never clamped by its first touch. Latin accents have no size setting (they
 bake at scale 1), so there the shape *is* scaled: an imported accent in place, a built-in one that
 actually ships through a scaled custom copy created before the undo snapshot (the Generate Bold
-idiom — emptied by undo, it reads as the built-in again).
+idiom — emptied by undo, it reads as the built-in again). An accent belongs to the Latin letters, not
+to the nikkud box: its shape follows the operation's `accentX` / `accentY` whenever the set holds
+every letter that carries it — the whole font, whatever the marks box says, or *Only the English
+tab* — and one letter leaves the shared shape as it is (the dialog's scope hint says so for a Latin
+letter that carries accents, `engSupportsAccents`; an accented form taken whole from a font has its
+accent in its own outline, so it changes with it and gets no such hint). A slant needs no factor: an
+accent leans by its own letter's record.
 
 **An operation may stamp a record and carry Font Details fields.** `op.stamp(letter)` returns fields
 to set on every letter the operation changes (`null` removes a key) — still only assignments and
@@ -1207,8 +1217,11 @@ apart, given the plain stretch instead (its guarantee, below). Letter names in a
 default line box's breathing room and QA's overlap tolerance were written for a 600-unit letter. A
 uniform whole-font scale with the guide lines on multiplies `sizeK` by its factor, and those readers
 go through `gxKLen` / `gxKY`, so a letter traced **after** a rescale is seeded like its neighbours.
+With the guide lines off it stays as it was, even when the marks are resized: a new letter is drawn
+to the guide lines, and those did not move.
 At 1 (absent) every one of them is the integer it always was. It lives in `metrics` so the `metrics`
-undo scope carries it and Reset metrics returns it to 1 with the lines. A new constant that means "a
+undo scope carries it and Reset metrics returns it to 1 with the lines; an import that replaces the
+outlines removes it too (the letters it described are gone). A new constant that means "a
 distance at the standard letter size" goes through the same two helpers.
 
 **Scale all letters** (`gxScaleOp`, `#scaleAllOverlay`, `scaleAll*`) is the first operation: a uniform
@@ -1226,14 +1239,21 @@ kerning and the guide lines do not change. The lean direction the controls start
 `markDirty()` only), else left for Hebrew and right for a Latin-script tab.
 
 **The lean record (`l.slant`, degrees, rounded to 0.1°; composed by adding tangents —
-`slantCompose`).** Stamped on every letter a slant changes (a photo-only letter too). It is what the
+`slantCompose`).** Stamped on every letter a slant changes (a photo-only letter too). A letter with
+nothing to lean — no outline, no photo matrix, no strokes — is left out of a slant altogether
+(`op.skipBare`): an export seeds anchors on every letter, and sheared seeds plus a record would make
+the letter drawn there next measure and seed as if it leaned; a dot placed on its composed forms stays
+too. (Scale all still scales such seeds.) It is what the
 Italic export declares, and what lets code that assumed an upright letter keep working — each reader
 is the identity at 0:
 - `uprightExtent(l)`: `finalizeFromRaw`, Fit margins and Reset metrics measure a letter's **width**
   on the un-leaned ink, so a slanted letter traced again keeps its advance instead of gaining its
   overhang.
 - `seedAnchors`, `ensureNikkudAnchors`, `ensureTropAnchors` and the QA mirror seed on
-  `uprightContours(l)` and then lean the points (`leanAnchorSet`).
+  `uprightContours(l)` and then lean the points (`leanAnchorSet`) — the Samaritan columns too
+  (`smrAnchorSeed`, from the upright extent, so Reset anchors and the QA grid agree with the engine),
+  and the default holam slot after שׁ / שׂ leans its 55 units of height by the base letter's record
+  (`precompHolamAnchor`).
 - Wide letterforms and digraphs: an x-scale would turn a lean of k into k·w, so `buildWideGlyph`
   un-leans, widens and leans again (`wideXY`), and hands every other site the one map, `g.tx(x, y,
   i)` — the donor's anchors and pins, QA's wide rows. A new site that widens uses `g.tx`, never
@@ -1242,9 +1262,28 @@ is the identity at 0:
   accent by that letter's own record.
 The record is **cleared** where an outline is replaced from outside (`importLetterOutline`, which
 then stamps the source font's own lean; `assignSvgContours`; a new photo, crop or auto-split;
-Center image; clearing punctuation) and **copied** where an outline or a picture matrix is copied
-(Copy outline, duplicate glyph, convert wide form, apply alignment). A new path that replaces or
-copies an outline does the same. The photo "skew" nudges in Align leave no record.
+Center image; clearing punctuation) and **copied** where an outline is copied (Copy outline,
+duplicate glyph, convert wide form, points pasted into an empty letter — the points clipboard
+carries its letter's record; pasted onto an outline, the target's own record stays). When Copy
+outline or a paste gives a letter with a picture of its own (`photoOwn`) a record of its new outline,
+the lean of that picture's placement waits as `l.photoSlant` for its next trace (`setOutlineSlant`);
+so does the strokes' lean of a drawing (`drawingOwn`: strokes whose next Save traces them — Clear
+outline drops a drawing's raster, never its strokes), and the next Save takes it. A copied drawing
+replaces the picture, and nothing waits; strokes saved over a picture for the first time drop the
+picture's waiting lean (`_drawCommitNow`). An outline
+emptied by hand (Clear outline, deleting every contour in Edit points) loses its record when no
+photo and no strokes are left to lean (`clearLeanIfBare`; a photo's matrix is still sheared, so a
+photo letter keeps it). *Apply alignment to other letters* copies a picture's placement, never an
+outline, so every record keeps describing the outline its letter has; a letter with no photo of
+its own (an outline pasted, built, imported or drawn) gets nothing else. A letter with a photo of
+its own is traced through that placement next, so it takes the placement's lean
+(`photoLean(src)`): with no outline yet as its record, and over an outline traced from the old
+placement as `l.photoSlant`, which waits beside the record until the next trace from the picture
+(`finalizeFromRaw` → `photoSlantTake`) makes it the record. `l.photoSlant` composes and narrows with
+the record under Slant and Width, and composes under a whole-letter Slant in Edit points (the carry,
+`xformCarryBase` → `xformSlantCarry` → `xformPutCarry`) — the photo's matrix moves with each — and goes wherever the record
+goes for a new placement (a new photo, crop or auto-split, Center image). A new path that replaces
+or copies an outline does the same. The photo "skew" nudges in Align leave no record.
 
 **Marks under a leaning font (`project.font.markLean[kind] = { place, shape }`, tangents, per mark
 store, under `tropTune`).** A mark is one glyph for every letter, so following a slant is font-level
@@ -1258,7 +1297,11 @@ and every view and the export read mark shapes only through the public three. Th
 for measurements that need the upright shape — `hatafSplit`, `_metegInk` (so the Auto meteg gap and
 the pairing do not move), and the hataf-meteg splice, which is assembled upright and leaned once at
 the end — and for the mark editor, which shows the upright shape with a one-line note. Importing a
-kind's shapes resets that kind (`markLeanReset` — the `markScale = 1` rule). `markMkmkAnchor` follows
+kind's shapes resets that kind (`markLeanReset` — the `markScale = 1` rule). An import that replaces
+the outlines replaces this state for the other kinds too: they follow the imported letters' own lean
+(`place` = the tangent of the source font's angle, `shape` 0 — what a Slant all with the box off
+leaves; no entry when the font is upright), so built-in marks never stay slid for letters that are
+gone, and an italic font without nikkud of its own gets them placed for its lean. `markMkmkAnchor` follows
 the lean; the import-fidelity predictor measures only freshly imported kinds, whose lean is 0.
 
 **Width** (`gxWidthOp`, `gxWidthPlan`, the dialog's third tool) makes letters narrower or wider:
@@ -1407,7 +1450,8 @@ measurements stay unsqueezed and what is built from them is squeezed as one fini
 through the map at the end, and so a meteg gap (typed or Auto) is a distance in unsqueezed mark space
 and is **not** scaled by the engine (`gapX` is null for a width change; the vowel–trop shift, a
 letter-space distance, is — `pairX`). Latin accents have no font-level setting, so their shapes are
-squeezed in place (x only), as a resize does. Importing a kind's shapes resets it with the lean
+squeezed in place (x only, by the typed width), as a resize does and under the same rule — the whole
+font or the English tab, whether or not this box is ticked. Importing a kind's shapes resets it with the lean
 (`markLeanReset`); the mark editor shows the unsqueezed shape with its own one-line note. Squeezed
 marks are not stem-corrected.
 
