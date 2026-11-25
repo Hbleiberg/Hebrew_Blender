@@ -18268,7 +18268,7 @@ function gxwUnloop(pts) {   // cut out a small loop where a ring crosses itself 
     const t = ((c[0] - a[0]) * (d[1] - c[1]) - (c[1] - a[1]) * (d[0] - c[0])) / den, P = [Math.round(a[0] + t * (b[0] - a[0])), Math.round(a[1] + t * (b[1] - a[1]))];
     if (inner <= 8 && inner <= n - inner) r = r.slice(0, i + 1).concat([P], r.slice(j + 1));
     else if (n - inner <= 8) r = [P].concat(r.slice(i + 1, j + 1));
-    else return null;   // a real overlap of two strokes, not a notch tip — left as it is (the gap columns report it)
+    else return null;   // a real overlap of two strokes, not a notch tip — left as it is (gxwShape reports the letter as closed)
     r = bgDedupe(r); if (r.length < 3) return null;
   }
   return contourSelfIntersects(r) ? null : r;
@@ -18323,7 +18323,7 @@ function gxwApart(rings, curves, out, memo, key) {
 /* The outline step. rings: [[x,y]…] per contour (font units, as stored); curves: 1:1 or null; s: the
    X factor; t: the stem thickness to restore; hand: the polygon is exactly its curves flattened
    (a hand-edited letter) and is rebuilt that way. → gxOutline's record { keep, rings, curves, lost }
-   plus closed (a counter closes or nearly does, or strokes meet — see the gap columns below), tau (the shift that put the
+   plus closed (a counter closes or nearly does, or strokes meet — the gap columns below — or a stroke runs into its own contour), tau (the shift that put the
    ink's left edge at s × its old place) and b0 / b1 (the polygon's bounds before and after). */
 function gxwShape(rings, curves, s, t, hand) {
   const hasCv = Array.isArray(curves) && curves.length === rings.length;
@@ -18462,7 +18462,10 @@ function gxwShape(rings, curves, s, t, hand) {
     let pts = (hand && cv) ? gxwFlatten(cv) : bgDedupe(r.map(rp));
     // The step must not leave an outline crossing itself where it did not: the tip of a sharp notch is cut
     // back to where its two sides now meet. That contour then ships as its polygon (a null curve entry).
-    if (pts.length <= 400 && contourSelfIntersects(pts) && !contourSelfIntersects(rings[i])) { const mended = gxwUnloop(pts); if (mended) { pts = mended; cv = null; } }
+    // A crossing that cannot be mended that way is a stroke that now runs into another part of its own
+    // contour (the free end of an open bowl reaching the stem). The gap columns below cannot see it — the
+    // gap it closed shares its column with the wide counter beside it — so the letter is reported here.
+    if (pts.length <= 400 && contourSelfIntersects(pts) && !contourSelfIntersects(rings[i])) { const mended = gxwUnloop(pts); if (mended) { pts = mended; cv = null; } else out.closed = true; }
     const A0 = signedArea(rings[i]), A1 = pts.length >= 3 ? signedArea(pts) : 0;
     if (pts.length < 3 || Math.abs(A1) < 1 || (A1 > 0) !== (A0 > 0)) { out.lost++; if (A0 * sides[i] > 0) out.closed = true; return; }   // collapsed or turned inside out — and if it was a counter, the counter closed
     out.keep.push(i); out.rings.push(pts);

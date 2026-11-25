@@ -1039,7 +1039,9 @@ corner or tangle a noisy outline.
   other closes to a point in the middle instead of leaving the outline crossing itself; and where a
   ring still crosses itself that did not before, the small loop at the notch's tip is cut back to
   where its two sides meet (`gxwUnloop`) and that one contour ships as its polygon (a null curve
-  entry). A large loop is a real overlap of two strokes: left as it is and reported by the gap columns.
+  entry). A large loop is a real overlap of two strokes — the free end of an open bowl that now runs
+  through the stem: it is left as it is, and the letter is reported as `closed` there and then (the
+  gap columns cannot see it: the gap it closed shares its column with the wide counter beside it).
 - *Buried ends — letters assembled from overlapping contours.* An edge that lies inside another
   contour's ink (the end of a roof bar run into a stem, the root of an n's arch) is not the side of a
   stroke. Corrected as one, a widened bar's end is pulled back out of the stem while the stem's own
@@ -1085,7 +1087,8 @@ corner or tangle a noisy outline.
   old width — along its **whole** height; a
   ring that collapses or turns inside out is reported when it was a counter. A wedge-shaped notch only
   gets shorter at its tip — which is why this follows columns instead of testing the outline for
-  crossings (those fire on every crotch).
+  crossings (those fire on every crotch); the one crossing that is reported is the one `gxwUnloop`
+  could not mend (above).
 - *Lean.* A lean is a tangent, so it narrows with the letter: the stamp scales `l.slant`, `leanScale`
   scales `markLean`'s numbers for a whole-font run, and a typed Italic angle rides `gxMeta`.
 
