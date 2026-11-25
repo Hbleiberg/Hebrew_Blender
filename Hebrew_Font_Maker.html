@@ -23725,7 +23725,7 @@ function fmSubmitDraft(files, dest) {   // same layout as resources.html's openS
     .concat(lines, [I18n.t('resources.fonts.submit.anything_else')]).join('\r\n');
   return { subject, body, shareText };
 }
-function fmLicenseFile() { return new File([licenseText()], fontSafeBase(project.font.familyName) + '-LICENSE.txt', {type:'text/plain'}); }
+function fmLicenseFile(lic) { return new File([licenseText(lic)], fontSafeBase(project.font.familyName) + '-LICENSE.txt', {type:'text/plain'}); }   // lic: the licence the font beside it was built under (default: the project's)
 async function fmSendFiles() {   // [TTF File, LICENSE File] — always the TTF; rebuilt when the last build is missing or stale (UFO export, rename, another licence). null = the build failed; false = the licence gate stopped it
   const stem = fontFileStem();
   // A build made under another licence is stale too: the TTF's own licence record would contradict the
@@ -23975,6 +23975,10 @@ async function doExport(fmt) {
 
     status(I18n.t('fontmaker.status.building_font'), true);
     const _gen = _editGen;                    // read with the spec (the size readout's freshness mark)
+    // …and so are the licence and file stem these bytes are built under: the shaping check below waits
+    // with the page live, and a licence chosen meanwhile must not become the build's record (Send would
+    // reuse an old-licence TTF beside a new LICENSE file) nor the text shipped beside it.
+    const _built = { lic: project.font.license, stem: fontFileStem() };
     const spec = buildFontSpec();
     const rangeErr = glyphRangeError(spec);   // same guard as the Preview path, in this one's own idiom
     if (rangeErr) { status(''); _setVersion(_prevVersion); askModal(I18n.t('fontmaker.modals.build_fail_title'), '<span class="warn">'+rangeErr+'</span>', [{label:I18n.t('fontmaker.modals.ok')}]); return; }
@@ -23997,10 +24001,10 @@ async function doExport(fmt) {
       askModal(I18n.t('fontmaker.modals.shaping_fail_title'),
         `<span class="warn">${gate.msg}</span><br><br>` + I18n.t('fontmaker.modals.shaping_fail_body'),
         [ {label:I18n.t('fontmaker.modals.cancel'), cls:'ghost', onClick: () => _setVersion(_prevVersion) },   // no download happened — don't ratchet the version per retry
-          {label:I18n.t('fontmaker.modals.download_anyway'), onClick: () => finishDownload(bytes, gate && gate.skipped, fmt).then(done => { if (!done) _setVersion(_prevVersion); }) } ]);
+          {label:I18n.t('fontmaker.modals.download_anyway'), onClick: () => finishDownload(bytes, gate && gate.skipped, fmt, _built).then(done => { if (!done) _setVersion(_prevVersion); }) } ]);
       return;
     }
-    if (!await finishDownload(bytes, gate && gate.skipped, fmt)) _setVersion(_prevVersion);   // WOFF2/zip failure = no file shipped → roll the bump back
+    if (!await finishDownload(bytes, gate && gate.skipped, fmt, _built)) _setVersion(_prevVersion);   // WOFF2/zip failure = no file shipped → roll the bump back
   } catch (err) {
     console.error(err); status(''); _setVersion(_prevVersion);
     askModal(I18n.t('fontmaker.modals.export_error_title'), '<span class="warn">'+(err && err.message || err)+'</span>', [{label:I18n.t('fontmaker.modals.ok')}]);
@@ -24010,18 +24014,19 @@ async function doExport(fmt) {
     if (_exportPreparing) { _exportPreparing = false; onExportFormatChange(); }
   }
 }
-async function finishDownload(bytes, gateSkipped, fmt) {   // resolves true only when a file actually shipped — callers roll the version bump back on false
+async function finishDownload(bytes, gateSkipped, fmt, built) {   // resolves true only when a file actually shipped — callers roll the version bump back on false. built: { lic, stem } as read with the spec
   fmt = fmt || 'ttf';
+  built = built || { lic: project.font.license, stem: fontFileStem() };
   const fam = fontFileStem();   // family base + '-Bold' for the bold style — no Regular/Bold file collisions
-  window._lastFontBytes = bytes; window._lastFontStem = fontFileStem();   // for Send to IvritSuite (stem = freshness stamp)
-  window._lastFontLic = project.font.license;
+  window._lastFontBytes = bytes; window._lastFontStem = built.stem;   // for Send to IvritSuite (stem = freshness stamp)
+  window._lastFontLic = built.lic;   // the licence the bytes say, not the menu's now: one chosen during the shaping check makes this build stale for Send
   window._lastExport = null;   // the Exported ✓ screen's size line — set below with the file that really went out
   if (fmt === 'ttf') {
     window._lastExport = { kind: 'ttf', size: bytes.length };
     downloadBlob(new Blob([bytes], {type:'font/ttf'}), fam + '.ttf');
     status(window.I18n ? I18n.t(gateSkipped ? 'fontmaker.status.exported_ttf_skipped' : 'fontmaker.status.exported_ttf', {name: fam})
                     : 'Exported ' + fam + '.ttf' + (gateSkipped ? ' (shaping check skipped)' : ' ✓'));
-    offerSaveToMyFonts(true);   // single-file → offer LICENSE.txt reliably from the success screen
+    offerSaveToMyFonts(true, built.lic);   // single-file → offer LICENSE.txt reliably from the success screen (the one the file says)
     return true;
   }
   // WOFF2 / TTF+WOFF2 zip — re-flavour the just-built TTF through fontTools (brotli loaded on demand)
@@ -24037,7 +24042,7 @@ async function finishDownload(bytes, gateSkipped, fmt) {   // resolves true only
       window._lastExport = { kind: 'woff2', size: woff2.length };
       downloadBlob(new Blob([woff2], {type:'font/woff2'}), fam + '.woff2');
       status(I18n.t('fontmaker.status.exported_woff2', {name: fam}));
-      offerSaveToMyFonts(true);   // single-file → offer LICENSE.txt reliably from the success screen
+      offerSaveToMyFonts(true, built.lic);   // single-file → offer LICENSE.txt reliably from the success screen (the one the file says)
       return true;
     }
     // ttfwoff2 → one zip: both fonts + a paste-ready @font-face + the licence
@@ -24045,7 +24050,7 @@ async function finishDownload(bytes, gateSkipped, fmt) {   // resolves true only
       { name: fam + '.ttf',   b64: bytesToB64(bytes) },
       { name: fam + '.woff2', b64: wr.woff2_b64 },
       { name: fam + '.css',   text: fontFaceCss((project.font.familyName || fam) + fontNameParts(project.font).famSfx, fam, fontIsBold(), fontIsItalic()) },
-      { name: 'LICENSE.txt',  text: licenseText() }
+      { name: 'LICENSE.txt',  text: licenseText(built.lic) }   // the licence the TTF and WOFF2 beside it say
     ];
     pyodide.globals.set('hfm_zip_json', JSON.stringify(entries));
     const zb64 = pyodide.runPython('hfm_zip(hfm_zip_json)');
@@ -24576,7 +24581,7 @@ async function saveCurrentToMyFonts(bytes) {
     askModal(I18n.t('fontmaker.modals.couldnt_save_title'), '<span class="warn">' + esc(e && e.message || String(e)) + '</span>', [{ label: I18n.t('fontmaker.modals.ok') }]);
   }
 }
-function offerSaveToMyFonts(licenseSeparate) {   // post-export success screen (called after every successful export, any format)
+function offerSaveToMyFonts(licenseSeparate, lic) {   // post-export success screen (called after every successful export, any format). lic: the licence the downloaded file was built under
   markClean();   // a successful export is a safe checkpoint → drop the unsaved-work breadcrumb
   const dl = window._lastDownload;   // snapshot now — the LICENSE button below overwrites it
   const dlFile = dl ? new File([dl.blob], dl.name, {type: dl.blob.type}) : null;
@@ -24588,13 +24593,13 @@ function offerSaveToMyFonts(licenseSeparate) {   // post-export success screen (
                 { label: I18n.t('fontmaker.modals.exported_send_btn'), cls: 'ghost', icon: ICON_SEND_SM, onClick: () => fmSendFont('ivrit') },
                 { label: I18n.t('fontmaker.modals.exported_send_os_btn'), cls: 'ghost', icon: ICON_SEND_SM, onClick: () => fmSendFont('os') }];
   if (canShareFile) btns.push({ label: I18n.t('fontmaker.modals.exported_sharefile_btn'), cls: 'ghost', icon: ICON_SEND_SM,
-    onClick: () => fmShareFiles(licenseSeparate ? [dlFile, fmLicenseFile()] : [dlFile]) });
+    onClick: () => fmShareFiles(licenseSeparate ? [dlFile, fmLicenseFile(lic)] : [dlFile]) });
   if (canPick) btns.push({ label: I18n.t('fontmaker.modals.exported_saveas_btn'), cls: 'ghost', icon: ICON_SAVE_SM, onClick: () => fmSaveAsPicker(dlFile) });
   // Single-file TTF/WOFF2 downloads don't carry the license (the zip/UFO embed it), so offer it as a
   // reliable one-click download here — a click inside the modal is never blocked, unlike an
   // auto-triggered second download.
   if (licenseSeparate) btns.push({ label: I18n.t('fontmaker.modals.exported_license_btn'), cls: 'ghost',
-    onClick: () => downloadBlob(new Blob([licenseText()], {type:'text/plain'}), fontSafeBase(project.font.familyName) + '-LICENSE.txt') });
+    onClick: () => downloadBlob(new Blob([licenseText(lic)], {type:'text/plain'}), fontSafeBase(project.font.familyName) + '-LICENSE.txt') });
   const canKeep = !!(dlFile && project.cloudId && fmCloudUser() && dlFile.size <= 5 * 1024 * 1024);   // the project has an account copy: keep this export with it
   if (canKeep) btns.push({ label: _cT('exported_keep_btn', 'Keep this export in my account'), cls: 'ghost', icon: ICON_CLOUD_SM, onClick: () => fmCloudKeepExport(dlFile) });
   if (canSave) btns.push({ label: I18n.t('fontmaker.modals.exported_myfonts_btn'), onClick: () => openMyFonts() });
@@ -24650,9 +24655,9 @@ function licenseCtx() {
   const reserved = project.font.reservedFontName || family;
   return { family, author, reserved, year: new Date().getFullYear() };
 }
-function licenseText() {            // the LICENSE.txt body for the chosen license
+function licenseText(lic) {         // the LICENSE.txt body for the chosen license — or for `lic`, the one a build was made under
   if (project.osFont) return osPassthroughText();   // partner lock wins over any (tampered) license key
-  switch (project.font.license) {
+  switch (lic == null ? project.font.license : lic) {
     case 'cc0':  return cc0Text();
     case 'mit':  return mitText();
     case 'arr':  return arrText();

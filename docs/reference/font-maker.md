@@ -694,7 +694,11 @@ after the wait for the engine (`doExport`, before its version bump, and `buildFo
 Fonts and Send), because the page stays live during that wait. While such a build is in flight
 (`_fontOut`), no font import can start: `fontImportHeld()` answers the picker's button and
 `uploadSourceFont` with one status line. Send reuses the last build only if it was made under the
-project's current licence (`_lastFontLic`). Preview PDF stays available (its build is ungated, and its
+project's current licence and file name (`_lastFontLic`, `_lastFontStem`) — both read with the spec,
+never at the download: `doExport` waits on its shaping check with the page live, so a licence chosen
+or a rename made meanwhile leaves that build stale for Send, and what ships beside that export (the
+zip's `LICENSE.txt`, the Exported screen's LICENSE.txt and its Share-file pair) is the licence the
+font itself says (`licenseText(lic)`). Preview PDF stays available (its build is ungated, and its
 bytes stay in the page). And no fallback can say OFL: `LICENSES.unset` and `licenseText()`'s `'unset'`
 case exist for that. **The project itself is not a font and is outside the gate on purpose:** Save
 Project to the computer, a save to the account and the account autosave carry the project — the
