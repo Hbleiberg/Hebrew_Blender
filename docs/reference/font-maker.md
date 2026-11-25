@@ -216,10 +216,14 @@ handler goes through the real setters (`setMarkEnabled`, `setAdd*`, `setInputMod
   the page, not a list of ids, so a new dialog is covered by being an `.overlay` (focus on a dialog's
   button or list is not typing: undo, the arrow nudges, Delete and pen-mode Enter used to act on the
   letter behind the shortcuts sheet, My Fonts and Apply alignment). The census of the page's overlays
-  shows one that needs the editor's keys and is therefore let through: the **Edit-shape window**
-  (`#markEditOverlay`) — its undo and redo arrive through the global Ctrl+Z handler (the `meActive`
-  branch, a working-copy undo that never touches the project), and Shift+G / Shift+R toggle the grid
-  and the rulers its stage shares. A dialog raised over it refuses like any other.
+  shows one that needs some of the editor's keys: the **Edit-shape window** (`#markEditOverlay`) —
+  its undo and redo arrive through the global Ctrl+Z handler (the `meActive` branch, a working-copy
+  undo that never touches the project), and Shift+G / Shift+R toggle the grid and the rulers its stage
+  shares. Only those three handlers let it through, by passing `udShortcutBlocked(true)`; every other
+  shortcut is refused there as behind any dialog (the letter steps `[ ] { }`, the point editor's Delete
+  and arrows and draw mode's keys would act on the letter behind the window). A dialog raised over it
+  refuses even those three, and the window's own arrow nudge stands down for it too (the *Apply* and
+  *Reset* confirmations used to let the arrows move the selected piece behind them).
 - **A key press that closes a dialog is the dialog's, not a shortcut's.** A dialog closes in the
   middle of the key's own dispatch — the modal trap on Escape, a dialog's own handler on Enter — and
   the handlers that run afterwards for that same key find no dialog and focus back on the opener, so

@@ -14885,7 +14885,7 @@ function initRulers() {
     if (e.key === 'Escape' && _rlDrag) { rlEndDrag(true); e.stopPropagation(); return; }   // abandon a half-pulled guide
     if (e.key !== 'R' && e.key !== 'r') return;
     if (!e.shiftKey || e.ctrlKey || e.metaKey || e.altKey) return;
-    if (udShortcutBlocked()) return;                       // typing in a field / modal open / no project
+    if (udShortcutBlocked(true)) return;                   // typing in a field / modal open / no project (true: the Edit-shape stage has rulers too)
     e.preventDefault();
     setRulersShown(!_rulersOn);
     status(I18n.t(_rulersOn ? 'fontmaker.rulers.on' : 'fontmaker.rulers.off'));
@@ -15096,7 +15096,7 @@ function initGrid() {
   document.addEventListener('keydown', e => {
     if (e.key !== 'G' && e.key !== 'g') return;
     if (!e.shiftKey || e.ctrlKey || e.metaKey || e.altKey) return;
-    if (udShortcutBlocked()) return;                       // typing in a field / modal open / no project
+    if (udShortcutBlocked(true)) return;                   // typing in a field / modal open / no project (true: the Edit-shape stage has the grid too)
     e.preventDefault();
     setGridShown(!_gridOn);
     status(I18n.t(_gridOn ? 'fontmaker.grid.on' : 'fontmaker.grid.off'));
@@ -20629,17 +20629,19 @@ function wireDrop(id, cb, multi) {
    and undo, the arrow nudges, Delete and pen-mode Enter used to act on the letter under the shortcuts
    sheet, My Fonts, Apply alignment and every other dialog that an id list had not caught up with. A new
    dialog is covered by being an .overlay; nothing has to be added here.
-   The one exception is the Edit-shape window (#markEditOverlay), which needs the editor's keys: its
-   undo and redo arrive through the global Ctrl+Z handler (the `meActive` branch — a working-copy undo
-   that never touches the project), and Shift+G / Shift+R toggle the grid and rulers its stage shares.
-   A dialog raised over it (a confirmation, Help) refuses like any other. */
-function udShortcutBlocked() {
+   The one exception is the Edit-shape window (#markEditOverlay), and only for the three handlers that
+   serve it, which pass `editShape`: its undo and redo arrive through the global Ctrl+Z handler (the
+   `meActive` branch — a working-copy undo that never touches the project), and Shift+G / Shift+R toggle
+   the grid and rulers its stage shares. Every other shortcut is refused there as behind any dialog — the
+   letter steps ([ ] { }), the point editor's Delete and arrows, draw mode's keys would act on the letter
+   behind the window. A dialog raised over it (a confirmation, Help) refuses even those three. */
+function udShortcutBlocked(editShape) {
   if (!project) return true;
   if (keyClosedADialog()) return true;   // this very key press just closed a dialog: it was the dialog's, not a shortcut's
   const ae = document.activeElement;
   if (ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA' || ae.isContentEditable)) return true;
   if (document.querySelector('.ivsav-overlay')) return true;   // the account screen (js/ivrit-saves.js) is open over the editor
-  if (document.querySelector('.overlay.open:not(#markEditOverlay)')) return true;
+  if (document.querySelector(editShape ? '.overlay.open:not(#markEditOverlay)' : '.overlay.open')) return true;
   return false;
 }
 /* Ctrl/Cmd+Z = undo · Ctrl/Cmd+Shift+Z or Ctrl+Y = redo */
@@ -20647,7 +20649,7 @@ document.addEventListener('keydown', e => {
   if (!(e.ctrlKey || e.metaKey) || e.altKey) return;
   const k = e.key.toLowerCase();
   if (k !== 'z' && k !== 'y') return;
-  if (udShortcutBlocked()) return;
+  if (udShortcutBlocked(true)) return;                                           // true: also inside the Edit-shape window, whose undo this is
   if (meActive) {                                                                // the "Edit shape" modal has its own working-copy undo
     if (meDrag) return;                                                          // not mid-drag
     e.preventDefault();
@@ -28009,6 +28011,7 @@ function init() {
   // the on-screen direction and the X/Y fields; bars translate, dots move their center — like a drag.
   document.addEventListener('keydown', e => {
     if (!meActive || !meItem || meItem.designMode !== 'editor') return;
+    if (document.querySelector('.overlay.open:not(#markEditOverlay)')) return;   // a confirmation (Apply, Reset) or Help raised over the window owns the keys: no nudge behind it
     const t = e.target;
     if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.isContentEditable)) return;
     let dx = 0, dy = 0;
