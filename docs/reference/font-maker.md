@@ -389,6 +389,17 @@ The size of the font is shown in two places, and neither ever starts a build.
   (only while the readout is showing), by `onExportFormatChange` and by `udClear` (a project just
   arrived or left). The WOFF2 size is known only after a WOFF2 was made from that same build
   (`ref === bytes`); the zip and the UFO show nothing.
+- **Out of the toolbar's flow.** The readout sits in `.export-size-slot`, positioned after the Export
+  group (`.tb-export` is its containing block, `pointer-events: none`), so it coming and going
+  cannot re-wrap the toolbar — in the flow it tipped a row in and out and the editor jumped under the
+  pointer. The slot carries no `dir` (Chromium resolves `inset-inline-start` by the element's own
+  direction, and the readout itself is `dir="ltr"`). `exportSizeFit()` shows it only where the room
+  after the group, up to the next control on that row or the toolbar's content edge, holds it with
+  the toolbar's 8px gap; elsewhere it gets `.es-nofit` (`display: none` — a hidden box past the
+  toolbar's edge would still scroll the page) and the Export button's description and the Exported ✓
+  screen still carry the size. A `ResizeObserver` on the toolbar and each of its parts re-runs the
+  check (window width, language, the sign-in pip, the engine badge, a font arriving), and
+  `exportSizeSync` runs it after every text change.
 
 Three things to keep:
 - The edit count is read with `buildFontSpec()`, not when the bytes come back: the export awaits

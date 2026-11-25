@@ -913,8 +913,15 @@ header{--kin-pt:10px;--kin-pb:10px;--kin-gap:14px;}   /* this header's block pad
     [data-kh-pop]:hover > .kh-pop, [data-kh-pop]:focus-visible > .kh-pop { visibility: visible; opacity: 1; transition: opacity 0.12s linear 0.3s, visibility 0s linear 0.3s; }
     #nodeBar.nb-tight .kh:not(.kh-pop) { display: none; }   /* the bar's icons-only layout */
   }
-  /* The size of the font as last built, beside Export — present only while that build is still this project's font. */
+  /* The size of the font as last built, beside Export — present only while that build is still this project's font.
+     It is out of the toolbar's flow: its slot is placed after the Export group, so it coming and going can never re-wrap
+     the toolbar (in the flow it tipped a row in and out, and the editor jumped under the pointer). The slot carries no
+     direction of its own — inset-inline-start follows the toolbar's, while the readout inside stays left to right — and
+     exportSizeFit() hides the readout (.es-nofit) wherever the room after the group cannot hold it. */
+  .tb-group.tb-export { position: relative; }
+  .export-size-slot { position: absolute; inset-inline-start: calc(100% + 8px); inset-block-start: 50%; transform: translateY(-50%); pointer-events: none; white-space: nowrap; }
   .export-size { font-size: 0.74rem; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--gold-light); white-space: nowrap; }
+  .export-size.es-nofit { display: none; }   /* not visibility: a hidden box past the toolbar's edge would still scroll the page */
   @media (max-width: 600px) { .export-size { display: none; } }
   .shp-draft-hole { stroke-dasharray: 5 4; }
   body.shape-armed #stage, body.shape-armed #stage * { cursor: crosshair !important; }
@@ -1972,7 +1979,7 @@ html[lang="he"] .tp-label{letter-spacing:normal;text-transform:none;}
       <option value="ufo" data-i18n="fontmaker.toolbar.fmt_ufo">UFO source (zip)</option>
     </select>
     <button class="tbtn hi-btn" id="exportBtn" onclick="exportFont()" aria-describedby="exportSize"><svg class="hi hi-sm hi-download" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.4v11.2"/><path d="M7.6 10.4 12 14.8l4.4-4.4"/><path d="M4.5 16.6v1.9a2.1 2.1 0 0 0 2.1 2.1h10.8a2.1 2.1 0 0 0 2.1-2.1v-1.9"/></svg><span class="hi-lbl" data-i18n="fontmaker.toolbar.export_btn">Export TTF</span></button>
-    <span id="exportSize" class="export-size" dir="ltr" hidden></span>
+    <span class="export-size-slot"><span id="exportSize" class="export-size" dir="ltr" hidden></span></span>
     <span id="engineBadge" class="engine-badge" title="Getting the font engine ready so your first export is fast" data-i18n-title="fontmaker.toolbar.engine_badge_title" hidden><span class="engine-dot" aria-hidden="true"></span><span data-i18n="fontmaker.toolbar.engine_badge">engine loading…</span></span>
   </div>
   <!-- The other six tools all launch the tour from a header Tour button; here it used to live only
@@ -23548,6 +23555,31 @@ function exportSizeSync() {
   // (a left-over title would tell a screen reader "nothing has changed since" about a font that has).
   el.textContent = n ? fmt.toUpperCase() + ' · ' + fmMb(n) : '';
   if (n && window.I18n) el.title = I18n.t('fontmaker.toolbar.export_size_title'); else el.removeAttribute('title');
+  exportSizeFit();
+}
+/* The readout is out of the toolbar's flow (its slot sits after the Export group, which takes no room for it), so it is
+   shown only where it fits on that row: between the group and the next control, or the toolbar's own edge, with the
+   toolbar's 8px gap left before either. Where it does not fit it is hidden, not moved — and it still describes the
+   Export button, and the Exported ✓ screen still gives the size. Run whenever the toolbar or one of its parts changes
+   size (a window width, a language, the sign-in pip, the engine badge, a font arriving) and when the text changes. */
+function exportSizeFit() {
+  const el = document.getElementById('exportSize'); if (!el) return;
+  el.classList.remove('es-nofit');
+  const r = el.getBoundingClientRect(); if (el.hidden || !r.width) return;   // no size to show, or put away (≤600px)
+  const g = el.closest('.tb-group'), tb = g && g.parentElement; if (!tb) return;
+  const cs = getComputedStyle(tb), t = tb.getBoundingClientRect(), gr = g.getBoundingClientRect(), rtl = cs.direction === 'rtl';
+  let room = rtl ? r.left - (t.left + parseFloat(cs.paddingLeft)) : (t.right - parseFloat(cs.paddingRight)) - r.right;
+  for (const c of tb.children) {
+    if (c === g) continue;
+    const q = c.getBoundingClientRect();
+    if (!q.width || q.bottom <= r.top || q.top >= r.bottom || (rtl ? q.left >= gr.left : q.right <= gr.right)) continue;   // another row, or before the group
+    room = Math.min(room, rtl ? r.left - q.right : q.left - r.right);
+  }
+  if (room < 8) el.classList.add('es-nofit');
+}
+if (window.ResizeObserver) {   // a toolbar part that changes size changes the room after the Export group
+  const tb = document.querySelector('.toolbar');
+  if (tb) { const ro = new ResizeObserver(() => exportSizeFit()); ro.observe(tb); [...tb.children].forEach(c => ro.observe(c)); }
 }
 function exportSizeLine() {   // the Exported ✓ screen: the size of the file that was just downloaded
   const x = window._lastExport; if (!x || !x.size) return '';
