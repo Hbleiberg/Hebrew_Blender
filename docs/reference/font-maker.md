@@ -1186,6 +1186,16 @@ where they overlap, and a hole over two overlapping solids cuts nothing. There i
 `holeTroubles(l)` says when a hole is not cutting — it asks "is this ink?" (`gxwEdges` / `gxwInside`)
 of points just inside each hole's edge — and the Contours list shows a note under that row.
 
+**Which contours are holes is read in one place, `contourRoles(rings, kept)`** — the Contours rows,
+their switch (`contourToggleHole`), `holeTroubles` and `nodeKeepAll` all use it, so a row, its note
+and the keep step cannot disagree. In a kept letter a hole is a counter-clockwise contour, nothing
+more. An automatic letter is read **relative to itself**: when its largest contour (an outline's
+biggest ring is a solid) runs counter-clockwise the whole outline is drawn the other way round — an
+imported CFF outline, the stock punctuation marks — and then *clockwise* is the hole, with its
+inside on the right of travel; and a contour that stands clear of every other one (their boxes do
+not meet) is a solid whichever way it runs. The label is never consulted: a CFF outer is labelled
+`'ccw'`, and reading the label called it a hole that was not cutting.
+
 **Nesting cannot decide a block letter.** `renestNodeModel` used to re-derive every contour's
 direction, on every structural edit, from how many other rings hold the contour's *first point*.
 That is right for a traced letter and wrong for one built from **overlapping solids**: a roof bar

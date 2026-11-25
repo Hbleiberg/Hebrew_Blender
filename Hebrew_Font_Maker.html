@@ -15490,18 +15490,21 @@ function shapesPanelHTML() {
 /* Which holes are not cutting cleanly → Set of contour indices. A hole shows only where the letter's
    winding, the hole counted, comes to zero: so points just inside each hole's edge are asked "is
    this ink?" of the whole outline. Ink there means the hole pokes past the letter, lies over
-   another hole or over two overlapping solids, or stands alone. */
+   another hole or over two overlapping solids, or stands alone. Which contours ARE holes is
+   contourRoles' reading — the Contours rows use the same one — so the outer of an imported CFF
+   letter or of a stock punctuation mark (drawn the other way round) is not taken for a hole. */
 function holeTroubles(l) {
-  const out = new Set(), rings = ((l && l.contours) || []).map(c => c.points || []);
-  if (!rings.some(R => R.length >= 3 && signedArea(R) > 0)) return out;
-  const E = gxwEdges(rings);
+  const out = new Set(), cs = (l && l.contours) || [], rings = cs.map(c => c.points || []);
+  const roles = contourRoles(rings, cs.some(c => c.dirSet === true));
+  if (!roles.holes.some(Boolean)) return out;
+  const E = gxwEdges(rings), side = roles.reversed ? -1 : 1;    // a hole runs counter-clockwise (y-up units), its inside on the left of travel — in a letter drawn the other way round, clockwise and on the right
   rings.forEach((R, i) => {
-    if (R.length < 3 || !(signedArea(R) > 0)) return;          // counter-clockwise in y-up units = a hole; its inside is on the left of travel
+    if (!roles.holes[i]) return;
     const step = Math.max(1, Math.ceil(R.length / 48));
     for (let k = 0; k < R.length; k += step) {
       const a = R[k], b = R[(k + 1) % R.length], dx = b[0] - a[0], dy = b[1] - a[1], len = Math.hypot(dx, dy);
       if (len < 4) continue;
-      const p = [(a[0] + b[0]) / 2 - 2.5 * dy / len, (a[1] + b[1]) / 2 + 2.5 * dx / len];
+      const p = [(a[0] + b[0]) / 2 - side * 2.5 * dy / len, (a[1] + b[1]) / 2 + side * 2.5 * dx / len];
       if (!pointInPoly(p, R)) continue;                         // a sliver, or a kink: no verdict from this edge
       if (gxwInside(E, p[0], p[1])) { out.add(i); return; }
     }
@@ -15510,7 +15513,8 @@ function holeTroubles(l) {
 }
 function contourToggleHole(ci) {                 // the Contours list's ○ / ● switch — any contour, one undo step
   if (!nodeModel || !nodeModel.contours[ci]) return;
-  const l = curLetter(), ct = nodeModel.contours[ci], toHole = ct.winding !== 'ccw';   // the opposite of what the row shows
+  const l = curLetter(), ct = nodeModel.contours[ci];
+  const toHole = !contourRoles(nodeModel.contours.map(nodeContourToPoints), nodeKept()).holes[ci];   // the opposite of what the row shows — read before the keep step, which then freezes that same reading
   udDo([itemScope()], (toHole ? 'make hole' : 'make solid') + ' — ' + l.name, () => {
     nodeKeepAll();
     ct.winding = toHole ? 'ccw' : 'cw'; ct.dirSet = true;
@@ -15574,9 +15578,10 @@ function contourSelBoxSVG() {
 function contoursPanelHTML() {
   if (!nodeModel) return '';
   const selCis = _selContourIndices(), bad = holeTroubles(curLetter());
+  const holes = contourRoles(nodeModel.contours.map(nodeContourToPoints), nodeKept()).holes;   // by the order of the points, relative to the letter — never by the label (an imported CFF outer is labelled 'ccw')
   const rows = nodeModel.contours.map((ct, ci) => {
     const hid = _hiddenContours.has(ci), tint = NODE_TINTS[ci % NODE_TINTS.length];
-    const hole = ct.winding === 'ccw', sel = selCis.has(ci);
+    const hole = holes[ci], sel = selCis.has(ci);
     return `<div class="ct-row${hid ? ' hid' : ''}${sel ? ' sel' : ''}"${sel ? ` style="--ct-tint:${tint};"` : ''}>
       <span class="ct-swatch" style="background:${tint};" aria-hidden="true"></span>
       <button type="button" class="ct-kind" data-fk="ct:${ci}" onclick="contourToggleHole(${ci})" title="${esc(I18n.t(hole ? 'fontmaker.node_editor.contour_make_solid_title' : 'fontmaker.node_editor.contour_make_hole_title'))}" aria-label="${esc(I18n.t(hole ? 'fontmaker.node_editor.contour_make_solid_aria' : 'fontmaker.node_editor.contour_make_hole_aria', { count: ci + 1 }))}"><span aria-hidden="true">${hole ? '○' : '●'}</span></button>
