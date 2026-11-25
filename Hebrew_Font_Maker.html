@@ -9954,7 +9954,14 @@ function svgOwnStyle(el, rules) {            // the properties this element sets
   return o;
 }
 function svgSanitize(root, opts) {           // inert parsed root → { svg: a geometry-only tree safe to mount, skipped: how many stroke-only shapes were left out }
-  const o = opts || {}, rules = svgStyleRules(root), stat = { shapes: 0, subpaths: 0, skipped: 0 };
+  const o = opts || {}, rules = svgStyleRules(root), stat = { shapes: 0, subpaths: 0, skipped: 0, filled: 0 };
+  const outlines = [];                        // closed shapes drawn with a stroke and no fill — kept or left out together, once the whole document has been read
+  const count = (src, tag) => {               // the caps are for pasted artwork only — they must never refuse a sheet a saved project already holds
+    if (!o.paste) return;
+    stat.shapes++;
+    stat.subpaths += tag === 'path' ? Math.max(1, ((src.getAttribute('d') || '').match(/[Mm]/g) || []).length) : 1;
+    if (stat.shapes > SVG_PASTE_MAX_SHAPES || stat.subpaths > SVG_PASTE_MAX_SUBPATHS) throw new Error(I18n.t('fontmaker.modals.svg_too_complex'));
+  };
   const copy = (src, out, names) => names.forEach(n => { const v = src.getAttribute(n); if (v != null) out.setAttribute(n, v); });
   const carry = (src, out) => {               // what every kept element takes along: its transform (attribute and CSS) and its names, as data
     copy(src, out, ['transform']);
@@ -9985,19 +9992,32 @@ function svgSanitize(root, opts) {           // inert parsed root → { svg: a g
     }
     if (/^(hidden|collapse)$/i.test(st.visibility || '')) return;
     const unfilled = tag === 'line' || /^none$/i.test(st.fill || '') || parseFloat(st['fill-opacity']) === 0;   // a <line> encloses nothing whatever its fill says
-    if (unfilled) { if (st.stroke && !/^none$/i.test(st.stroke)) stat.skipped++; return; }   // a stroke with nothing inside it is not an outline; an unpainted shape is nothing at all
-    if (o.paste) {                                                      // the caps are for pasted artwork only — they must never refuse a sheet a saved project already holds
-      stat.shapes++;
-      stat.subpaths += tag === 'path' ? Math.max(1, ((src.getAttribute('d') || '').match(/[Mm]/g) || []).length) : 1;
-      if (stat.shapes > SVG_PASTE_MAX_SHAPES || stat.subpaths > SVG_PASTE_MAX_SUBPATHS) throw new Error(I18n.t('fontmaker.modals.svg_too_complex'));
-    }
+    const outline = unfilled && svgShapeCloses(src);                    // drawn with a stroke only, and closed: an outline — if the whole artwork is drawn that way (decided below)
+    if (unfilled) {
+      if (!st.stroke || /^none$/i.test(st.stroke)) return;              // an unpainted shape is nothing at all
+      if (!outline) { stat.skipped++; return; }                         // an open line encloses nothing: never an outline
+    } else { stat.filled++; count(src, tag); }
     const out = document.createElementNS(SVG_NS, tag);
     copy(src, out, SVG_SHAPE_ATTRS[tag]);
     carry(src, out);
     parentOut.appendChild(out);
+    if (outline) outlines.push({ src, tag, out });
   };
   const svg = walk(root, null, {}) || document.createElementNS(SVG_NS, 'svg');   // a root that is display:none imports as nothing
+  // One decision for the whole document. Artwork with nothing filled in it is drawn as outlines (a pen
+  // tool's default look, a sheet of letters drawn that way): each closed stroke-only shape is the
+  // outline it draws. Beside a filled shape the same stroke is a frame or a guide around the letter —
+  // read as an outline it would turn the letter into a solid block — so there it is left out and counted.
+  if (stat.filled) { outlines.forEach(p => p.out.remove()); stat.skipped += outlines.length; }
+  else outlines.forEach(p => count(p.src, p.tag));
   return { svg, skipped: stat.skipped };
+}
+function svgShapeCloses(el) {                // does this shape draw a closed outline? a rect, circle, ellipse or polygon always does; a path when every one of its subpaths ends in Z; a line or a polyline never
+  const tag = el.localName;
+  if (tag === 'rect' || tag === 'circle' || tag === 'ellipse' || tag === 'polygon') return true;
+  if (tag !== 'path') return false;
+  const subs = splitSubpaths((el.getAttribute('d') || '').trim());
+  return subs.length > 0 && subs.every(s => /[Zz][\s,]*$/.test(s));
 }
 function splitSubpaths(d) {                 // split a path's d at each M/m so holes stay separate closed contours
   if (!d) return [];

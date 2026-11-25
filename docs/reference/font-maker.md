@@ -526,15 +526,23 @@ every route in — a file upload, a sheet, auto-split, a sheet re-read when a pr
   adopted, so nothing is fetched; without constructable sheets the classes are simply not read), then
   the inline `style`. `fill`, `stroke` and `visibility` inherit. The old `getComputedStyle` filter on the
   mounted clone is gone: page CSS could hide a shape through it.
-- **One reading for every route.** A shape whose fill resolves to `none` (or a `line`, which encloses
-  nothing whatever its fill says) is left out and counted in `skipped` — every caller says how many
-  (`svgSkippedNote`), and an SVG with nothing but strokes gets its own plain error. `display:none` on a
-  group hides its whole subtree, so a hidden layer does not import. `svgInkLoops` drops a loop that
-  encloses nothing before any fit measures its box. A sheet is re-parsed when its project loads
-  (`cacheSvgSheet`), so these readings apply to a saved sheet's next crop or auto-split too — letters
-  already assigned keep the contours they have.
-- **`opts.paste`** switches on only the caps (`SVG_PASTE_MAX_*`): a cap must never refuse a sheet a
-  saved project already holds.
+- **One reading for every route, decided once per document.** A filled shape is an outline. A shape
+  drawn with a stroke and no fill (its fill resolves to `none`, or its `fill-opacity` to 0) is an
+  outline only when it is closed — `svgShapeCloses`: a `rect`, `circle`, `ellipse` or `polygon`, or a
+  `path` whose every subpath ends in `Z` — and only when nothing in the document is filled. Artwork
+  drawn as outlines (a pen tool's default look, a sheet of letters drawn that way) then imports as the
+  lines it draws, the way it did before the sanitizer existed. Beside a filled shape the same stroke
+  is a frame or a guide around the letter — read as an outline it would turn the letter into a solid
+  block — so there it is left out and counted in `skipped`. An open stroke (a `line`, a `polyline`, a
+  path with an open subpath) is always left out and counted, and a shape with neither fill nor stroke
+  is nothing at all. Every caller says how many were left out (`svgSkippedNote`), and an SVG in which
+  nothing can become an outline gets its own plain error (a closed shape needs a fill; Outline Stroke
+  is for an open line). `display:none` on a group hides its whole subtree, so a hidden layer does not
+  import. `svgInkLoops` drops a loop that encloses nothing before any fit measures its box. A sheet is
+  re-parsed when its project loads (`cacheSvgSheet`), so these readings apply to a saved sheet's next
+  crop or auto-split too — letters already assigned keep the contours they have.
+- **`opts.paste`** switches on only the caps (`SVG_PASTE_MAX_*`, counted over the shapes that are
+  kept): a cap must never refuse a sheet a saved project already holds.
 
 **The project file is the other way in, and it is as untrusted as the sheet inside it.** The page
 writes an item's numbers into markup — the Letter metrics fields, the Trace sliders and their readout,
