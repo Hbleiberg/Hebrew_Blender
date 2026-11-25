@@ -1353,12 +1353,21 @@ resolving them), and **L2**'s run reversal. Two embedding levels is the whole la
 field has no markup to nest deeper. Kerning stays a *logical* pair, so `spacingLineSVG` applies
 `gaps[min(a,b)]` only between visual neighbours still adjacent in reading order.
 
-`bidiClassOf` gives each cell its class: R for the right-to-left blocks (`isRtlCp`), EN for the
-European digits, L for the English and Cyrillic sets — and, because a custom glyph can sit at any code
-point, L for a Private Use code point (the range the Custom glyphs tab recommends) and for a letter of
-any other script outside the right-to-left blocks, R for one inside them. That is the class a browser
-gives those code points: three custom glyphs read left to right even inside Hebrew text. Punctuation,
-symbols and marks are the neutrals.
+`bidiClassOf` gives each cell its class from `cpBidiClass(hex)`, the one reading of a code point's
+direction (kerning's `kernPairDir` and the legacy-kern importer read it too). A regular expression
+cannot ask for Unicode's Bidi_Class itself, so it is read as near as the General_Category, the
+Script and three binary properties allow. R: the page's own right-to-left sets, whole (`isRtlCp`).
+EN: the European digits. Strong — R inside Unicode's other right-to-left blocks (`isRtlBlockCp`), L
+outside them: a letter, a letter number, a spacing mark, an alphabetic symbol (the circled letters),
+every Private Use code point (the range the Custom glyphs tab recommends) and an unassigned one
+(not a noncharacter or default-ignorable); and, outside those blocks, a script's own digits
+(Devanagari, Thai…). That is the
+class a browser gives those code points, which matters because a custom glyph can sit at any of
+them: three custom glyphs read left to right even inside Hebrew text. Punctuation, most symbols,
+marks and spaces are the neutrals. Where the reading falls short — all rare for a custom glyph: a
+few symbol blocks a browser sets left to right (Braille, the APL symbols, the parenthesised letters)
+count as neutral, and a few modifier letters (U+02C6–U+02CF among them) and the Greek acrophonic
+numerals, which it treats as neutral, count as L.
 
 Any change here is checked against **Chromium's own bidi**, not against reasoning: render the same
 string in an element with `dir="auto"`, read each character's x with a `Range`, and compare the two
@@ -1407,9 +1416,12 @@ of the value follows `kernPairDir`: a left-to-right pair is the bare value (the 
 advance); a right-to-left pair is placement **and** advance on the first glyph, `<v 0 v 0>` — an
 advance change alone would move the letter *before* the pair and leave the pair's own gap as it
 was; a pair of two directions gets no rule. A group whose letters mix directions needs no special
-case, since every pair is written by itself. A pair of two punctuation marks (or symbols) is written
-for Hebrew text: no one value record closes a pair's own gap in both directions, and in a
-left-to-right run the record a right-to-left pair needs closes the gap before the pair instead.
+case, since every pair is written by itself. A pair of two neutrals (punctuation marks, most
+symbols) is written for Hebrew text: no one value record closes a pair's own gap in both directions,
+and in a left-to-right run the record a right-to-left pair needs closes the gap before the pair
+instead. A known limit: two left-to-right letters of different scripts — a Private Use custom glyph
+beside a Latin letter, as Latin beside Cyrillic — are written and shown as kerned, but a browser
+shapes the two in separate script runs and applies nothing.
 `hfm_read_kern` reads a pair by its advance, so an exported font re-imports with the same values; when a font holds more rows than the import limit
 (`KERN_IMPORT_CAP`), it first folds glyph pairs that share a value back into group rows — per first
 glyph, then first glyphs with the same folded row — so a font this page exported from group pairs
@@ -1426,9 +1438,9 @@ directions is in the editor, `#kernDirNote` under the pair preview says why the 
 units and returns the smallest clearance, and it assumes its **second** argument sits to the
 **left** — right for Hebrew. `kernPairDir(a, b)` says how a pair is set (`'rtl'`, `'ltr'`, or `null`
 for two different directions, which sit in separate runs and never kern; each side takes its class
-from `bidiClassOf`, so a custom glyph in Private Use is left to right; punctuation and symbols take
-their neighbour's side, and two of them count as Hebrew text), and `kernVisualGap` hands the letters
-to `kernOpticalGap` the right way round. Call `kernVisualGap`; `kernOpticalGap` directly is only
+from `cpBidiClass`, so a custom glyph in Private Use, at a letter or at an unassigned code point is
+left to right; neutrals take their neighbour's side, and two of them count as Hebrew text), and
+`kernVisualGap` hands the letters to `kernOpticalGap` the right way round. Call `kernVisualGap`; `kernOpticalGap` directly is only
 right for a pair known to be Hebrew. The gap ignores the pair's own kerning and includes Letter spacing (`effLetterAdvance`).
 *Suggest pairs* (`suggestKernPairs`) uses it, treats a space in the sample as a break — and a
 maqaf, paseq, sof pasuq or nun hafukha, the rule `scripts/build-kern-pairs.mjs` uses; vowels and
