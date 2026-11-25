@@ -962,7 +962,11 @@ kerning and the guide lines do not change. The lean direction the controls start
 `markDirty()` only), else left for Hebrew and right for a Latin-script tab.
 
 **The lean record (`l.slant`, degrees, rounded to 0.1°; composed by adding tangents —
-`slantCompose`).** Stamped on every letter a slant changes (a photo-only letter too). It is what the
+`slantCompose`).** Stamped on every letter a slant changes (a photo-only letter too). A letter with
+nothing to lean — no outline, no photo matrix, no strokes — is left out of a slant altogether
+(`op.skipBare`): an export seeds anchors on every letter, and sheared seeds plus a record would make
+the letter drawn there next measure and seed as if it leaned; a dot placed on its composed forms stays
+too. (Scale all still scales such seeds.) It is what the
 Italic export declares, and what lets code that assumed an upright letter keep working — each reader
 is the identity at 0:
 - `uprightExtent(l)`: `finalizeFromRaw`, Fit margins and Reset metrics measure a letter's **width**

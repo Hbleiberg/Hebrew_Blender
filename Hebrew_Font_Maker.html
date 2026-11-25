@@ -17975,7 +17975,7 @@ function gxPlan(op, set) {
   }
   if (tune) plan.font.tune = tune;
   /* ── letters ── */
-  const specs = {};
+  const specs = {}, bare = new Set();
   gxLetterSet(set).forEach(l => {
     const spec = gxSpec(op, l);
     if (spec === 'mirror') { plan.refuse.mirror = true; return; }
@@ -17989,6 +17989,10 @@ function gxPlan(op, set) {
     if (r.off) plan.warn.off.push(nm);
     if (r.closed) plan.warn.closed.push(nm);
     if (r.set.contours && r.set.advance != null) { plan.adv.before += letterAdvance(l); plan.adv.after += r.set.advance; }   // what the text's length becomes
+    // An operation that only leans (op.skipBare) leaves out a letter with nothing to lean — no outline, no
+    // photo matrix, no strokes. Such a letter may still carry anchors an export seeded on it; sheared, and
+    // with a record stamped, the letter drawn there next would be measured and seeded as if it leaned.
+    if (op.skipBare && !(r.set.contours || r.set.transform || r.set.draw)) { bare.add(l.codepoint); return; }
     if (!Object.keys(r.set).length) return;
     const it = { l, set: r.set };
     // An operation may stamp a record on every letter it changes (the slant keeps each letter's lean):
@@ -18002,7 +18006,7 @@ function gxPlan(op, set) {
   (project.precomposed || []).forEach(pc => {
     const spec = specs[precompBaseCp(pc)], w = {}, nm = precompName(pc);
     if (spec && spec !== 'mirror') {
-      ['anchor', 'holam'].forEach(key => {
+      if (!bare.has(precompBaseCp(pc)) || precompSrcOutline(pc)) ['anchor', 'holam'].forEach(key => {   // a dot placed over a letter left out stays with that letter; a form the source font drew whole is ink of its own
         const p = pc[key];
         if (p && Number.isFinite(p.x) && Number.isFinite(p.y)) { const q = gxRPt(spec.TA || spec.T, [p.x, p.y]); big(q[0], nm); big(q[1], nm); w[key] = Object.assign({}, p, { x: q[0], y: q[1] }); }   // other keys (anchor.auto) ride along
       });
@@ -18127,6 +18131,7 @@ function gxSlantOp(deg, o) {   // o: { scope, marks, name }
     label: o.scope === 'letter' ? 'slant letter — ' + o.name : 'slant letters',
     affine() { return { T: [1, k, 0, 1, -k * b, 0], keepLsb: true }; },   // x' = x + k·(y − baseline); a stored left margin is a width, not a point
     stamp(l) { const d = slantCompose(letterSlant(l), deg); return { slant: d || null }; },
+    skipBare: true,   // a letter nobody has drawn yet has nothing to lean: no record, its seed anchors left as they are
     lean: all ? k : 0, markShape: !!(all && o.marks),
     fontX: null, fontY: null, markFactor: null
   };
