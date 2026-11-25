@@ -1269,6 +1269,14 @@ in `nodeDrag` (`type: 'shape'`) — never in the model, like the pen's.
   `renestNodeModel()`, `writeThroughRebuild(l)`. Afterwards the tool is away and the new contour is
   selected, so the arrows nudge it and the Transform fields size it. No outline moves, so anchors a
   teacher placed stay where they are, as with a pen or pasted contour.
+- **The corner radius** (`#shapeRadius`) commits on its own `change`, and again when a shape is about
+  to be made: `shapePointerDown` and `shapePlaceMiddle` call `shapeRadiusCommit()`, which reads the
+  field with the same clamping. A drag never blurs the field (the stage's pointerdown is
+  default-prevented, so the field keeps focus right through it), and without that a radius typed
+  just before the drag went to the *next* shape. It is never committed on a keystroke, which would
+  rewrite the number while it is being typed. When a shape is inserted with focus in that field,
+  `shapeInsert` moves focus to the shape's own button instead of letting the rebuild hand it back:
+  in a field the arrow keys step the radius, and the status line says they move the new shape.
 - While a shape is picked, `renderNodeChrome` shows none of the three mode buttons pressed but still
   derives the toolbar's single Tab stop from pen / marquee / select — a fourth mode with no bar
   button would leave the whole bar unreachable by Tab.

@@ -15369,6 +15369,12 @@ function shapeRadiusSet(el) {
   const v = Math.max(0, Math.min(SHAPE_R_MAX, Math.round(+el.value || 0)));
   _shapeRadius = v; el.value = v; wsSavePref('nodeShapeRadius', v);
 }
+/* The field commits on `change`, and a drag on the stage never fires it: the stage's pointerdown is
+   default-prevented, so the field keeps focus right through the drag, and a radius typed just
+   before it would be used by the NEXT shape. So a stage press and "Place in the middle" read the
+   field themselves, with the same clamping — at that moment only, never on a keystroke, which
+   would rewrite the number while it is being typed. */
+function shapeRadiusCommit() { const el = document.getElementById('shapeRadius'); if (el && el.value !== String(_shapeRadius)) shapeRadiusSet(el); }
 function buildWithShapes(ev) {                   // entry for a blank glyph — an empty outline, the Shapes section open, the last shape picked
   if (curKind !== 'letter') return;
   _shapeEntry = true; _shapesOpen = true;
@@ -15394,6 +15400,7 @@ function shapeDefaultBox(l, hole) {
 function shapePlaceMiddle() {
   if (!nodeModel || !_shapeTool) return;
   const kind = _shapeTool;
+  shapeRadiusCommit();
   if (shapeInsert(shapeDefaultBox(curLetter(), _shapeHole)) && document.activeElement === document.body) shapeFocus(kind);   // the Place button went away with the tool; the arrows nudge from here
 }
 function shapeInsert(box) {                      // one undo step: the letter becomes a kept one, the shape joins it
@@ -15412,7 +15419,10 @@ function shapeInsert(box) {                      // one undo step: the letter be
   const ci = nodeModel.contours.indexOf(ct);
   _shapeTool = null; _hiddenContours.clear(); nodeSel.clear();
   if (ci >= 0) ct.nodes.forEach((_, ni) => nodeSel.add(nodeKey(ci, ni)));   // selected: the arrows nudge it, the Transform fields size it
+  const ae = document.activeElement, inRadius = !!ae && ae.id === 'shapeRadius';
+  if (inRadius) ae.blur();                       // the radius field kept focus through the drag; given it back by the rebuild, the arrow keys would step the radius instead of moving the shape
   renderGrids(); renderStage(); renderControls(); renderLegend();
+  if (inRadius) shapeFocus(kind);                // the shape's own button, as after Place in the middle: the arrows nudge from there
   const warn = hole && ci >= 0 && holeTroubles(l).has(ci);
   status(I18n.t(hole ? 'fontmaker.status.shape_added_hole' : 'fontmaker.status.shape_added_' + kind) + (warn ? ' ' + I18n.t('fontmaker.status.shape_hole_warn') : ''));
   return true;
@@ -15423,6 +15433,7 @@ function shapeClampPt(p) {                       // a captured pointer can leave
 }
 function shapePointerDown(e) {
   if (nodeDrag || e.button) return;
+  shapeRadiusCommit();                           // a radius typed just now is this shape's (the draft is drawn with it too)
   const tg = collectSnapTargets(), a = shapeClampPt(clientToFont(e));
   let hit = null;
   if (snapGuidesOn() && !e.altKey) {             // the first corner snaps like a pen click (Alt bypasses)
