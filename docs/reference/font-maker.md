@@ -221,6 +221,51 @@ handler goes through the real setters (`setMarkEnabled`, `setAdd*`, `setInputMod
   an old key press), and a key that closes nothing is not affected: the guard still lets keys through
   to an open window that is not on its list, which the Edit-shape window's own undo relies on.
 
+### Shortcut keys on buttons — the `KH` table
+
+A button that has a keyboard shortcut shows it. `KH` (beside `modKey()`) is the one table: an entry
+per shortcut, each a list of combinations written with `mod` for the platform's modifier
+(`undo: ['mod+Z']`, `redo: ['mod+Shift+Z', 'mod+Y']`, `drawLine: ['L']`, `nodeSelect: ['Escape']`).
+Three readers, and nothing else spells a key:
+
+| Reader | Gives | Used for |
+|---|---|---|
+| `khHtml(id, pop)` | the caps, `<span class="kh" aria-hidden="true" dir="ltr"><kbd>…</kbd>…</span>` — the first combination only | the visible hint |
+| `khTitle(id)` | `Ctrl+Z` / `⌘+Z` | the `{keys}` placeholder of a title string |
+| `khAria(id)` | `Control+Z` / `Meta+Z`, every combination, space-separated | `aria-keyshortcuts` |
+
+`mod` is ⌘ / `Meta` when `IS_MAC`, Ctrl / `Control` otherwise. Keys are never translated; a title is
+(`fontmaker.toolbar.undo_title` = `Undo ({keys})`).
+
+**Two forms.** A key *sits on* its button where there is room — the Draw tools (in the button's
+corner: the five share one row of the panel and have no width to give), Select / Marquee / Pen in
+the Edit points bar, Copy / Paste / Select all in the points panel, and after the label of the
+rulers and grid checkboxes in Advanced. Where there is none — Undo and Redo in the toolbar, the Edit
+points bar, the Draw panel and the Edit-shape window, and the bar's Grid toggle — it is the
+*pop-up* form (`khHtml(id, true)`, `.kh-pop`): a child of the button, out of the row's flow, shown
+by CSS on `:hover` and `:focus-visible` after a short delay. The host carries `data-kh-pop`.
+
+**Static and built buttons.** A button in the page's markup carries `data-kh="<id>"` (plus
+`data-kh-pop`, and `data-kh-title="<string key>"` in place of a fixed `title`); `khSyncStatic()`
+— run at start and from `applyI18n` — sets `aria-keyshortcuts`, the title, and adds the caps once
+(a checkbox's caps go after its label). A button built in a template calls the three readers
+itself. `khSyncStatic` writes attributes and the caps only; it is safe to run at any time.
+
+**Rules that are easy to break:**
+- The caps are `display: none` unless `(pointer: fine)` — the suite's rule for key hints; the
+  `aria-keyshortcuts` stays (a keyboard may be attached to a tablet).
+- A cap must never change a row: `.kh` has a negative block margin so a button is not taller for
+  it, the bar's icons-only layout (`#nodeBar.nb-tight`) drops the on-button caps, and the Draw
+  tools use the corner. Measure a new site with the caps hidden and shown.
+- A greyed-out button is faded with `opacity`, which would fade a pop-up inside it and make the
+  button a layer the following content paints over. So a pop-up host rises on hover / focus
+  (`z-index`), and `.tbtn.ghost[data-kh-pop]:disabled` / `.ctl-btn[data-kh-pop]:disabled` fade
+  their own colours with `color-mix` instead of `opacity` (inside `@supports`; a browser without
+  it keeps the old fade and a paler pop-up). A new pop-up host of another button class needs its
+  own line there. Undo is greyed out on every new project, so this is the common case, not an edge.
+- A new shortcut that has a button: one `KH` entry, the readers at the button, and its row in
+  `shortcutGroups()` — the sheet stays the full list, `KH` only the ones with a button.
+
 ### The two dots on a שׁ/שׂ placement screen
 `precompTakesHolam(pc)` (base ש + mark ׁ/ׂ) is the **only** form that draws two draggable dots: the
 orange one is the form's own mark (`#pcMark`, dragged via `.pcanc`), the blue one is
@@ -322,6 +367,38 @@ address as resources.html's `openSubmitFont`, and either opens the share sheet w
 gesture (`navigator.share`, `showSaveFilePicker`) is called synchronously from a click — never after
 an `await` — so every async preparation runs before the modal whose button makes the call; in-body
 checklist buttons are wired with `fmWireAct` after `askModal()` so they don't close the dialog.
+
+### Font size readout
+
+The size of the font is shown in two places, and neither ever starts a build.
+
+- **The Exported ✓ screen** adds one line (`exportSizeLine()`): the size of the file that was just
+  downloaded — `TTF · 84 KB`, `WOFF2 · 31 KB`, `ZIP · 118 KB (TTF 84 KB, WOFF2 31 KB)`,
+  `UFO (zip) · 60 KB`. `finishDownload` and the UFO branch record it in `window._lastExport`
+  (`{ kind, size, ttf?, woff2? }`) from the bytes they hand to `downloadBlob`; the LICENSE button
+  on that screen overwrites `_lastDownload`, which is why the line does not read it. Sizes are
+  formatted by `fmMb()`, the format names are not translated, and each size is its own
+  left-to-right `<bdi>`.
+- **Beside the Export button** (`#exportSize`, also the button's `aria-describedby`): the size of
+  the last build, for the picked format, **only while that build is still this project's font**.
+  Every build — `buildFontBytes()` (Preview PDF, Send, Save to My Fonts) and `doExport` — calls
+  `fmBuildKeep(bytes, gen)`, which stores `window._lastBuild = { proj, gen, stem, ref, ttf, woff2 }`:
+  the `project` object, the edit count read **together with the spec** (`_editGen`, bumped by
+  `markDirty()`), and the file stem. `fmBuildFresh()` is true while all three still hold;
+  `exportSizeSync()` shows or empties the readout and is called by `fmBuildKeep`, by `markDirty`
+  (only while the readout is showing), by `onExportFormatChange` and by `udClear` (a project just
+  arrived or left). The WOFF2 size is known only after a WOFF2 was made from that same build
+  (`ref === bytes`); the zip and the UFO show nothing.
+
+Three things to keep:
+- The edit count is read with `buildFontSpec()`, not when the bytes come back: the export awaits
+  the shaping check and the WOFF2 package after the build, and an edit made meanwhile must leave
+  the build an old one.
+- The export's own version bump does not go through `markDirty`, so a finished export keeps its
+  readout; an undo does (it is an edit of the project), so an old number never returns.
+- When the readout is hidden its text **and its title** are removed. A hidden element still
+  describes the button it is `aria-describedby` for, and with no text the browser falls back to
+  the title — which would tell a screen reader "nothing has changed since" about a font that has.
 
 ### Preview PDF — what the specimen shows
 `generatePreviewPDF` draws the cover, the letter × nikkud chart (Hebrew letters only — punctuation

@@ -1107,9 +1107,11 @@ Documented keyboard shortcuts get visible `<kbd>` hint rows (surfaced on keyboar
 touch-primary tools get gesture equivalents; every new interactive element must be keyboard-operable.
 - **Implemented on** (census measured across all seven tools):
   **One heavy surface.** `Hebrew_Font_Maker.html` carries the full treatment — global shortcut handler +
-  `?` cheat sheet via `shortcutGroups()`/`openShortcuts()` + `<kbd>` hints + 5 `aria-keyshortcuts`
-  (the three node-panel mode buttons — `Escape`/`M`/`P` — plus undo `Control+Z` and redo
-  `Control+Shift+Z Control+Y`). The right shape for a tool with dozens of shortcuts, and the only one.
+  `?` cheat sheet via `shortcutGroups()`/`openShortcuts()` + the key shown on every button that has
+  one, with its `aria-keyshortcuts` and title, all read from one table (`KH`: Undo / Redo in four
+  places, Copy / Paste / Select all, the Draw tools, Select / Marquee / Pen, rulers and grid; ⌘ and
+  `Meta` on a Mac — `docs/reference/font-maker.md` → *Shortcut keys on buttons*). The right shape for a
+  tool with dozens of shortcuts, and the only one.
   **Five light surfaces, all `<kbd>` hints without a cheat sheet.** `flash_cards.html`:
   two `.fc-kh-set` rows under the card nav that swap with `setListenChrome()`, because a listening round
   takes different keys (no flip, no Y/N), plus numbered `.lc-key` badges on the listening tiles — the
