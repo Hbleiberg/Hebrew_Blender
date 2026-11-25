@@ -27094,11 +27094,16 @@ function migrateProject(data) {
   data.precomposed =Array.isArray(data.precomposed) ? data.precomposed.filter(_isObj) : PRECOMPOSED.map(p => ({...p}));
   data.precomposed.forEach(pc => { if (pc.anchor === undefined) pc.anchor = null; if (pc.holam === undefined) pc.holam = null; sanitizePrecompNumbers(pc); });   // per-form mark anchor + holam-attach override — and its numbers are numbers (a string here reached the form's X / Y fields as markup)
   data.precomposed.forEach(sanitizePrecompSrc);   // a form outline taken whole from a source font — shape-checked because it becomes glyph data verbatim
+  // The four opacity sliders (the template letter, the photo in Align and in Trace, the outline) are
+  // written into the stage's markup as opacity= / fill-opacity=, so each is a number in the 0–1 its
+  // setter keeps, else the default — a string there reached innerHTML whole and ran.
+  const _opacity = (v, d) => { const n = (typeof v === 'number' || (typeof v === 'string' && v.trim() !== '')) ? +v : NaN; return Number.isFinite(n) ? Math.max(0, Math.min(1, n)) : d; };
   if (!_isObj(data.template)) data.template = { font:"'Noto Sans Hebrew', sans-serif", opacity:0.35, showOverlay:true };
+  data.template.opacity = _opacity(data.template.opacity, 0.35);
   data.template.customFonts = _objs(data.template.customFonts);   // uploaded tracing fonts (bytes) persist here; one picked from the installed fonts persists as a name
   data.template.customFonts.forEach(cf => { if (cf.local !== undefined && !(typeof cf.local === 'string' && LF_PS_RE.test(cf.local))) delete cf.local; });   // the name goes inside local("…"): only the strict pattern
   if (!_isObj(data.view)) data.view = { imgOpacityAlign:0.92, imgOpacityTrace:0.28, glyphOpacity:1.0 };
-  ['imgOpacityAlign','imgOpacityTrace','glyphOpacity'].forEach((k,i)=>{ if(data.view[k]==null) data.view[k]=[0.92,0.28,1.0][i]; });
+  ['imgOpacityAlign','imgOpacityTrace','glyphOpacity'].forEach((k,i)=>{ data.view[k] = _opacity(data.view[k], [0.92,0.28,1.0][i]); });
   if (data.view.snapGuides == null) data.view.snapGuides = true;   // node-drag snapping — absent = ON
   if (!data.guides || typeof data.guides !== 'object') data.guides = { show: true, items: [] };   // project-wide drawing guides
   data.guides.items = _objs(data.guides.items);

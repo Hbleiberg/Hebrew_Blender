@@ -581,9 +581,12 @@ precomposed forms*: its `anchor` and `holam` are two finite numbers, rounded (th
 `defWidth` a finite number inside their slider's range, or "not set". A form the source font drew
 whole keeps its curves (`src.curves`, which reach the stage, the form tiles and the font verbatim)
 only while every point in them is two finite numbers (`sanitizePrecompSrc`); otherwise its rounded
-polygons are used, as for a set that does not match its contours. A field that is absent stays
-absent, and a number that is already good is not touched, so a normal project loads exactly as it was
-saved. The paste dialog's
+polygons are used, as for a set that does not match its contours. The project's own four opacities —
+the template letter's (`template.opacity`) and the photo's in Align and in Trace and the outline's
+(`view.imgOpacityAlign`, `imgOpacityTrace`, `glyphOpacity`), which the stage writes as `opacity=` /
+`fill-opacity=` — are a number inside their sliders' 0–1, or the default. A field that is absent stays
+absent (an opacity takes its default), and a number that is already good is not touched, so a normal
+project loads exactly as it was saved. The paste dialog's
 preview (`svgPasteDrawPreview`, the one `innerHTML` this feature adds) writes every value through
 `Math.round(+v) || 0`: nothing but a number can reach its markup, whatever the project holds.
 
