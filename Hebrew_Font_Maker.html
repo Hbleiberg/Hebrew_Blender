@@ -23320,6 +23320,7 @@ def hfm_read_kern(ttf_b64, cap):
     # and class-2-index-0 ("any other glyph" — unboundable as an explicit list) are counted in
     # "skipped" rather than guessed. Walk order = LookupList order = shaper application order, and
     # the first definition of a pair signature wins, so kernEffective never meets a doubled pair from here.
+    # A font with more rows than cap has its glyph pairs folded into group rows first (see the end).
     import io, base64, json
     from fontTools.ttLib import TTFont
     try:
@@ -23347,6 +23348,7 @@ def hfm_read_kern(ttf_b64, cap):
             return [format(g2u[g], "04X") for g in gl if g in g2u]
         pairs, seen = [], set()
         skipped = 0
+        room = cap * 30   # read past the cap: rows that fold into group rows (below) must all be seen before anything is cut off
         for li in sorted(i for i in want if i < len(lookups)):
             for st in (lookups[li].SubTable or []):
                 ext = getattr(st, "ExtSubTable", None)
@@ -23408,10 +23410,28 @@ def hfm_read_kern(ttf_b64, cap):
                             v1000 = int(round(v * scale))
                             if v1000:
                                 pairs.append({"left": L, "right": R, "value": v1000})
-                if len(pairs) >= cap:
+                if len(pairs) >= room:
                     break
-            if len(pairs) >= cap:
+            if len(pairs) >= room:
                 break
+        if len(pairs) > cap:
+            # More rows than the editor lists. Glyph pairs that share a value are one rule written out
+            # letter by letter - buildFEA writes every group pair that way - so fold them back into group
+            # rows before anything is cut off: for each first glyph its second glyphs with one value,
+            # then the first glyphs whose folded row is the same. No two folded rows hold the same pair,
+            # and they go ahead of the font's own class rows, so each pair keeps exactly the value it
+            # had as a specific pair (kernEffective: a specific pair, else the first group in the list).
+            by_first, rest = {}, []
+            for p in pairs:
+                if len(p["left"]) == 1 and len(p["right"]) == 1:
+                    by_first.setdefault(p["left"][0], {}).setdefault(p["value"], []).append(p["right"][0])
+                else:
+                    rest.append(p)
+            merged = {}
+            for a, by_val in by_first.items():
+                for v, bs in by_val.items():
+                    merged.setdefault((tuple(sorted(bs)), v), []).append(a)
+            pairs = [{"left": firsts, "right": list(bs), "value": v} for (bs, v), firsts in merged.items()] + rest
         return json.dumps({"ok": True, "pairs": pairs[:cap], "skipped": skipped})
     except Exception as e:
         return json.dumps({"error": "kern read failed: " + str(e)})
