@@ -1010,7 +1010,8 @@ its own is traced through that placement next, so it takes the placement's lean
 (`photoLean(src)`): with no outline yet as its record, and over an outline traced from the old
 placement as `l.photoSlant`, which waits beside the record until the next trace from the picture
 (`finalizeFromRaw` → `photoSlantTake`) makes it the record. `l.photoSlant` composes and narrows with
-the record under Slant and Width (the photo's matrix moves with them), and goes wherever the record
+the record under Slant and Width, and composes under a whole-letter Slant in Edit points (the carry,
+`xformCarryBase` → `xformSlantCarry` → `xformPutCarry`) — the photo's matrix moves with each — and goes wherever the record
 goes for a new placement (a new photo, crop or auto-split, Center image). A new path that replaces
 or copies an outline does the same. The photo "skew" nudges in Align leave no record.
 

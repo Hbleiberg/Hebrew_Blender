@@ -15738,15 +15738,18 @@ function xformSlantAfter(kind, arg, cur) {
 }
 /* …and a whole-glyph SLANT carries the letter's photo and pen strokes, exactly as the engine does
    (gxLetterPatch), so a later re-trace or one more stroke agrees with the record. `base` is the letter
-   as it was before the transform. → { transform?, captureBox?, draw?, drawSig?, drawOut } */
+   as it was before the transform. The lean a photo's placement waits to give its next trace
+   (l.photoSlant) takes the same shear, as the engine's stamp does. → { transform?, captureBox?, draw?,
+   drawSig?, photoSlant?, drawOut } */
 function xformSlantCarry(l, base, deg) {
-  const k = slantTan(deg), b = effMetrics().baseline;
-  const r = gxLetterPatch(Object.assign({}, l, base), { T: [1, k, 0, 1, -k * b, 0], keepLsb: true }, null), out = { drawOut: r.drawOut };
+  const k = slantTan(deg), b = effMetrics().baseline, was = Object.assign({}, l, base);
+  const r = gxLetterPatch(was, { T: [1, k, 0, 1, -k * b, 0], keepLsb: true }, null), out = { drawOut: r.drawOut };
   ['transform', 'captureBox', 'draw', 'drawSig'].forEach(key => { if (key in r.set) out[key] = r.set[key]; });
+  if (base.photoSlant != null) out.photoSlant = slantCompose(photoLean(was), deg);
   return out;
 }
-function xformCarryBase(l) { return JSON.parse(JSON.stringify({ transform: l.transform, captureBox: l.captureBox || null, draw: l.draw || null, drawSig: l.drawSig == null ? null : l.drawSig, slant: letterSlant(l) })); }
-function xformPutCarry(l, c) { ['transform', 'captureBox', 'draw', 'drawSig'].forEach(key => { if (key in c) l[key] = c[key]; }); }
+function xformCarryBase(l) { return JSON.parse(JSON.stringify({ transform: l.transform, captureBox: l.captureBox || null, draw: l.draw || null, drawSig: l.drawSig == null ? null : l.drawSig, slant: letterSlant(l), photoSlant: l.photoSlant == null ? null : l.photoSlant })); }
+function xformPutCarry(l, c) { ['transform', 'captureBox', 'draw', 'drawSig', 'photoSlant'].forEach(key => { if (key in c) l[key] = c[key]; }); }
 function xformScope(l, kind) {   // a slant that carries pen strokes must snapshot them too (draw is outside a plain item scope)
   return (kind === 'slant' && xformWhole() && l.draw && l.draw.strokes && l.draw.strokes.length) ? Object.assign(itemScope(), { withDraw: true }) : itemScope();
 }
