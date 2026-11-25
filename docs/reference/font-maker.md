@@ -429,7 +429,10 @@ nudges, the six mark sizes, the marks' placement / lean under a slanted font (`m
 width factor (`markWide`) — and
 `'sheetFit'`, each letter sheet's units-per-pixel scale, which
 only the glyph transform engine writes under undo). Continuous inputs: slider drags use `udBurstBegin`/`udBurstCommit` (one
-undo entry per drag); arrow-key nudges use `udNudgeTick`/`udNudgeCommit`. `udPush` calls
+undo entry per drag); arrow-key nudges use `udNudgeTick`/`udNudgeCommit`. A nudge still inside its
+debounce is settled by the next capture — `udCapture` commits it first, and every `udDo`, slider
+burst and pointer drag starts with one — so a nudge never spans another edit and the undo steps come
+out in the order of the edits. `udPush` calls
 `markDirty()` automatically (debounced IndexedDB autosave), so going through `udDo`/burst/nudge
 covers undo + dirty + autosave in one. Pure-UI state (panel collapse, toggles) calls `markDirty()`
 directly with no undo entry. Read-only features (tour, QA grid, shortcuts sheet) must touch none of

@@ -4374,7 +4374,13 @@ function udNavTo(s) {                                    // show the affected it
   if (curKind === s.kind && curCp === s.cp) return;
   curKind = s.kind; curCp = s.cp; catTab = catTabFor(s.kind, s.cp);   // the same precedence a click uses — an undo on a punctuation glyph stays on that tab
 }
-function udCapture(scopes, label) { return { label, slices: scopes.map(s => ({ scope: s, before: udSnap(s) })) }; }
+/* Every edit starts with a capture — udDo, a slider burst, a pointer drag — and an arrow nudge still
+   inside its debounce is settled first: a nudge never spans another edit. Left pending, its entry
+   was pushed AFTER the next edit's, with a "before" from before the nudge and an "after" that held
+   the next edit too, so the two undo steps came out in the wrong order and each did something other
+   than its message said. (udNudgeTick captures only while no nudge is pending, and udNudgeCommit
+   only pushes, so this cannot recurse.) */
+function udCapture(scopes, label) { udNudgeCommit(); return { label, slices: scopes.map(s => ({ scope: s, before: udSnap(s) })) }; }
 function udPush(p) {
   if (!p) return;
   const slices = p.slices.map(sl => ({ scope: sl.scope, before: sl.before, after: udSnap(sl.scope) }))
