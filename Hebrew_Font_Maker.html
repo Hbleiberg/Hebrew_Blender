@@ -9248,6 +9248,40 @@ async function uploadSourceFont(file) {
 function importFontLean(font) {   // the source font's own declared lean, in this app's convention (+ = right); 0 when upright or unreadable
   try { const a = +(font.tables && font.tables.post && font.tables.post.italicAngle); return (Number.isFinite(a) && Math.abs(a) >= 0.05 && Math.abs(a) <= 60) ? Math.round(-a * 10) / 10 : 0; } catch (e) { return 0; }
 }
+/* Which member of which family a source font says it is → { bold, italic, width }. Both halves become
+   this project's names and file name, so each is taken only from what the font states outright:
+   - Italic from the style flags alone (OS/2 fsSelection bit 0, head.macStyle bit 1). A declared italic
+     angle is NOT one: handwriting faces declare an angle on their Regular, and such a font would export
+     as an "Italic" with no Regular beside it. The angle still stamps each letter's lean record
+     (importFontLean) — that is what the record is for.
+   - A width name from OS/2 usWidthClass only when the font's own names (name IDs 1, 2, 4, 16, 17, any
+     language) carry the same word — case, spaces and hyphens aside. The class is often set carelessly,
+     and the word joins the family name: on the class alone an unchanged font would be renamed. */
+function importFontIdentity(font) {
+  const tb = (font && font.tables) || {}, os2 = tb.os2 || null, head = tb.head || null;
+  const bold = !!((os2 && (((os2.fsSelection || 0) & 0x20) || (os2.usWeightClass || 0) >= 600)) || (head && ((head.macStyle || 0) & 0x01)));
+  const italic = !!((os2 && ((os2.fsSelection || 0) & 0x01)) || (head && ((head.macStyle || 0) & 0x02)));
+  const wc = os2 ? +os2.usWidthClass : 5;
+  let width = (!Number.isFinite(wc) || wc === 5 || wc < 1 || wc > 9) ? 'normal' : wc <= 3 ? 'condensed' : wc === 4 ? 'semicondensed' : wc === 6 ? 'semiextended' : 'extended';
+  if (width !== 'normal') {
+    const squash = v => String(v).toLowerCase().replace(/[\s_-]+/g, ''), word = squash(fontWidthInfo(width).name);
+    const longer = Object.keys(FONT_WIDTHS).map(key => squash(FONT_WIDTHS[key].name)).filter(w => w !== word && w.includes(word));   // "Semi Condensed" is not "Condensed"
+    const N = (font && font.names) || {}, per = ['windows', 'macintosh', 'unicode'].map(key => N[key]).filter(t => t && typeof t === 'object');   // the names by platform (newer opentype.js) or flat
+    const said = [];
+    (per.length ? per : [N]).forEach(t => ['fontFamily', 'fontSubfamily', 'fullName', 'preferredFamily', 'preferredSubfamily'].forEach(key => {
+      const v = t[key];
+      if (typeof v === 'string') said.push(squash(v)); else if (v && typeof v === 'object') Object.keys(v).forEach(lang => said.push(squash(v[lang])));
+    }));
+    if (!said.some(nm => longer.reduce((rest, w) => rest.split(w).join(' '), nm).includes(word))) width = 'normal';
+  }
+  return { bold, italic, width };
+}
+function importIdentityNote() {   // what an import set the Style and the Width name to, for the status line ('' for a Regular of normal width)
+  let s = '';
+  if (fontStyleOf(project.font.style) !== 'regular') s += ' ' + I18n.t('fontmaker.status.style_detected', { style: I18n.t('fontmaker.panels.style_' + fontStyleOf(project.font.style)) });
+  if (fontWidthOf(project.font.width) !== 'normal') s += ' ' + I18n.t('fontmaker.status.width_detected', { width: I18n.t('fontmaker.panels.width_' + fontWidthOf(project.font.width)) });
+  return s;
+}
 function importLetterOutline(l, font, scale) {
   const glyph = font.charToGlyph(String.fromCodePoint(parseInt(l.codepoint,16)));
   l.source = { kind:'font', dataUrl:null, cropRect:null };
@@ -9700,15 +9734,13 @@ async function applyFontImport(file, font, bytes, opts) {
     // only import keeps the current project's style).
     if (opts.outlines) {
       try {
-        const os2 = font.tables && font.tables.os2, head = font.tables && font.tables.head;
-        const srcBold = !!((os2 && (((os2.fsSelection || 0) & 0x20) || (os2.usWeightClass || 0) >= 600)) || (head && ((head.macStyle || 0) & 0x01)));
-        // …and one flagged italic (fsSelection bit 0, macStyle bit 1, or a declared italic angle) its Italic.
-        const srcItalic = !!((os2 && ((os2.fsSelection || 0) & 0x01)) || (head && ((head.macStyle || 0) & 0x02)) || importFontLean(font));
-        project.font.style = fontStyleMake(srcBold, srcItalic);
+        // …and one flagged italic (fsSelection bit 0 or macStyle bit 1 — never a declared angle alone) its Italic.
+        const idn = importFontIdentity(font);
+        project.font.style = fontStyleMake(idn.bold, idn.italic);
         delete project.font.italicLean;   // the angle now comes from the imported letters' own records
-        // …and one that declares a width (OS/2 usWidthClass) its Condensed / Extended. The width word joins the
-        // family name on export, so a family name that already ends in it gives the word up here.
-        const wc = os2 ? +os2.usWidthClass : 5, wkey = (!Number.isFinite(wc) || wc === 5 || wc < 1 || wc > 9) ? 'normal' : wc <= 3 ? 'condensed' : wc === 4 ? 'semicondensed' : wc === 6 ? 'semiextended' : 'extended';
+        // …and one that declares a width (OS/2 usWidthClass) AND says so in its names its Condensed / Extended. The
+        // width word joins the family name on export, so a family name that already ends in it gives the word up here.
+        const wkey = idn.width;
         if (wkey === 'normal') delete project.font.width;
         else {
           project.font.width = wkey;
@@ -9841,8 +9873,7 @@ async function applyFontImport(file, font, bytes, opts) {
     if (nForms) msg += ' ' + pl('fontmaker.status.import_loaded_forms', nForms);
     if (metricsImported) msg += ' ' + I18n.t('fontmaker.status.import_metrics');
     if (nKern) msg += ' ' + pl('fontmaker.status.import_kerning', nKern);
-    if (opts.outlines && fontStyleOf(project.font.style) !== 'regular') msg += ' ' + I18n.t('fontmaker.status.style_detected', { style: I18n.t('fontmaker.panels.style_' + fontStyleOf(project.font.style)) });
-    if (opts.outlines && fontWidthOf(project.font.width) !== 'normal') msg += ' ' + I18n.t('fontmaker.status.width_detected', { width: I18n.t('fontmaker.panels.width_' + fontWidthOf(project.font.width)) });
+    if (opts.outlines) msg += importIdentityNote();
     if (opts.outlines && n && !fontIsBold() && !opts.boldAfter) msg += ' ' + I18n.t('fontmaker.status.boldgen_hint');
     status(msg);
     markDirty();   // applyFontImport mutates project directly (a bulk import is a deliberate udDo exception) and used to leave _projectDirty false, so nothing scheduled an autosave
@@ -27619,7 +27650,7 @@ async function wizardOsFinish(){
                           boldAfter: false, autofix: true, english: eng, cyrillic: cyr, phoenician: phn, aramaic: aram, samaritan: smr });
   setInputMode('font');   // applyFontImport stamps project.inputMode; this also persists the pref
   setCatTab('letter');
-  status(I18n.t('fontmaker.oswizard.created_toast', { font: e.displayName || e.id, name }));
+  status(I18n.t('fontmaker.oswizard.created_toast', { font: e.displayName || e.id, name }) + importIdentityNote());   // this line replaces the import's own: carry what it said about the Style and Width the project was set to
   markDirty();   // applyFontImport never dirties — this makes the import tomorrow's "Continue" snapshot
   if (tour) tourStartWhenClear();
 }

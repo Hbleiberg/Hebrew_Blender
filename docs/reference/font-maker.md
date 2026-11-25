@@ -1157,8 +1157,13 @@ the Regular's.
   the drawn letters' records (`fontSlantInfo()`, which also counts how many letters differ — shown
   in the panel and, when the teacher has not chosen, on the Exported screen). Regular and Bold
   declare 0 whatever the letters do. The caret slope is `UPM / round(tan(lean) × UPM)`, or 1 / 0.
-- Importing a font flagged italic (fsSelection bit 0, macStyle bit 1 or a declared angle) sets the
-  style and stamps the source's angle on each imported letter (`importFontLean`).
+- Importing a font sets the style from the source's **style flags alone** (`importFontIdentity`:
+  fsSelection bit 0 or macStyle bit 1 for Italic; fsSelection bit 5, macStyle bit 0 or a weight of
+  600 and up for Bold). A declared italic angle is not a style — handwriting faces declare one on
+  their Regular, and such a font would export as an Italic with no Regular beside it — but it is
+  still stamped on each imported letter as its lean record (`importFontLean`), whatever the style.
+  The import's status line says what Style it set (`importIdentityNote`), and the partner-link
+  flow carries that sentence into its own closing line.
 - An Italic is its own project, as a Bold is: the same Family name in each. A whole-font slant with
   its Style box ticked turns *this* project into the Italic, its saved copy with it.
 
@@ -1189,8 +1194,12 @@ the normal one, and it replaces that font's file, list entry or saved project.
 - The Width dialog's box sets the name with the change: `fontWidthAfter(current, pct)` — the nearest
   name (by ratio) to the width the font already stands for × the percentage, so Condensed widened by
   118% is normal again. Only five names; other amounts take the nearest.
-- Importing a font reads `usWidthClass`; a family name that already ends in the word gives it up there
-  (the export would otherwise say it twice).
+- Importing a font takes the width name from `usWidthClass` **only when the source's own names say
+  the same** (`importFontIdentity`: the word in name ID 1, 2, 4, 16 or 17, in any language — case,
+  spaces and hyphens aside, and "Semi Condensed" is not "Condensed"). The class alone is often set
+  carelessly, and the word joins the family name: an unchanged font would be renamed. A family name
+  that already ends in the word gives it up there (the export would otherwise say it twice), and
+  the status line — the partner-link flow's too — says what Width name was set.
 - A condensed font is its own project, as a Bold or an Italic is.
 
 ### Shapes, holes and kept directions — the point editor's building blocks
