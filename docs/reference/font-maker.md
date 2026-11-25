@@ -578,7 +578,10 @@ piece without its numbers is left out. A combined form (`project.precomposed`) g
 `sanitizePrecompNumbers`, for the X / Y fields and the Dot size and Width sliders of *Special &
 precomposed forms*: its `anchor` and `holam` are two finite numbers, rounded (the placement check's
 `auto` mark kept), or `null` — the form follows its letter again; `markScale`, `widthScale` and
-`defWidth` a finite number inside their slider's range, or "not set". A field that is absent stays
+`defWidth` a finite number inside their slider's range, or "not set". A form the source font drew
+whole keeps its curves (`src.curves`, which reach the stage, the form tiles and the font verbatim)
+only while every point in them is two finite numbers (`sanitizePrecompSrc`); otherwise its rounded
+polygons are used, as for a set that does not match its contours. A field that is absent stays
 absent, and a number that is already good is not touched, so a normal project loads exactly as it was
 saved. The paste dialog's
 preview (`svgPasteDrawPreview`, the one `innerHTML` this feature adds) writes every value through

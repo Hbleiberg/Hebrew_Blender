@@ -9283,8 +9283,12 @@ function sanitizePrecompSrc(pc) {
     }).filter(Boolean) : []).filter(c => c.length >= 3) : [];
     const adv = num(s.advance);
     if (!cs.length || adv == null || adv < 0 || adv > 10000) return null;
+    // the curves ride verbatim to the stage, the form tiles and the font: their points are pairs of finite numbers, or the polygons above are used (a string here threw out of the load)
+    const pt = p => Array.isArray(p) && p.length >= 2 && Number.isFinite(p[0]) && Number.isFinite(p[1]);
+    const curveOk = cv => cv == null || (typeof cv === 'object' && pt(cv.start) && Array.isArray(cv.segments)
+      && cv.segments.every(sg => sg && typeof sg === 'object' && Array.isArray(sg.pts) && sg.pts.length >= (sg.type === 'cubic' ? 3 : 1) && sg.pts.every(pt)));
     return { contours: cs, advance: adv,
-             curves: (Array.isArray(s.curves) && s.curves.length === cs.length) ? s.curves : null };
+             curves: (Array.isArray(s.curves) && s.curves.length === cs.length && s.curves.every(curveOk)) ? s.curves : null };
   };
   if (!pc) return;
   const s = clean(pc.src);
