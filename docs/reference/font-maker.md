@@ -1683,8 +1683,9 @@ in `nodeDrag` (`type: 'shape'`) — never in the model, like the pen's.
   clamped to the drawn window, since a captured pointer can leave the stage; a click without a drag
   and a cancelled pointer add nothing — or **Place in the middle** (`shapePlaceMiddle`,
   `shapeDefaultBox`): a solid at 70% of the letter box (`glyphBand(cp)` × `dispAdvance(l)`), a hole
-  at half the selected contours' box (a shape just added is selected), else the ink's, else the
-  letter box's. There is deliberately **no global Enter key**: the node keydown handler sits on
+  at half the selected contours' box (a shape just added is selected), else half the ink's — and,
+  with nothing to sit in (no ink, or none at least twice `SHAPE_MIN` each way), at 35% of the letter
+  box. There is deliberately **no global Enter key**: the node keydown handler sits on
   `document` and would swallow Enter on a focused panel button.
 - `shapeInsert` is the one writer: **one `udDo([itemScope()], …)`** = `nodeKeepAll()`, push,
   `renestNodeModel()`, `writeThroughRebuild(l)`. Afterwards the tool is away and the new contour is
