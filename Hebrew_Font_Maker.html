@@ -9234,6 +9234,7 @@ function dropKindPins(l, kinds) {
 }
 async function uploadSourceFont(file) {
   if (file && file.hfmInstalled && lfLettersRefused()) return;   // an installed font's letters never enter a partner-locked project, whichever way the file got here
+  if (fontImportHeld()) return;                                  // a font is being built to leave the computer: no import starts under it (file, drop or picker)
   status(I18n.t('fontmaker.status.reading_font'), true);
   let font, bytes;
   try {
@@ -9242,6 +9243,7 @@ async function uploadSourceFont(file) {
     font = ot.parse(buf);
     bytes = new Uint8Array(buf);
   } catch (e) { console.error(e); status(''); askModal(I18n.t('fontmaker.modals.font_read_failed_title'), '<span class="warn">'+(e.message||e)+'</span>', [{label:I18n.t('fontmaker.modals.ok')}]); return; }
+  if (fontImportHeld()) return;                                  // …nor when the build was started while this file was being read
   askFontImportOptions(file, font, bytes);
 }
 /* Pull one glyph's outline + advance out of the source font onto a letter item, in the font's own
@@ -10724,7 +10726,7 @@ function lfLettersRefused() {
 }
 async function lfOpen(target) {               // called straight from the button's click: the browser wants the teacher's own gesture, so nothing is awaited before queryLocalFonts()
   if (!LF_OK || _lfAsking || _lf) return;
-  if (target !== 'reference' && lfLettersRefused()) return;   // before the browser is asked: no permission prompt for a list that cannot be used
+  if (target !== 'reference' && (lfLettersRefused() || fontImportHeld())) return;   // before the browser is asked: no permission prompt for a list that cannot be used
   _lfAsking = true;
   let fonts = null, err = null;
   try { fonts = await window.queryLocalFonts(); } catch (e) { err = e; }
@@ -20797,6 +20799,18 @@ document.addEventListener('keydown', e => {
 let pyodide = null, pyodideLoading = null;
 let _pyoPhase = 'idle';        // 'idle' | 'download' | 'install' | 'ready'
 let _exportPreparing = false;  // true while a click-to-export is waiting on the engine
+/* A font being built to leave the computer (Export, Save to My Fonts, Send) waits on the engine with
+   the whole page live — tens of seconds on a first export. What leaves must still be what the licence
+   gate let through at the click, so two things hold while such a build is in flight (_fontOut counts
+   them): the gate is asked AGAIN at the moment the spec is read, after the awaits (doExport, and
+   buildFontBytes(true) for the other two); and no font import can start (fontImportHeld — the picker's
+   button and uploadSourceFont ask it), so the build never reads a half-imported project. */
+let _fontOut = 0;
+function fontImportHeld() {
+  if (!_fontOut) return false;
+  status(I18n.t('fontmaker.status.import_wait_build'));
+  return true;
+}
 let _pyoPrefetched = false;
 let _pyoWarming = false;       // true while the background download of the engine's files runs
 const PYO_BASE = 'https://cdn.jsdelivr.net/pyodide/v0.26.2/full/';
@@ -23571,8 +23585,9 @@ function exportSizeLine() {   // the Exported ✓ screen: the size of the file t
     ? I18n.t('fontmaker.modals.exported_size_zip', { size, inside: '<bdi dir="ltr">' + esc('TTF ' + fmMb(x.ttf) + ', WOFF2 ' + fmMb(x.woff2)) + '</bdi>' })
     : I18n.t('fontmaker.modals.exported_size', { size }));
 }
-async function buildFontBytes() {                 // build the TTF in memory (no download) — shared by Preview PDF
+async function buildFontBytes(leaving) {          // build the TTF in memory (no download) — shared by Preview PDF. leaving: the bytes are to leave the computer (My Fonts, Send)
   await ensurePyodide();
+  if (leaving && licenseUnsetGate()) return null; // the licence gate again, now that the wait is over: null = it stopped the build and its dialog is up (Preview PDF passes nothing and is never stopped)
   const gen = _editGen;                           // read with the spec: an edit made while the engine works makes this build an old one
   const spec = buildFontSpec();
   const rangeErr = glyphRangeError(spec);   // name the letter here; fontTools would only say 'h' format requires …
@@ -23658,11 +23673,12 @@ function fmSubmitDraft(files, dest) {   // same layout as resources.html's openS
   return { subject, body, shareText };
 }
 function fmLicenseFile() { return new File([licenseText()], fontSafeBase(project.font.familyName) + '-LICENSE.txt', {type:'text/plain'}); }
-async function fmSendFiles() {   // [TTF File, LICENSE File] — always the TTF; rebuilt when the last build is missing or stale (UFO export, rename)
+async function fmSendFiles() {   // [TTF File, LICENSE File] — always the TTF; rebuilt when the last build is missing or stale (UFO export, rename). null = the build failed; false = the licence gate stopped it
   const stem = fontFileStem();
   if (!(window._lastFontBytes && window._lastFontBytes.length) || window._lastFontStem !== stem) {
     status(I18n.t('fontmaker.send.rebuilding'), true);
-    try { await buildFontBytes(); } catch (err) { console.error(err); status(''); return null; }
+    _fontOut++;
+    try { if (!await buildFontBytes(true)) { status(''); return false; } } catch (err) { console.error(err); status(''); return null; } finally { _fontOut--; }
     status('');
   }
   return [ new File([window._lastFontBytes], stem + '.ttf', {type:'font/ttf'}), fmLicenseFile() ];
@@ -23743,6 +23759,7 @@ async function fmSendFont(dest, licenseChecked) {   // Exported ✓ → Send to 
   const d = fmDest(dest);
   if (d.freeOnly && !licenseChecked && !project.osFont && project.font.license === 'arr') { fmSendLicenseWarn(dest); return; }
   const files = await fmSendFiles();
+  if (files === false) return;   // the licence became "not chosen yet" while the engine loaded: the gate's own dialog is up
   if (!files) { askModal(I18n.t('fontmaker.send.nofile_title'), esc(I18n.t('fontmaker.send.nofile_body')), [{ label: I18n.t('fontmaker.modals.ok') }]); return; }
   const draft = fmSubmitDraft(files, dest);
   if (fmCanShareFiles(files)) fmSendPreflightShare(files, draft, dest); else fmSendViaMailto(draft, files, dest);
@@ -23856,6 +23873,7 @@ async function doExport(fmt) {
   window._lastGateSkipped = false;   // reset per export — set only when marks were enabled but the shaping check couldn't run
   const _prevVersion = project.font.version;
   const _setVersion = (val) => { project.font.version = val; const el = document.getElementById('fontVersion'); if (el) el.value = val; };
+  _fontOut++;   // a font is on its way out: no font import may start until the finally below
   try {
     // If the engine isn't ready yet, show phased progress on the button itself.
     if (!pyodide) { _exportPreparing = true; _setPyoPhase(_pyoPhase === 'idle' ? 'download' : _pyoPhase); }
@@ -23870,6 +23888,12 @@ async function doExport(fmt) {
     }
     _exportPreparing = false; onExportFormatChange();
     await osEnsureLicenseText();   // partner projects: make sure LICENSE.txt can embed the upstream text
+
+    // The licence gate again, now that the waiting is over and the spec is about to be read: exportFont
+    // asked it at the click, but the page stayed live while the engine loaded, and the project in front
+    // of this line may no longer be the one the click saw (another project opened meanwhile, an import
+    // that was already running). Nothing has been changed yet, so there is nothing to roll back.
+    if (licenseUnsetGate()) { status(''); return; }   // outer finally re-enables the button
 
     // Bump the font version only now that the engine is ready — a failed engine download (the common,
     // repeatable failure) must no longer ratchet the version on every retry. A build error below rolls
@@ -23925,6 +23949,7 @@ async function doExport(fmt) {
     console.error(err); status(''); _setVersion(_prevVersion);
     askModal(I18n.t('fontmaker.modals.export_error_title'), '<span class="warn">'+(err && err.message || err)+'</span>', [{label:I18n.t('fontmaker.modals.ok')}]);
   } finally {
+    _fontOut--;
     btn.disabled = false;   // never leave the button stuck disabled
     if (_exportPreparing) { _exportPreparing = false; onExportFormatChange(); }
   }
@@ -24480,7 +24505,12 @@ async function saveCurrentToMyFonts(bytes) {
   // The My Fonts store is keyed by name — a bold save must not evict its Regular sibling.
   const fam = (project.font.familyName || 'My Hebrew Font').trim() + fontNameParts(project.font).sfx;
   try {
-    if (!bytes) { status(I18n.t('fontmaker.status.building_font'), true); bytes = await buildFontBytes(); }
+    if (!bytes) {
+      status(I18n.t('fontmaker.status.building_font'), true);
+      _fontOut++;
+      try { bytes = await buildFontBytes(true); } finally { _fontOut--; }
+      if (!bytes) { status(''); return; }   // the licence gate stopped it once the engine was in (its dialog is up)
+    }
     await saveUserFont(fam, bytes, fam);
     status(I18n.t('fontmaker.status.saved_myfonts', {name: fam}));
     if (_myFontsOpen) renderMyFontsList();

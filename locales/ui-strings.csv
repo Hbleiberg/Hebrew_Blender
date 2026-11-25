@@ -3409,6 +3409,7 @@ fontmaker.status.localfont_blocked,"The installed fonts cannot be read while thi
 fontmaker.status.localfont_none,The browser did not return any installed fonts.,הדפדפן לא החזיר גופנים מותקנים.,toast,
 fontmaker.status.localfont_noname,This font cannot be used by its name. Upload its file instead.,אי אפשר להשתמש בגופן הזה לפי שמו. העלו את הקובץ שלו במקום זה.,toast,
 fontmaker.status.localfont_locked,"This project keeps the license of {font}, the font it started from, so letters from an installed font cannot be brought into it.","הפרויקט הזה שומר על הרישיון של {font}, הגופן שממנו התחיל, ולכן אי אפשר להביא אליו אותיות מגופן מותקן.","toast; Pick an installed font… pressed in a project that started from a partner font",param font
+fontmaker.status.import_wait_build,"The font is still being built, so the import has to wait until that is done.","הגופן עדיין נבנה, ולכן הייבוא צריך לחכות עד שהבנייה תסתיים.","toast; a font import (a file or an installed font) tried while an export, a save to My Fonts or a send is still building the font",
 fontmaker.status.reference_missing,"The reference font {name} is not installed on this computer, so a default font stands in for it.","גופן הייחוס {name} אינו מותקן במחשב הזה, ולכן גופן ברירת מחדל מחליף אותו.",toast,
 fontmaker.status.svgpaste_done,Artwork pasted into {name}.,הציור הודבק אל {name}.,toast,
 fontmaker.status.svgpaste_added,Artwork added to {name}.,הציור נוסף אל {name}.,toast,
