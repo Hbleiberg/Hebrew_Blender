@@ -847,7 +847,9 @@ One engine applies a geometric change to many glyphs in **one** undo step. A new
   place; `TA` is the map for anchors, pins and a composed form's `anchor` / `holam` when it differs
   from `T` (which stays the map of the photo, the capture box and the stroke centre lines); `penK`
   fixes the pen-width factor (1 = the pen is left exactly as it is, a chisel's nib included);
-  `setAdvance` writes the new advance on a letter that was still on the default one.
+  `setAdvance` writes the new advance on a letter that was still on the default one; `stretched`
+  says the operation gave this letter its plain map in place of the one it was asked for (the plan
+  lists it in `warn.stretched`).
 - `fontX` / `fontY` are the factors for font-wide horizontal / vertical lengths (`null` = leave them);
   `markFactor` is the uniform factor for mark size (`null` = leave marks). The horizontal factor has
   four audiences, each following `fontX` unless the operation names it: letter geometry (`fontX`
@@ -935,7 +937,8 @@ contour; a mirror; an operation's own `refuse` (`narrow`: a width with no room l
 *Warn* (Apply stays available): contours lost to rounding; a letter with a photo or drawing whose ink
 leaves the window the tracer can rasterize (`GX_TRACE_WIN` — its outline is fine, a later re-trace
 would clip it); settings held at a stored limit; `closed` — letters in which a counter closes or
-strokes meet (the width step's finding). Letter names in a message go through
+strokes meet (the width step's finding); `stretched` — letters the width step would have pulled
+apart, given the plain stretch instead (its guarantee, below). Letter names in a message go through
 `gName`, and through `textContent`.
 
 **The size factor (`metrics.sizeK`, read by `gxK()`).** The anchor seeds (`ANCHOR_Y`, the +40 / 120 /
@@ -1037,6 +1040,35 @@ corner or tangle a noisy outline.
   ring still crosses itself that did not before, the small loop at the notch's tip is cut back to
   where its two sides meet (`gxwUnloop`) and that one contour ships as its polygon (a null curve
   entry). A large loop is a real overlap of two strokes: left as it is and reported by the gap columns.
+- *Buried ends — letters assembled from overlapping contours.* An edge that lies inside another
+  contour's ink (the end of a roof bar run into a stem, the root of an n's arch) is not the side of a
+  stroke. Corrected as one, a widened bar's end is pulled back out of the stem while the stem's own
+  side moves away from it — the pieces come apart — and a narrowed one grows out of the far side of a
+  thin stroke. So a point with a buried leg (`hidden`: a quarter unit outside its own ring there is
+  ink of the other rings, and the ring is not a counter cut out of that ink), or one that lies in
+  such ink itself, is **held inside its cover** (`heldOf`, `chord`, `keep`): inside the horizontal
+  run of ink of the largest ring of its own direction that covers it, at least as deep from each end
+  as it was — up to half the stem, and narrowed with a narrowed letter — the run's ends taken where
+  their own points were moved to (three passes: a cover's own end may be held too). A point that is
+  still that deep where the step put it is not moved, so a stem whose top runs into a roof keeps its
+  sides parallel. Curve nodes are held the same way against the settled polygons (a segment for a
+  leg), and their handles go with them. Two kinds of ring are never asked and come out exactly as
+  before: one with no ring of its own direction near it — every ordinary letter, point for point —
+  and one with less than a third of its outline showing (a fill-in at a joint: held in its two
+  covers it would be stretched into a web across the joint; left alone it thins away as the joint
+  opens, and is reported as lost detail when it goes).
+- *The guarantee — a letter never leaves the step in more pieces than it came in (`gxwPieces`,
+  `gxwApart`).* For every letter of more than one contour `gxWidthOp` counts the pieces of ink
+  before and after: the connected parts of the nonzero fill on slices one unit apart, counted twice
+  — parts within a unit of each other joined (two contours that only touch are one piece), and two
+  contours joined only by a real overlap (a joint that merely touches is one a rounding can open; a
+  contour's own ink counts as one piece wherever it pinches) — on the polygons and, where curves
+  ship, on the flattened curves. A letter with more pieces after than before is **not given the
+  step**: its spec is the plain scale by the shapes' factor with `stretched: true` (advance,
+  anchors, pen and photo as with the box off; no `handEdited` stamp), and the plan lists it in
+  `warn.stretched`. The dialog names those letters in their own warn-styled sentence; Edit points
+  says it in the status line. The "before" counts ride on the census (`cen.pieces`), which the
+  dialog keeps while it is open.
 - *The result* is translated so the ink's left edge lands exactly on s × its old place, rounded, and
   returned as the spec's `out`; `TA` maps old ink edges → new ink edges (`boldGenLetter`'s rule) and
   `penK` is 1, so a re-saved drawing keeps its stems. A **photo** cannot: such a letter is stamped

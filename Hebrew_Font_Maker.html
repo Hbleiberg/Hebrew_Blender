@@ -15833,9 +15833,9 @@ function xformWidthStems(pct) {
   udFlushPending(); _xformBase = null;   // a slider burst still open would write its old model back over the result
   const res = gxWidthPlan(pct, { scope: 'letter', stems: true, spacing: false, marks: false, name: l.name }, { scope: 'letter', cp: l.codepoint, cat: _drawCatOf(l.codepoint) });
   if (gxRefused(res.plan) || !res.plan.scopes.length) { status(gxRefusalText(res.plan, 'width', pct) || I18n.t('fontmaker.scaleall.note_nothing')); return; }
-  const warn = res.plan.warn.closed.length > 0;
+  const warn = res.plan.warn.closed.length > 0, stretched = res.plan.warn.stretched.length > 0;   // stretched: the stem step would have pulled this letter apart, so the plan gave it the plain stretch
   if (!gxCommit(res.plan, null)) return;
-  status(I18n.t(warn ? 'fontmaker.node_editor.scale_stems_warn' : 'fontmaker.widthall.applied_letter', { pct }));
+  status(I18n.t(stretched ? 'fontmaker.node_editor.scale_stems_stretched' : warn ? 'fontmaker.node_editor.scale_stems_warn' : 'fontmaker.widthall.applied_letter', { pct }));
 }
 /* Live transform sliders — the fillet/reduce burst idiom, but for a RELATIVE op: the slider value
    is the total rotation/scale since drag start (reset-from-base each tick), and it snaps back to
@@ -17865,7 +17865,7 @@ function gxPlan(op, set) {
   const fS = grp('spaceX'), fP = grp('pairX'), fG = grp('gapX');
   const mw = (all && op.markWide != null && op.markWide !== 1) ? op.markWide : null;
   const plan = { label: op.label, items: [], precomp: [], font: {}, scopes: [], count: 0, adv: { before: 0, after: 0 },
-                 refuse: { range: [], gone: [], draw: [], mirror: false, narrow: op.refuse === 'narrow' }, warn: { lost: [], off: [], held: [], closed: [] } };
+                 refuse: { range: [], gone: [], draw: [], mirror: false, narrow: op.refuse === 'narrow' }, warn: { lost: [], off: [], held: [], closed: [], stretched: [] } };
   const held = new Set();
   const lim = (v, lo, hi, tag) => { const r = Math.round(v); if (r < lo || r > hi) { held.add(tag); return Math.max(lo, Math.min(hi, r)); } return r; };
   const big = (v, name) => { if (Math.abs(v) > GX_COORD_MAX && !plan.refuse.range.includes(name)) plan.refuse.range.push(name); };
@@ -17988,6 +17988,7 @@ function gxPlan(op, set) {
     if (r.lost && !r.gone) plan.warn.lost.push(nm);
     if (r.off) plan.warn.off.push(nm);
     if (r.closed) plan.warn.closed.push(nm);
+    if (spec.stretched) plan.warn.stretched.push(nm);   // the operation gave this letter its plain map in place of the one it was asked for (a width's stem step that would pull the letter apart)
     if (r.set.contours && r.set.advance != null) { plan.adv.before += letterAdvance(l); plan.adv.after += r.set.advance; }   // what the text's length becomes
     if (!Object.keys(r.set).length) return;
     const it = { l, set: r.set };
@@ -18013,7 +18014,8 @@ function gxPlan(op, set) {
         if (!sp || sp === 'mirror') return;
         const o = sp.out || gxOutline(s.contours, s.curves, sp.T);
         if (o.closed && !plan.warn.closed.includes(nm)) plan.warn.closed.push(nm);
-        const adv = Math.max(0, sp.advance != null ? sp.advance : Math.round((+s.advance || 0) * sp.T[0]));
+        if (sp.stretched && !plan.warn.stretched.includes(nm)) plan.warn.stretched.push(nm);
+        const adv =Math.max(0, sp.advance != null ? sp.advance : Math.round((+s.advance || 0) * sp.T[0]));
         if (!o.rings.length) { plan.refuse.gone.push(nm); return; }
         if (gxOutlineExtent(o).worst > GX_COORD_MAX || adv > GX_SRC_ADV_MAX) big(GX_COORD_MAX + 1, nm);
         if (o.lost && !plan.warn.lost.includes(nm)) plan.warn.lost.push(nm);
@@ -18153,9 +18155,9 @@ const GXW_MIN = 50, GXW_MAX = 150, GXW_PRESETS = [85, 92, 100, 108, 115];
 const GXW_WIN = 8;            // a polygon's direction at a vertex is read over this much outline, so a noisy tracing does not jitter
 const GXW_LOCAL_MAX = 1500;   // above this many points a letter uses its one stem value for every edge (the per-edge look-across is quadratic)
 function gxwMedian(a) { if (!a.length) return null; const b = a.slice().sort((x, y) => x - y), m = b.length >> 1; return b.length % 2 ? b[m] : (b[m - 1] + b[m]) / 2; }
-function gxwEdges(rings) {   // every non-flat edge: [x1, y1, x2, y2, ring]
+function gxwEdges(rings) {   // every non-flat edge: [x1, y1, x2, y2, ring, the index of its first point in that ring]
   const E = [];
-  rings.forEach((r, ri) => { const n = r.length; for (let i = 0; i < n; i++) { const a = r[i], b = r[(i + 1) % n]; if (a[1] !== b[1]) E.push([a[0], a[1], b[0], b[1], ri]); } });
+  rings.forEach((r, ri) => { const n = r.length; for (let i = 0; i < n; i++) { const a = r[i], b = r[(i + 1) % n]; if (a[1] !== b[1]) E.push([a[0], a[1], b[0], b[1], ri, i]); } });
   return E;
 }
 function gxwRuns(E, y) {   // the ink (nonzero winding) along the horizontal line at y: [[x0, x1, edge0, edge1], …]
@@ -18271,6 +18273,53 @@ function gxwUnloop(pts) {   // cut out a small loop where a ring crosses itself 
   }
   return contourSelfIntersects(r) ? null : r;
 }
+/* The pieces a letter's ink is in — the connected parts of its nonzero fill, counted on horizontal slices
+   one unit apart: runs of ink on neighbouring slices belong together when they overlap. → [n, firm]: n
+   lets parts within a unit of each other count as joined (two contours that only touch are one piece);
+   firm asks two CONTOURS for a real overlap — a joint that holds only by touching is one a rounding can
+   open — and takes a contour's own ink as one piece wherever it pinches (a run of ink belongs to the
+   contours that bound it). No height moves under a width change, so the same slices cut the letter
+   before and after: the two results are only ever compared (gxwApart), never read on their own. */
+function gxwPieces(rings) {
+  const E = gxwEdges(rings); if (!E.length) return [0, 0];
+  let y0 = Infinity, y1 = -Infinity;
+  E.forEach(e => { y0 = Math.min(y0, e[1], e[3]); y1 = Math.max(y1, e[1], e[3]); });
+  const R = rings.length, near = gxwBins(E), loose = [], firm = rings.map((r, i) => i);   // firm: one node per contour, then one per run
+  const find = (p, a) => { while (p[a] !== a) { p[a] = p[p[a]]; a = p[a]; } return a; }, join = (p, a, b) => { a = find(p, a); b = find(p, b); if (a !== b) p[a] = b; };
+  let prev = [];
+  for (let y = Math.floor(y0) + 0.5; y < y1; y += 1) {
+    const cur = [];
+    gxwRuns(near(y), y).forEach(q => {
+      if (!(q[1] - q[0] > 0.01)) return;
+      const id = loose.length; cur.push([q[0], q[1], id]); loose.push(id); firm.push(R + id);
+      join(firm, R + id, q[2][4]); join(firm, R + id, q[3][4]);
+    });
+    cur.forEach(c => prev.forEach(p => {
+      const ov = Math.min(c[1], p[1]) - Math.max(c[0], p[0]);
+      if (ov > -1) join(loose, c[2], p[2]);
+      if (ov >= Math.min(1, 0.5 * Math.min(c[1] - c[0], p[1] - p[0]))) join(firm, R + c[2], R + p[2]);   // a unit — or half of the narrower run, so the tip of a point still belongs to its stroke
+    }));
+    prev = cur;
+  }
+  let n = 0; const roots = new Set();
+  for (let i = 0; i < loose.length; i++) { if (find(loose, i) === i) n++; roots.add(find(firm, R + i)); }
+  return [n, roots.size];
+}
+/* Did the stem step pull a letter's ink apart? rings / curves: the letter before; out: gxwShape's result;
+   memo: a (Weak)Map that keeps the "before" counts per letter (the dialog plans the same font many times).
+   Counted on the polygons and, where curves ship, on the curves too (flattened) — the two agree only to
+   the fit tolerance, and a joint can hold in one and open in the other. */
+function gxwApart(rings, curves, out, memo, key) {
+  if (rings.length < 2) return false;   // one contour is one piece of ink, whatever is done to it
+  const ship = (rs, cvs) => (Array.isArray(cvs) && cvs.length === rs.length && cvs.some(cv => cv && cv.segments && cv.segments.length))
+    ? rs.map((r, i) => (cvs[i] && cvs[i].segments && cvs[i].segments.length) ? gxwFlatten(cvs[i]) : r) : null;
+  let was = memo ? memo.get(key) : null;
+  if (!was) { const s0 = ship(rings, curves); was = [gxwPieces(rings), s0 ? gxwPieces(s0) : null]; if (memo) memo.set(key, was); }
+  const more = (a, b) => b[0] > a[0] || b[1] > a[1];
+  if (more(was[0], gxwPieces(out.rings))) return true;
+  const s1 = was[1] ? ship(out.rings, out.curves) : null;
+  return !!s1 && more(was[1], gxwPieces(s1));
+}
 /* The outline step. rings: [[x,y]…] per contour (font units, as stored); curves: 1:1 or null; s: the
    X factor; t: the stem thickness to restore; hand: the polygon is exactly its curves flattened
    (a hand-edited letter) and is rebuilt that way. → gxOutline's record { keep, rings, curves, lost }
@@ -18294,20 +18343,80 @@ function gxwShape(rings, curves, s, t, hand) {
     return [w, -sg * Math.sign(uy) * (tl / 2) * (1 - s * Math.sqrt(ux * ux / (s * s) + w)) / Math.abs(uy)];
   };
   const mix = (a, b) => (a[0] + b[0] > 0) ? (a[0] * a[1] + b[0] * b[1]) / (a[0] + b[0]) : 0;
-  const movePoly = (r, sg) => {
-    const n = r.length;
-    const reach = (i, dir) => { let j = i, acc = 0; for (let k = 0; k < n - 1 && acc < GXW_WIN; k++) { const nj = (j + dir + n) % n; acc += Math.hypot(r[nj][0] - r[j][0], r[nj][1] - r[j][1]); j = nj; } return r[j]; };
-    const P = r.map((V, i) => {
-      const B = reach(i, -1), F = reach(i, 1);
-      const a = leg(V[0] - B[0], V[1] - B[1], (V[0] + B[0]) / 2, (V[1] + B[1]) / 2, sg), b = leg(F[0] - V[0], F[1] - V[1], (V[0] + F[0]) / 2, (V[1] + F[1]) / 2, sg);
-      return [V[0] * s + mix(a, b), V[1]];
-    });
-    // An edge whose ends have passed each other (the floor of a notch narrower than the stems grew): the
-    // two ends meet in the middle — the notch closes to a point there instead of the outline crossing itself.
-    for (let i = 0; i < n; i++) { const j = (i + 1) % n; if ((r[j][0] - r[i][0]) * (P[j][0] - P[i][0]) < 0) { const m = (P[i][0] + P[j][0]) / 2; P[i][0] = m; P[j][0] = m; } }
-    return P;
+  const reach = (r, i, dir) => { const n = r.length; let j = i, acc = 0; for (let k = 0; k < n - 1 && acc < GXW_WIN; k++) { const nj = (j + dir + n) % n; acc += Math.hypot(r[nj][0] - r[j][0], r[nj][1] - r[j][1]); j = nj; } return r[j]; };
+  // An edge whose ends have passed each other (the floor of a notch narrower than the stems grew): the
+  // two ends meet in the middle — the notch closes to a point there instead of the outline crossing itself.
+  const unpass = (r, P) => { const n = r.length; for (let i = 0; i < n; i++) { const j = (i + 1) % n; if ((r[j][0] - r[i][0]) * (P[j][0] - P[i][0]) < 0) { const m = (P[i][0] + P[j][0]) / 2; P[i][0] = m; P[j][0] = m; } } return P; };
+  const movePoly = (r, sg) => unpass(r, r.map((V, i) => {
+    const B = reach(r, i, -1), F = reach(r, i, 1);
+    const a = leg(V[0] - B[0], V[1] - B[1], (V[0] + B[0]) / 2, (V[1] + B[1]) / 2, sg), b = leg(F[0] - V[0], F[1] - V[1], (V[0] + F[0]) / 2, (V[1] + F[1]) / 2, sg);
+    return [V[0] * s + mix(a, b), V[1]];
+  }));
+  const moved0 = rings.map((r, i) => (r.length >= 3 ? movePoly(r, sides[i]) : r.map(p => [p[0] * s, p[1]])));
+  /* Buried ends. A letter assembled from overlapping contours (a roof bar run into a stem, the arch of an n
+     run into its stem) has edges that lie inside another contour's ink. They are not the sides of a stroke,
+     and corrected as if they were, the end of a widened bar is pulled back out of the stem it sat in while
+     the stem's own side moves away from it: the pieces come apart. So where one ring can lie in another's
+     ink, each leg is asked whether just OUTSIDE its own ring there is ink of the other rings (hidden — and
+     the ring must not be a counter cut out of that ink). A point with a buried leg, or that lies in such
+     ink itself, must stay buried: it is held inside the horizontal chord of ink of the ring that covers it (chord), at least as deep from each
+     end as it was (up to half a stem; narrowed with a narrowed letter), the chord's two ends standing where
+     their own rings' points were moved to (keep; settled in a few passes, since a cover's own end may be
+     held too). A point that is
+     still that deep where the step put it is not touched: the side of a stem whose top runs into a roof
+     stays parallel to its other side. Two kinds of ring are never asked and take exactly the path above:
+     one with no ring of its own direction near it (every ordinary letter), and one with less than a third
+     of its outline still showing — a fill-in at a joint, not a stroke: held in its two covers it would be
+     pulled into a web across the joint, where left alone it thins away as the joint opens. */
+  const turn = rings.map(r => (r.length >= 3 && signedArea(r) > 0) ? 1 : -1);   // +1: the ring's inside is on the left of its direction of travel (and counts −1 in gxwRuns' winding)
+  const size = rings.map(r => (r.length >= 3 ? Math.abs(signedArea(r)) : 0)), bx = rings.map(r => polysBounds([r]));
+  const deep = rings.map((r, i) => r.length >= 3 && rings.some((q, j) => j !== i && q.length >= 3 && turn[j] === turn[i] &&
+    bx[j].minX <= bx[i].maxX + 1 && bx[j].maxX >= bx[i].minX - 1 && bx[j].minY <= bx[i].maxY + 1 && bx[j].maxY >= bx[i].minY - 1));
+  const crossX = (e, y) => e[0] + (y - e[1]) * (e[2] - e[0]) / (e[3] - e[1]);
+  const inked = (ri, q) => {   // is q in ink of the OTHER rings, which would be ink with ring ri or without it? → q, or null
+    const B = near(q[1]); let w = 0;
+    for (let i = 0; i < B.length; i++) { const e = B[i]; if (e[4] !== ri && (e[1] > q[1]) !== (e[3] > q[1]) && crossX(e, q[1]) < q[0]) w += e[3] > e[1] ? 1 : -1; }
+    return (w !== 0 && w - turn[ri] !== 0) ? q : null;
   };
-  const moveCurve = (cv, sg) => {
+  const hidden = (ri, px, py, dx, dy) => { const L = Math.hypot(dx, dy); if (!L) return null; const o = turn[ri] * 0.25 / L; return inked(ri, [px + o * dy, py - o * dx]); };   // the outline of ring ri at p, running along (dx, dy): is it covered — tested a quarter unit outside the ring? → that point, or null
+  const chord = (ri, q) => {   // the largest other ring of ri's own direction that holds the point q, and its run of ink through q (its counters taken out) → [left edge, right edge, their x at q's height, that height]
+    const B = near(q[1]), cr = [], on = e => e[4] !== ri && (e[1] > q[1]) !== (e[3] > q[1]), wind = new Map(); let j = -1;
+    for (let i = 0; i < B.length; i++) { const e = B[i]; if (on(e) && turn[e[4]] === turn[ri] && crossX(e, q[1]) < q[0]) wind.set(e[4], (wind.get(e[4]) || 0) + (e[3] > e[1] ? 1 : -1)); }
+    wind.forEach((w, k) => { if (w && (j < 0 || size[k] > size[j])) j = k; });
+    if (j < 0) return null;
+    for (let i = 0; i < B.length; i++) { const e = B[i]; if (on(e) && (e[4] === j || turn[e[4]] !== turn[ri])) cr.push([crossX(e, q[1]), e[3] > e[1] ? 1 : -1, e]); }
+    cr.sort((a, b) => a[0] - b[0]);
+    let w = 0, L = null;
+    for (let i = 0; i < cr.length; i++) { const c = cr[i], w1 = w + c[1]; if (!w && w1) L = c; else if (w && !w1 && L[0] <= q[0] && q[0] <= c[0]) return [L[2], c[2], L[0], c[0], q[1]]; w = w1; }
+    return null;
+  };
+  const heldOf = ri => {   // the points of ring ri that must stay buried: [index, its cover's chord] — null when it has none, or when the ring is a fill-in
+    const r = rings[ri], n = r.length, list = []; let seen = 0, all = 0;
+    const at = (V, T, f) => [V[0] + f * (T[0] - V[0]), V[1] + f * (T[1] - V[1])];
+    const legHid = (V, T, dx, dy) => [0.5, 0.25, 0.75].every(f => { const p = at(V, T, f); return hidden(ri, p[0], p[1], dx, dy); });
+    const probe = (V, T, dx, dy) => { const d = Math.hypot(T[0] - V[0], T[1] - V[1]), p = at(V, T, Math.min(0.25, d / 2) / (d || 1)), q = hidden(ri, p[0], p[1], dx, dy); return q && chord(ri, q); };
+    for (let i = 0; i < n; i++) {
+      const V = r[i], B = reach(r, i, -1), F = reach(r, i, 1);
+      const bdx = V[0] - B[0], bdy = V[1] - B[1], fdx = F[0] - V[0], fdy = F[1] - V[1], lb = Math.hypot(bdx, bdy), lf = Math.hypot(fdx, fdy);
+      const hb = legHid(V, B, bdx, bdy), hf = legHid(V, F, fdx, fdy);
+      all += lb + lf; seen += (hb ? 0 : lb) + (hf ? 0 : lf);
+      const c = (hf && probe(V, F, fdx, fdy)) || (hb && probe(V, B, bdx, bdy)) || (inked(ri, V) && chord(ri, V));   // a buried leg — or the point itself lies in the cover (the tip of a foot that only just reaches into a leg)
+      if (c) list.push([i, c]);
+    }
+    return (list.length && seen * 3 >= all) ? list : null;
+  };
+  const held = rings.map((r, i) => (deep[i] ? heldOf(i) : null));
+  const moved = moved0.map((P, i) => (held[i] ? P.map(p => p.slice()) : P));
+  const keep = (c, x, own) => {   // the place of a point that was at x and that the step put at `own`, held inside its cover's chord as the chord's ends now stand
+    const at = e => { const P = moved[e[4]], a = P[e[5]], b = P[(e[5] + 1) % P.length]; return a[0] + (c[4] - e[1]) / (e[3] - e[1]) * (b[0] - a[0]); };
+    const f = Math.min(1, s), lo = at(c[0]) + f * Math.min(x - c[2], t / 2), hi = at(c[1]) - f * Math.min(c[3] - x, t / 2);   // the depth it had — a narrowed letter's, narrowed with it
+    return lo > hi ? (lo + hi) / 2 : Math.max(lo, Math.min(hi, own));
+  };
+  if (held.some(Boolean)) {
+    for (let pass = 0; pass < 3; pass++) held.forEach((list, ri) => { if (list) list.forEach(d => { moved[ri][d[0]][0] = keep(d[1], rings[ri][d[0]][0], moved0[ri][d[0]][0]); }); });
+    held.forEach((list, ri) => { if (list) unpass(rings[ri], moved[ri]); });
+  }
+  const moveCurve = (cv, sg, ri) => {
     const segs = []; let pen = cv.start;   // absolute control polygons, cubics cut at their extrema
     cv.segments.forEach(g => {
       if (g.type === 'cubic') gxwSplitCubic(pen, g.pts[0], g.pts[1], g.pts[2]).forEach(q => { segs.push([pen, q[0], q[1], q[2]]); pen = q[2]; });
@@ -18320,16 +18429,29 @@ function gxwShape(rings, curves, s, t, hand) {
       const si = at(Q, Q.length === 2 ? 0.5 : 0.8), so = at(P, P.length === 2 ? 0.5 : 0.2);
       return mix(leg(V[0] - pin[0], V[1] - pin[1], si[0], si[1], sg), leg(pout[0] - V[0], pout[1] - V[1], so[0], so[1], sg));
     });
-    for (let j = 0; j < m; j++) {   // the same rule for a curve's nodes (movePoly): a segment whose ends passed each other closes to a point
+    const unpassCv = () => { for (let j = 0; j < m; j++) {   // the same rule for a curve's nodes (movePoly): a segment whose ends passed each other closes to a point
       const a = segs[j][0], bn = segs[(j + 1) % m][0], i2 = (j + 1) % m, od = (bn[0] - a[0]) * s, nd = od + dl[i2] - dl[j];
       if (od * nd < 0) { const mid = (a[0] * s + dl[j] + bn[0] * s + dl[i2]) / 2; dl[j] = mid - a[0] * s; dl[i2] = mid - bn[0] * s; }
+    } };
+    unpassCv();
+    if (held[ri]) {   // buried segments (heldOf's rule, a segment for a leg): a node of one is held in its cover — the polygons', now settled — and its handles go with the node
+      const hid = (P, u) => { const p = at(P, u), a = at(P, Math.max(0, u - 0.02)), b = at(P, Math.min(1, u + 0.02)); return hidden(ri, p[0], p[1], b[0] - a[0], b[1] - a[1]); };
+      const sh = segs.map(P => !!(hid(P, 0.5) && hid(P, 0.25) && hid(P, 0.75)));
+      const probe = (P, end) => { const u = Math.min(0.02, 0.5 / Math.max(1, Math.hypot(P[P.length - 1][0] - P[0][0], P[P.length - 1][1] - P[0][1]))), q = hid(P, end ? 1 - u : u); return q && chord(ri, q); };   // about half a unit along the segment from the node
+      let any = false;
+      for (let j = 0; j < m; j++) {
+        const jp = (j - 1 + m) % m, V = segs[j][0], c = (sh[j] && probe(segs[j], false)) || (sh[jp] && probe(segs[jp], true)) || (inked(ri, V) && chord(ri, V));
+        if (!c) continue;
+        const x = keep(c, V[0], V[0] * s + dl[j]);
+        if (x !== V[0] * s + dl[j]) { dl[j] = x - V[0] * s; any = true; }
+      }
+      if (any) unpassCv();
     }
     const mv = (p, d) => [p[0] * s + d, p[1]];
     return { winding: cv.winding, start: mv(segs[0][0], dl[0]),
       segments: segs.map((P, j) => { const d0 = dl[j], d1 = dl[(j + 1) % m]; return P.length === 2 ? { type: 'line', pts: [mv(P[1], d1)] } : { type: 'cubic', pts: [mv(P[1], d0), mv(P[2], d1), mv(P[3], d1)] }; }) };
   };
-  const moved = rings.map((r, i) => (r.length >= 3 ? movePoly(r, sides[i]) : r.map(p => [p[0] * s, p[1]])));
-  const movedCv = hasCv ? curves.map((cv, i) => (cv && cv.segments && cv.segments.length) ? moveCurve(cv, sides[i]) : null) : null;
+  const movedCv = hasCv ? curves.map((cv, i) => (cv && cv.segments && cv.segments.length) ? moveCurve(cv, sides[i], i) : null) : null;
   const b0 = polysBounds(rings); let mn = Infinity;
   moved.forEach(r => r.forEach(p => { if (p[0] < mn) mn = p[0]; }));
   const tau = Number.isFinite(mn) ? Math.round(b0.minX * s) - mn : 0;   // the ink's left edge lands exactly on s × its old place — the side bearing scales with the letter
@@ -18380,15 +18502,26 @@ function gxwShape(rings, curves, s, t, hand) {
 function gxWidthOp(pct, o) {
   const s = pct / 100, all = o.scope === 'all', stems = !!o.stems;
   const cen = stems ? (o.cen || gxwCensus()) : null, k = (stems && o.k != null) ? o.k : s;
+  /* One letter's stem step, worked out once → { t, out, apart }. The guarantee behind the step is that a
+     letter never leaves it in more pieces than it came in: one whose ink came apart all the same (apart —
+     gxwApart) is not given the step. It is stretched plainly, which cannot separate anything, and the
+     plan names it (warn.stretched). */
+  const tried = new Map(), memo = cen ? (cen.pieces || (cen.pieces = new WeakMap())) : null;   // the "before" counts ride on the census, which the dialog keeps while it is open
+  const step = l => {
+    let r = tried.get(l); if (r) return r;
+    r = { t: gxwStemFor(cen, l), out: null, apart: false };
+    if (r.t != null) { const rings = l.contours.map(c => c.points); r.out = gxwShape(rings, l.curves, k, r.t, !!l.handEdited); r.apart = !!r.out.b1 && gxwApart(rings, l.curves, r.out, memo, l); }
+    tried.set(l, r); return r;
+  };
   return {
     label: o.scope === 'letter' ? 'width ' + pct + '% — ' + o.name : 'letter width ' + pct + '%',
     refuse: (stems && !(k >= 0.2 && k <= 2)) ? 'narrow' : null,
     affine(l) {
-      const has = !!(l.contours && l.contours.length), t = (stems && has) ? gxwStemFor(cen, l) : null;
+      const has = !!(l.contours && l.contours.length), st = (stems && has) ? step(l) : null;
       if (!has) return [k, 0, 0, 1, 0, 0];
       const adv0 = letterAdvance(l);
-      if (t == null) return { T: [k, 0, 0, 1, 0, 0], advance: Math.round(adv0 * k), setAdvance: true };   // the plain scale (and a font with no measurable stem)
-      const out = gxwShape(l.contours.map(c => c.points), l.curves, k, t, !!l.handEdited);
+      if (!st || st.t == null || st.apart) return { T: [k, 0, 0, 1, 0, 0], advance: Math.round(adv0 * k), setAdvance: true, stretched: !!(st && st.apart) };   // the plain scale (a font with no measurable stem, and a letter the step would pull apart)
+      const out = st.out;
       if (!out.b1) return { T: [k, 0, 0, 1, 0, 0], out };
       const W0 = out.b0.maxX - out.b0.minX, ka = W0 > 0 ? (out.b1.maxX - out.b1.minX) / W0 : k;
       return { T: [k, 0, 0, 1, out.tau, 0], out, penK: 1, keepLsb: true, setAdvance: true,
@@ -18397,7 +18530,8 @@ function gxWidthOp(pct, o) {
     },
     stamp(l) {
       const st = { slant: slantDegOf(slantTan(letterSlant(l)) * k) || null };   // a lean is a tangent: it narrows with the letter
-      if (stems && l.contours && l.contours.length && gxwStemFor(cen, l) != null) {
+      const kept = (stems && l.contours && l.contours.length) ? step(l) : null;
+      if (kept && kept.t != null && !kept.apart) {
         if (l.lsb != null) st.lsb = Math.max(0, Math.round(l.lsb * k));           // a stored left margin is a width (the affine carries the stem shift)
         // A photo cannot keep stems: re-traced, this letter would silently return to the thin squeeze, so it
         // counts as hand-edited — Trace then asks before it discards the correction.
@@ -18624,13 +18758,14 @@ function scaleAllScan() {
   }
   const ap = document.getElementById('saApply'), note = document.getElementById('saNote');
   const bad = gxRefused(plan), empty = !plan.scopes.length;
-  note.className = 'hint' + ((bad || plan.warn.closed.length) ? ' warn' : '');
+  note.className = 'hint' + ((bad || plan.warn.closed.length || plan.warn.stretched.length) ? ' warn' : '');
   if (bad) note.textContent = gxRefusalText(plan, st.tool, st.val);
   else if (empty) note.textContent = I18n.t('fontmaker.scaleall.note_nothing');
   else {
     const parts = [I18n.t(plan.count === 1 ? 'fontmaker.scaleall.note_count.one' : 'fontmaker.scaleall.note_count.other', { count: plan.count })];
     if (res.ratio != null && st.opt[0]) parts.push(I18n.t('fontmaker.widthall.note_ratio', { pct: Math.abs(res.ratio * 100 - Math.round(res.ratio * 100)) < 0.15 ? Math.round(res.ratio * 100) : Math.round(res.ratio * 1000) / 10 }));
     if (plan.warn.closed.length) parts.push(I18n.t('fontmaker.widthall.warn_closed', { names: gxNames(plan.warn.closed) }));
+    if (plan.warn.stretched.length) parts.push(I18n.t('fontmaker.widthall.warn_stretched', { names: gxNames(plan.warn.stretched) }));
     if (plan.warn.lost.length) parts.push(I18n.t('fontmaker.scaleall.warn_lost', { names: gxNames(plan.warn.lost) }));
     if (plan.warn.off.length) parts.push(I18n.t('fontmaker.scaleall.warn_off', { names: gxNames(plan.warn.off) }));
     if (plan.warn.held.length) parts.push(I18n.t('fontmaker.scaleall.warn_held', { things: plan.warn.held.map(t => I18n.t('fontmaker.scaleall.held_' + t)).join(', ') }));
