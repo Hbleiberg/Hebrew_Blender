@@ -1122,7 +1122,10 @@ One engine applies a geometric change to many glyphs in **one** undo step. A new
 
 A set is `{ scope: 'letter' | 'tab' | 'all', cp, cat }`; `tab` is `tabDrawCps(cat)`, `all` is every
 item in `project.letters` whatever its tab's switch says (a tab turned on later must not be the old
-size — the Generate Bold rule). The font-wide factors and `markFactor` apply only with `all`.
+size — the Generate Bold rule). The font-wide factors and `markFactor` apply only with `all`. In the
+dialog a box for one of those (`all: true` in `SA_TOOLS`) is disabled for one tab or one letter and
+shown unticked, which is what will happen there; the whole font's choice is kept, never saved from the
+disabled box, and comes back with the whole-font scope.
 
 **`gxPlan(op, set)` is pure** — it reads the project and returns every new value plus its findings.
 **`gxCommit(plan)`** refuses a plan with a blocking finding, then makes one `udDo` whose body is only
@@ -1136,7 +1139,8 @@ afresh at commit time, never from a preview's copy.
   Generate Bold has to drop them, this does not. A contour that collapses is dropped **with** its
   `curves[i]` (the export ships curves only while the two arrays are the same length).
 - *Width:* `advance`, `lsb`, `rsb` when stored.
-- *Marks' positions:* `anchors[*]` and the pins in `markAnchors`, rounded at the source. A side trop
+- *Marks' positions:* `anchors[*]` and the pins in `markAnchors`, rounded at the source, each moved
+  by where its marks land rather than as a point of the letter (*Where a mark lands*, below). A side trop
   column still at its default (centre ± `tropSideOffset`) is re-tied to the new centre ± the spread
   — the new one when the spread scales, the same one when it does not (one letter, one tab) —
   because `setTropSideOffset` recognises "still the default" by exact equality: mapped on its own, the
@@ -1187,6 +1191,34 @@ tab* — and one letter leaves the shared shape as it is (the dialog's scope hin
 letter that carries accents, `engSupportsAccents`; an accented form taken whole from a font has its
 accent in its own outline, so it changes with it and gets no such hint). A slant needs no factor: an
 accent leans by its own letter's record.
+
+**Where a mark lands (`MARK_LAND_Y`, `markLandC`, `markLandTable`).** A letter's anchor is where a
+mark's attach point (mark-local 0,0) goes; the mark's ink lands at the anchor plus `c`, the offset
+inside the mark from its attach point to its **landing point** — the top centre of a mark below, the
+bottom centre of one above, the middle of the dagesh, each trop and Samaritan column by its row
+(`MARK_LAND_Y`, beside `MARK_CLASS`). `markLandC` measures it at the size the mark is drawn, its width
+and lean settings applied (the public readers' map), the per-mark nudge left out (a fine-tune on top
+of the landing point, as for a drawn mark). For every built-in, drawn or pieced mark `c` is exactly 0:
+the bbox convention puts the attach point on the landing point. A mark imported from a font keeps the
+source font's attach point (`m.attachAnchor`), often hundreds of units from its ink — Alef's vowels
+attach at the glyph origin with the ink about 215 to the right, a Culmus holam's ink starts about 600
+above its attach point — and then mapping the anchor as a point of the letter would send the mark
+somewhere unrelated. So the engine maps the landing point: `a' = M(a + c) − c2` (`gxLandD`,
+`gxLandPt`), with `M` the letter's map (`TA`) and `c2` the offset once the operation's own complement
+for the marks is done — the size, width and lean settings the plan writes (`markLandTable`'s `after`).
+That runs in every scope, marks box on or off; when the marks are resized by the letters' own factor,
+or `c` is 0, it is the plain map bit for bit (the drawn-font exports are byte-identical). A whole-font
+slant keeps the plain map: its exact per-mark complement is `markLean.place`. For an anchor key `c` is
+the component-wise median over the marks in use that read it (the marks of a store in custom mode, each
+letter taking its own shape for a vowel); a trop side column takes its row's, so a column at its default
+stays exactly centre ± the spread. A pin and a composed form's dot (`pc.anchor`, at the form's own dot
+size; `pc.holam`, the holam typed after שׁ / שׂ) use their own mark's `c` exactly (`precompLandCC`).
+Only letters the marks attach to take it: a Latin or Cyrillic letter keeps its accents' convention (an
+accent's `c` is 0), a Samaritan letter takes only its family's columns. What one median cannot do: a mark
+whose own offset differs from its key's keeps the difference as it is — under a resize of the letters
+alone it drifts by (1 − the factor) × the difference, under a flip by twice it (Taamey Frank CLM's holam
+is 104 units beside the shin and sin dots and rafe it shares `above` with; its left-column trop up to
+about 200 units beside the row; Alef's qubuts 82).
 
 **An operation may stamp a record and carry Font Details fields.** `op.stamp(letter)` returns fields
 to set on every letter the operation changes (`null` removes a key) — still only assignments and

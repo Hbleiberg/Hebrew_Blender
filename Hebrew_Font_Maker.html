@@ -3234,6 +3234,18 @@ const MARK_CLASS = {
   '05B9':'above', '05BA':'above', '05C1':'above', '05C2':'above', '05BF':'above',
   '05BC':'center'
 };
+/* Where a mark LANDS on its letter, per anchor key: the point of the mark's own ink that the key's place on
+   the letter is for — as a fraction of the ink's height from its bottom, at the ink's horizontal middle. A
+   mark below lands with the top of its ink (1), one above with the bottom (0), the dagesh with its middle;
+   every trop and Samaritan column by its row. It is the bbox convention markAttachOrigin uses for a drawn
+   mark, so for such a mark the landing point IS its attach point. A mark imported from a font keeps the
+   source font's attach point instead (m.attachAnchor), often hundreds of units from its ink; then the
+   landing point is the anchor plus the offset inside the mark (markLandC), and a letter's anchor is moved
+   and seeded by where its marks land (markLandTable, xformLand, markLandSeed). */
+const MARK_LAND_Y = { below: 1, above: 0, center: 0.5,
+  tropAbove: 0, tropAboveL: 0, tropAboveR: 0, tropBelow: 1, tropBelowL: 1, tropBelowR: 1,
+  smrAboveR: 0, smrAbove: 0, smrAboveL: 0 };
+const MARK_LAND_ROW = { tropAboveL: 'tropAbove', tropAboveR: 'tropAbove', tropBelowL: 'tropBelow', tropBelowR: 'tropBelow' };   // a trop side column shares its row's offset, so it stays exactly "centre ± the spread" (setTropSideOffset and the engine's re-tie recognise that by equality)
 // "Sheva Na" — an OPTIONAL heavier sheva, exported as a stylistic-set alternate (ss01) + a private
 // code point so a mobile (na) sheva can be shown distinctly from a silent (nach) one. It's not a
 // separate editor mark; it's scaled from the user's own sheva at export (see buildFont / buildFEA).
@@ -4668,8 +4680,10 @@ function markAttachOrigin(m) {
   // built-in marks, older projects) ⇒ the bbox convention, byte-for-byte as before. This function
   // is the only sanctioned reader of attachAnchor — preview, QA, ghosts and export all flow
   // through it, so replacing the origin here keeps every surface consistent.
+  // `own` says which of the two it is: a mark that keeps the source font's attach point lands away from
+  // it (markLandItem / markLandC), one in the bbox convention lands on it.
   const aa = m.attachAnchor;
-  if (aa && Number.isFinite(aa.x) && Number.isFinite(aa.y)) return { x: aa.x, y: aa.y };
+  if (aa && Number.isFinite(aa.x) && Number.isFinite(aa.y)) return { x: aa.x, y: aa.y, own: true };
   let minX=1e9,maxX=-1e9,minY=1e9,maxY=-1e9;
   (m.contours||[]).forEach(c => c.points.forEach(([x,y]) => { minX=Math.min(minX,x);maxX=Math.max(maxX,x);minY=Math.min(minY,y);maxY=Math.max(maxY,y); }));
   if (minX>maxX) return { x:0, y:0 };
@@ -4782,8 +4796,9 @@ function markWideK(kind) {
   const v = project && project.font && project.font.markWide ? +project.font.markWide[kind] : 1;
   return (Number.isFinite(v) && v > 0) ? v : 1;
 }
-function markLeanFn(kind, rawPolys) {   // → (x, y) => x' for points of this mark, or null when its kind is neither placed, leaned nor squeezed
-  const L = markLean(kind), w = markWideK(kind); if (!L && w === 1) return null;
+function markLeanFn(kind, rawPolys) { return markLeanFnOf(markLean(kind), markWideK(kind), rawPolys); }   // → (x, y) => x' for points of this mark, or null when its kind is neither placed, leaned nor squeezed
+function markLeanFnOf(L, w, rawPolys) {   // the same map for given settings — markLandC measures a mark under the settings an operation is about to write
+  if (!L && w === 1) return null;
   if (!L) return x => w * x;
   let minY = Infinity, maxY = -Infinity;
   (rawPolys || []).forEach(poly => poly.forEach(p => { if (p[1] < minY) minY = p[1]; if (p[1] > maxY) maxY = p[1]; }));
@@ -4810,6 +4825,89 @@ function markContoursFor(letter, kind, cp) {
   }
   const raw = markContoursForRaw(letter, kind, cp);
   return markLeanPolys(raw, markLeanFn(kind, raw));
+}
+/* ── Landing points (MARK_LAND_Y). A letter's anchor puts a mark's attach point (mark-local 0,0) there; the
+   mark's ink lands at the anchor plus c, the offset inside the mark from its attach point to its landing
+   point. markLandC is that c, in font units at the size the mark is drawn, its width and lean settings
+   applied (the public readers' map), and the per-mark nudge left out (it is a fine-tune on top of the
+   landing point, as it is for a drawn mark). It is exactly {0,0} for every mark without an attach point
+   of its own (built-in, drawn and pieced marks: the bbox convention puts the attach point on the landing
+   point), so for them nothing that uses it changes a bit. A Latin accent leans with its own letter and is
+   sized with the Latin letters — it keeps 0. ── */
+function markLandItem(letter, kind, cp) {   // the shape a mark is drawn from when it keeps the source font's attach point (markAttachOrigin's `own`), else null — the resolution markContoursForRaw makes
+  if (kind === 'accent' || !project || !project.font) return null;
+  const aa = m => !!markAttachOrigin(m).own;
+  const lm = !MARK_FAMILY[kind] && letter && letter.markShapes && letter.markShapes[cp];
+  if (lm) {
+    if (lm.designMode === 'editor') { if (piecesToContours(lm.pieces).length) return null; }
+    else if (lm.contours && lm.contours.length) return aa(lm) ? lm : null;
+  }
+  const f = project.font[kind], m = f && f.mode === 'custom' && f.custom && f.custom[cp];
+  return (m && m.designMode !== 'editor' && m.contours && m.contours.length && aa(m)) ? m : null;
+}
+function markLandC(letter, kind, cp, key, size, st) {   // st: { wide, lean } to measure under instead of the project's (undefined fields = as now)
+  if (!markLandItem(letter, kind, cp)) return { x: 0, y: 0 };
+  const raw = markContoursForRaw(letter, kind, cp);
+  const L = (st && st.lean !== undefined) ? st.lean : markLean(kind), w = (st && st.wide != null) ? st.wide : markWideK(kind);
+  let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+  markLeanPolys(raw, markLeanFnOf(L, w, raw)).forEach(poly => poly.forEach(p => { if (p[0] < x0) x0 = p[0]; if (p[0] > x1) x1 = p[0]; if (p[1] < y0) y0 = p[1]; if (p[1] > y1) y1 = p[1]; }));
+  if (!(x0 <= x1)) return { x: 0, y: 0 };
+  const fy = MARK_LAND_Y[key] != null ? MARK_LAND_Y[key] : 0.5;
+  return { x: size * (x0 + x1) / 2, y: size * (y0 + fy * (y1 - y0) - markNudgeDy(cp)) };
+}
+function markLandHeb(l) { const cp = l && l.codepoint; return !!cp && !(isEng(cp) || isCyr(cp) || isPhn(cp) || isAram(cp) || isSmr(cp)); }   // a letter the Hebrew marks attach to (every Latin and Cyrillic letter keeps its accents' convention, a Samaritan one its own family's)
+function markLandUsers() {   // [kind, cp, key] for every mark of a store drawn from its own shapes — the marks a letter's anchors are for
+  const out = [], F = project.font;
+  if (F.nikkud && F.nikkud.mode === 'custom') MARK_CPS.forEach(cp => out.push(['nikkud', cp, MARK_CLASS[cp]]));
+  if (F.trop && F.trop.mode === 'custom') TROP_CPS.forEach(cp => out.push(['trop', cp, tropColKey(TROP_CLASS[cp], tropHalign(cp))]));
+  if (F.smrmarks && F.smrmarks.mode === 'custom') SMR_MARK_CPS.forEach(cp => out.push(['smrmarks', cp, smrMarkKey(cp)]));
+  return out;
+}
+/* The landing offsets, worked out once for a seed or an operation. → null when no mark in use keeps an attach
+   point of its own: every offset is then 0 and every caller keeps the plain map, bit for bit.
+   after(kind, cp, size) → { size, wide, lean } the mark is drawn with once the operation is done (the marks'
+   own complement — a resize, a squeeze, a lean), or null for "as now"; without `after`, c2 = c.
+   keys(l) → { key: [c, c2] } for the keys l's marks read: the component-wise median over the marks in use
+   that read the key (a trop side column takes its row's), so a font of imported marks with a few drawn ones
+   follows the imported convention and a drawn font gives 0 — only keys with an offset are listed.
+   mark(l, kind, cp, key, size) → [c, c2] of one mark exactly: a pin, a composed form's dot. */
+function markLandTable(after) {
+  const users = markLandUsers();
+  if (!users.some(u => markLandItem(null, u[0], u[1])) && !project.letters.some(l => l.markShapes && Object.keys(l.markShapes).some(cp => MARK_CLASS[cp] && markLandItem(l, 'nikkud', cp)))) return null;
+  const mark = (l, kind, cp, key, size) => {
+    const s0 = Number.isFinite(size) ? size : markCatScale(kind, cp), c = markLandC(l, kind, cp, key, s0);
+    const a = after ? after(kind, cp, s0) : null;
+    return [c, a ? markLandC(l, kind, cp, key, a.size, a) : c];
+  };
+  const med = vs => { const s = vs.slice().sort((p, q) => p - q), n = s.length; return n ? (n % 2 ? s[n >> 1] : (s[n / 2 - 1] + s[n / 2]) / 2) : 0; };
+  const glob = users.map(([kind, cp, key]) => ({ kind, cp, key, row: MARK_LAND_ROW[key] || key, v: mark(null, kind, cp, key) }));
+  return {
+    mark,
+    keys(l) {
+      const fam = smrMarkBase(l) ? 'smrmarks' : markLandHeb(l) ? 'heb' : null, rows = {}, out = {};
+      if (!fam) return out;
+      glob.forEach(g => {
+        if ((g.kind === 'smrmarks') !== (fam === 'smrmarks')) return;
+        const v = (g.kind === 'nikkud' && l.markShapes && l.markShapes[g.cp]) ? mark(l, g.kind, g.cp, g.key) : g.v;   // a letter's own shape for a vowel is the one it lands with
+        (rows[g.row] = rows[g.row] || []).push(v);
+      });
+      for (const r in rows) {
+        const vs = rows[r], cc = [0, 1].map(i => ({ x: med(vs.map(v => v[i].x)), y: med(vs.map(v => v[i].y)) }));
+        if (!(cc[0].x || cc[0].y || cc[1].x || cc[1].y)) continue;
+        Object.keys(MARK_LAND_Y).forEach(k => { if ((MARK_LAND_ROW[k] || k) === r) out[k] = cc; });
+      }
+      return out;
+    }
+  };
+}
+/* How far a map moves an anchor beyond the plain map of the point itself, for marks that land c inside
+   themselves: a' = M(a + c) − c2 = M(a) + (L·c − c2), L the map's linear part. → [dx, dy], or null when it
+   is nothing (c = c2 = 0, or the marks follow the letter exactly: a resize of both by one factor). */
+function gxLandD(T, cc) {
+  if (!cc) return null;
+  const c = cc[0], c2 = cc[1], z = v => Math.abs(v) < 1e-6 ? 0 : v;
+  const dx = z(T[0] * c.x + T[1] * c.y - c2.x), dy = z(T[2] * c.x + T[3] * c.y - c2.y);
+  return (dx || dy) ? [dx, dy] : null;
 }
 function markGlyphContoursRaw(kind, cp) {
   if (kind === 'accent') {
@@ -18373,6 +18471,16 @@ const GX_TRACE_WIN = { x0: -546, x1: 1328, y0: -359, y1: 1390 };   // what the t
 const GX_SCALE_PRESETS = [50, 75, 90, 110, 125, 150, 200];
 function gxMap(T, x, y) { return [T[0] * x + T[1] * y + T[4], T[2] * x + T[3] * y + T[5]]; }
 function gxRPt(T, p) { const q = gxMap(T, p[0], p[1]); return [Math.round(q[0]), Math.round(q[1])]; }   // rounded at the source — feaLib rejects a fractional anchor, and outlines are whole units everywhere
+function gxLandPt(T, p, cc) {   // an anchor point {x, y} through the map, moved by where its marks land (gxLandD; cc = [c, c2] or null) → [x, y], rounded at the source
+  const q = gxMap(T, p.x, p.y), d = gxLandD(T, cc);
+  return d ? [Math.round(q[0] + d[0]), Math.round(q[1] + d[1])] : [Math.round(q[0]), Math.round(q[1])];
+}
+function precompLandCC(t, pc, key) {   // [c, c2] of the dot a composed form places for itself (t: markLandTable) — its own mark at its own size, as the bake draws it; or the holam typed after שׁ / שׂ
+  if (!t) return null;
+  if (key === 'holam') return t.mark(null, 'nikkud', '05B9', 'above', nikScale('05B9'));
+  const base = project.letters.find(x => x.codepoint === precompBaseCp(pc));
+  return t.mark(base || null, catOfCp(pc.mark), pc.mark, markClassFor(pc.mark), precompMarkScale(pc));
+}
 function gxSimilarity(T) { return (T[1] === 0 && T[2] === 0 && T[0] === T[3] && T[0] > 0) ? T[0] : null; }   // a uniform scale plus a shift → its factor; anything else → null
 function gxStageMatrix(T) {   // the same map in stage px, in M's column layout — left-multiplied onto a photo's image→stage matrix it keeps the photo under its outline
   return [T[0], -T[2], -T[1], T[3], PADX * (1 - T[0]) + T[1] * BY + SC * T[4], BY * (1 - T[3]) + T[2] * PADX - SC * T[5]];
@@ -18421,11 +18529,14 @@ function gxLetterPatch(l, spec, ctx) {   // PURE: one letter's new field values 
   if (l.advance != null || (spec.setAdvance && spec.advance != null)) { const v = Math.max(0, spec.advance != null ? spec.advance : Math.round(l.advance * a)); out.set.advance = v; see(v); }   // setAdvance: a letter still on the default width gets its new one written
   if (l.lsb != null && !spec.keepLsb) out.set.lsb = Math.max(0, Math.round(a * l.lsb + T[4]));
   if (l.rsb != null && !spec.keepRsb) out.set.rsb = Math.max(0, Math.round(l.rsb * a));
-  const mapPt = p => { const q = gxRPt(TA, [p.x, p.y]); see(q[0]); see(q[1]); return Object.assign({}, p, { x: q[0], y: q[1] }); };
+  // An anchor moves with where its marks LAND (ctx.land — gxPlan's markLandTable): a' = M(a + c) − c2, which
+  // is the plain map of the point whenever the marks land on their attach point (c = 0) or follow the letter.
+  const land = ctx && ctx.land, lk = land ? land.keys(l) : null;
+  const mapPt = (p, cc) => { const q = gxLandPt(TA, p, cc); see(q[0]); see(q[1]); return Object.assign({}, p, { x: q[0], y: q[1] }); };
   const okPt = p => !!p && Number.isFinite(p.x) && Number.isFinite(p.y);
   if (l.anchors) {
     const an = {};
-    for (const k in l.anchors) an[k] = okPt(l.anchors[k]) ? mapPt(l.anchors[k]) : l.anchors[k];
+    for (const k in l.anchors) an[k] = okPt(l.anchors[k]) ? mapPt(l.anchors[k], lk && lk[k]) : l.anchors[k];
     // A side trop column still sitting at its default (centre ± the spread) stays tied to the new centre ±
     // the new spread — setTropSideOffset recognises "still the default" by exact equality, which separate
     // rounding of the two would break by a unit.
@@ -18435,7 +18546,7 @@ function gxLetterPatch(l, spec, ctx) {   // PURE: one letter's new field values 
     });
     out.set.anchors = an;
   }
-  if (l.markAnchors) { const ma = {}; for (const cp in l.markAnchors) ma[cp] = okPt(l.markAnchors[cp]) ? mapPt(l.markAnchors[cp]) : l.markAnchors[cp]; out.set.markAnchors = ma; }
+  if (l.markAnchors) { const ma = {}; for (const cp in l.markAnchors) { const p = l.markAnchors[cp]; ma[cp] = okPt(p) ? mapPt(p, land && land.mark(l, catOfCp(cp), cp, p.key)) : p; } out.set.markAnchors = ma; }   // a pin is one mark's: its own landing offset, exactly
   const k = gxSimilarity(T);
   if (hasImage && Array.isArray(l.transform) && l.transform.length === 6) {
     out.set.transform = M.mul(gxStageMatrix(T), l.transform);
@@ -18620,6 +18731,15 @@ function gxPlan(op, set) {
     tune.markLean = ml;
   }
   if (tune) plan.font.tune = tune;
+  /* ── where the marks land: a letter's anchors, pins and its composed forms' dots move by the landing point
+        of the marks they place (gxLetterPatch, below) — in every scope, marks box or not, the marks' own
+        complement (a resize, a squeeze, a lean narrowed) taken from what this plan writes. A whole-font slant
+        has its exact per-mark complement already (markLean.place), so it keeps the plain map. ── */
+  const tn = tune || {};
+  ctx.land = (all && op.lean) ? null : markLandTable((kind, cp, s0) => ({
+    size: mf != null ? Math.max(MARK_SIZE_MIN, Math.min(MARK_SIZE_MAX, Math.round(s0 * mf * 1e4) / 1e4)) : s0,   // the mark-size block's own rule
+    wide: tn.markWide ? (tn.markWide[kind] != null ? tn.markWide[kind] : 1) : undefined,
+    lean: tn.markLean ? (tn.markLean[kind] || null) : undefined }));
   /* ── letters ── */
   const specs = {}, bare = new Set();
   gxLetterSet(set).forEach(l => {
@@ -18655,7 +18775,7 @@ function gxPlan(op, set) {
     if (spec && spec !== 'mirror') {
       if (!bare.has(precompBaseCp(pc)) || precompSrcOutline(pc)) ['anchor', 'holam'].forEach(key => {   // a dot placed over a letter left out stays with that letter; a form the source font drew whole is ink of its own
         const p = pc[key];
-        if (p && Number.isFinite(p.x) && Number.isFinite(p.y)) { const q = gxRPt(spec.TA || spec.T, [p.x, p.y]); big(q[0], nm); big(q[1], nm); w[key] = Object.assign({}, p, { x: q[0], y: q[1] }); }   // other keys (anchor.auto) ride along
+        if (p && Number.isFinite(p.x) && Number.isFinite(p.y)) { const q = gxLandPt(spec.TA || spec.T, p, precompLandCC(ctx.land, pc, key)); big(q[0], nm); big(q[1], nm); w[key] = Object.assign({}, p, { x: q[0], y: q[1] }); }   // other keys (anchor.auto) ride along; the dot moves by where it lands, as the letter's own anchors do
       });
       ['src', 'srcDagesh'].forEach(key => {   // an outline the source font drew whole — rebuilt as a NEW object (the precomp undo snapshot shares the old one by reference)
         const s = pc[key];
@@ -19434,7 +19554,7 @@ function scaleAllOpt() {
   if (!saState) return;
   const cfg = SA_TOOLS[saState.tool], r = document.querySelector('input[name="saScope"]:checked'), d = document.querySelector('input[name="saDir"]:checked');
   saState.scope = r ? r.value : 'all';
-  cfg.opts.forEach((o, i) => { saState.opt[i] = document.getElementById(SA_OPT_IDS[i]).checked; wsSavePref(o.pref, saState.opt[i]); });
+  cfg.opts.forEach((o, i) => { const box = document.getElementById(SA_OPT_IDS[i]); if (box.disabled) return; saState.opt[i] = box.checked; wsSavePref(o.pref, saState.opt[i]); });   // a box switched off for one tab or letter shows what will happen there, not the choice it keeps for the whole font
   if (d && d.value !== saState.dir) { saState.dir = d.value; setSlantDir(d.value); }   // the lean direction is remembered per project
   scaleAllRender();
 }
@@ -19508,7 +19628,7 @@ function scaleAllRender() {
   const st = saState, cfg = SA_TOOLS[st.tool], valid = st.val != null, val = valid ? st.val : cfg.neutral;
   saStrips();
   const narrow = st.scope !== 'all';
-  cfg.opts.forEach((o, i) => { document.getElementById(SA_OPT_IDS[i]).disabled = narrow && o.all; });   // a font-wide choice (a Style, the marks, the kerning) means nothing for one letter
+  cfg.opts.forEach((o, i) => { const box = document.getElementById(SA_OPT_IDS[i]), off = narrow && o.all; box.disabled = off; box.checked = off ? false : saState.opt[i]; });   // a font-wide choice (a Style, the marks, the kerning) means nothing for one letter — so for one tab or letter the box shows it is not done (unticked), and the whole font's choice comes back with the whole font
   const sh = document.getElementById('saScopeHint'); sh.hidden = !narrow;
   if (narrow) sh.textContent = I18n.t(cfg.ns + '.scope_hint') + ((st.scope === 'letter' && st.tool !== 'slant' && st.cat === 'english' && engSupportsAccents(st.cp)) ? ' ' + I18n.t('fontmaker.scaleall.scope_hint_accents') : '');   // a resize or width change of one Latin letter that carries accents leaves the shared accents as they are (a slant leans them with the letter's record); an accented form taken whole from a font has its accent in its own outline
   const sn = document.getElementById('saStyleNote'), mnote = saMetaNote(saMetaAfter(null));
