@@ -1054,10 +1054,7 @@ corner or tangle a noisy outline.
     leg moves nothing and holds nothing) — the cap of a bar, an arch or a bowl run into a stem;
   - a point that only *lies* in the other ink, with no buried leg (the tip of a foot that just reaches
     into a leg), when its outline turns back there rather than running on past, and when the cover
-    holds nothing of its own in this ring (`tip`). The corner of a stem tucked under the root of an
-    arch (r, m, n), or under the end of a bowl (a, b, d), is not held: the arch's buried end is
-    already held in the stem, and holding the stem's corner as well only tilts the stem's visible
-    side — its two sides would no longer be parallel;
+    holds nothing of its own in this ring (`tip`);
   - when two rings are buried in each other, only the smaller is held (a thin arm of X in the thick
     diagonal, not the diagonal's notch in the arm).
 
@@ -1065,14 +1062,33 @@ corner or tangle a noisy outline.
   put back as deep from each end as it was — up to half the stem, and narrowed with a narrowed
   letter — the run's ends taken where their own points were moved to (three passes: a cover's own
   end may be held too), and the rest of its buried run moves by the same amount, so a stroke's end
-  shifts as one piece and its two sides keep their spacing (K's leg under its arm). Curve nodes are
-  held the same way against the settled polygons (a segment for a leg), and their handles go with
-  them. Two kinds of ring are never asked and come out exactly as before: one with no ring of its
-  own direction near it — every ordinary letter, point for point — and one with less than a third of
-  its outline showing (a fill-in at a joint: held in its two covers it would be stretched into a web
-  across the joint; left alone it thins away as the joint opens, and is reported as lost detail when
-  it goes). What a held end still costs: where the visible outline next to it is short (the foot of
-  an arm that ends a few units into a diagonal), that outline bends.
+  shifts as one piece and its two sides keep their spacing (K's leg under its arm).
+
+  **An upright side that shows is the step's alone** (`shows`, `GXW_UPRIGHT`). A hold that would move
+  any part of a near-upright edge (as drawn, steeper than about 72°) by more than a unit, where that
+  part shows, is let go, and the other holds settle again without it. "Shows" means not inside the
+  other rings' ink and not running along it within a unit and a half — the underside of r's ear,
+  where it merges into the stem, runs along the stem and is part of the joint. So the corner of a
+  stem under a roof it only touches, the corner of a stem tucked under an arch root (r, m, n) or a
+  bowl's end (a, b, d), and the side of a tail below the bowl it leaves (Rashi Samekh) all keep the
+  thickness the step gave them, instead of tapering. Where the point let go is drawn on a corner of
+  its cover — two contours made to meet at a corner, as each roof and stem of Stopmotion do — that
+  corner of the cover goes with it instead (its slanted end turns a little), unless that would move
+  an upright side of the cover; the two still meet. A joint that comes apart all the same is the
+  guarantee's (below): the letter is stretched plainly and named.
+
+  **The curves follow the polygon's holds** (`moveCurve`): a held ring's curve is first cut where its
+  polygon's holds begin and end (the polygon point is found on the curve that runs its way, so the
+  two sides of a hairline are not confused; `gxwAt`, `gxwCut`), then every node takes the hold of the
+  place it lies on along the polygon, and its handles go with it. A curve therefore bends only where
+  its polygon bends, and never holds what the polygon let go. Two kinds of ring are never asked and
+  come out exactly as before: one with no ring of its own direction near it — every ordinary letter,
+  point for point — and one with less than a third of its outline showing (a fill-in at a joint: held
+  in its two covers it would be stretched into a web across the joint; left alone it thins away as
+  the joint opens, and is reported as lost detail when it goes). What a held end still costs: the
+  outline beside it that is not upright (the arch of an n leaving its stem, the foot of an arm that
+  ends a few units into a diagonal) bends near the joint, and a buried run moved as one piece can
+  show a little past a narrower part of its cover (æ's a-stem in the e's counter at 150%).
 - *The guarantee — a letter never leaves the step in more pieces than it came in (`gxwPieces`,
   `gxwApart`).* For every letter of more than one contour `gxWidthOp` counts the pieces of ink
   before and after: the connected parts of the nonzero fill on slices one unit apart, counted twice
