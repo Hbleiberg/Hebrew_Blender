@@ -1742,7 +1742,7 @@ fontmaker.boldgen.apply,Apply,החלה,button,
 fontmaker.boldgen.before,Before,לפני,preview row label,
 fontmaker.boldgen.curves_note.one,1 traced letter converts to point outlines (its curves become straight segments).,אות עקובה אחת תומר למתאר נקודות (העקומות שלה יהפכו לקטעים ישרים).,modal note,plural
 fontmaker.boldgen.curves_note.other,{count} traced letters convert to point outlines (their curves become straight segments).,{count} אותיות עקובות יומרו למתארי נקודות (העקומות שלהן יהפכו לקטעים ישרים).,modal note,plural
-fontmaker.boldgen.intro,"Thickens every traced letter's strokes by the amount below. Nothing changes until you press Apply, one Undo reverts it all, and applying again stacks on top of the current weight. A positive weight also sets the font's Style to Bold.","מעבה את הקווים של כל אות עקובה לפי הכמות שלמטה. שום דבר לא משתנה עד שתלחצו החלה, ביטול אחד מחזיר הכול, והחלה נוספת נערמת על המשקל הנוכחי. משקל חיובי גם מגדיר את סגנון הגופן למודגש.",modal intro,
+fontmaker.boldgen.intro,"Thickens every traced letter's strokes by the amount below. Nothing changes until you press Apply, one Undo reverts it all, and applying again stacks on top of the current weight. A positive weight also sets the font's Style to Bold, or to Bold Italic for an Italic font.","מעבה את הקווים של כל אות עקובה לפי הכמות שלמטה. שום דבר לא משתנה עד שתלחצו החלה, ביטול אחד מחזיר הכול, והחלה נוספת נערמת על המשקל הנוכחי. משקל חיובי גם מגדיר את סגנון הגופן למודגש, או למודגש נטוי בגופן נטוי.",modal intro,
 fontmaker.boldgen.keep_height,Keep letter height,שמירה על גובה האותיות,checkbox,
 fontmaker.boldgen.preset_bold,Bold +65,‎מודגש ‎+65,preset button,
 fontmaker.boldgen.preset_heavy,Heavy +95,‎כבד ‎+95,preset button,
