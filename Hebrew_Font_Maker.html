@@ -18518,7 +18518,7 @@ function gxWidthOp(pct, o) {
   };
   return {
     label: o.scope === 'letter' ? 'width ' + pct + '% — ' + o.name : 'letter width ' + pct + '%',
-    refuse: (stems && !(k >= 0.2 && k <= 2)) ? 'narrow' : null,
+    refuse: (stems && !(k >= 0.2)) ? 'narrow' : null,   // no upper bound: a factor above 2 is a letter whose ink is nearly all stem being widened — only its side spaces grow (a result out of range is the plan's own refusal)
     affine(l) {
       const has = !!(l.contours && l.contours.length), st = (stems && has) ? step(l) : null;
       if (!has) return [k, 0, 0, 1, 0, 0];

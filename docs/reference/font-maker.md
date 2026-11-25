@@ -1079,7 +1079,10 @@ corner or tangle a noisy outline.
   than the typed s, one for the whole set, chosen so that the set's total advance comes out at s:
   first `(s·ΣA − Σt)/(ΣA − Σt)` (`gxwFirstK`), then corrected from the plan's own outcome, at most
   twice (`gxWidthPlan`; `plan.adv` is the total advance before and after). The dialog's note says
-  what the text becomes. `k` outside 0.2–2 is the `narrow` refusal.
+  what the text becomes. `k` below 0.2 is the `narrow` refusal (no room left for the strokes). There
+  is no upper bound: a factor above 2 is one narrow letter whose ink is nearly all stem being widened
+  on its own — only its side spaces grow — and a result that leaves the coordinate range is the
+  plan's own refusal.
 - *The `closed` finding — gap columns.* No height moved, so the same horizontal slice cuts the letter
   before and after: every gap between two runs of ink (a counter, or the space between two strokes)
   is followed slice by slice as a column and matched to what is left of it. A column is reported when
