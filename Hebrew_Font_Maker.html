@@ -15838,6 +15838,8 @@ function applyXformToKeys(keys, m) {                         // affine about the
 }
 function transformSelectedNodes(kind, angleDeg) {            // button / number-field Apply path — one udDo per click
   if (!nodeModel) return;
+  udFlushPending();                                          // before anything is read: a slider preview that was never released is taken back, so this starts from the letter as it is
+  if (!nodeModel) return;
   const l = curLetter();
   const m = xformMatrix(kind, angleDeg);
   if (!m) return;
@@ -15908,7 +15910,7 @@ function xformWidthStems(pct) {
    (a live writeThrough already set handEdited + re-flattened points, which udPush wouldn't drop).
    A range input whose drag ends on the value it started from fires `input` and NO `change`, so the
    gesture is settled on release whatever the value (the slider's pointerup / pointercancel / keyup /
-   blur call xformCommit as well — XF_END), and a snapshot never outlives its gesture: it names its
+   blur lead to xformCommit as well — XF_END), and a snapshot never outlives its gesture: it names its
    item and its undo burst, xformLive never restores one that is another item's or whose burst is no
    longer the open one (xformStale), and whatever settles the undo state first (udFlushPending — a
    step or letter change, undo / redo, a dialog), a whole-font operation (gxCommit) or a new project
@@ -15925,7 +15927,8 @@ function xformDrop() {
     renderStage(); renderControls();
   }
 }
-const XF_END = kind => `onchange="xformCommit('${kind}')" onpointerup="xformCommit('${kind}')" onpointercancel="xformCommit('${kind}')" onkeyup="xformCommit('${kind}')" onblur="xformCommit('${kind}')"`;
+function xformRelease(kind) { setTimeout(() => xformCommit(kind), 0); }   // a pointer release settles one task later — after the browser's own `change` when it fires one (pointerup comes before it), so an ordinary drag is still committed there and this only catches the drag that fired none
+const XF_END = kind => `onchange="xformCommit('${kind}')" onpointerup="xformRelease('${kind}')" onpointercancel="xformRelease('${kind}')" onkeyup="xformCommit('${kind}')" onblur="xformCommit('${kind}')"`;
 function xformLive(kind, v) {
   if (!nodeModel || _penMode) return;
   if (xformStale()) xformDrop();                             // never restore another glyph's outline into this one, nor an outline from before whatever happened since
