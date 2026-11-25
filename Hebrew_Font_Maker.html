@@ -18763,7 +18763,7 @@ function kernSpecific(firstCp, secondCp) {       // the specific pair's own valu
 function kernEffective(firstCp, secondCp) {
   const v = kernSpecific(firstCp, secondCp); if (v) return v;
   for (const k of fontKerning())
-    if (k && k.value && ((k.left||[]).length > 1 || (k.right||[]).length > 1) && k.left.includes(firstCp) && k.right.includes(secondCp)) return k.value;
+    if (k && k.value && ((k.left||[]).length > 1 || (k.right||[]).length > 1) && (k.left||[]).includes(firstCp) && (k.right||[]).includes(secondCp)) return k.value;
   return 0;
 }
 /* Every glyph pair the list kerns, as Map('first|second' → value) — kernEffective's answer for each
@@ -27130,7 +27130,15 @@ function migrateProject(data) {
     });
     if (!data.font.spacing) data.font.spacing = { letterSpacing:0, wordSpacing:260, lineSpacing:0, sample:'שלום עולם', kernTarget:40 };
     else { const sp = data.font.spacing; if (sp.letterSpacing==null) sp.letterSpacing=0; if (sp.wordSpacing==null) sp.wordSpacing=260; if (sp.lineSpacing==null) sp.lineSpacing=0; if (!sp.sample) sp.sample='שלום עולם'; if (sp.kernTarget==null) sp.kernTarget=40; }
-    if (!Array.isArray(data.font.kerning)) data.font.kerning = [];
+    // Kerning rows — a project file is untrusted. A row needs two sides that are non-empty lists of code
+    // points and a finite value (a fraction is rounded: feaLib rejects one, and with it the whole font);
+    // anything else is dropped. Every reader of the list assumes that shape, and one row with a side
+    // missing used to throw in the Spacing tab's render, which left the tab empty and the row undeletable.
+    { const cps = s => Array.isArray(s) && s.length > 0 && s.every(c => typeof c === 'string' && /^[0-9A-F]{4,6}$/.test(c));
+      data.font.kerning = Array.isArray(data.font.kerning)
+        ? data.font.kerning.filter(k => k && typeof k === 'object' && cps(k.left) && cps(k.right) && typeof k.value === 'number' && Number.isFinite(k.value))
+            .map(k => ({ left: k.left, right: k.right, value: Math.round(k.value) || 0 }))   // || 0: a −0.4 rounds to −0
+        : []; }
     if (!Array.isArray(data.font.kernClasses)) data.font.kernClasses = [];   // user-defined kern classes
     data.font.kernChecked = Array.isArray(data.font.kernChecked)             // Common pairs ticks — keys only, well-formed, bounded (a project file is untrusted)
       ? [...new Set(data.font.kernChecked.filter(k => typeof k === 'string' && /^[0-9A-F]{4,6}\|[0-9A-F]{4,6}$/.test(k)))].slice(0, 2000) : [];
