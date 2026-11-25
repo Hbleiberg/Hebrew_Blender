@@ -15562,7 +15562,7 @@ function confirmAndDeleteContours(doomedIn) {         // shared confirm rules: s
 }
 function _deleteContoursNow(l, doomed, empties) {
   udDo([itemScope()], (empties ? 'delete outline — ' : 'delete contour — ') + l.name, () => {
-    if (empties) { l.contours = null; l.curves = null; _rawTrace = null; l.handEdited = false; }   // mirror _clearTraceNow (advance + anchors kept)
+    if (empties) { l.contours = null; l.curves = null; _rawTrace = null; l.handEdited = false; clearLeanIfBare(l); }   // mirror _clearTraceNow (advance + anchors kept)
     else { doomed.forEach(ci => nodeModel.contours.splice(ci, 1)); renestNodeModel(); writeThroughRebuild(l); }   // a hole whose parent died re-nests as filled
   });
   nodeSel.clear(); _hiddenContours.clear();           // contour indices changed — session-only visibility resets
@@ -15614,7 +15614,7 @@ function copySelectedNodes() {
     contours.push((len === n && ct.dirSet === true) ? { nodes, winding: ct.winding, dirSet: true } : { nodes });   // a whole contour whose role was chosen keeps it through the paste
   });
   if (!contours.length) { status(I18n.t('fontmaker.status.copy_min_points')); return false; }
-  nodeClipboard = { sourceCp: curCp, pastes: 0, contours };
+  nodeClipboard = { sourceCp: curCp, pastes: 0, contours, slant: letterSlant(curItem()) };   // the points lean as their letter does
   svgMarkPointsCopied();                                     // the system clipboard now says "points", so artwork copied earlier does not win the next paste
   status(I18n.t(contours.length === 1 ? 'fontmaker.status.copied_contours.one' : 'fontmaker.status.copied_contours.other', {count: contours.length, mod: modKey()}));
   renderControls();                                          // enable the Paste button
@@ -15635,6 +15635,7 @@ function pasteNodes() {
         type: nd.type })) };
       if (src.dirSet === true) ct.dirSet = true;             // (renest below makes it run the way its label says)
       nodeModel.contours.push(ct); });
+    if (!first && curKind === 'letter') setLetterSlant(l, nodeClipboard.slant);   // into an empty letter the copied outline brings its lean record (Copy outline's rule); added to an outline, the letter's own record stays
     renestNodeModel(); writeThroughRebuild(l);
   });
   nodeSel.clear(); _hiddenContours.clear();           // contour indices changed — session-only visibility resets
@@ -16132,8 +16133,17 @@ function _clearTraceNow() {
   udDo([Object.assign(itemScope(), dropRaster ? { withSource: true } : {})], 'clear trace — ' + it.name, () => {
     it.contours = null; it.curves = null; _rawTrace = null;
     if (dropRaster) it.source.dataUrl = null;
+    clearLeanIfBare(it);
     renderGrids(); renderStage(); renderControls();
   });
+}
+/* An outline emptied by hand leaves nothing that leans unless a picture or strokes remain (a photo's
+   matrix is still sheared, a drawing's strokes still lean): with neither, the lean record goes too, so
+   a shape built there next is measured and seeded as the upright shape it is. Inside the caller's udDo. */
+function clearLeanIfBare(l) {
+  if (!l || (l.contours && l.contours.length)) return;
+  if ((l.source && l.source.dataUrl) || (l.draw && Array.isArray(l.draw.strokes) && l.draw.strokes.length)) return;
+  delete l.slant;
 }
 /* ε change — instant: re-simplify the cached loops (or recompute if the cache is stale). */
 function liveDetail(v) {   // slider 0–100 reads as "detail"; ε is the inverse (100 = closest trace)
@@ -27763,7 +27773,7 @@ function applyAlignDo(){
   const targets = cps.map(cp => project.letters.find(l => l.codepoint === cp)).filter(Boolean);
   if (!targets.length) { closeApplyAlign(); return; }
   udDo(targets.map(l => ({ t:'item', kind:'letter', cp:l.codepoint })), 'apply alignment to ' + targets.length + ' letters', () => {
-    targets.forEach(l => { l.transform = src.transform.slice(); setLetterSlant(l, letterSlant(src)); });   // a leaned picture matrix carries its lean record
+    targets.forEach(l => { l.transform = src.transform.slice(); });   // a picture's placement only, never an outline: each letter's lean record stays its own (its outline did not change; a re-trace decides)
     renderGrids(); renderStage(); renderControls();
   });
   closeApplyAlign();

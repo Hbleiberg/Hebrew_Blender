@@ -986,9 +986,14 @@ is the identity at 0:
   accent by that letter's own record.
 The record is **cleared** where an outline is replaced from outside (`importLetterOutline`, which
 then stamps the source font's own lean; `assignSvgContours`; a new photo, crop or auto-split;
-Center image; clearing punctuation) and **copied** where an outline or a picture matrix is copied
-(Copy outline, duplicate glyph, convert wide form, apply alignment). A new path that replaces or
-copies an outline does the same. The photo "skew" nudges in Align leave no record.
+Center image; clearing punctuation) and **copied** where an outline is copied (Copy outline,
+duplicate glyph, convert wide form, points pasted into an empty letter — the points clipboard
+carries its letter's record; pasted onto an outline, the target's own record stays). An outline
+emptied by hand (Clear outline, deleting every contour in Edit points) loses its record when no
+photo and no strokes are left to lean (`clearLeanIfBare`; a photo's matrix is still sheared, so a
+photo letter keeps it). *Apply alignment to other letters* copies a picture's placement, never an
+outline, so it leaves every letter's record as it was (a re-trace decides). A new path that
+replaces or copies an outline does the same. The photo "skew" nudges in Align leave no record.
 
 **Marks under a leaning font (`project.font.markLean[kind] = { place, shape }`, tangents, per mark
 store, under `tropTune`).** A mark is one glyph for every letter, so following a slant is font-level
