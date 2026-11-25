@@ -850,9 +850,11 @@ One engine applies a geometric change to many glyphs in **one** undo step. A new
   `setAdvance` writes the new advance on a letter that was still on the default one.
 - `fontX` / `fontY` are the factors for font-wide horizontal / vertical lengths (`null` = leave them);
   `markFactor` is the uniform factor for mark size (`null` = leave marks). The horizontal factor has
-  four audiences, each following `fontX` unless the operation names it: letter geometry (`fontX`
-  itself — the default side bearings, the trop side-column spread, vertical user guides), spacing and
-  kerning (`spaceX`), the vowel–trop pair shift (`pairX`), a typed meteg gap (`gapX`).
+  five audiences, each following `fontX` unless the operation names it: letter geometry (`fontX`
+  itself — the default side bearings, vertical user guides), the trop side-column spread (`tropX`),
+  spacing and kerning (`spaceX`), the vowel–trop pair shift (`pairX`), a typed meteg gap (`gapX`).
+  A resize names two of them after what they measure, whatever its spacing box says: the spread
+  follows the letters (`tropX` = the size), the meteg gap the marks (`gapX` = `markFactor`).
 - `lean` / `markShape` (a slant), `leanScale` (a width change narrows a lean with the letters),
   `markWide` (the marks' width factor) and `refuse` (the operation cannot be done at all at this
   amount) are described with the operations that use them.
@@ -943,6 +945,8 @@ strokes meet (the width step's finding). Letter names in a message go through
 default line box's breathing room and QA's overlap tolerance were written for a 600-unit letter. A
 uniform whole-font scale with the guide lines on multiplies `sizeK` by its factor, and those readers
 go through `gxKLen` / `gxKY`, so a letter traced **after** a rescale is seeded like its neighbours.
+With the guide lines off it stays as it was, even when the marks are resized: a new letter is drawn
+to the guide lines, and those did not move.
 At 1 (absent) every one of them is the integer it always was. It lives in `metrics` so the `metrics`
 undo scope carries it and Reset metrics returns it to 1 with the lines. A new constant that means "a
 distance at the standard letter size" goes through the same two helpers.

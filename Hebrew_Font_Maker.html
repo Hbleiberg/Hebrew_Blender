@@ -17857,12 +17857,14 @@ function gxPlan(op, set) {
   const fX = (all && op.fontX != null && op.fontX !== 1) ? op.fontX : null;
   const fY = (all && op.fontY != null && op.fontY !== 1) ? op.fontY : null;
   const mf = (all && op.markFactor != null && op.markFactor !== 1) ? op.markFactor : null;
-  // The horizontal factor has four audiences. fontX is letter geometry (the default side bearings, the trop
-  // side-column spread, vertical user guides); spacing and kerning (spaceX), the vowel–trop pair shift
-  // (pairX) and a typed meteg gap (gapX) follow it unless the operation names them — a width change scales
-  // letter geometry always, the spacing by an option, the pair shift only when it squeezes the marks.
+  // The horizontal factor has five audiences. fontX is letter geometry (the default side bearings, vertical
+  // user guides); the trop side-column spread (tropX), spacing and kerning (spaceX), the vowel–trop pair
+  // shift (pairX) and a typed meteg gap (gapX) follow it unless the operation names them — a width change
+  // scales letter geometry always, the spacing by an option, the pair shift only when it squeezes the
+  // marks; a resize scales the trop spread with the letters and the meteg gap with the marks, whatever
+  // its spacing box says.
   const grp = key => { const v = op[key] !== undefined ? op[key] : op.fontX; return (all && v != null && v !== 1) ? v : null; };
-  const fS = grp('spaceX'), fP = grp('pairX'), fG = grp('gapX');
+  const fT = grp('tropX'), fS = grp('spaceX'), fP = grp('pairX'), fG = grp('gapX');
   const mw = (all && op.markWide != null && op.markWide !== 1) ? op.markWide : null;
   const plan = { label: op.label, items: [], precomp: [], font: {}, scopes: [], count: 0, adv: { before: 0, after: 0 },
                  refuse: { range: [], gone: [], draw: [], mirror: false, narrow: op.refuse === 'narrow' }, warn: { lost: [], off: [], held: [], closed: [] } };
@@ -17875,8 +17877,8 @@ function gxPlan(op, set) {
   { // A side trop column still at its default follows the font's spread: the new one when the spread scales,
     // the same one when it does not (one letter, one tab) — mapped on its own it would stop following the slider.
     const prev = F.tropSideOffset != null ? F.tropSideOffset : TROP_POS_SHIFT;
-    if (fX != null) {
-      const raw = Math.round(prev * fX), next = Math.max(0, Math.min(600, raw));
+    if (fT != null) {
+      const raw = Math.round(prev * fT), next = Math.max(0, Math.min(600, raw));
       tune = { tropSideOffset: next };
       if (next === raw) ctx.trop = { prev, next }; else held.add('trop_spread');   // clamped → the columns are simply mapped, not re-tied
     } else ctx.trop = { prev, next: prev };
@@ -18120,7 +18122,10 @@ function gxScaleOp(pct, o) {   // o: { scope, spacing, marks, name }
       if (!Number.isFinite(x0)) return { T: [s, 0, 0, s, 0, b * (1 - s)], advance: l.advance, keepRsb: true };
       return { T: [s, 0, 0, s, x0 * (1 - s), b * (1 - s)], advance: l.advance != null ? Math.round(l.advance + (s - 1) * (x1 - x0)) : null, keepRsb: true };
     },
-    fontX: (all && o.spacing) ? s : null, fontY: (all && o.spacing) ? s : null, markFactor: (all && o.marks) ? s : null
+    fontX: (all && o.spacing) ? s : null, fontY: (all && o.spacing) ? s : null, markFactor: (all && o.marks) ? s : null,
+    // The trop side columns belong to the letters (centre ± the spread), a typed meteg gap to the marks: each
+    // follows the size of what it measures, not the spacing box — the seeds (sizeK) stay with the guide lines.
+    tropX: all ? s : null, gapX: (all && o.marks) ? s : null
   };
 }
 /* ── Slant — the engine's second operation: a horizontal shear about the baseline, so letters keep
