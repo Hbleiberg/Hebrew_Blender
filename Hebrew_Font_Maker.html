@@ -3858,14 +3858,21 @@ const MARK_FAMILY = {
               labelKey: 'fontmaker.panels.smrmarks_label', template: 'samaritanmarks' }   // its panel strings are fontmaker.panels.<kind>_enable / _hint / _click_design / _click_box
 };
 const MARK_STORE_KINDS = ['nikkud', 'trop', 'customMarks', 'smrmarks'];   // every project.font mark store — the one list the outline scan, the autosave stripper, the cloud packer and the loader walk
-/* The right-to-left blocks the app knows — the Hebrew block with its presentation forms, and the three
-   ancient sets. One predicate for the two places that must agree on it: bidiClassOf (the spacing
-   preview's run direction) and the legacy-kern importer (which skips RTL pairs, because that table's
-   order is unknowable for them). A new RTL set adds its block here and nowhere else. */
+/* Right to left. isRtlCp: the page's own right-to-left sets — the Hebrew block with its presentation
+   forms, and the three ancient sets — right to left whole, marks and punctuation too; a new RTL set adds
+   its block here and nowhere else. isRtlBlockCp: all of Unicode's right-to-left blocks (Arabic, Syriac,
+   Thaana, N'Ko… and the historic scripts past U+10800), where a custom glyph at a letter is right to
+   left too. cpBidiClass (beside bidiClassOf) reads both, and its answer is the one test for the places
+   that must agree on a direction: the spacing preview's runs, which gap a kerning pair is written for,
+   and the legacy-kern importer (which skips RTL pairs, because that table's order is unknowable for them). */
 function isRtlCp(hex) {
   const c = parseInt(hex, 16);
   return (c >= 0x0590 && c <= 0x05FF) || (c >= 0xFB1D && c <= 0xFB4F)
       || (c >= 0x10900 && c <= 0x1091F) || (c >= 0x10840 && c <= 0x1085F) || (c >= 0x0800 && c <= 0x083F);
+}
+function isRtlBlockCp(c) {
+  return (c >= 0x0590 && c <= 0x08FF) || (c >= 0xFB1D && c <= 0xFDFF) || (c >= 0xFE70 && c <= 0xFEFF)
+      || (c >= 0x10800 && c <= 0x10FFF) || (c >= 0x1E800 && c <= 0x1EFFF);
 }
 function markClassFor(cp) { return (SMR_MARK_BY_CP[cp] && SMR_MARK_BY_CP[cp].cls) || (LATIN_ACCENTS[cp] && LATIN_ACCENTS[cp].cls) || MARK_CLASS[cp] || TROP_CLASS[cp]; }
 
@@ -9832,7 +9839,9 @@ async function applyFontImport(file, font, bytes, opts) {
     // is LOGICAL-order by spec — unambiguous for RTL — so it is read first, through the engine (loaded
     // by the anchors step when that ran, otherwise loaded here) (hfm_read_kern: PairPos format 1 + 2, Extension-wrapped included;
     // opentype.js cannot see Extension lookups, hence the Pyodide path). Class pairs land as class
-    // rows, matching buildFEA's singles-before-classes emission and kernEffective's read.
+    // rows, which kernEffective reads — and buildFEA writes out pair by pair — as specific pairs first,
+    // then the first group in the list. A right-to-left pair is read by its advance, the half of the
+    // placement + advance record buildFEA writes for it, so an exported font re-imports with the same values.
     // The legacy `kern` table is the fallback, LTR pairs only. For a left-to-right run that order is
     // unambiguous and buildFEA emits it unchanged. For a right-to-left script it is NOT: the table is visual-order by
     // spec while most tools write logical order, and — measured with HarfBuzz against a purpose-built
@@ -9878,7 +9887,7 @@ async function applyFontImport(file, font, bytes, opts) {
           for (const k of keys) {
             const p = k.split(','), a = cpOf[+p[0]], b = cpOf[+p[1]];
             if (!a || !b) continue;
-            if (isRtlCp(a) || isRtlCp(b)) { skippedRtl++; continue; }   // see above — order is unknowable, so it is not guessed; isRtlCp is the same test bidiClassOf uses
+            if (cpBidiClass(a) === BIDI_R || cpBidiClass(b) === BIDI_R) { skippedRtl++; continue; }   // see above — order is unknowable, so it is not guessed; the same reading of a direction the spacing preview and kerning use
             const v = Math.round(kp[k] * scale);
             if (!v) continue;                                  // a 0 pair is a no-op the exporter drops anyway
             if (out.length >= KERN_IMPORT_CAP) { console.warn('kern import: stopped at ' + KERN_IMPORT_CAP + ' pairs'); break; }
@@ -19086,11 +19095,15 @@ function glyphPathAt(cs, dx, yo, curves) {
   });
   return d;
 }
-/* The kerning a pair gets in the exported font, by emitKern's own rules, in logical/reading order
-   (first then second); 0 if none. A specific pair (one glyph each side) with a real value wins —
-   the LAST one if the list holds it twice — and a pair at 0 is no rule at all, so a group pair
-   that covers the two letters shows through; among group pairs, the first in the list. The big
-   sample and the Common pairs chips read this one function, so they cannot disagree with the font. */
+/* The kerning a pair gets in the exported font, in logical/reading order (first then second); 0 if
+   none. A specific pair (one glyph each side) with a real value wins — the LAST one if the list
+   holds it twice — and a pair at 0 is no rule at all, so a group pair that covers the two letters
+   shows through; among group pairs, the first in the list. Two letters that are set in different
+   directions (kernPairDir is null — a Hebrew letter beside a Latin letter, a digit or a custom
+   glyph in Private Use) sit in separate runs of text and are never kerned, whatever the list
+   says: 0. The export writes these values and nothing else — one glyph pair at a time, from
+   kernExpanded() below, which applies the same rules in one pass — and the big sample and the
+   Common pairs chips read this one function, so neither can disagree with the font. */
 function kernSpecific(firstCp, secondCp) {       // the specific pair's own value; 0 if none or at 0
   let v = 0;
   for (const k of fontKerning())
@@ -19098,17 +19111,36 @@ function kernSpecific(firstCp, secondCp) {       // the specific pair's own valu
   return v;
 }
 function kernEffective(firstCp, secondCp) {
+  if (kernPairDir(firstCp, secondCp) === null) return 0;
   const v = kernSpecific(firstCp, secondCp); if (v) return v;
   for (const k of fontKerning())
-    if (k && k.value && ((k.left||[]).length > 1 || (k.right||[]).length > 1) && k.left.includes(firstCp) && k.right.includes(secondCp)) return k.value;
+    if (k && k.value && ((k.left||[]).length > 1 || (k.right||[]).length > 1) && (k.left||[]).includes(firstCp) && (k.right||[]).includes(secondCp)) return k.value;
   return 0;
 }
-function kernPreviewValue(firstCp, secondCp) {   // big-sample preview: the in-progress edit wins (live), else saved pairs
+/* Every glyph pair the list kerns, as Map('first|second' → value) — kernEffective's answer for each
+   pair, worked out in one pass. This is what the export writes: glyph pairs only, never a class
+   rule, because a shaper stops at the first class subtable that knows a pair's FIRST letter, so a
+   later group pair that shares that letter would never apply, and because the members of one group
+   may be set in different directions (kernPairDir). */
+function kernExpanded() {
+  const out = new Map(), rows = fontKerning().filter(k => k && k.value);
+  const single = k => (k.left||[]).length === 1 && (k.right||[]).length === 1;
+  rows.forEach(k => { if (single(k)) return;                                  // group pairs: the first in the list keeps the pair
+    (k.left||[]).forEach(a => (k.right||[]).forEach(b => { const key = a + '|' + b; if (!out.has(key) && kernPairDir(a, b) !== null) out.set(key, k.value); })); });
+  rows.forEach(k => { if (single(k) && kernPairDir(k.left[0], k.right[0]) !== null) out.set(k.left[0] + '|' + k.right[0], k.value); });   // a specific pair wins — the last one if doubled
+  return out;
+}
+function kernPreviewValue(firstCp, secondCp) {   // both previews: the in-progress edit wins (live), else saved pairs
+  if (kernPairDir(firstCp, secondCp) === null) return 0;   // two directions: never kerned, so not even the gap being dragged shows
   const e = kernEdit;
   if (e) { const L = kernSideCps(e.left), R = kernSideCps(e.right);
-    if (L.includes(firstCp) && R.includes(secondCp))
-      return (L.length === 1 && R.length === 1) ? (e.value|0)          // the pair being edited shows live
-        : (kernSpecific(firstCp, secondCp) || (e.value|0)); }          // a group being edited never hides a saved specific pair
+    if (L.includes(firstCp) && R.includes(secondCp)) {
+      if (L.length > 1 || R.length > 1) return kernSpecific(firstCp, secondCp) || (e.value|0);   // a group being edited never hides a saved specific pair
+      // The pair being edited shows live — except at 0 with no real value of its own saved. A pair at
+      // 0 is no rule at all, so the font gives the two letters whatever a group pair gives them, and
+      // drawing 0 would show the group's kerning as removed for this one pair when nothing can do that.
+      if ((e.value|0) || kernSpecific(firstCp, secondCp)) return e.value|0;
+    } }
   return kernEffective(firstCp, secondCp);
 }
 function _spacingCellMarks(cell) {   // place a glyph cell's stacked nikkud together — precomposed-aware, faithful to the exported font
@@ -19224,13 +19256,36 @@ function spacingPreviewLayout() {   // shared by the big preview and the waterfa
    "a number leans R" were both wrong on the first pass and both looked perfectly plausible.
    Returns logical cell indices in LEFT-TO-RIGHT visual order. */
 const BIDI_R = 1, BIDI_L = 2, BIDI_EN = 3, BIDI_NEUTRAL = 4;
+/* A code point's class, as near Unicode's Bidi_Class as JavaScript can read it: a regular expression
+   cannot ask for the class itself, so it is read from the General_Category, the Script and three binary
+   properties. A custom glyph can sit at any code point, and a browser sets it by that code point's
+   class, so this is what decides which way a run of them reads (bidiClassOf) and which gap a pair's
+   kerning is written for (kernPairDir) — calling a strong one neutral drew it the wrong way round and
+   wrote its kerning for the gap before the pair. Strong: a letter (L*), a letter number (Nl), a spacing
+   mark (Mc), an alphabetic symbol (the circled letters), every Private Use code point (U+E000–F8FF and
+   the two astral planes, where the Custom glyphs tab sends new shapes) and an unassigned one that is
+   not a noncharacter or default-ignorable (Unicode's default class for those is strong too, except in
+   the Currency Symbols block, U+20A0–20CF, where it is the weak European terminator, so those stay
+   neutral here) — R inside the right-to-left blocks, L outside them — and, outside those blocks, a script's own digits
+   (Devanagari, Thai…; inside them, digits are Arabic numbers, not strong). The page's own
+   right-to-left sets are R whole (isRtlCp); the European digits are EN. Everything else is neutral: punctuation, most symbols, marks, spaces. What that misses, all
+   rare for a custom glyph: a few symbol blocks a browser sets left to right (Braille, the APL symbols,
+   the parenthesised letters) count as neutral here, and a few modifier letters (U+02C6–U+02CF among
+   them) and the Greek acrophonic numerals, which it treats as neutral, count as L. */
+const BIDI_STRONG = /[\p{L}\p{Nl}\p{Mc}\p{Co}]|(?=\P{Mn})\p{Alphabetic}|(?=\P{Noncharacter_Code_Point})(?=\P{Default_Ignorable_Code_Point})\p{Cn}/u;
+const BIDI_SCRIPT_DIGIT = /(?=\P{Script=Common})(?=\P{Script=Inherited})\p{Nd}/u;
+function cpBidiClass(hex) {
+  const c = parseInt(hex, 16);
+  if (!(c >= 0 && c <= 0x10FFFF)) return BIDI_NEUTRAL;
+  if (isRtlCp(hex)) return BIDI_R;                                      // Hebrew block + its presentation forms + Phoenician + Imperial Aramaic + Samaritan
+  if (c >= 0x30 && c <= 0x39) return BIDI_EN;                          // European digits — they READ left-to-right but LEAN right-to-left (bidiOrder)
+  if (c >= 0x20A0 && c <= 0x20CF) return BIDI_NEUTRAL;                // Currency Symbols: every assigned one is a currency sign (ET) and the unassigned rest defaults to ET too — weak, which this reading keeps neutral
+  const ch = String.fromCodePoint(c), rtl = isRtlBlockCp(c);
+  if (BIDI_STRONG.test(ch)) return rtl ? BIDI_R : BIDI_L;
+  return !rtl && BIDI_SCRIPT_DIGIT.test(ch) ? BIDI_L : BIDI_NEUTRAL;   // neutrals take their surroundings
+}
 function bidiClassOf(cell) {
-  if (cell.type !== 'glyph' || !cell.cp) return BIDI_NEUTRAL;          // the space cell, and anything without a code point
-  const c = parseInt(cell.cp, 16);
-  if (isRtlCp(cell.cp)) return BIDI_R;                                  // Hebrew block + its presentation forms + Phoenician + Imperial Aramaic + Samaritan
-  if (c >= 0x30 && c <= 0x39) return BIDI_EN;                          // European digits — they READ left-to-right but LEAN right-to-left (below)
-  if (isEng(cell.cp) || isCyr(cell.cp)) return BIDI_L;                 // the same predicates that route a letter to the English / Cyrillic tab
-  return BIDI_NEUTRAL;                                                 // punctuation, symbols, custom glyphs — they take their surroundings
+  return cell.type === 'glyph' && cell.cp ? cpBidiClass(cell.cp) : BIDI_NEUTRAL;   // the space cell, and anything without a code point, is neutral
 }
 function bidiOrder(cells) {
   const n = cells.length, cls = cells.map(bidiClassOf);
@@ -19381,13 +19436,29 @@ function kernSideLabel(cps) {
   const uc = userKernClasses().find(c => sameSet(cps, c.members)); if (uc) return uc.name;
   return (cps || []).map(cp => String.fromCodePoint(parseInt(cp, 16))).join(' ');
 }
-function kernPairIndex(left, right) { return fontKerning().findIndex(k => sameSet(k.left, left) && sameSet(k.right, right)); }
+/* The row the editor loads and Update writes for these two sides: the row kernEffective reads. The
+   list can hold a pair twice (a group edited down to one letter, a hand-made file); for a specific
+   pair the LAST row with a real value is the one that counts, for a group pair the first. Loading
+   the first match instead left the chip showing one row's value and the editor changing another. */
+function kernPairIndex(left, right) {
+  const rows = fontKerning(), hits = [];
+  rows.forEach((k, i) => { if (k && sameSet(k.left, left) && sameSet(k.right, right)) hits.push(i); });
+  if (hits.length < 2) return hits.length ? hits[0] : -1;
+  const real = hits.filter(i => rows[i].value), last = left.length === 1 && right.length === 1;
+  return last ? (real.length ? real[real.length - 1] : hits[hits.length - 1]) : (real.length ? real[0] : hits[0]);
+}
 function kernCpTraced(cp){ const l = project.letters.find(x => x.codepoint === cp); return !!(l && l.contours && l.contours.length); }
 function kernSideBuilt(cps){ return (cps||[]).some(kernCpTraced); }                 // ≥1 member traced (mirrors the export filter)
 function kernPairReason(k){                                                         // '' = will export; else why it won't
   if (!k || !k.value) return 'set a gap';
   if (!kernSideBuilt(k.left) || !kernSideBuilt(k.right)) return 'untraced glyph';
+  if (!k.left.some(a => k.right.some(b => kernPairDir(a, b) !== null))) return 'two directions';   // no two of its letters are ever kerned against each other (a group that mixes directions still holds real pairs)
   return '';
+}
+function kernDirNoteSync() {   // the line under the pair preview: why the Gap slider moves nothing for a pair whose two letters are set in different directions
+  const n = document.getElementById('kernDirNote'); if (!n) return;
+  const p = kernEditPair(), off = !p || kernPairDir(p.a, p.b) !== null;
+  n.hidden = off; n.textContent = off ? '' : I18n.t('fontmaker.panels.kern_twodir_title');
 }
 
 /* ════════ Common pairs — the chips above "Your pairs" ════════
@@ -19572,8 +19643,14 @@ function renderKerningSectionNow() {
   pairs.forEach((k, i) => {
     const reason = kernPairReason(k); if (!reason) nReady++;
     const active = sameSet(kernSideCps(e.left), k.left||[]) && sameSet(kernSideCps(e.right), k.right||[]);
+    const badgeTitle = reason==='untraced glyph' ? _pT('kern_untraced_title', 'A glyph in this pair has no traced outline — it will be skipped on export.')
+      : reason==='two directions' ? I18n.t('fontmaker.panels.kern_twodir_title')
+      : _pT('kern_setgap_title', 'Pairs at 0 do nothing — drag the gap to apply.');
+    const badgeText = reason==='untraced glyph' ? ICON_WARN_SM + _pT('kern_untraced_badge', 'untraced')
+      : reason==='two directions' ? I18n.t('fontmaker.panels.kern_twodir_badge')
+      : _pT('kern_setgap_badge', 'set a gap');
     const badge = reason
-      ? `<span style="font-size:0.62rem;padding:1px 5px;border-radius:4px;white-space:nowrap;background:${reason==='untraced glyph'?'rgba(190,90,90,0.18)':'rgba(150,150,150,0.18)'};color:${reason==='untraced glyph'?'#c0392b':'var(--muted)'};" title="${esc(reason==='untraced glyph'?_pT('kern_untraced_title', 'A glyph in this pair has no traced outline — it will be skipped on export.'):_pT('kern_setgap_title', 'Pairs at 0 do nothing — drag the gap to apply.'))}">${reason==='untraced glyph'?ICON_WARN_SM + _pT('kern_untraced_badge', 'untraced'):_pT('kern_setgap_badge', 'set a gap')}</span>`
+      ? `<span style="font-size:0.62rem;padding:1px 5px;border-radius:4px;white-space:nowrap;background:${reason==='untraced glyph'?'rgba(190,90,90,0.18)':'rgba(150,150,150,0.18)'};color:${reason==='untraced glyph'?'#c0392b':'var(--muted)'};" title="${esc(badgeTitle)}">${badgeText}</span>`
       : '';
     rows += `<div class="readline" style="cursor:pointer;gap:8px;align-items:center;${active?'background:rgba(201,146,42,0.14);border-radius:5px;':''}" onclick="loadKernPair(${i})" title="${esc(window.I18n ? I18n.t('fontmaker.panels.kern_click_edit') : 'Click to edit')}">
       <span style="font-family:var(--heb-font);font-size:1.05rem;">${esc(kernSideLabel(k.left||[]))}<span style="color:var(--muted);font-size:0.7rem;font-family:inherit;"> · </span>${esc(kernSideLabel(k.right||[]))}</span>
@@ -19589,6 +19666,7 @@ function renderKerningSectionNow() {
     <div class="hint" style="margin-top:3px;">${I18n.t('fontmaker.panels.kern_reading_hint')}</div>
     <svg id="kernPreviewSvg" role="img" aria-label="${esc(I18n.t('fontmaker.aria.kern_preview'))}" style="width:100%;height:auto;max-height:120px;margin-top:8px;"></svg>
     ${(e.left.cls||e.right.cls) ? `<div class="hint" style="margin-top:-2px;font-size:0.7rem;">${I18n.t('fontmaker.panels.kern_preview_note')}</div>` : ''}
+    <div class="hint" id="kernDirNote" aria-live="polite" style="margin-top:-2px;font-size:0.7rem;" hidden></div>
     <div class="inline" style="margin-top:2px;">${I18n.t('fontmaker.panels.kern_gap')} <input type="range" min="-200" max="200" step="5" value="${e.value}" oninput="setKernValue(this.value)" aria-label="${esc(I18n.t('fontmaker.panels.kern_gap'))}"> <span id="kernV" class="readout" dir="ltr">${e.value>0?'+':''}${e.value|0}</span></div>
     <div class="ctl-row" style="margin-top:6px;">
       <button id="kernAddBtn" class="ctl-btn primary" data-fk="kp:add" onclick="addOrUpdateKernPair()">${isUpdate?I18n.t('fontmaker.panels.kern_update'):I18n.t('fontmaker.panels.kern_add')}</button>
@@ -19598,8 +19676,9 @@ function renderKerningSectionNow() {
     <div class="hint" style="margin-top:4px;">${_pT('kern_autotightness_hint', 'Negative = tighter, positive = looser (font units). “Suggest pairs” seeds an even starting gap toward <b>Auto-tightness</b> (lower = tighter), measured <b>optically</b> so overhanging letters tuck in; Preview PDF shows it shaped in full.')}</div>
     <div id="kernCommon"></div>
     <div class="ctl-label" style="margin-top:14px;">${I18n.t('fontmaker.kernpairs.your_pairs')}</div>
-    ${pairs.length ? `<div class="hint" style="margin-top:-2px;">${_pT(pairs.length === 1 ? 'kern_export_summary.one' : 'kern_export_summary.other', nReady + ' of ' + pairs.length + ' pair' + (pairs.length > 1 ? 's' : '') + ' will be exported.', { ready: nReady, total: pairs.length })}${nReady<pairs.length?' '+_pT('kern_export_skip', 'Pairs marked “⚠ untraced” or “set a gap” are skipped.'):''}</div><div style="margin-top:4px;">${rows}</div>` : '<div class="hint" style="margin-top:-2px;">'+esc(I18n.t('fontmaker.panels.kern_no_pairs'))+'</div>'}
+    ${pairs.length ? `<div class="hint" style="margin-top:-2px;">${_pT(pairs.length === 1 ? 'kern_export_summary.one' : 'kern_export_summary.other', nReady + ' of ' + pairs.length + ' pair' + (pairs.length > 1 ? 's' : '') + ' will be exported.', { ready: nReady, total: pairs.length })}${nReady<pairs.length?' '+_pT('kern_export_skip', 'Pairs marked “⚠ untraced”, “set a gap” or “two directions” are skipped.'):''}</div><div style="margin-top:4px;">${rows}</div>` : '<div class="hint" style="margin-top:-2px;">'+esc(I18n.t('fontmaker.panels.kern_no_pairs'))+'</div>'}
     ${kernClassManagerHTML()}`;
+  kernDirNoteSync();
   renderKernCommon();
   renderKernPreview();
   renderSpacingPreview();   // keep the big multi-line sample in sync with every kerning add/update/delete
@@ -19626,7 +19705,9 @@ function renderKernPreview() {
   const lb = project.letters.find(x => x.codepoint === kernSideCps(e.right)[0]);
   const wa = la ? effLetterAdvance(la) : effLetterAdvance(null);
   const wb = lb ? effLetterAdvance(lb) : effLetterAdvance(null);
-  const gap = Math.max(-200, Math.min(200, e.value|0));
+  // a specific pair is drawn at the value the big sample gives it (kernPreviewValue), so the two previews agree
+  // on a pair they both show — at 0 under a group pair that is the group's kerning; a group side shows the slider's value
+  const gap = Math.max(-200, Math.min(200, (e.left.cls || e.right.cls) ? (e.value|0) : kernPreviewValue(e.left.cp, e.right.cp)));
   const total = wa + gap + wb;
   const cell = (l, w, pen) => (l && l.contours)
     ? `<path d="${glyphPathAt(l.contours, pen, 0, l.curves)}" fill="currentColor"/>`
@@ -19658,6 +19739,7 @@ function setKernGlyph(which, v) {
   renderKernCommon();       // …and moves the chips' "current" mark (the typed-in box is outside that block, so it keeps focus)
   ['left','right'].forEach(w => { const c = document.getElementById('kernCap-' + w);   // typing a Latin letter can flip the pair's direction
     if (c) c.textContent = kernSideCaption(w); });                                     // in place, for the same reason the button below is
+  kernDirNoteSync();                                                                   // …or make it a pair of two directions, which is never kerned
   const btn = document.getElementById('kernAddBtn');        // refresh label without re-rendering (keeps input focus)
   // fontmaker.panels.kern_update / kern_add have shipped translated since the panel landed; the
   // ternary here just never asked for them.
@@ -19684,13 +19766,30 @@ function addOrUpdateKernPair() {
   udDo([{t:'kerning'}], 'kerning pair', () => {
     if (!Array.isArray(project.font.kerning)) project.font.kerning = [];
     const idx = kernPairIndex(left, right);
-    if (idx >= 0) project.font.kerning[idx].value = e.value;
+    if (idx >= 0) {
+      const row = project.font.kerning[idx]; row.value = e.value;
+      // one pair, one row: a second row for the same two sides hides behind this one, and would bring its old value back the day this one is set to 0
+      project.font.kerning = project.font.kerning.filter(k => k === row || !(k && sameSet(k.left, left) && sameSet(k.right, right)));
+    }
     else project.font.kerning.push({ left, right, value: e.value });
   });
   renderKerningSection();
-  status(I18n.t(e.value ? 'fontmaker.status.kern_pair_saved' : 'fontmaker.status.kern_pair_saved_zero'));
+  // saved at 0 = no rule of its own: when a group pair covers the two letters, its kerning is what the font applies — say so
+  const underGroup = !e.value && left.length === 1 && right.length === 1 && kernEffective(left[0], right[0]);
+  status(I18n.t(e.value ? 'fontmaker.status.kern_pair_saved' : underGroup ? 'fontmaker.status.kern_pair_saved_zero_group' : 'fontmaker.status.kern_pair_saved_zero'));
 }
-function deleteKernPair(i) { udDo([{t:'kerning'}], 'delete kerning pair', () => { (project.font.kerning||[]).splice(i, 1); }); renderKerningSection(); }
+function deleteKernPair(i) {
+  const a = document.activeElement, own = !!(a && a.dataset && a.dataset.fk === 'kpd:' + i);   // focus is on this row's delete button
+  udDo([{t:'kerning'}], 'delete kerning pair', () => { (project.font.kerning||[]).splice(i, 1); });
+  renderKerningSection();
+  // The rebuild puts focus on the row that moved up into this place (fkKeep). After the LAST row there
+  // is none and focus fell to <body>: go to the row before it, or to Add pair when the list is empty.
+  if (own && (!document.activeElement || document.activeElement === document.body)) {
+    const box = document.getElementById('kerningBody');
+    const t = box && (box.querySelector('[data-fk="kpd:' + (i - 1) + '"]') || box.querySelector('[data-fk="kp:add"]'));
+    if (t) t.focus();
+  }
+}
 function loadKernPair(i) {
   const k = fontKerning()[i]; if (!k) return;
   const side = cps => {
@@ -19745,11 +19844,19 @@ function kernOpticalGap(la, lb) {
   return isFinite(minClear) ? Math.round(minClear) : boxGap;
 }
 /* Which way a pair is set: 'rtl' (the second letter sits to the LEFT — Hebrew and its sister
-   scripts), 'ltr' (to the right — Latin, Cyrillic, digits), or null for two different scripts,
-   which sit in separate runs and are never kerned against each other. Punctuation and custom glyphs
-   take their neighbour's side; two of them count as Hebrew text, as this page's fonts are. */
+   scripts), 'ltr' (to the right — Latin, Cyrillic, digits), or null for two different directions,
+   which sit in separate runs and are never kerned against each other. A side reads its direction from
+   cpBidiClass, the class a browser sets its code point by: a custom glyph in Private Use (or at a
+   letter of another script, an unassigned code point…) is left to right, so beside a Hebrew letter it
+   is a pair of two directions. Neutrals (punctuation, most symbols) take their neighbour's side; two
+   of them count as Hebrew text, as this page's fonts are — no one value record kerns the right gap
+   both ways round, and buildFEA writes them for Hebrew text. Two sides of one direction but different
+   scripts (a Private Use glyph or a circled letter beside a Latin letter, Latin beside Cyrillic, a
+   Hebrew letter beside an Arabic-block glyph) count as that direction, though a browser shapes them in
+   separate runs and applies nothing — a known limit, as are the Roman numerals (U+2160…) and the
+   unassigned right-to-left code points, which Chromium never kerns at all. */
 function kernPairDir(aCp, bCp) {
-  const side = cp => { const k = bidiClassOf({ type: 'glyph', cp }); return k === BIDI_R ? 'rtl' : (k === BIDI_L || k === BIDI_EN) ? 'ltr' : ''; };
+  const side = cp => { const k = cpBidiClass(cp); return k === BIDI_R ? 'rtl' : (k === BIDI_L || k === BIDI_EN) ? 'ltr' : ''; };
   const a = side(aCp), b = side(bCp);
   if (a && b && a !== b) return null;
   return a || b || 'rtl';
@@ -19763,9 +19870,12 @@ function kernVisualGap(la, lb) {
 }
 function setKernTarget(v) { udBurstBegin([{t:'spacing'}], 'kern tightness'); fontSpacing().kernTarget = Math.max(-40, Math.min(160, +v||0)); const s = document.getElementById('kernTgtV'); if (s) s.textContent = fontSpacing().kernTarget; }
 function suggestKernPairs() {
+  // U+0591–U+05C7 is the marks AND four punctuation signs that stand BETWEEN letters — maqaf, paseq, sof pasuq,
+  // nun hafukha. They are not skipped over like a mark: each is a break, the rule scripts/build-kern-pairs.mjs uses.
+  const isBreak = c => c === 0x20 || c === 0xA0 || c === 0x0A || c === 0x05BE || c === 0x05C0 || c === 0x05C3 || c === 0x05C6;
   const cps = [...(fontSpacing().sample || '')]
-    .map(ch => ch.codePointAt(0)).filter(c => !(c>=0x0591 && c<=0x05C7) && !SMR_MARK_INTS.has(c))        // base letters only (drop the Hebrew and Samaritan marks)
-    .map(c => (c === 0x20 || c === 0xA0 || c === 0x0A) ? null : c.toString(16).toUpperCase().padStart(4,'0'));   // a space stays as a break: the letters either side of it are not a pair
+    .map(ch => ch.codePointAt(0)).filter(c => isBreak(c) || (!(c>=0x0591 && c<=0x05C7) && !SMR_MARK_INTS.has(c)))   // base letters only (drop the Hebrew and Samaritan marks)
+    .map(c => isBreak(c) ? null : c.toString(16).toUpperCase().padStart(4,'0'));   // a space or one of those signs stays as a break: the letters either side of it are not a pair
   const target = kernTargetGap(), MIN_CLEAR = 10, EPS = 6;
   const seen = new Set(), cand = [];
   for (let i = 0; i < cps.length - 1; i++) {
@@ -23006,30 +23116,37 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLette
     });
     if (mkmkOut) f += 'feature mkmk {\n' + mkmkOut + '} mkmk;\n\n';
   }
-  // ── kerning (GPOS pair adjustment). RTL convention (confirmed visually via the live preview +
-  //    Preview PDF): the pair is stored/emitted in logical (reading) order — the order it is typed,
-  //    which for Hebrew is right-to-left visually. A single value adjusts the FIRST glyph's
-  //    x-advance, and advance = pen movement in the writing direction, so − tightens / + loosens in
-  //    both LTR and RTL (HarfBuzz applies advances in logical order for the RTL run). baseGlyphNames
-  //    is the set of glyphs actually built, so a pair on a punct/digit glyph can't break the build
-  //    when "Include digits & punctuation" is off (its side just drops out). ──
+  // ── kerning (GPOS pair adjustment). Every rule is ONE glyph pair in logical (reading) order — the
+  //    order it is typed — with the value kernEffective gives that pair (kernExpanded). Which value
+  //    record it gets depends on how the pair is set (kernPairDir), measured in Chromium and in
+  //    HarfBuzz on three-letter strings:
+  //    · left to right: the bare value = the FIRST glyph's x-advance. The second glyph sits after
+  //      the first, so a shorter advance pulls it in (− tightens, + loosens).
+  //    · right to left: placement AND advance on the first glyph, <v 0 v 0>. A shaper lays an RTL run
+  //      out leftwards from the pen, so the first glyph's advance box ends where the letter BEFORE
+  //      it stands: an advance change alone would move that letter (the wrong gap) and leave the
+  //      pair as it was. Shifting the first glyph by the same amount moves it toward the second,
+  //      and the advance change then carries everything before it along — only the pair's own gap
+  //      changes. This is how ufo2ft and the Hebrew fonts this page imports write RTL kerning, and
+  //      hfm_read_kern (which reads the advance) gets the same value back.
+  //    · two directions (null): the letters sit in separate runs and are never kerned — no rule.
+  //    A custom glyph takes the direction cpBidiClass reads from its code point (Private Use, a letter,
+  //    an unassigned code point: left to right outside the right-to-left blocks). Two neutrals
+  //    (punctuation, most symbols) count as right to left: no one value record closes a pair's gap
+  //    both ways round, and in a left-to-right run this one closes the gap before them instead.
+  //    baseGlyphNames is the set of glyphs actually built, so a pair on a punct/digit glyph can't
+  //    break the build when "Include digits & punctuation" is off (the pair just drops out). ──
   const builtSet = new Set(baseGlyphNames);
-  const kernSide = cps => (cps || []).map(gname).filter(n => builtSet.has(n));
-  const kernMap = new Map();   // key → emitted line; a later duplicate overwrites the value, position stable (last wins)
-  const emitKern = k => {
-    if (!k || !k.value) return;                                  // value 0 (incl. un-tuned "Suggest" seeds) → omit
-    const L = kernSide(k.left), R = kernSide(k.right);
-    if (!L.length || !R.length) return;                          // a side resolved to no built glyph → skip
-    const lhs = L.length > 1 ? `[${L.join(' ')}]` : L[0];
-    const rhs = R.length > 1 ? `[${R.join(' ')}]` : R[0];
-    kernMap.set(lhs + '\t' + rhs, `  pos ${lhs} ${rhs} ${k.value};\n`);
-  };
-  const kernSingle = k => (k.left||[]).length === 1 && (k.right||[]).length === 1;
-  (project.font.kerning || []).filter(k => k && kernSingle(k)).forEach(emitKern);    // specific glyph pairs first…
-  (project.font.kerning || []).filter(k => k && !kernSingle(k)).forEach(emitKern);   // …then class pairs, so a specific pair wins on overlap
-  if (kernMap.size) {
-    let kernLines = ''; kernMap.forEach(line => { kernLines += line; });
-    f += '# kern: pair in logical (reading) order; value = first-glyph x-advance (− tightens, + loosens)\n';
+  let kernLines = '';
+  kernExpanded().forEach((v, key) => {
+    const [a, b] = key.split('|'), dir = kernPairDir(a, b), na = gname(a), nb = gname(b);
+    if (!dir || !builtSet.has(na) || !builtSet.has(nb)) return;
+    kernLines += dir === 'rtl' ? `  pos ${na} ${nb} <${v} 0 ${v} 0>;\n` : `  pos ${na} ${nb} ${v};\n`;
+  });
+  if (kernLines) {
+    f += '# kern: glyph pairs in logical (reading) order. A right-to-left pair moves its first glyph by the value and changes\n' +
+         '# the advance of that glyph by the same amount (<v 0 v 0>); a left-to-right pair changes the advance alone (v).\n' +
+         '# Either way only the gap between the two glyphs of the pair changes (− tightens, + loosens).\n';
     f += 'feature kern {\n' + kernLines + '} kern;\n\n';
   }
   // explicit GDEF (base=1, mark=3); empty mark slot when letters-only. The CGJ/ZWJ joiner glyphs
@@ -23609,10 +23726,13 @@ def hfm_read_kern(ttf_b64, cap):
     # from an existing font, as the editor's model rows [{left:[HEXCP..], right:[HEXCP..], value}] in
     # LOGICAL order. GPOS pair order is logical by spec, so this is unambiguous for RTL — unlike the
     # legacy kern table the JS import deliberately skips for Hebrew. value = the pair's total
-    # x-advance delta (Value1 + Value2), scaled to 1000 UPM; zero rows dropped. Placement-only pairs
+    # x-advance delta (Value1 + Value2), scaled to 1000 UPM; zero rows dropped. A right-to-left pair is
+    # normally written as placement + advance of the same amount (buildFEA writes it so too), and its
+    # advance is the pair's value, so such a pair round-trips. Placement-only pairs
     # and class-2-index-0 ("any other glyph" — unboundable as an explicit list) are counted in
     # "skipped" rather than guessed. Walk order = LookupList order = shaper application order, and
     # the first definition of a pair signature wins, so kernEffective never meets a doubled pair from here.
+    # A font with more rows than cap has its glyph pairs folded into group rows first (see the end).
     import io, base64, json
     from fontTools.ttLib import TTFont
     try:
@@ -23640,6 +23760,7 @@ def hfm_read_kern(ttf_b64, cap):
             return [format(g2u[g], "04X") for g in gl if g in g2u]
         pairs, seen = [], set()
         skipped = 0
+        room = cap * 30   # read past the cap: rows that fold into group rows (below) must all be seen before anything is cut off
         for li in sorted(i for i in want if i < len(lookups)):
             for st in (lookups[li].SubTable or []):
                 ext = getattr(st, "ExtSubTable", None)
@@ -23701,10 +23822,28 @@ def hfm_read_kern(ttf_b64, cap):
                             v1000 = int(round(v * scale))
                             if v1000:
                                 pairs.append({"left": L, "right": R, "value": v1000})
-                if len(pairs) >= cap:
+                if len(pairs) >= room:
                     break
-            if len(pairs) >= cap:
+            if len(pairs) >= room:
                 break
+        if len(pairs) > cap:
+            # More rows than the editor lists. Glyph pairs that share a value are one rule written out
+            # letter by letter - buildFEA writes every group pair that way - so fold them back into group
+            # rows before anything is cut off: for each first glyph its second glyphs with one value,
+            # then the first glyphs whose folded row is the same. No two folded rows hold the same pair,
+            # and they go ahead of the font's own class rows, so each pair keeps exactly the value it
+            # had as a specific pair (kernEffective: a specific pair, else the first group in the list).
+            by_first, rest = {}, []
+            for p in pairs:
+                if len(p["left"]) == 1 and len(p["right"]) == 1:
+                    by_first.setdefault(p["left"][0], {}).setdefault(p["value"], []).append(p["right"][0])
+                else:
+                    rest.append(p)
+            merged = {}
+            for a, by_val in by_first.items():
+                for v, bs in by_val.items():
+                    merged.setdefault((tuple(sorted(bs)), v), []).append(a)
+            pairs = [{"left": firsts, "right": list(bs), "value": v} for (bs, v), firsts in merged.items()] + rest
         return json.dumps({"ok": True, "pairs": pairs[:cap], "skipped": skipped})
     except Exception as e:
         return json.dumps({"error": "kern read failed: " + str(e)})
@@ -27590,7 +27729,15 @@ function migrateProject(data) {
     });
     if (!data.font.spacing) data.font.spacing = { letterSpacing:0, wordSpacing:260, lineSpacing:0, sample:'שלום עולם', kernTarget:40 };
     else { const sp = data.font.spacing; if (sp.letterSpacing==null) sp.letterSpacing=0; if (sp.wordSpacing==null) sp.wordSpacing=260; if (sp.lineSpacing==null) sp.lineSpacing=0; if (!sp.sample) sp.sample='שלום עולם'; if (sp.kernTarget==null) sp.kernTarget=40; }
-    if (!Array.isArray(data.font.kerning)) data.font.kerning = [];
+    // Kerning rows — a project file is untrusted. A row needs two sides that are non-empty lists of code
+    // points and a finite value (a fraction is rounded: feaLib rejects one, and with it the whole font);
+    // anything else is dropped. Every reader of the list assumes that shape, and one row with a side
+    // missing used to throw in the Spacing tab's render, which left the tab empty and the row undeletable.
+    { const cps = s => Array.isArray(s) && s.length > 0 && s.every(c => typeof c === 'string' && /^[0-9A-F]{4,6}$/.test(c));
+      data.font.kerning = Array.isArray(data.font.kerning)
+        ? data.font.kerning.filter(k => k && typeof k === 'object' && cps(k.left) && cps(k.right) && typeof k.value === 'number' && Number.isFinite(k.value))
+            .map(k => ({ left: k.left, right: k.right, value: Math.round(k.value) || 0 }))   // || 0: a −0.4 rounds to −0
+        : []; }
     if (!Array.isArray(data.font.kernClasses)) data.font.kernClasses = [];   // user-defined kern classes
     data.font.kernChecked = Array.isArray(data.font.kernChecked)             // Common pairs ticks — keys only, well-formed, bounded (a project file is untrusted)
       ? [...new Set(data.font.kernChecked.filter(k => typeof k === 'string' && /^[0-9A-F]{4,6}\|[0-9A-F]{4,6}$/.test(k)))].slice(0, 2000) : [];

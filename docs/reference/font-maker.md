@@ -1588,6 +1588,23 @@ resolving them), and **L2**'s run reversal. Two embedding levels is the whole la
 field has no markup to nest deeper. Kerning stays a *logical* pair, so `spacingLineSVG` applies
 `gaps[min(a,b)]` only between visual neighbours still adjacent in reading order.
 
+`bidiClassOf` gives each cell its class from `cpBidiClass(hex)`, the one reading of a code point's
+direction (kerning's `kernPairDir` and the legacy-kern importer read it too). A regular expression
+cannot ask for Unicode's Bidi_Class itself, so it is read as near as the General_Category, the
+Script and three binary properties allow. R: the page's own right-to-left sets, whole (`isRtlCp`).
+EN: the European digits. Strong — R inside Unicode's other right-to-left blocks (`isRtlBlockCp`), L
+outside them: a letter, a letter number, a spacing mark, an alphabetic symbol (the circled letters),
+every Private Use code point (the range the Custom glyphs tab recommends) and an unassigned one
+(not a noncharacter or default-ignorable, and not in the Currency Symbols block, U+20A0–20CF, whose
+unassigned code points default to the weak European terminator and stay neutral); and, outside
+those blocks, a script's own digits (Devanagari, Thai…). That is the
+class a browser gives those code points, which matters because a custom glyph can sit at any of
+them: three custom glyphs read left to right even inside Hebrew text. Punctuation, most symbols,
+marks and spaces are the neutrals. Where the reading falls short — all rare for a custom glyph: a
+few symbol blocks a browser sets left to right (Braille, the APL symbols, the parenthesised letters)
+count as neutral, and a few modifier letters (U+02C6–U+02CF among them) and the Greek acrophonic
+numerals, which it treats as neutral, count as L.
+
 Any change here is checked against **Chromium's own bidi**, not against reasoning: render the same
 string in an element with `dir="auto"`, read each character's x with a `Range`, and compare the two
 orders cell-by-cell. Doing that is what caught W7 and the EN-leans-R rule in N1 — both were wrong on
@@ -1608,25 +1625,64 @@ drop focus mid-typing, and typing a Latin letter can flip the pair's direction.
 **Storage.** `project.font.kerning = [{left:[cp…], right:[cp…], value}]`, always in logical (reading)
 order; a side with one code point is a specific pair, with more it is a group ("class") pair.
 `project.font.kernClasses` holds the user's named groups. `project.font.kernChecked` holds the Common
-pairs ticks as `'first|second'` keys.
+pairs ticks as `'first|second'` keys. `migrateProject` keeps only well-formed rows — two sides that
+are non-empty lists of code-point strings and a finite value, a fraction rounded — because every
+reader assumes that shape (a row with a side missing once blanked the whole Spacing tab).
 
-**One reader for "what kerning does this pair get": `kernEffective(first, second)`.** It follows
-`emitKern` (the export) rule for rule: a specific pair with a real value wins — the last one if the
-list holds it twice — a pair at 0 is no rule at all, so a group pair that covers the two letters
-shows through, and among group pairs the first in the list. `kernSpecific` is the first half alone.
-The big sample (`kernPreviewValue`) and the chips read it, so neither can disagree with the exported
-font. In `kernPreviewValue` the pair being edited still shows live; a *group* being edited never hides
-a saved specific pair. A new reader of kerning calls `kernEffective`, never walks the list itself.
+**One reader for "what kerning does this pair get": `kernEffective(first, second)`.** A specific pair
+with a real value wins — the last one if the list holds it twice — a pair at 0 is no rule at all, so
+a group pair that covers the two letters shows through, and among group pairs the first in the list.
+Two letters set in different directions (`kernPairDir` is `null`: a Hebrew letter beside a Latin
+letter, a digit or a custom glyph in Private Use) get 0 whatever the list says, because text never
+kerns across the two runs.
+`kernSpecific` is the specific half alone. The big sample and the pair preview (`kernPreviewValue`)
+and the chips read it, so none of them can disagree with the exported font. In `kernPreviewValue`
+the pair being edited shows live while it has something of its own to show — a non-zero Gap, or a
+real saved value being dragged away; at 0 with nothing real saved it falls through to
+`kernEffective`, so a pair saved at 0 under a group pair shows the group's kerning (the status line
+on saving says so). A *group* being edited never hides a saved specific pair. A new reader of
+kerning calls `kernEffective`, never walks the list itself.
+
+**What the export writes** (`buildFEA`, the `kern` feature). Glyph pairs only, each with the value
+`kernEffective` gives it: `kernExpanded()` works the whole list out in one pass (the same rules, as
+a `Map('first|second' → value)`), and the emitter writes one `pos` statement per pair whose two
+glyphs are built. No class rule is ever written: a shaper stops at the first class subtable that
+knows a pair's first letter, so a second group pair sharing that letter would never apply. The form
+of the value follows `kernPairDir`: a left-to-right pair is the bare value (the first glyph's
+advance); a right-to-left pair is placement **and** advance on the first glyph, `<v 0 v 0>` — an
+advance change alone would move the letter *before* the pair and leave the pair's own gap as it
+was; a pair of two directions gets no rule. A group whose letters mix directions needs no special
+case, since every pair is written by itself. A pair of two neutrals (punctuation marks, most
+symbols) is written for Hebrew text: no one value record closes a pair's own gap in both directions,
+and in a left-to-right run the record a right-to-left pair needs closes the gap before the pair
+instead. A known limit: two letters of one direction but different scripts — a Private Use custom
+glyph or a circled letter beside a Latin letter, Latin beside Cyrillic, a Hebrew letter beside an
+Arabic-block custom glyph — are written and shown as kerned, but a browser shapes the two in
+separate script runs and applies nothing; and Chromium never kerns the Roman numerals (U+2160…) or
+an unassigned right-to-left code point, even beside one of their own.
+`hfm_read_kern` reads a pair by its advance, so an exported font re-imports with the same values; when a font holds more rows than the import limit
+(`KERN_IMPORT_CAP`), it first folds glyph pairs that share a value back into group rows — per first
+glyph, then first glyphs with the same folded row — so a font this page exported from group pairs
+comes back whole. A font under the limit imports row for row.
+
+**Your pairs.** `kernPairIndex(left, right)` is the row the editor loads and *Update pair* writes:
+the row `kernEffective` reads (for a specific pair held twice, the last with a real value), and
+Update leaves one row for those two sides. `kernPairReason(row)` says why a row will not be
+exported — `'set a gap'`, `'untraced glyph'`, or `'two directions'` when no two of its letters are
+ever kerned against each other — and the summary line counts the rest; while a pair of two
+directions is in the editor, `#kernDirNote` under the pair preview says why the Gap moves nothing.
 
 **Measuring a gap: `kernVisualGap(la, lb)`.** `kernOpticalGap(a, b)` scans both outlines every 20
 units and returns the smallest clearance, and it assumes its **second** argument sits to the
 **left** — right for Hebrew. `kernPairDir(a, b)` says how a pair is set (`'rtl'`, `'ltr'`, or `null`
-for two different scripts, which sit in separate runs and never kern; punctuation and custom glyphs
-take their neighbour's side), and `kernVisualGap` hands the letters to `kernOpticalGap` the right
-way round. Call `kernVisualGap`; `kernOpticalGap` directly is only right for a pair known to be
-Hebrew. The gap ignores the pair's own kerning and includes Letter spacing (`effLetterAdvance`).
-*Suggest pairs* (`suggestKernPairs`) uses it, treats a space in the sample as a break, and skips
-ticked pairs.
+for two different directions, which sit in separate runs and never kern; each side takes its class
+from `cpBidiClass`, so a custom glyph in Private Use, at a letter or at an unassigned code point is
+left to right; neutrals take their neighbour's side, and two of them count as Hebrew text), and
+`kernVisualGap` hands the letters to `kernOpticalGap` the right way round. Call `kernVisualGap`; `kernOpticalGap` directly is only
+right for a pair known to be Hebrew. The gap ignores the pair's own kerning and includes Letter spacing (`effLetterAdvance`).
+*Suggest pairs* (`suggestKernPairs`) uses it, treats a space in the sample as a break — and a
+maqaf, paseq, sof pasuq or nun hafukha, the rule `scripts/build-kern-pairs.mjs` uses; vowels and
+trop are skipped over — and skips ticked pairs.
 
 **The Common pairs block** (`renderKernCommon()` → `#kernCommon`, inside `#kerningBody`).
 - *The Hebrew list is generated.* `KERN_COMMON_HE` (`[first, second, count]`, top 60) sits between
@@ -1672,8 +1728,9 @@ that run their `…Now` twin inside `fkKeep`, which remembers the focused contro
 focuses its rebuilt twin — looked up again after the rebuild, because `renderSpacingPanel` replaces
 `#kerningBody` itself. Undo from a focused Kerning control comes through the outer one. Keys in use:
 `kp:<first|second>` (chips), `kp:fine`, `kp:next`, `kp:more`, `kp:add`, `kp:suggest`, `kpd:<row>` (a
-row's delete button, so deleting by keyboard lands on the next row). `renderControls` keeps its own
-copy of the same idea for the left column.
+row's delete button, so deleting by keyboard lands on the next row; after the last row
+`deleteKernPair` puts focus on the row before it, or on Add pair when the list is empty).
+`renderControls` keeps its own copy of the same idea for the left column.
 
 ### QA Check grid (`#qaOverlay`)
 `qaBuild()` counts flagged cells per tab into `qaResult.counts` (the tab badges) and `qaResult.total`
