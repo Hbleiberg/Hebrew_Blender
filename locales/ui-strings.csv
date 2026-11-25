@@ -3409,6 +3409,8 @@ fontmaker.status.localfont_denied,"Permission to see the installed fonts was not
 fontmaker.status.localfont_blocked,"The installed fonts cannot be read while this page is shown inside another site. Open IvritSuite in a tab of its own, or upload a font file.","אי אפשר לקרוא את הגופנים המותקנים כשהעמוד מוצג בתוך אתר אחר. פתחו את IvritSuite בלשונית משלו, או העלו קובץ גופן.",toast,
 fontmaker.status.localfont_none,The browser did not return any installed fonts.,הדפדפן לא החזיר גופנים מותקנים.,toast,
 fontmaker.status.localfont_noname,This font cannot be used by its name. Upload its file instead.,אי אפשר להשתמש בגופן הזה לפי שמו. העלו את הקובץ שלו במקום זה.,toast,
+fontmaker.status.localfont_locked,"This project keeps the license of {font}, the font it started from, so letters from an installed font cannot be brought into it.","הפרויקט הזה שומר על הרישיון של {font}, הגופן שממנו התחיל, ולכן אי אפשר להביא אליו אותיות מגופן מותקן.","toast; Pick an installed font… pressed in a project that started from a partner font",param font
+fontmaker.status.import_wait_build,"The font is still being built, so the import has to wait until that is done.","הגופן עדיין נבנה, ולכן הייבוא צריך לחכות עד שהבנייה תסתיים.","toast; a font import (a file or an installed font) tried while an export, a save to My Fonts or a send is still building the font",
 fontmaker.status.reference_missing,"The reference font {name} is not installed on this computer, so a default font stands in for it.","גופן הייחוס {name} אינו מותקן במחשב הזה, ולכן גופן ברירת מחדל מחליף אותו.",toast,
 fontmaker.status.svgpaste_done,Artwork pasted into {name}.,הציור הודבק אל {name}.,toast,
 fontmaker.status.svgpaste_added,Artwork added to {name}.,הציור נוסף אל {name}.,toast,
@@ -6167,6 +6169,7 @@ fontmaker.oswizard.name_prefill,{font} (modified),{font} (modified),step-2 name 
 fontmaker.oswizard.name_ph_rfn,A new name of your own — e.g. add your school's name,"שם חדש משלכם — למשל, הוסיפו את שם בית הספר",step-2 name placeholder when reserved names force a rename,
 fontmaker.oswizard.need_name_author,Enter a font name and your name to continue.,הזינו שם לגופן ואת שמכם כדי להמשיך.,step-2 inline validation,
 fontmaker.oswizard.rfn_note,"The original's license reserves “{rfn}” (reserved names: {names}) — pick a name that doesn't include it, e.g. your school's name or your own.","רישיון המקור שומר את ”{rfn}“ (שמות שמורים: {names}) — בחרו שם שאינו כולל אותו, למשל שם בית הספר או שמכם.",step-2 inline validation on a reserved-name collision,"params rfn, names"
+fontmaker.oswizard.wait_build,Your current font is still being built. Press “{btn}” again when that is done.,הגופן הנוכחי שלכם עדיין נבנה. לחצו שוב על ”{btn}“ כשהבנייה תסתיים.,"note in the starting-font wizard's foot when Start editing is pressed while an export, a save to My Fonts or a send of the current font is still waiting on the engine; nothing changed",param btn = the Start editing button's label (fontmaker.oswizard.start_editing)
 fontmaker.oswizard.author_label,Your name (contributor),השם שלכם (יופיע כתורם),step-2 field label,
 fontmaker.oswizard.orig_author,Original author,היוצר המקורי,step-2 read-only row label,
 fontmaker.oswizard.step3_title,Step 3 of 3 — What to include,שלב 3 מתוך 3 — מה לכלול,partner wizard step heading,

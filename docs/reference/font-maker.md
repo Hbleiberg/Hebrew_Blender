@@ -177,6 +177,12 @@ handler goes through the real setters (`setMarkEnabled`, `setAdd*`, `setInputMod
   on top; `aOpenModal` therefore lifts a modal opened over another open one to one layer above the highest
   open `.overlay` (an inline `z-index` that `aCloseModal` clears). Without it, Help opened from the wizard's
   license "?" (and Shortcuts reached from that Help) painted beneath the wizard, which sits later in the page.
+  `_activeModal` is a single slot — the dialog on top. `aOpenModal` remembers the dialog it opens over
+  (`_modalsUnder`), and `aCloseModal` hands the slot back to the newest one still open, so Escape and the
+  Tab trap serve the dialog underneath again (a confirmation over My Fonts used to leave My Fonts with
+  neither); the wizard and the starting-font picker also re-arm themselves with their current close
+  function, unless a third dialog is still open above them. If the focus then sits outside the dialog
+  that got the slot back, it is moved to that dialog's first control.
 - **Confirmations**: `askModal(title, bodyHtml, buttons)` with `[{label, cls:'ghost'?, onClick}]`.
   `#askOverlay` sits one z-index layer above the other `.overlay`s, so a confirmation raised over the
   wizard, help, QA, My Fonts or mobile-warn overlay is the one under the pointer.
@@ -203,9 +209,21 @@ handler goes through the real setters (`setMarkEnabled`, `setAdd*`, `setInputMod
 - **Escaping**: use `esc()` (escapes all five metacharacters, including `'`). This is the
   canonical helper across the suite; the older `escapeHtml()` (which didn't escape `'`) was
   removed and all its call sites migrated to `esc()`.
-- **Global keyboard shortcuts**: start the handler with the `udShortcutBlocked()` guard (blocks
-  while typing or when ask/help/QA overlays are open), and register the shortcut in BOTH the `?`
-  cheat sheet (`shortcutGroups()`) and the triggering button's `title=` tooltip.
+- **Global keyboard shortcuts**: start the handler with the `udShortcutBlocked()` guard, and register
+  the shortcut in BOTH the `?` cheat sheet (`shortcutGroups()`) and the triggering button's `title=`
+  tooltip. The guard refuses while there is no project, while typing (an `input`, a `textarea`,
+  editable content), while the account screen is up, and while **any** `.overlay` is open — it asks
+  the page, not a list of ids, so a new dialog is covered by being an `.overlay` (focus on a dialog's
+  button or list is not typing: undo, the arrow nudges, Delete and pen-mode Enter used to act on the
+  letter behind the shortcuts sheet, My Fonts and Apply alignment). The census of the page's overlays
+  shows one that needs some of the editor's keys: the **Edit-shape window** (`#markEditOverlay`) —
+  its undo and redo arrive through the global Ctrl+Z handler (the `meActive` branch, a working-copy
+  undo that never touches the project), and Shift+G / Shift+R toggle the grid and the rulers its stage
+  shares. Only those three handlers let it through, by passing `udShortcutBlocked({ editShape: true })`; every other
+  shortcut is refused there as behind any dialog (the letter steps `[ ] { }`, the point editor's Delete
+  and arrows and draw mode's keys would act on the letter behind the window). A dialog raised over it
+  refuses even those three, and the window's own arrow nudge stands down for it too (the *Apply* and
+  *Reset* confirmations used to let the arrows move the selected piece behind them).
 - **A key press that closes a dialog is the dialog's, not a shortcut's.** A dialog closes in the
   middle of the key's own dispatch — the modal trap on Escape, a dialog's own handler on Enter — and
   the handlers that run afterwards for that same key find no dialog and focus back on the opener, so
@@ -218,8 +236,14 @@ handler goes through the real setters (`setMarkEnabled`, `setAdd*`, `setInputMod
   returns true for it — so every shortcut handler is covered through the guard it already starts
   with, whatever key closed the dialog and whichever handler closed it. The note is dropped when the
   dispatch is over (a paste or a drop asks the same guard a moment later and must not be refused by
-  an old key press), and a key that closes nothing is not affected: the guard still lets keys through
-  to an open window that is not on its list, which the Edit-shape window's own undo relies on.
+  an old key press), and a key that closes nothing is not affected by it. **A held key closes one
+  dialog.** Holding a key past the repeat delay sends more keydowns of the same press, and by then the
+  dialog is gone (a held Escape used to close a confirmation, then clear the selection, then leave
+  Edit points). So the same capture listener remembers the key whose press closed a dialog — the count
+  went down, or `aCloseModal` ran during it (a button that closes one confirmation and opens the next,
+  as *Continue* opens the import dialog) — and stops that key's auto-repeats (`e.repeat`) before any
+  handler sees them, until its keyup or the window's blur. A fresh press of the key is never stopped,
+  so a keyup the page missed holds nothing back.
 
 ### Shortcut keys on buttons — the `KH` table
 
@@ -618,10 +642,10 @@ every *Copy outline…* button and in the point editor's nothing-selected stack 
 `svgFromDataTransfer` reads, in order, `image/svg+xml`, an SVG file item, `text/plain` that
 `isProbablySvg` accepts, and `text/html` holding an `<svg>` (taken out through an inert HTML parse,
 `svgTextFromHtml` — also the second try for markup too loose for XML). `svgPasteStageOk()` is the one
-gate: a project, nothing in `udShortcutBlocked(true)`, no open overlay, no tour, a letter's stage showing
+gate: a project, nothing in `udShortcutBlocked({ ownFocusRule: true })`, no open overlay, no tour, a letter's stage showing
 (not a `cat-settings` tab, not a combined form's placement), no drag or stroke in flight, no file still
 being read. Letters only; a mark selected gets a toast. Where the focus sits is not part of that gate
-(the `true` skips the shortcut guard's "typing somewhere" rule, which for key shortcuts rightly covers
+(`ownFocusRule` skips the shortcut guard's "typing somewhere" rule, which for key shortcuts rightly covers
 every input): the paste listener asks the focused field itself, `svgFieldTakesPaste` — a text area, an
 editable region or an input one types in keeps the paste; a slider, a checkbox, a radio or a button,
 which keep the focus after the mouse has used them, do not — and a drop, aimed with the pointer, does
@@ -693,8 +717,8 @@ aligned, checksums and `head.checkSumAdjustment` recomputed. `lfNames` reads nam
 English, then any Unicode record, then Mac Roman), capped and stripped of control characters
 (`lfClean`). A face over `LF_MAX_BYTES` is not opened.
 
-**The picker** (`#localFontOverlay`, in `udShortcutBlocked` — its list is a focused `div`, which that
-guard does not read as typing) reuses the Starting Fonts picker's sheet CSS with one difference: its
+**The picker** (`#localFontOverlay`, an `.overlay`, so `udShortcutBlocked` refuses while it is open —
+its list is a focused `div`, which that guard would not read as typing) reuses the Starting Fonts picker's sheet CSS with one difference: its
 scroller is `.lf-list`, a real listbox (`role="listbox"`, `aria-activedescendant`, a `role="group"`
 per family, a `role="option"` per face). `lfKey` on the dialog owns the keys: ↑ ↓ Home End PageUp
 PageDown move the active option, Enter chooses, a printable key pressed in the list moves focus to the
@@ -723,16 +747,52 @@ over.
 project: for a file that carries `hfmInstalled`, in a project that is not partner-locked, it sets
 `project.font.license = 'unset'` and `project.font.sourceFont = { name, copyright, license,
 licenseUrl }`, then `syncMetaToForm()` — without that the form still says OFL and the next
-`onMetaChange()` (any Font Details keystroke, every save) writes it back. Font metadata is outside
-undo, and so is a font import; this rides with it. `#license` has a hidden `unset` option shown only
-while active (the `os-passthrough` idiom, but the menu stays enabled), and `syncSourceFontNote()`
-(called from `syncOsFontLock`, so `applyI18n` re-runs it) fills `#srcFontNote` with the source font's
-words through `textContent`. Nothing may leave the computer while the licence is unset:
-`licenseUnsetGate()` stops `exportFont()`, `saveCurrentToMyFonts()` (which builds a font without
-passing `exportFont`) and `fmSendFont()`, offering `exportJumpToLicense`. Preview PDF stays available.
-And no fallback can say OFL: `LICENSES.unset` and `licenseText()`'s `'unset'` case exist for that.
-`migrateProject` keeps `'unset'`, and shape-checks and caps `sourceFont` (`lfCleanSource`). An uploaded
-font **file** is unchanged: no notice, licence untouched.
+`onMetaChange()` (any Font Details keystroke, every save) writes it back. The stamp follows the
+picker's mark, never the font's name: the list already falls back, after `lfClean`, from a full name
+that cleans to nothing to the family and then the PostScript name, a record whose name is still blank
+is kept under the file's name, and with no name anywhere the licence is still set (only `sourceFont` is
+left out). Font metadata is outside undo, and so is a font import; this rides with it. `#license` has a
+hidden `unset` option shown only while active (the `os-passthrough` idiom, but the menu stays enabled),
+and `syncSourceFontNote()` (called from `syncOsFontLock`, so `applyI18n` re-runs it, and from
+`onMetaChange()` whenever the licence changes, so the reminder goes as soon as one is chosen in the
+menu) fills `#srcFontNote` with the source font's words through `textContent`.
+
+*Chosen* means `licenseChosen()`: the licence is a key of `LICENSES` other than `unset`. Anything else
+— `unset`, empty, a key this page does not know — is *not chosen yet*: the gate stops on it and the note
+says so, and `onMetaChange()` never overwrites such a key with the blank menu's `""`. `migrateProject`
+keeps `'unset'`, shape-checks and caps `sourceFont` (`lfCleanSource`), and in a project that is not
+partner-locked and has a `sourceFont`, turns an empty or unknown licence into `'unset'` (an older page
+version has no `unset` option and writes the field back empty); without a `sourceFont` an empty licence
+still heals to OFL.
+
+**No built font leaves the computer while no licence is chosen:** `licenseUnsetGate()` stops
+`exportFont()`, `saveCurrentToMyFonts()` (which builds a font without passing `exportFont`) and
+`fmSendFont()`, offering `exportJumpToLicense` — at the click, and again at the moment the spec is read,
+after the wait for the engine (`doExport`, before its version bump, and `buildFontBytes(true)` for My
+Fonts and Send), because the page stays live during that wait. While such a build is in flight
+(`_fontOut`), no font import can start: `fontImportHeld()` answers the picker's button and
+`uploadSourceFont` with one status line, and the starting-font wizard's *Start editing*
+(`wizardOsFinish`, which would replace the project under that build) changes nothing and says so in
+the wizard's foot (`#wizHoldNote`), keeping every answer for the next press. Send reuses the last
+build only if it was made under the project's current licence and file name (`_lastFontLic`,
+`_lastFontStem`) — both read with the spec,
+never at the download: `doExport` waits on its shaping check with the page live, so a licence chosen
+or a rename made meanwhile leaves that build stale for Send, and what ships beside that export (the
+zip's `LICENSE.txt`, the Exported screen's LICENSE.txt and its Share-file pair) is the licence the
+font itself says (`licenseText(lic)`). Preview PDF stays available (its build is ungated, and its
+bytes stay in the page). And no fallback can say OFL: `LICENSES.unset` and `licenseText()`'s `'unset'`
+case exist for that. **The project itself is not a font and is outside the gate on purpose:** Save
+Project to the computer, a save to the account and the account autosave carry the project — the
+installed font's outlines and `sourceFont` included — with the licence unset (holding back the autosave
+would put a teacher's work at risk). An uploaded font **file** is unchanged: no notice, licence
+untouched.
+
+**A partner-locked project takes no letters from an installed font.** Its licence is the partner's and
+its menu is locked, so nothing in it could become *not chosen yet*: `lfOpen('import')` refuses before
+the browser is asked for the list (`lfLettersRefused`, one status line naming the partner font),
+`uploadSourceFont` refuses a file that carries `hfmInstalled` the same way, and `lfLicenseNotice` prints
+the "the licence becomes Not chosen yet" line only where that happens. The same font as a **reference**
+stays allowed: it is stored by name and never shipped.
 
 **Reference target: by name, never by bytes.** `lfUseAsReference` registers
 `new FontFace(fam, 'local("<PostScript name>")')` and stores `{ name, fam, family, local }` in
@@ -740,7 +800,10 @@ font **file** is unchanged: no notice, licence untouched.
 *uploaded* reference font still stores its bytes, as before). The name must match `LF_PS_RE`; it goes
 inside `local("…")`, and `migrateProject` drops a `local` that does not match. `restoreCustomTemplateFonts`
 has the `local` branch: on a computer without the font the entry stays in the menu, marked *not
-installed here*, its family falls back to the generic font, and one status line says so.
+installed here*, its family falls back to the generic font, and one status line says so. A face that
+already has an entry (the same `local`) is never added twice: picking it again re-registers that
+entry's family, drops its *not installed here* mark and selects it. The rebuilt panel no longer shows
+the picker's button, so the focus goes to the reference-font menu (`#templateFont`), not to `<body>`.
 
 ### Workspace model + render pipeline
 State: `curKind` (`letter|nikkud|trop`), `curCp`, `workMode` (`align|trace|anchors|nodes`).

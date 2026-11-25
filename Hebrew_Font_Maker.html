@@ -2788,6 +2788,8 @@ html[lang="he"] .tp-label{letter-spacing:normal;text-transform:none;}
 
     <div class="wiz-foot">
       <span id="wizNextNote" class="wiz-note" aria-live="polite" hidden data-i18n="fontmaker.wizard.next_need_name_author">Enter a font name and author to continue.</span>
+      <!-- Filled by wizardOsFinish (textContent) when a font being built to leave the computer holds the partner import back -->
+      <span id="wizHoldNote" class="wiz-note" aria-live="polite" hidden></span>
       <div class="mbtns">
         <button class="tbtn ghost" id="wizBack" onclick="wizardBack()" data-i18n="fontmaker.wizard.back" hidden>Back</button>
         <button class="tbtn" id="wizNext" onclick="wizardNext()" data-i18n="fontmaker.wizard.next">Next</button>
@@ -5154,13 +5156,16 @@ function _tabKeydown(e, tab) {
 }
 
 /* Modal dialogs: focus the first control, trap Tab inside, Escape to close, return focus to opener. */
-let _activeModal = null;   // { id, close, opener }
+let _activeModal = null;   // { id, close, opener } — the dialog on top: the one the trap below serves
+let _modalsUnder = [];     // the dialogs a newer one was opened over, oldest first; the top one of them gets the trap back when the newer one closes
 function _focusables(el) {
   return [...el.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])')]
     .filter(n => !n.disabled && n.offsetParent !== null);
 }
 function aOpenModal(id, closeFn) {
   const ov = document.getElementById(id); if (!ov) return;
+  _modalsUnder = _modalsUnder.filter(m => m.id !== id);
+  if (_activeModal && _activeModal.id !== id && document.getElementById(_activeModal.id)?.classList.contains('open')) _modalsUnder.push(_activeModal);   // opened over a dialog that stays open: remember it
   _activeModal = { id, close: closeFn || (() => aCloseModal(id)), opener: document.activeElement };
   // Every .overlay shares one z-index, so DOM order decides which paints on top — a modal opened OVER an
   // open one that sits later in the page (Help from the wizard's license "?", which the user saw as Help
@@ -5174,6 +5179,7 @@ function aOpenModal(id, closeFn) {
 }
 function aCloseModal(id) {
   const ov = document.getElementById(id); if (ov) { ov.classList.remove('open'); ov.style.zIndex = ''; }
+  if (_keyNow) _keyClosedIn = _keyNow;   // a key press is closing this dialog: its auto-repeats will be held back (see the capture listener below)
   const ret =(_activeModal && _activeModal.id === id) ? _activeModal.opener : null;
   if (_activeModal && _activeModal.id === id) _activeModal = null;
   // <body> is not an opener: a modal that auto-opens on load (the onboarding wizard) captures it
@@ -5183,12 +5189,24 @@ function aCloseModal(id) {
   // to the main region (APG: the invoking element, or failing that a sensible place in the page).
   if (ret && ret !== document.body && ret.focus) { try { ret.focus(); } catch (e) {} }
   else { const m = document.getElementById('mainContent'); if (m) { try { m.focus(); } catch (e) {} } }
-  // _activeModal is a single slot: a modal stacked over the onboarding wizard (help via the
-  // license "?", the template-PDF failure askModal) steals it, and closing that modal would
-  // leave the still-open wizard with no Escape/Tab trap — hand it back.
-  if (id !== 'wizardOverlay' && document.getElementById('wizardOverlay')?.classList.contains('open')) wizardRearmTrap();
-  // Same single-slot hand-back for the starting-font picker (its load-failure askModal and the license "?" help stack over it).
-  if (id !== 'osPickOverlay' && id !== 'wizardOverlay' && document.getElementById('osPickOverlay')?.classList.contains('open')) _activeModal = { id: 'osPickOverlay', close: osPickClose, opener: _osPickOpener };
+  // _activeModal is a single slot, and a dialog opened over another one takes it. When that dialog
+  // closes, the one still open underneath gets the slot back (Escape and the Tab trap are its again) —
+  // a confirmation raised over My Fonts used to leave My Fonts with neither, so the next Escape went to
+  // the editor behind it. The newest dialog still open wins; one closed out of turn is simply dropped.
+  _modalsUnder = _modalsUnder.filter(m => m.id !== id);
+  while (!_activeModal && _modalsUnder.length) { const m = _modalsUnder.pop(); if (document.getElementById(m.id)?.classList.contains('open')) _activeModal = m; }
+  // The two dialogs whose close function and opener change while they are open re-arm themselves with
+  // the current ones — unless a third dialog is still open above them and has just been given the slot:
+  const theirs = !_activeModal || _activeModal.id === 'wizardOverlay' || _activeModal.id === 'osPickOverlay';
+  // a modal stacked over the onboarding wizard (help via the license "?", the template-PDF failure askModal)…
+  if (theirs && id !== 'wizardOverlay' && document.getElementById('wizardOverlay')?.classList.contains('open')) wizardRearmTrap();
+  // …and over the starting-font picker (its load-failure askModal and the license "?" help stack over it).
+  if (theirs && id !== 'osPickOverlay' && id !== 'wizardOverlay' && document.getElementById('osPickOverlay')?.classList.contains('open')) _activeModal = { id: 'osPickOverlay', close: osPickClose, opener: _osPickOpener };
+  // The keyboard belongs inside the dialog that is now on top: if the focus just returned to something
+  // outside it (the closed dialog was opened from the page, or its opener is gone), bring it in —
+  // Enter or Space on a toolbar button behind an open dialog would press that button.
+  const top = _activeModal && document.getElementById(_activeModal.id);
+  if (top && top.classList.contains('open') && !top.contains(document.activeElement)) { const f = _focusables(top); try { (f[0] || top.querySelector('[tabindex="-1"]') || top).focus(); } catch (e) {} }
 }
 /* A key press that closes a dialog belongs to that dialog — it is not also a shortcut. A dialog
    closes in the middle of the key's own dispatch (the trap below on Escape; a dialog's own handler on
@@ -5197,10 +5215,24 @@ function aCloseModal(id) {
    selected in Edit points or left the step, Enter finished a crop or placed a pen point. So the count
    of open dialogs is noted before any handler sees the key, and udShortcutBlocked() refuses a key
    during which that count went down (keyClosedADialog). The note is dropped once the dispatch is
-   over — a later paste or drop asks the same guard and must not be answered by an old key press. */
-let _keyNow = null, _keyDialogs = 0;
+   over — a later paste or drop asks the same guard and must not be answered by an old key press.
+   A key held down past the repeat delay sends more keydowns of the same press, and by then the dialog
+   is gone: they used to run the editor's shortcuts (a held Escape closed a confirmation, then cleared
+   the selection, then left Edit points). So the key that closed a dialog (or closed one that another
+   then replaced — Continue → the import dialog) is remembered, and its auto-repeats are stopped here,
+   before any handler sees them, until it is let go: one press closes one dialog. A fresh press is
+   never stopped (a missed keyup, when the window lost focus, cannot hold a key back). */
+let _keyNow = null, _keyDialogs = 0, _keyHeld = '', _keyClosedIn = null;
 function openDialogCount() { return document.querySelectorAll('.overlay.open, .ivsav-overlay').length; }
-window.addEventListener('keydown', e => { _keyNow = e; _keyDialogs = openDialogCount(); setTimeout(() => { if (_keyNow === e) _keyNow = null; }, 0); }, true);
+window.addEventListener('keydown', e => {
+  const code = e.code || e.key || '';
+  if (e.repeat && _keyHeld && code === _keyHeld) { e.preventDefault(); e.stopImmediatePropagation(); return; }   // the held key that closed a dialog: its repeats are nobody's
+  if (!e.repeat) _keyHeld = '';
+  _keyNow = e; const n = _keyDialogs = openDialogCount();
+  setTimeout(() => { if (_keyNow === e) _keyNow = null; if (_keyClosedIn === e || openDialogCount() < n) _keyHeld = code; if (_keyClosedIn === e) _keyClosedIn = null; }, 0);
+}, true);
+window.addEventListener('keyup', e => { if (_keyHeld && (e.code || e.key || '') === _keyHeld) _keyHeld = ''; }, true);
+window.addEventListener('blur', () => { _keyHeld = ''; });
 function keyClosedADialog() { return !!_keyNow && openDialogCount() < _keyDialogs; }
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && document.querySelector('.ivsav-overlay')) return;   // the account screen closes itself on Escape — the editor's modal underneath must not
@@ -6165,10 +6197,11 @@ function syncOsFontLock() {
   syncSourceFontNote();   // the other licence note: a font that came from the computer's installed fonts (Installed fonts block)
 }
 function onMetaChange() {
+  const licWas = project.font.license;
   project.font.familyName = document.getElementById('familyName').value;
   if (!project.osFont) {
     project.font.reservedFontName = document.getElementById('reservedName').value;
-    project.font.license = document.getElementById('license').value;
+    { const v = document.getElementById('license').value; if (v) project.font.license = v; }   // a blank menu is a licence key this page has no option for (a hand-edited or newer file): it is not overwritten with "" by an unrelated keystroke — the gate stops on it until one is chosen
   } else {
     project.font.license = 'os-passthrough';   // partner lock: license + reserved names are upstream truth, never read from the DOM
   }
@@ -6177,6 +6210,7 @@ function onMetaChange() {
   project.font.style = fontStyleOf(document.getElementById('fontStyle').value);
   { const w = fontWidthOf(document.getElementById('fontWidth').value); if (w === 'normal') delete project.font.width; else project.font.width = w; }
   syncItalicRow();
+  if (project.font.license !== licWas) syncSourceFontNote();   // a licence was just chosen in the menu: the "choose a license" reminder under it (the menu's description) goes with the old state
   markDirty();   // meta edits autosave like every other edit
 }
 /* ════════ Template fonts — ported from torah_trainer.html, same grouping ════════ */
@@ -9237,6 +9271,8 @@ function dropKindPins(l, kinds) {
   if (!Object.keys(l.markAnchors).length) delete l.markAnchors;
 }
 async function uploadSourceFont(file) {
+  if (file && file.hfmInstalled && lfLettersRefused()) return;   // an installed font's letters never enter a partner-locked project, whichever way the file got here
+  if (fontImportHeld()) return;                                  // a font is being built to leave the computer: no import starts under it (file, drop or picker)
   status(I18n.t('fontmaker.status.reading_font'), true);
   let font, bytes;
   try {
@@ -9245,6 +9281,7 @@ async function uploadSourceFont(file) {
     font = ot.parse(buf);
     bytes = new Uint8Array(buf);
   } catch (e) { console.error(e); status(''); askModal(I18n.t('fontmaker.modals.font_read_failed_title'), '<span class="warn">'+(e.message||e)+'</span>', [{label:I18n.t('fontmaker.modals.ok')}]); return; }
+  if (fontImportHeld()) return;                                  // …nor when the build was started while this file was being read
   askFontImportOptions(file, font, bytes);
 }
 /* Pull one glyph's outline + advance out of the source font onto a letter item, in the font's own
@@ -10380,7 +10417,7 @@ function svgFieldTakesPaste(el) {            // would a paste go INTO this eleme
   return el.tagName === 'INPUT' && !/^(range|checkbox|radio|button|submit|reset|color|file|image|hidden)$/i.test(el.type || '');
 }
 function svgPasteStageOk() {                 // is a letter's stage what the teacher is looking at, with nothing in flight? (Where the focus sits is not asked here: the paste listener asks it of the field itself, and a drop is aimed with the pointer)
-  if (!project || udShortcutBlocked(true) || _svgPasteBusy || _tourActive) return false;
+  if (!project || udShortcutBlocked({ ownFocusRule: true }) || _svgPasteBusy || _tourActive) return false;
   if (document.querySelector('.overlay.open')) return false;
   if (document.body.classList.contains('cat-settings') || precompTarget) return false;   // Font details / Spacing / Advanced, or a combined form on the placement stage: the letter is not what is showing
   return !(tDrag || eDrag || metricDrag || guideDrag || nodeDrag || drawGesture);
@@ -10838,8 +10875,18 @@ async function lfFaceBytes(it) {              // the chosen face as a standalone
 
 /* ── the picker ── */
 function lfT(k, p) { return I18n.t('fontmaker.localfont.' + k, p); }
+/* A partner-locked project (project.osFont) carries the partner font's licence and its menu is
+   locked, so nothing in it can become "not chosen yet": an installed font is not taken as a source of
+   LETTERS there. The press says why on the status line and changes nothing. As a tracing guide the
+   same font is fine — it is stored by name and never shipped. */
+function lfLettersRefused() {
+  if (!project || !project.osFont) return false;
+  status(I18n.t('fontmaker.status.localfont_locked', { font: project.osFont.displayName || '' }));
+  return true;
+}
 async function lfOpen(target) {               // called straight from the button's click: the browser wants the teacher's own gesture, so nothing is awaited before queryLocalFonts()
   if (!LF_OK || _lfAsking || _lf) return;
+  if (target !== 'reference' && (lfLettersRefused() || fontImportHeld())) return;   // before the browser is asked: no permission prompt for a list that cannot be used
   _lfAsking = true;
   let fonts = null, err = null;
   try { fonts = await window.queryLocalFonts(); } catch (e) { err = e; }
@@ -10852,9 +10899,12 @@ async function lfOpen(target) {               // called straight from the button
     status(I18n.t(err && err.name === 'SecurityError' ? 'fontmaker.status.localfont_blocked' : denied ? 'fontmaker.status.localfont_denied' : 'fontmaker.status.localfont_none'));
     return;
   }
-  const items = Array.from(fonts).map(fd => ({ fd, family: lfClean(String(fd.family || ''), 120), style: lfClean(String(fd.style || ''), 80),
-    full: lfClean(String(fd.fullName || fd.family || ''), 160), ps: lfClean(String(fd.postscriptName || ''), 120) }))
-    .filter(it => it.family || it.full);
+  // A full name that cleans to nothing (white space, control characters, a lone U+FEFF) falls back to the
+  // family, then to the PostScript name — after the cleaning, not before it: the font is still listed
+  // under a name, and that name is what its licence record is kept under (lfStampInstalled).
+  const items = Array.from(fonts).map(fd => { const family = lfClean(String(fd.family || ''), 120), ps = lfClean(String(fd.postscriptName || ''), 120);
+      return { fd, family, style: lfClean(String(fd.style || ''), 80), full: lfClean(String(fd.fullName || ''), 160) || family || ps, ps }; })
+    .filter(it => it.full);
   items.forEach(it => { it.family = it.family || it.full; it.search = (it.family + ' ' + it.full + ' ' + it.style + ' ' + it.ps).toLowerCase(); it.heb = _lfHebCache.has(it.ps) ? _lfHebCache.get(it.ps) : undefined; });
   items.sort((a, b) => a.family.localeCompare(b.family) || a.full.localeCompare(b.full));
   _lf = { target: target === 'reference' ? 'reference' : 'import', items, gen: Date.now(), obs: null, faces: [], active: null, choosing: false,
@@ -11021,7 +11071,7 @@ function lfLicenseNotice(info, variable, go) {   // what the font says about its
     '<span class="lf-lic">' + '<span class="lf-lic-line">' + esc(lfT(stated ? 'notice_intro' : 'notice_none', { font: info.name })) + '</span>'
       + box('notice_copyright', info.copyright) + box('notice_license', info.license) + box('notice_url', info.licenseUrl, ' lf-lic-url')
       + '<span class="lf-lic-line"><b>' + esc(lfT('notice_own')) + '</b></span>'
-      + '<span class="lf-lic-line">' + esc(lfT('notice_after')) + '</span>'
+      + ((project && project.osFont) ? '' : '<span class="lf-lic-line">' + esc(lfT('notice_after')) + '</span>')   // promised only where it happens: a partner-locked project keeps its licence (and lfOpen never brings it here)
       + (variable ? '<span class="lf-lic-line">' + esc(lfT('notice_variable')) + '</span>' : '') + '</span>',
     [{ label: I18n.t('fontmaker.modals.cancel'), cls: 'ghost' }, { label: lfT('notice_continue'), onClick: go }]);
   const href = lfHttpUrl(info.licenseUrl), slot = document.querySelector('#askBody .lf-lic-url');
@@ -11034,21 +11084,35 @@ function lfLicenseNotice(info, variable, go) {   // what the font says about its
    before its first change to the project, so nothing of the font is ever in a project that still says
    OFL; syncMetaToForm() right after, or the form's next onMetaChange() would write the old choice back.
    Font metadata is outside undo (onMetaChange → markDirty), and so is a font import; this rides with it.
-   A partner-locked project (project.osFont) keeps its lock. */
+   A partner-locked project (project.osFont) keeps its lock — and never gets this far with an installed
+   font: lfOpen and uploadSourceFont refuse it first (lfLettersRefused). */
 function lfCleanSource(o) {
   if (!o || typeof o !== 'object') return null;
   const s = { name: lfClean(o.name, 160), copyright: lfClean(o.copyright, 600), license: lfClean(o.license, 600), licenseUrl: lfClean(o.licenseUrl, 300) };
   return s.name ? s : null;
 }
 function lfStampInstalled(file) {
-  const src = lfCleanSource(file && file.hfmInstalled);
-  if (!src || !project || project.osFont) return;
-  project.font.license = 'unset'; project.font.sourceFont = src;
+  const inst = file && file.hfmInstalled;
+  if (!inst || typeof inst !== 'object' || !project || project.osFont) return;
+  // The stamp follows where the file came from (the picker's mark), never what the font is called: a
+  // record whose name cleans to nothing is kept under the file's name, and with no name anywhere the
+  // licence is still "not chosen yet" — only the note about the source font is left out.
+  const src = lfCleanSource(inst) || lfCleanSource({ name: String(file.name || ''), copyright: inst.copyright, license: inst.license, licenseUrl: inst.licenseUrl });
+  project.font.license = 'unset';
+  if (src) project.font.sourceFont = src; else delete project.font.sourceFont;
   syncMetaToForm(); markDirty();
+}
+/* "A licence has been chosen" = the project's licence is one of the table's own keys other than
+   'unset'. Anything else — empty, a key this page does not know, 'unset' itself — is "not chosen yet":
+   the gate stops on it and the note under the menu says so. (An older page version has no 'unset'
+   option and writes the field back empty; a hand-edited file can hold anything.) */
+function licenseChosen() {
+  const k = project && project.font.license;
+  return typeof k === 'string' && k !== 'unset' && Object.prototype.hasOwnProperty.call(LICENSES, k);
 }
 function syncSourceFontNote() {               // Font Details: the "not chosen yet" option and what the source font says about itself
   const lic = document.getElementById('license'), note = document.getElementById('srcFontNote'); if (!lic || !note) return;
-  const src = (project && !project.osFont && project.font.sourceFont) || null, unset = !!(project && !project.osFont && project.font.license === 'unset');
+  const src = (project && !project.osFont && project.font.sourceFont) || null, unset = !!(project && !project.osFont && !licenseChosen());
   note.hidden = !src && !unset;
   note.textContent = '';
   if (note.hidden) { if (lic.getAttribute('aria-describedby') === 'srcFontNote') lic.removeAttribute('aria-describedby'); return; }
@@ -11062,8 +11126,8 @@ function syncSourceFontNote() {               // Font Details: the "not chosen y
   }
   lic.setAttribute('aria-describedby', 'srcFontNote');
 }
-function licenseUnsetGate() {                 // true = stop: nothing is exported, saved to My Fonts or sent while no licence was chosen
-  if (!project || project.osFont || project.font.license !== 'unset') return false;
+function licenseUnsetGate() {                 // true = stop: no font is exported, saved to My Fonts or sent while no licence was chosen
+  if (!project || project.osFont || licenseChosen()) return false;   // a partner-locked project is never stopped: its licence is the partner's
   const src = project.font.sourceFont;
   askModal(I18n.t('fontmaker.modals.license_unset_title'),
     esc(I18n.t(src ? 'fontmaker.modals.license_unset_body' : 'fontmaker.modals.license_unset_body_plain', { font: src ? src.name : '' })),
@@ -11072,16 +11136,22 @@ function licenseUnsetGate() {                 // true = stop: nothing is exporte
 }
 async function lfUseAsReference(it) {         // the tracing guide, by NAME: no bytes are read, none are stored in the project
   if (!LF_PS_RE.test(it.ps)) { status(I18n.t('fontmaker.status.localfont_noname')); return; }
-  const fam = 'TplLocal_' + it.ps.replace(/[^A-Za-z0-9]+/g, '_') + '_' + (customTemplateFonts.length + 1);
-  try { const ff = new FontFace(fam, 'local("' + it.ps + '")'); await ff.load(); document.fonts.add(ff); }
+  const list = project.template.customFonts || [];
+  const had = list.find(c => c && c.local === it.ps);   // the same installed face picked again: its entry is selected again, never added a second time
+  const fam = had ? had.fam : 'TplLocal_' + it.ps.replace(/[^A-Za-z0-9]+/g, '_') + '_' + (customTemplateFonts.length + 1);
+  try { const ff = new FontFace(fam, 'local("' + it.ps + '")'); await ff.load(); document.fonts.add(ff); }   // registered again for an entry that was "not installed here" when the project opened
   catch (e) { console.error(e); status(I18n.t('fontmaker.status.font_read_fail')); return; }
-  const family = "'" + fam + "', serif", name = it.full;
-  customTemplateFonts.push({ section: 'Custom', name, family, load: null });
-  (project.template.customFonts = project.template.customFonts || []).push({ name, fam, family, local: it.ps });
+  const family = had ? had.family : "'" + fam + "', serif", name = had ? had.name : it.full;
+  const mem = customTemplateFonts.find(f => f.family === family);
+  if (mem) mem.name = name; else customTemplateFonts.push({ section: 'Custom', name, family, load: null });   // (a "not installed here" mark goes: it is installed now)
+  if (!had) (project.template.customFonts = list).push({ name, fam, family, local: it.ps });
   project.template.font = family; project.template.showOverlay = true;
   markDirty();
   renderStage(); renderControls(); renderLetterGrid();
   const sel = document.getElementById('templateFont'); if (sel) sel.value = family;
+  // The picker handed the focus back to its button, which the rebuilt panel no longer shows (the menu
+  // left "Upload…"): it goes to the menu that now names the font, not to <body>.
+  if (sel && (!document.activeElement || document.activeElement === document.body)) { try { sel.focus(); } catch (e) {} }
   status(I18n.t('fontmaker.status.template_font_loaded', { name }));
 }
 
@@ -14943,7 +15013,7 @@ function initRulers() {
     if (e.key === 'Escape' && _rlDrag) { rlEndDrag(true); e.stopPropagation(); return; }   // abandon a half-pulled guide
     if (e.key !== 'R' && e.key !== 'r') return;
     if (!e.shiftKey || e.ctrlKey || e.metaKey || e.altKey) return;
-    if (udShortcutBlocked()) return;                       // typing in a field / modal open / no project
+    if (udShortcutBlocked({ editShape: true })) return;    // typing in a field / modal open / no project (editShape: the Edit-shape stage has rulers too)
     e.preventDefault();
     setRulersShown(!_rulersOn);
     status(I18n.t(_rulersOn ? 'fontmaker.rulers.on' : 'fontmaker.rulers.off'));
@@ -15154,7 +15224,7 @@ function initGrid() {
   document.addEventListener('keydown', e => {
     if (e.key !== 'G' && e.key !== 'g') return;
     if (!e.shiftKey || e.ctrlKey || e.metaKey || e.altKey) return;
-    if (udShortcutBlocked()) return;                       // typing in a field / modal open / no project
+    if (udShortcutBlocked({ editShape: true })) return;    // typing in a field / modal open / no project (editShape: the Edit-shape stage has the grid too)
     e.preventDefault();
     setGridShown(!_gridOn);
     status(I18n.t(_gridOn ? 'fontmaker.grid.on' : 'fontmaker.grid.off'));
@@ -20783,24 +20853,29 @@ function wireDrop(id, cb, multi) {
 }
 
 /* shared guard for global shortcuts: ignore while typing, a modal is open, or no project.
-   `ownFocusRule`: the caller decides about the focused field itself (the SVG paste: only a field that
-   takes text keeps a paste — svgFieldTakesPaste — where a key shortcut must also stay off a slider). */
-function udShortcutBlocked(ownFocusRule) {
+   `o` (optional) widens it for one caller, and only in the way it names:
+   · o.ownFocusRule — the caller decides about the focused field itself (the SVG paste: only a field that
+     takes text keeps a paste — svgFieldTakesPaste — where a key shortcut must also stay off a slider);
+   · o.editShape — the Edit-shape window does not refuse (below).
+   ANY open dialog refuses — every `.overlay` in the page is a modal over the whole workspace, so no
+   key pressed on one may reach the editor behind it: focus on a dialog's button or list is not typing,
+   and undo, the arrow nudges, Delete and pen-mode Enter used to act on the letter under the shortcuts
+   sheet, My Fonts, Apply alignment and every other dialog that an id list had not caught up with. A new
+   dialog is covered by being an .overlay; nothing has to be added here.
+   The one exception is the Edit-shape window (#markEditOverlay), and only for the three handlers that
+   serve it, which pass `{ editShape: true }`: its undo and redo arrive through the global Ctrl+Z handler
+   (the `meActive` branch — a working-copy undo that never touches the project), and Shift+G / Shift+R
+   toggle the grid and rulers its stage shares. Every other shortcut is refused there as behind any
+   dialog — the letter steps ([ ] { }), the point editor's Delete and arrows, draw mode's keys would act
+   on the letter behind the window. A dialog raised over it (a confirmation, Help) refuses even those three. */
+function udShortcutBlocked(o) {
+  o = o || {};
   if (!project) return true;
   if (keyClosedADialog()) return true;   // this very key press just closed a dialog: it was the dialog's, not a shortcut's
   const ae = document.activeElement;
-  if (!ownFocusRule && ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA' || ae.isContentEditable)) return true;
-  if (document.getElementById('askOverlay')?.classList.contains('open')) return true;
+  if (!o.ownFocusRule && ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA' || ae.isContentEditable)) return true;
   if (document.querySelector('.ivsav-overlay')) return true;   // the account screen (js/ivrit-saves.js) is open over the editor
-  if (document.getElementById('helpOverlay')?.classList.contains('open')) return true;
-  if (document.getElementById('qaOverlay')?.classList.contains('open')) return true;
-  if (document.getElementById('adOverlay')?.classList.contains('open')) return true;
-  if (document.getElementById('scaleAllOverlay')?.classList.contains('open') || document.getElementById('boldGenOverlay')?.classList.contains('open')) return true;   // a whole-font change is being previewed — undo and nudges must not change the letters under the preview
-  if (document.getElementById('svgPasteOverlay')?.classList.contains('open')) return true;   // focus on one of its buttons is not typing — undo, nudges and Delete must not reach the letter behind it
-  if (document.getElementById('localFontOverlay')?.classList.contains('open')) return true;   // its listbox is a focused div, not a field: arrows, Delete and undo must not reach the editor behind it
-  if (document.getElementById('wizardOverlay')?.classList.contains('open')) return true;   // esp. cancellable mode — Ctrl+Z must not mutate the project behind it
-  if (document.getElementById('osPickOverlay')?.classList.contains('open')) return true;   // the starting-font picker sits in the same slot as the wizard
-  if (document.getElementById('importProgressOverlay')?.classList.contains('open')) return true;   // an import is mid-flight — no undo/redo into a half-imported project
+  if (document.querySelector(o.editShape ? '.overlay.open:not(#markEditOverlay)' : '.overlay.open')) return true;
   return false;
 }
 /* Ctrl/Cmd+Z = undo · Ctrl/Cmd+Shift+Z or Ctrl+Y = redo */
@@ -20808,7 +20883,7 @@ document.addEventListener('keydown', e => {
   if (!(e.ctrlKey || e.metaKey) || e.altKey) return;
   const k = e.key.toLowerCase();
   if (k !== 'z' && k !== 'y') return;
-  if (udShortcutBlocked()) return;
+  if (udShortcutBlocked({ editShape: true })) return;                            // also inside the Edit-shape window, whose undo this is
   if (meActive) {                                                                // the "Edit shape" modal has its own working-copy undo
     if (meDrag) return;                                                          // not mid-drag
     e.preventDefault();
@@ -21014,6 +21089,19 @@ document.addEventListener('keydown', e => {
 let pyodide = null, pyodideLoading = null;
 let _pyoPhase = 'idle';        // 'idle' | 'download' | 'install' | 'ready'
 let _exportPreparing = false;  // true while a click-to-export is waiting on the engine
+/* A font being built to leave the computer (Export, Save to My Fonts, Send) waits on the engine with
+   the whole page live — tens of seconds on a first export. What leaves must still be what the licence
+   gate let through at the click, so two things hold while such a build is in flight (_fontOut counts
+   them): the gate is asked AGAIN at the moment the spec is read, after the awaits (doExport, and
+   buildFontBytes(true) for the other two); and no font import can start (fontImportHeld — the picker's
+   button and uploadSourceFont ask it; the partner wizard's Create, wizardOsFinish, reads _fontOut and
+   says it in the wizard), so the build never reads a half-imported project. */
+let _fontOut = 0;
+function fontImportHeld() {
+  if (!_fontOut) return false;
+  status(I18n.t('fontmaker.status.import_wait_build'));
+  return true;
+}
 let _pyoPrefetched = false;
 let _pyoWarming = false;       // true while the background download of the engine's files runs
 const PYO_BASE = 'https://cdn.jsdelivr.net/pyodide/v0.26.2/full/';
@@ -23788,8 +23876,9 @@ function exportSizeLine() {   // the Exported ✓ screen: the size of the file t
     ? I18n.t('fontmaker.modals.exported_size_zip', { size, inside: '<bdi dir="ltr">' + esc('TTF ' + fmMb(x.ttf) + ', WOFF2 ' + fmMb(x.woff2)) + '</bdi>' })
     : I18n.t('fontmaker.modals.exported_size', { size }));
 }
-async function buildFontBytes() {                 // build the TTF in memory (no download) — shared by Preview PDF
+async function buildFontBytes(leaving) {          // build the TTF in memory (no download) — shared by Preview PDF. leaving: the bytes are to leave the computer (My Fonts, Send)
   await ensurePyodide();
+  if (leaving && licenseUnsetGate()) return null; // the licence gate again, now that the wait is over: null = it stopped the build and its dialog is up (Preview PDF passes nothing and is never stopped)
   const gen = _editGen;                           // read with the spec: an edit made while the engine works makes this build an old one
   const spec = buildFontSpec();
   const rangeErr = glyphRangeError(spec);   // name the letter here; fontTools would only say 'h' format requires …
@@ -23799,6 +23888,7 @@ async function buildFontBytes() {                 // build the TTF in memory (no
   if (res.error) throw new Error(res.error);
   const bytes = b64ToBytes(res.ttf_b64);
   window._lastFontBytes = bytes; window._lastFontStem = fontFileStem();   // for Send to IvritSuite (stem = freshness stamp)
+  window._lastFontLic = project.font.license;   // …and the licence it was built under: Preview PDF's build is ungated, so Send never reuses one made while no licence was chosen
   fmBuildKeep(bytes, gen);
   return bytes;
 }
@@ -23874,12 +23964,16 @@ function fmSubmitDraft(files, dest) {   // same layout as resources.html's openS
     .concat(lines, [I18n.t('resources.fonts.submit.anything_else')]).join('\r\n');
   return { subject, body, shareText };
 }
-function fmLicenseFile() { return new File([licenseText()], fontSafeBase(project.font.familyName) + '-LICENSE.txt', {type:'text/plain'}); }
-async function fmSendFiles() {   // [TTF File, LICENSE File] — always the TTF; rebuilt when the last build is missing or stale (UFO export, rename)
+function fmLicenseFile(lic) { return new File([licenseText(lic)], fontSafeBase(project.font.familyName) + '-LICENSE.txt', {type:'text/plain'}); }   // lic: the licence the font beside it was built under (default: the project's)
+async function fmSendFiles() {   // [TTF File, LICENSE File] — always the TTF; rebuilt when the last build is missing or stale (UFO export, rename, another licence). null = the build failed; false = the licence gate stopped it
   const stem = fontFileStem();
-  if (!(window._lastFontBytes && window._lastFontBytes.length) || window._lastFontStem !== stem) {
+  // A build made under another licence is stale too: the TTF's own licence record would contradict the
+  // LICENSE file sent beside it — and one made by Preview PDF while no licence was chosen would leave the
+  // computer saying "License not chosen" (its build is the one the gate leaves open).
+  if (!(window._lastFontBytes && window._lastFontBytes.length) || window._lastFontStem !== stem || window._lastFontLic !== project.font.license) {
     status(I18n.t('fontmaker.send.rebuilding'), true);
-    try { await buildFontBytes(); } catch (err) { console.error(err); status(''); return null; }
+    _fontOut++;
+    try { if (!await buildFontBytes(true)) { status(''); return false; } } catch (err) { console.error(err); status(''); return null; } finally { _fontOut--; }
     status('');
   }
   return [ new File([window._lastFontBytes], stem + '.ttf', {type:'font/ttf'}), fmLicenseFile() ];
@@ -23960,6 +24054,7 @@ async function fmSendFont(dest, licenseChecked) {   // Exported ✓ → Send to 
   const d = fmDest(dest);
   if (d.freeOnly && !licenseChecked && !project.osFont && project.font.license === 'arr') { fmSendLicenseWarn(dest); return; }
   const files = await fmSendFiles();
+  if (files === false) return;   // the licence became "not chosen yet" while the engine loaded: the gate's own dialog is up
   if (!files) { askModal(I18n.t('fontmaker.send.nofile_title'), esc(I18n.t('fontmaker.send.nofile_body')), [{ label: I18n.t('fontmaker.modals.ok') }]); return; }
   const draft = fmSubmitDraft(files, dest);
   if (fmCanShareFiles(files)) fmSendPreflightShare(files, draft, dest); else fmSendViaMailto(draft, files, dest);
@@ -24073,6 +24168,7 @@ async function doExport(fmt) {
   window._lastGateSkipped = false;   // reset per export — set only when marks were enabled but the shaping check couldn't run
   const _prevVersion = project.font.version;
   const _setVersion = (val) => { project.font.version = val; const el = document.getElementById('fontVersion'); if (el) el.value = val; };
+  _fontOut++;   // a font is on its way out: no font import may start until the finally below
   try {
     // If the engine isn't ready yet, show phased progress on the button itself.
     if (!pyodide) { _exportPreparing = true; _setPyoPhase(_pyoPhase === 'idle' ? 'download' : _pyoPhase); }
@@ -24087,6 +24183,12 @@ async function doExport(fmt) {
     }
     _exportPreparing = false; onExportFormatChange();
     await osEnsureLicenseText();   // partner projects: make sure LICENSE.txt can embed the upstream text
+
+    // The licence gate again, now that the waiting is over and the spec is about to be read: exportFont
+    // asked it at the click, but the page stayed live while the engine loaded, and the project in front
+    // of this line may no longer be the one the click saw (another project opened meanwhile, an import
+    // that was already running). Nothing has been changed yet, so there is nothing to roll back.
+    if (licenseUnsetGate()) { status(''); return; }   // outer finally re-enables the button
 
     // Bump the font version only now that the engine is ready — a failed engine download (the common,
     // repeatable failure) must no longer ratchet the version on every retry. A build error below rolls
@@ -24112,6 +24214,10 @@ async function doExport(fmt) {
 
     status(I18n.t('fontmaker.status.building_font'), true);
     const _gen = _editGen;                    // read with the spec (the size readout's freshness mark)
+    // …and so are the licence and file stem these bytes are built under: the shaping check below waits
+    // with the page live, and a licence chosen meanwhile must not become the build's record (Send would
+    // reuse an old-licence TTF beside a new LICENSE file) nor the text shipped beside it.
+    const _built = { lic: project.font.license, stem: fontFileStem() };
     const spec = buildFontSpec();
     const rangeErr = glyphRangeError(spec);   // same guard as the Preview path, in this one's own idiom
     if (rangeErr) { status(''); _setVersion(_prevVersion); askModal(I18n.t('fontmaker.modals.build_fail_title'), '<span class="warn">'+rangeErr+'</span>', [{label:I18n.t('fontmaker.modals.ok')}]); return; }
@@ -24134,29 +24240,32 @@ async function doExport(fmt) {
       askModal(I18n.t('fontmaker.modals.shaping_fail_title'),
         `<span class="warn">${gate.msg}</span><br><br>` + I18n.t('fontmaker.modals.shaping_fail_body'),
         [ {label:I18n.t('fontmaker.modals.cancel'), cls:'ghost', onClick: () => _setVersion(_prevVersion) },   // no download happened — don't ratchet the version per retry
-          {label:I18n.t('fontmaker.modals.download_anyway'), onClick: () => finishDownload(bytes, gate && gate.skipped, fmt).then(done => { if (!done) _setVersion(_prevVersion); }) } ]);
+          {label:I18n.t('fontmaker.modals.download_anyway'), onClick: () => finishDownload(bytes, gate && gate.skipped, fmt, _built).then(done => { if (!done) _setVersion(_prevVersion); }) } ]);
       return;
     }
-    if (!await finishDownload(bytes, gate && gate.skipped, fmt)) _setVersion(_prevVersion);   // WOFF2/zip failure = no file shipped → roll the bump back
+    if (!await finishDownload(bytes, gate && gate.skipped, fmt, _built)) _setVersion(_prevVersion);   // WOFF2/zip failure = no file shipped → roll the bump back
   } catch (err) {
     console.error(err); status(''); _setVersion(_prevVersion);
     askModal(I18n.t('fontmaker.modals.export_error_title'), '<span class="warn">'+(err && err.message || err)+'</span>', [{label:I18n.t('fontmaker.modals.ok')}]);
   } finally {
+    _fontOut--;
     btn.disabled = false;   // never leave the button stuck disabled
     if (_exportPreparing) { _exportPreparing = false; onExportFormatChange(); }
   }
 }
-async function finishDownload(bytes, gateSkipped, fmt) {   // resolves true only when a file actually shipped — callers roll the version bump back on false
+async function finishDownload(bytes, gateSkipped, fmt, built) {   // resolves true only when a file actually shipped — callers roll the version bump back on false. built: { lic, stem } as read with the spec
   fmt = fmt || 'ttf';
+  built = built || { lic: project.font.license, stem: fontFileStem() };
   const fam = fontFileStem();   // family base + '-Bold' for the bold style — no Regular/Bold file collisions
-  window._lastFontBytes = bytes; window._lastFontStem = fontFileStem();   // for Send to IvritSuite (stem = freshness stamp)
+  window._lastFontBytes = bytes; window._lastFontStem = built.stem;   // for Send to IvritSuite (stem = freshness stamp)
+  window._lastFontLic = built.lic;   // the licence the bytes say, not the menu's now: one chosen during the shaping check makes this build stale for Send
   window._lastExport = null;   // the Exported ✓ screen's size line — set below with the file that really went out
   if (fmt === 'ttf') {
     window._lastExport = { kind: 'ttf', size: bytes.length };
     downloadBlob(new Blob([bytes], {type:'font/ttf'}), fam + '.ttf');
     status(window.I18n ? I18n.t(gateSkipped ? 'fontmaker.status.exported_ttf_skipped' : 'fontmaker.status.exported_ttf', {name: fam})
                     : 'Exported ' + fam + '.ttf' + (gateSkipped ? ' (shaping check skipped)' : ' ✓'));
-    offerSaveToMyFonts(true);   // single-file → offer LICENSE.txt reliably from the success screen
+    offerSaveToMyFonts(true, built.lic);   // single-file → offer LICENSE.txt reliably from the success screen (the one the file says)
     return true;
   }
   // WOFF2 / TTF+WOFF2 zip — re-flavour the just-built TTF through fontTools (brotli loaded on demand)
@@ -24172,7 +24281,7 @@ async function finishDownload(bytes, gateSkipped, fmt) {   // resolves true only
       window._lastExport = { kind: 'woff2', size: woff2.length };
       downloadBlob(new Blob([woff2], {type:'font/woff2'}), fam + '.woff2');
       status(I18n.t('fontmaker.status.exported_woff2', {name: fam}));
-      offerSaveToMyFonts(true);   // single-file → offer LICENSE.txt reliably from the success screen
+      offerSaveToMyFonts(true, built.lic);   // single-file → offer LICENSE.txt reliably from the success screen (the one the file says)
       return true;
     }
     // ttfwoff2 → one zip: both fonts + a paste-ready @font-face + the licence
@@ -24180,7 +24289,7 @@ async function finishDownload(bytes, gateSkipped, fmt) {   // resolves true only
       { name: fam + '.ttf',   b64: bytesToB64(bytes) },
       { name: fam + '.woff2', b64: wr.woff2_b64 },
       { name: fam + '.css',   text: fontFaceCss((project.font.familyName || fam) + fontNameParts(project.font).famSfx, fam, fontIsBold(), fontIsItalic()) },
-      { name: 'LICENSE.txt',  text: licenseText() }
+      { name: 'LICENSE.txt',  text: licenseText(built.lic) }   // the licence the TTF and WOFF2 beside it say
     ];
     pyodide.globals.set('hfm_zip_json', JSON.stringify(entries));
     const zb64 = pyodide.runPython('hfm_zip(hfm_zip_json)');
@@ -24697,7 +24806,12 @@ async function saveCurrentToMyFonts(bytes) {
   // The My Fonts store is keyed by name — a bold save must not evict its Regular sibling.
   const fam = (project.font.familyName || 'My Hebrew Font').trim() + fontNameParts(project.font).sfx;
   try {
-    if (!bytes) { status(I18n.t('fontmaker.status.building_font'), true); bytes = await buildFontBytes(); }
+    if (!bytes) {
+      status(I18n.t('fontmaker.status.building_font'), true);
+      _fontOut++;
+      try { bytes = await buildFontBytes(true); } finally { _fontOut--; }
+      if (!bytes) { status(''); return; }   // the licence gate stopped it once the engine was in (its dialog is up)
+    }
     await saveUserFont(fam, bytes, fam);
     status(I18n.t('fontmaker.status.saved_myfonts', {name: fam}));
     if (_myFontsOpen) renderMyFontsList();
@@ -24706,7 +24820,7 @@ async function saveCurrentToMyFonts(bytes) {
     askModal(I18n.t('fontmaker.modals.couldnt_save_title'), '<span class="warn">' + esc(e && e.message || String(e)) + '</span>', [{ label: I18n.t('fontmaker.modals.ok') }]);
   }
 }
-function offerSaveToMyFonts(licenseSeparate) {   // post-export success screen (called after every successful export, any format)
+function offerSaveToMyFonts(licenseSeparate, lic) {   // post-export success screen (called after every successful export, any format). lic: the licence the downloaded file was built under
   markClean();   // a successful export is a safe checkpoint → drop the unsaved-work breadcrumb
   const dl = window._lastDownload;   // snapshot now — the LICENSE button below overwrites it
   const dlFile = dl ? new File([dl.blob], dl.name, {type: dl.blob.type}) : null;
@@ -24718,13 +24832,13 @@ function offerSaveToMyFonts(licenseSeparate) {   // post-export success screen (
                 { label: I18n.t('fontmaker.modals.exported_send_btn'), cls: 'ghost', icon: ICON_SEND_SM, onClick: () => fmSendFont('ivrit') },
                 { label: I18n.t('fontmaker.modals.exported_send_os_btn'), cls: 'ghost', icon: ICON_SEND_SM, onClick: () => fmSendFont('os') }];
   if (canShareFile) btns.push({ label: I18n.t('fontmaker.modals.exported_sharefile_btn'), cls: 'ghost', icon: ICON_SEND_SM,
-    onClick: () => fmShareFiles(licenseSeparate ? [dlFile, fmLicenseFile()] : [dlFile]) });
+    onClick: () => fmShareFiles(licenseSeparate ? [dlFile, fmLicenseFile(lic)] : [dlFile]) });
   if (canPick) btns.push({ label: I18n.t('fontmaker.modals.exported_saveas_btn'), cls: 'ghost', icon: ICON_SAVE_SM, onClick: () => fmSaveAsPicker(dlFile) });
   // Single-file TTF/WOFF2 downloads don't carry the license (the zip/UFO embed it), so offer it as a
   // reliable one-click download here — a click inside the modal is never blocked, unlike an
   // auto-triggered second download.
   if (licenseSeparate) btns.push({ label: I18n.t('fontmaker.modals.exported_license_btn'), cls: 'ghost',
-    onClick: () => downloadBlob(new Blob([licenseText()], {type:'text/plain'}), fontSafeBase(project.font.familyName) + '-LICENSE.txt') });
+    onClick: () => downloadBlob(new Blob([licenseText(lic)], {type:'text/plain'}), fontSafeBase(project.font.familyName) + '-LICENSE.txt') });
   const canKeep = !!(dlFile && project.cloudId && fmCloudUser() && dlFile.size <= 5 * 1024 * 1024);   // the project has an account copy: keep this export with it
   if (canKeep) btns.push({ label: _cT('exported_keep_btn', 'Keep this export in my account'), cls: 'ghost', icon: ICON_CLOUD_SM, onClick: () => fmCloudKeepExport(dlFile) });
   if (canSave) btns.push({ label: I18n.t('fontmaker.modals.exported_myfonts_btn'), onClick: () => openMyFonts() });
@@ -24780,9 +24894,9 @@ function licenseCtx() {
   const reserved = project.font.reservedFontName || family;
   return { family, author, reserved, year: new Date().getFullYear() };
 }
-function licenseText() {            // the LICENSE.txt body for the chosen license
+function licenseText(lic) {         // the LICENSE.txt body for the chosen license — or for `lic`, the one a build was made under
   if (project.osFont) return osPassthroughText();   // partner lock wins over any (tampered) license key
-  switch (project.font.license) {
+  switch (lic == null ? project.font.license : lic) {
     case 'cc0':  return cc0Text();
     case 'mit':  return mitText();
     case 'arr':  return arrText();
@@ -27257,9 +27371,13 @@ function migrateProject(data) {
   if (data.font) {
     if (data.font.author === undefined) data.font.author = data.font.copyright || '';   // Copyright field → Author
     delete data.font.copyright;
-    if (!data.font.license) data.font.license = 'ofl';
     { const src = lfCleanSource(data.font.sourceFont); if (src) data.font.sourceFont = src; else delete data.font.sourceFont; }   // what an installed font said about itself: text from a project file, shape-checked and capped
     if (data.osFont && typeof data.osFont !== 'object') delete data.osFont;   // junk partner block → plain project
+    // A project that started from an installed font (its sourceFont survived the check above) never heals
+    // to OFL: a licence that is empty or not one of the table's keys — what an older page version writes
+    // back, or the orphaned lock key — is "not chosen yet". Without a source font an empty licence is OFL, as before.
+    if (!data.osFont && data.font.sourceFont && !(typeof data.font.license === 'string' && Object.prototype.hasOwnProperty.call(LICENSES, data.font.license))) data.font.license = 'unset';
+    if (!data.font.license) data.font.license = 'ofl';
     if (data.osFont) {   // partner starting-font (see CLAUDE.md: Starting Fonts): the license lock survives every load
       data.font.license = 'os-passthrough';
       if (!Array.isArray(data.osFont.reservedFontNames)) data.osFont.reservedFontNames = [];
@@ -27497,6 +27615,7 @@ function wizardShowStep(n, focusEl){
   document.getElementById('wizBack').hidden = (n === 1);
   document.getElementById('wizNext').hidden = (n === 3);
   document.getElementById('wizCreate').hidden = (n !== 3);
+  document.getElementById('wizHoldNote').hidden = true;   // wizardOsFinish's "still being built" line belongs to the press that showed it
   if (os) wizardValidateOs(); else wizardValidateStep1();
   // Focus the step's first control (the checked radio for the tile/segment steps) after
   // aOpenModal's own setTimeout(0) focus pass — the openShortcuts precedent.
@@ -27712,7 +27831,13 @@ function wizardOsCancel(){
   wizardOpen(back);
 }
 async function wizardOsFinish(){
+  const hold = document.getElementById('wizHoldNote'); hold.hidden = true;
   if (!wizardValidateOs()) { wizardShowStep(2); try { document.getElementById('wizOsName').focus(); } catch (e) {} return; }
+  // A font being built to leave the computer (an export, a save to My Fonts or a send still waiting on
+  // the engine) reads the project when the engine arrives: this import would replace it under that build,
+  // half-imported. It waits, like the file and installed-font imports (fontImportHeld), and says so here
+  // in the wizard — the status line sits behind it. Nothing has changed yet; the wizard keeps every answer.
+  if (_fontOut) { hold.textContent = I18n.t('fontmaker.oswizard.wait_build', { btn: I18n.t('fontmaker.oswizard.start_editing') }); hold.hidden = false; return; }   // the button's label in this mode (wizardOpen)
   const ctx = _osStartCtx, e = ctx.entry;
   const name = document.getElementById('wizOsName').value.trim();
   const author = document.getElementById('wizOsAuthor').value.trim();
@@ -28180,6 +28305,7 @@ function init() {
   // the on-screen direction and the X/Y fields; bars translate, dots move their center — like a drag.
   document.addEventListener('keydown', e => {
     if (!meActive || !meItem || meItem.designMode !== 'editor') return;
+    if (document.querySelector('.overlay.open:not(#markEditOverlay)')) return;   // a confirmation (Apply, Reset) or Help raised over the window owns the keys: no nudge behind it
     const t = e.target;
     if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.isContentEditable)) return;
     let dx = 0, dy = 0;
