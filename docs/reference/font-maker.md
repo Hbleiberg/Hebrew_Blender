@@ -1106,8 +1106,11 @@ corner or tangle a noisy outline.
   h, the bowl of þ, a's bowl from 130%) the outline differs from the step's own across that room —
   a smooth bend, nothing beyond it; the outline beside a gap is the step's own, including the bend
   the step itself gives an edge whose far end is a buried point it corrects as a stroke side (the
-  end of u's bowl rising into its stem); and a buried run moved as one piece can show a little past a
-  narrower part of its cover (æ's a-stem in the e's counter at 150%).
+  end of u's bowl rising into its stem); a foot that reaches into its stem by its tip alone has
+  almost no buried stretch to spend a hold in, so where the stem moves far away it would hang on by a
+  hairline and the guarantee stretches the letter plainly instead (Shlomo's Gimel and Dotted Gimel
+  at 150%); and a buried run moved as one piece can show a little past a narrower part of its cover
+  (æ's a-stem in the e's counter at 150%).
 - *The guarantee — a letter never leaves the step in more pieces than it came in (`gxwPieces`,
   `gxwApart`).* For every letter of more than one contour `gxWidthOp` counts the pieces of ink
   before and after: the connected parts of the nonzero fill on slices one unit apart, counted twice
