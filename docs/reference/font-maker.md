@@ -1089,7 +1089,8 @@ letter (`xformFormsBase` / `xformMappedForms`; `xformFormsFollow` says when) —
 shin dot keeps its side. A rotation, a vertical flip and any selection leave all of these alone — an
 "above" point must stay above, and part of a letter is not the letter. The live slider keeps the
 pre-drag anchors and placements in `_xformBase` and re-maps from them each tick, so a release at
-neutral still leaves zero undo entries. **The gesture is settled on release, not on `change`:** a range input whose
+neutral still leaves zero undo entries. **The gesture is settled on release, whatever the value:** a
+range input whose
 drag ends on the value it started from fires `input` and no `change`, so each slider also reaches
 `xformCommit` from its pointerup, pointercancel, keyup and blur (`XF_END`; the neutral branch is the
 cancel, and a second call finds no snapshot). A pointer release settles one task later
