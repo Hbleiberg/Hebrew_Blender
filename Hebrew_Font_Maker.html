@@ -9754,7 +9754,9 @@ async function applyFontImport(file, font, bytes, opts) {
     // is LOGICAL-order by spec — unambiguous for RTL — so it is read first, through the engine (loaded
     // by the anchors step when that ran, otherwise loaded here) (hfm_read_kern: PairPos format 1 + 2, Extension-wrapped included;
     // opentype.js cannot see Extension lookups, hence the Pyodide path). Class pairs land as class
-    // rows, matching buildFEA's singles-before-classes emission and kernEffective's read.
+    // rows, which kernEffective reads — and buildFEA writes out pair by pair — as specific pairs first,
+    // then the first group in the list. A right-to-left pair is read by its advance, the half of the
+    // placement + advance record buildFEA writes for it, so an exported font re-imports with the same values.
     // The legacy `kern` table is the fallback, LTR pairs only. For a left-to-right run that order is
     // unambiguous and buildFEA emits it unchanged. For a right-to-left script it is NOT: the table is visual-order by
     // spec while most tools write logical order, and — measured with HarfBuzz against a purpose-built
@@ -18745,11 +18747,13 @@ function glyphPathAt(cs, dx, yo, curves) {
   });
   return d;
 }
-/* The kerning a pair gets in the exported font, by emitKern's own rules, in logical/reading order
-   (first then second); 0 if none. A specific pair (one glyph each side) with a real value wins —
-   the LAST one if the list holds it twice — and a pair at 0 is no rule at all, so a group pair
-   that covers the two letters shows through; among group pairs, the first in the list. The big
-   sample and the Common pairs chips read this one function, so they cannot disagree with the font. */
+/* The kerning a pair gets in the exported font, in logical/reading order (first then second); 0 if
+   none. A specific pair (one glyph each side) with a real value wins — the LAST one if the list
+   holds it twice — and a pair at 0 is no rule at all, so a group pair that covers the two letters
+   shows through; among group pairs, the first in the list. The export writes these values and
+   nothing else — one glyph pair at a time, from kernExpanded() below, which applies the same rules
+   in one pass — and the big sample and the Common pairs chips read this one function, so neither
+   can disagree with the font. */
 function kernSpecific(firstCp, secondCp) {       // the specific pair's own value; 0 if none or at 0
   let v = 0;
   for (const k of fontKerning())
@@ -18761,6 +18765,19 @@ function kernEffective(firstCp, secondCp) {
   for (const k of fontKerning())
     if (k && k.value && ((k.left||[]).length > 1 || (k.right||[]).length > 1) && k.left.includes(firstCp) && k.right.includes(secondCp)) return k.value;
   return 0;
+}
+/* Every glyph pair the list kerns, as Map('first|second' → value) — kernEffective's answer for each
+   pair, worked out in one pass. This is what the export writes: glyph pairs only, never a class
+   rule, because a shaper stops at the first class subtable that knows a pair's FIRST letter, so a
+   later group pair that shares that letter would never apply, and because the members of one group
+   may be set in different directions (kernPairDir). */
+function kernExpanded() {
+  const out = new Map(), rows = fontKerning().filter(k => k && k.value);
+  const single = k => (k.left||[]).length === 1 && (k.right||[]).length === 1;
+  rows.forEach(k => { if (single(k)) return;                                  // group pairs: the first in the list keeps the pair
+    (k.left||[]).forEach(a => (k.right||[]).forEach(b => { const key = a + '|' + b; if (!out.has(key)) out.set(key, k.value); })); });
+  rows.forEach(k => { if (single(k)) out.set(k.left[0] + '|' + k.right[0], k.value); });   // a specific pair wins — the last one if doubled
+  return out;
 }
 function kernPreviewValue(firstCp, secondCp) {   // big-sample preview: the in-progress edit wins (live), else saved pairs
   const e = kernEdit;
@@ -22636,30 +22653,33 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLette
     });
     if (mkmkOut) f += 'feature mkmk {\n' + mkmkOut + '} mkmk;\n\n';
   }
-  // ── kerning (GPOS pair adjustment). RTL convention (confirmed visually via the live preview +
-  //    Preview PDF): the pair is stored/emitted in logical (reading) order — the order it is typed,
-  //    which for Hebrew is right-to-left visually. A single value adjusts the FIRST glyph's
-  //    x-advance, and advance = pen movement in the writing direction, so − tightens / + loosens in
-  //    both LTR and RTL (HarfBuzz applies advances in logical order for the RTL run). baseGlyphNames
-  //    is the set of glyphs actually built, so a pair on a punct/digit glyph can't break the build
-  //    when "Include digits & punctuation" is off (its side just drops out). ──
+  // ── kerning (GPOS pair adjustment). Every rule is ONE glyph pair in logical (reading) order — the
+  //    order it is typed — with the value kernEffective gives that pair (kernExpanded). Which value
+  //    record it gets depends on how the pair is set (kernPairDir), measured in Chromium and in
+  //    HarfBuzz on three-letter strings:
+  //    · left to right: the bare value = the FIRST glyph's x-advance. The second glyph sits after
+  //      the first, so a shorter advance pulls it in (− tightens, + loosens).
+  //    · right to left: placement AND advance on the first glyph, <v 0 v 0>. A shaper lays an RTL run
+  //      out leftwards from the pen, so the first glyph's advance box ends where the letter BEFORE
+  //      it stands: an advance change alone would move that letter (the wrong gap) and leave the
+  //      pair as it was. Shifting the first glyph by the same amount moves it toward the second,
+  //      and the advance change then carries everything before it along — only the pair's own gap
+  //      changes. This is how ufo2ft and the Hebrew fonts this page imports write RTL kerning, and
+  //      hfm_read_kern (which reads the advance) gets the same value back.
+  //    · two directions (null): the letters sit in separate runs and are never kerned — no rule.
+  //    baseGlyphNames is the set of glyphs actually built, so a pair on a punct/digit glyph can't
+  //    break the build when "Include digits & punctuation" is off (the pair just drops out). ──
   const builtSet = new Set(baseGlyphNames);
-  const kernSide = cps => (cps || []).map(gname).filter(n => builtSet.has(n));
-  const kernMap = new Map();   // key → emitted line; a later duplicate overwrites the value, position stable (last wins)
-  const emitKern = k => {
-    if (!k || !k.value) return;                                  // value 0 (incl. un-tuned "Suggest" seeds) → omit
-    const L = kernSide(k.left), R = kernSide(k.right);
-    if (!L.length || !R.length) return;                          // a side resolved to no built glyph → skip
-    const lhs = L.length > 1 ? `[${L.join(' ')}]` : L[0];
-    const rhs = R.length > 1 ? `[${R.join(' ')}]` : R[0];
-    kernMap.set(lhs + '\t' + rhs, `  pos ${lhs} ${rhs} ${k.value};\n`);
-  };
-  const kernSingle = k => (k.left||[]).length === 1 && (k.right||[]).length === 1;
-  (project.font.kerning || []).filter(k => k && kernSingle(k)).forEach(emitKern);    // specific glyph pairs first…
-  (project.font.kerning || []).filter(k => k && !kernSingle(k)).forEach(emitKern);   // …then class pairs, so a specific pair wins on overlap
-  if (kernMap.size) {
-    let kernLines = ''; kernMap.forEach(line => { kernLines += line; });
-    f += '# kern: pair in logical (reading) order; value = first-glyph x-advance (− tightens, + loosens)\n';
+  let kernLines = '';
+  kernExpanded().forEach((v, key) => {
+    const [a, b] = key.split('|'), dir = kernPairDir(a, b), na = gname(a), nb = gname(b);
+    if (!dir || !builtSet.has(na) || !builtSet.has(nb)) return;
+    kernLines += dir === 'rtl' ? `  pos ${na} ${nb} <${v} 0 ${v} 0>;\n` : `  pos ${na} ${nb} ${v};\n`;
+  });
+  if (kernLines) {
+    f += '# kern: glyph pairs in logical (reading) order. A right-to-left pair moves its first glyph by the value and changes\n' +
+         '# the advance of that glyph by the same amount (<v 0 v 0>); a left-to-right pair changes the advance alone (v).\n' +
+         '# Either way only the gap between the two glyphs of the pair changes (− tightens, + loosens).\n';
     f += 'feature kern {\n' + kernLines + '} kern;\n\n';
   }
   // explicit GDEF (base=1, mark=3); empty mark slot when letters-only. The CGJ/ZWJ joiner glyphs
@@ -23239,7 +23259,9 @@ def hfm_read_kern(ttf_b64, cap):
     # from an existing font, as the editor's model rows [{left:[HEXCP..], right:[HEXCP..], value}] in
     # LOGICAL order. GPOS pair order is logical by spec, so this is unambiguous for RTL — unlike the
     # legacy kern table the JS import deliberately skips for Hebrew. value = the pair's total
-    # x-advance delta (Value1 + Value2), scaled to 1000 UPM; zero rows dropped. Placement-only pairs
+    # x-advance delta (Value1 + Value2), scaled to 1000 UPM; zero rows dropped. A right-to-left pair is
+    # normally written as placement + advance of the same amount (buildFEA writes it so too), and its
+    # advance is the pair's value, so such a pair round-trips. Placement-only pairs
     # and class-2-index-0 ("any other glyph" — unboundable as an explicit list) are counted in
     # "skipped" rather than guessed. Walk order = LookupList order = shaper application order, and
     # the first definition of a pair signature wins, so kernEffective never meets a doubled pair from here.
