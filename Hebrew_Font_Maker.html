@@ -19065,7 +19065,17 @@ function kernSideLabel(cps) {
   const uc = userKernClasses().find(c => sameSet(cps, c.members)); if (uc) return uc.name;
   return (cps || []).map(cp => String.fromCodePoint(parseInt(cp, 16))).join(' ');
 }
-function kernPairIndex(left, right) { return fontKerning().findIndex(k => sameSet(k.left, left) && sameSet(k.right, right)); }
+/* The row the editor loads and Update writes for these two sides: the row kernEffective reads. The
+   list can hold a pair twice (a group edited down to one letter, a hand-made file); for a specific
+   pair the LAST row with a real value is the one that counts, for a group pair the first. Loading
+   the first match instead left the chip showing one row's value and the editor changing another. */
+function kernPairIndex(left, right) {
+  const rows = fontKerning(), hits = [];
+  rows.forEach((k, i) => { if (k && sameSet(k.left, left) && sameSet(k.right, right)) hits.push(i); });
+  if (hits.length < 2) return hits.length ? hits[0] : -1;
+  const real = hits.filter(i => rows[i].value), last = left.length === 1 && right.length === 1;
+  return last ? (real.length ? real[real.length - 1] : hits[hits.length - 1]) : (real.length ? real[0] : hits[0]);
+}
 function kernCpTraced(cp){ const l = project.letters.find(x => x.codepoint === cp); return !!(l && l.contours && l.contours.length); }
 function kernSideBuilt(cps){ return (cps||[]).some(kernCpTraced); }                 // ≥1 member traced (mirrors the export filter)
 function kernPairReason(k){                                                         // '' = will export; else why it won't
@@ -19385,7 +19395,11 @@ function addOrUpdateKernPair() {
   udDo([{t:'kerning'}], 'kerning pair', () => {
     if (!Array.isArray(project.font.kerning)) project.font.kerning = [];
     const idx = kernPairIndex(left, right);
-    if (idx >= 0) project.font.kerning[idx].value = e.value;
+    if (idx >= 0) {
+      const row = project.font.kerning[idx]; row.value = e.value;
+      // one pair, one row: a second row for the same two sides hides behind this one, and would bring its old value back the day this one is set to 0
+      project.font.kerning = project.font.kerning.filter(k => k === row || !(k && sameSet(k.left, left) && sameSet(k.right, right)));
+    }
     else project.font.kerning.push({ left, right, value: e.value });
   });
   renderKerningSection();
@@ -19393,7 +19407,18 @@ function addOrUpdateKernPair() {
   const underGroup = !e.value && left.length === 1 && right.length === 1 && kernEffective(left[0], right[0]);
   status(I18n.t(e.value ? 'fontmaker.status.kern_pair_saved' : underGroup ? 'fontmaker.status.kern_pair_saved_zero_group' : 'fontmaker.status.kern_pair_saved_zero'));
 }
-function deleteKernPair(i) { udDo([{t:'kerning'}], 'delete kerning pair', () => { (project.font.kerning||[]).splice(i, 1); }); renderKerningSection(); }
+function deleteKernPair(i) {
+  const a = document.activeElement, own = !!(a && a.dataset && a.dataset.fk === 'kpd:' + i);   // focus is on this row's delete button
+  udDo([{t:'kerning'}], 'delete kerning pair', () => { (project.font.kerning||[]).splice(i, 1); });
+  renderKerningSection();
+  // The rebuild puts focus on the row that moved up into this place (fkKeep). After the LAST row there
+  // is none and focus fell to <body>: go to the row before it, or to Add pair when the list is empty.
+  if (own && (!document.activeElement || document.activeElement === document.body)) {
+    const box = document.getElementById('kerningBody');
+    const t = box && (box.querySelector('[data-fk="kpd:' + (i - 1) + '"]') || box.querySelector('[data-fk="kp:add"]'));
+    if (t) t.focus();
+  }
+}
 function loadKernPair(i) {
   const k = fontKerning()[i]; if (!k) return;
   const side = cps => {
