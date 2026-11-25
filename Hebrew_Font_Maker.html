@@ -18401,16 +18401,21 @@ function gxwShape(rings, curves, s, t, hand) {
      and corrected as if they were, the end of a widened bar is pulled back out of the stem it sat in while
      the stem's own side moves away from it: the pieces come apart. So where one ring can lie in another's
      ink, each leg is asked whether just OUTSIDE its own ring there is ink of the other rings (hidden — and
-     the ring must not be a counter cut out of that ink). A point with a buried leg, or that lies in such
-     ink itself, must stay buried: it is held inside the horizontal chord of ink of the ring that covers
-     it (chord), at least as deep from each end as it was (up to half a stem; narrowed with a narrowed
-     letter), the chord's two ends standing where their own rings' points were moved to (keep; settled in
-     a few passes, since a cover's own end may be held too). A point that is still that deep where the
-     step put it is not touched: the side of a stem whose top runs into a roof stays parallel to its
-     other side. Two kinds of ring are never asked and take exactly the path above: one with no ring of
-     its own direction near it (every ordinary letter), and one with less than a third of its outline
-     still showing — a fill-in at a joint, not a stroke: held in its two covers it would be pulled into a
-     web across the joint, where left alone it thins away as the joint opens. */
+     the ring must not be a counter cut out of that ink). A point is held inside the horizontal chord of
+     ink of the ring that covers it (chord) when it has a buried leg the step moves it for (up: a flat leg
+     moves nothing), or — the tip of a foot that only just reaches into a leg — when it lies in such ink
+     itself, its outline turns back there instead of running on past (a stem's corner tucked under an arch
+     runs on), and its cover holds nothing of its own in this ring (tip: where the arch's buried end is
+     held in the stem, holding the stem's corner as well would only tilt the stem's visible side). Two
+     rings buried in each other hold only the smaller one. A held point still buried where the step put it
+     is not moved. One the step pushed out is put back as deep from that end as it was (up to half a stem;
+     narrowed with a narrowed letter), the chord's ends standing where their own rings' points were moved
+     to (keep; settled in a few passes, since a cover's own end may be held too), and the rest of its
+     buried run moves by the same amount, so the end of a stroke shifts as one piece and the stroke's two
+     sides keep their spacing (hold). Two kinds of ring are never asked and take exactly the path above: one with no ring of its own
+     direction near it (every ordinary letter), and one with less than a third of its outline still
+     showing — a fill-in at a joint, not a stroke: held in its two covers it would be pulled into a web
+     across the joint, where left alone it thins away as the joint opens. */
   const turn = rings.map(r => (r.length >= 3 && signedArea(r) > 0) ? 1 : -1);   // +1: the ring's inside is on the left of its direction of travel (and counts −1 in gxwRuns' winding)
   const size = rings.map(r => (r.length >= 3 ? Math.abs(signedArea(r)) : 0)), bx = rings.map(r => polysBounds([r]));
   const deep = rings.map((r, i) => r.length >= 3 && rings.some((q, j) => j !== i && q.length >= 3 && turn[j] === turn[i] &&
@@ -18422,7 +18427,7 @@ function gxwShape(rings, curves, s, t, hand) {
     return (w !== 0 && w - turn[ri] !== 0) ? q : null;
   };
   const hidden = (ri, px, py, dx, dy) => { const L = Math.hypot(dx, dy); if (!L) return null; const o = turn[ri] * 0.25 / L; return inked(ri, [px + o * dy, py - o * dx]); };   // the outline of ring ri at p, running along (dx, dy): is it covered — tested a quarter unit outside the ring? → that point, or null
-  const chord = (ri, q) => {   // the largest other ring of ri's own direction that holds the point q, and its run of ink through q (its counters taken out) → [left edge, right edge, their x at q's height, that height]
+  const chord = (ri, q) => {   // the largest other ring of ri's own direction that holds the point q, and its run of ink through q (its counters taken out) → [left edge, right edge, their x at q's height, that height, that ring]
     const B = near(q[1]), cr = [], on = e => e[4] !== ri && (e[1] > q[1]) !== (e[3] > q[1]), wind = new Map(); let j = -1;
     for (let i = 0; i < B.length; i++) { const e = B[i]; if (on(e) && turn[e[4]] === turn[ri] && crossX(e, q[1]) < q[0]) wind.set(e[4], (wind.get(e[4]) || 0) + (e[3] > e[1] ? 1 : -1)); }
     wind.forEach((w, k) => { if (w && (j < 0 || size[k] > size[j])) j = k; });
@@ -18430,10 +18435,11 @@ function gxwShape(rings, curves, s, t, hand) {
     for (let i = 0; i < B.length; i++) { const e = B[i]; if (on(e) && (e[4] === j || turn[e[4]] !== turn[ri])) cr.push([crossX(e, q[1]), e[3] > e[1] ? 1 : -1, e]); }
     cr.sort((a, b) => a[0] - b[0]);
     let w = 0, L = null;
-    for (let i = 0; i < cr.length; i++) { const c = cr[i], w1 = w + c[1]; if (!w && w1) L = c; else if (w && !w1 && L[0] <= q[0] && q[0] <= c[0]) return [L[2], c[2], L[0], c[0], q[1]]; w = w1; }
+    for (let i = 0; i < cr.length; i++) { const c = cr[i], w1 = w + c[1]; if (!w && w1) L = c; else if (w && !w1 && L[0] <= q[0] && q[0] <= c[0]) return [L[2], c[2], L[0], c[0], q[1], j]; w = w1; }
     return null;
   };
-  const heldOf = ri => {   // the points of ring ri that must stay buried: [index, its cover's chord] — null when it has none, or when the ring is a fill-in
+  const up = (dx, dy) => { const X = dx * s, L2 = X * X + dy * dy; return L2 > 0 && dy * dy >= 1e-4 * L2; };   // the step moves a point for this leg (leg()'s own test: it is not flat)
+  const heldOf = ri => {   // the points of ring ri that must stay buried: [index, its cover's chord, held only for lying in the cover] — null when it has none, or when the ring is a fill-in
     const r = rings[ri], n = r.length, list = []; let seen = 0, all = 0;
     const at = (V, T, f) => [V[0] + f * (T[0] - V[0]), V[1] + f * (T[1] - V[1])];
     const legHid = (V, T, dx, dy) => [0.5, 0.25, 0.75].every(f => { const p = at(V, T, f); return hidden(ri, p[0], p[1], dx, dy); });
@@ -18443,20 +18449,42 @@ function gxwShape(rings, curves, s, t, hand) {
       const bdx = V[0] - B[0], bdy = V[1] - B[1], fdx = F[0] - V[0], fdy = F[1] - V[1], lb = Math.hypot(bdx, bdy), lf = Math.hypot(fdx, fdy);
       const hb = legHid(V, B, bdx, bdy), hf = legHid(V, F, fdx, fdy);
       all += lb + lf; seen += (hb ? 0 : lb) + (hf ? 0 : lf);
-      const c = (hf && probe(V, F, fdx, fdy)) || (hb && probe(V, B, bdx, bdy)) || (inked(ri, V) && chord(ri, V));   // a buried leg — or the point itself lies in the cover (the tip of a foot that only just reaches into a leg)
-      if (c) list.push([i, c]);
+      const c = (hf && up(fdx, fdy) && probe(V, F, fdx, fdy)) || (hb && up(bdx, bdy) && probe(V, B, bdx, bdy));   // a buried leg the step moves the point for
+      const d = !c && !(bdy * fdy > 0) && inked(ri, V) && chord(ri, V);   // or the point itself lies in the cover where its outline turns back (the tip of a foot that only just reaches into a leg)
+      if (c || d) list.push([i, c || d, !c]);
     }
     return (list.length && seen * 3 >= all) ? list : null;
   };
   const held = rings.map((r, i) => (deep[i] ? heldOf(i) : null));
+  const into = new Set();   // "i>j": ring i has buried legs held in ring j
+  held.forEach((list, ri) => { if (list) list.forEach(d => { if (!d[2]) into.add(ri + '>' + d[1][5]); }); });
+  held.forEach((list, ri) => { if (list) list.forEach(d => { const j = d[1][5]; if (!d[2] && into.has(j + '>' + ri) && (size[ri] > size[j] || (size[ri] === size[j] && ri > j))) d[3] = true; }); });   // two rings buried in each other: the larger one gives way
+  held.forEach((list, ri) => { if (list) list.forEach(d => { if (d[3]) into.delete(ri + '>' + d[1][5]); }); });
+  const tip = (ri, c) => !into.has(c[5] + '>' + ri);   // a point only lying in its cover is held there only when the cover holds nothing of its own in this ring
+  held.forEach((list, ri) => { if (list) { const f = list.filter(d => !d[3] && (!d[2] || tip(ri, d[1]))); held[ri] = f.length ? f : null; } });
   const moved = moved0.map((P, i) => (held[i] ? P.map(p => p.slice()) : P));
   const keep = (c, x, own) => {   // the place of a point that was at x and that the step put at `own`, held inside its cover's chord as the chord's ends now stand
     const at = e => { const P = moved[e[4]], a = P[e[5]], b = P[(e[5] + 1) % P.length]; return a[0] + (c[4] - e[1]) / (e[3] - e[1]) * (b[0] - a[0]); };
-    const f = Math.min(1, s), lo = at(c[0]) + f * Math.min(x - c[2], t / 2), hi = at(c[1]) - f * Math.min(c[3] - x, t / 2);   // the depth it had — a narrowed letter's, narrowed with it
+    const L = at(c[0]), R = at(c[1]);
+    if (own > L + 1 && own < R - 1) return own;   // still buried where the step put it
+    const f = Math.min(1, s), lo = L + f * Math.min(x - c[2], t / 2), hi = R - f * Math.min(c[3] - x, t / 2);   // the depth it had — a narrowed letter's, narrowed with it
     return lo > hi ? (lo + hi) / 2 : Math.max(lo, Math.min(hi, own));
   };
+  const hold = (list, xs, own, n) => {   // list: a ring's [index, chord] in ring order (n points); xs: their old x; own: where the step put them → their held places, a buried run moving as one piece
+    const at = list.map((d, k) => keep(d[1], xs[k], own[k])), out = at.slice(), N = list.length;
+    const next = k => list[(k + 1) % N][0] === (list[k][0] + 1) % n && list[(k + 1) % N][1][5] === list[k][1][5];   // the next held point is the ring's next point, in the same cover
+    let a0 = 0; while (a0 < N && next((a0 - 1 + N) % N)) a0++; if (a0 === N) a0 = 0;   // start at the beginning of a run
+    for (let a = 0; a < N; ) {
+      let b = a + 1; while (b < N && next((a0 + b - 1) % N)) b++;
+      let D = 0, sg = 0, mixed = false;   // the run's largest correction, when all of its corrections go one way
+      for (let q = a; q < b; q++) { const k = (a0 + q) % N, dd = at[k] - own[k]; if (Math.abs(dd) > 1e-9) { if (sg && Math.sign(dd) !== sg) mixed = true; sg = Math.sign(dd); if (Math.abs(dd) > Math.abs(D)) D = dd; } }
+      if (D && !mixed) for (let q = a; q < b; q++) { const k = (a0 + q) % N; out[k] = keep(list[k][1], xs[k], own[k] + D); }
+      a = b;
+    }
+    return out;
+  };
   if (held.some(Boolean)) {
-    for (let pass = 0; pass < 3; pass++) held.forEach((list, ri) => { if (list) list.forEach(d => { moved[ri][d[0]][0] = keep(d[1], rings[ri][d[0]][0], moved0[ri][d[0]][0]); }); });
+    for (let pass = 0; pass < 3; pass++) held.forEach((list, ri) => { if (!list) return; const r = rings[ri], x = hold(list, list.map(d => r[d[0]][0]), list.map(d => moved0[ri][d[0]][0]), r.length); list.forEach((d, k) => { moved[ri][d[0]][0] = x[k]; }); });
     held.forEach((list, ri) => { if (list) unpass(rings[ri], moved[ri]); });
   }
   const moveCurve = (cv, sg, ri) => {
@@ -18479,15 +18507,17 @@ function gxwShape(rings, curves, s, t, hand) {
     unpassCv();
     if (held[ri]) {   // buried segments (heldOf's rule, a segment for a leg): a node of one is held in its cover — the polygons', now settled — and its handles go with the node
       const hid = (P, u) => { const p = at(P, u), a = at(P, Math.max(0, u - 0.02)), b = at(P, Math.min(1, u + 0.02)); return hidden(ri, p[0], p[1], b[0] - a[0], b[1] - a[1]); };
-      const sh = segs.map(P => !!(hid(P, 0.5) && hid(P, 0.25) && hid(P, 0.75)));
+      const sh = segs.map(P => !!(up(P[P.length - 1][0] - P[0][0], P[P.length - 1][1] - P[0][1]) && hid(P, 0.5) && hid(P, 0.25) && hid(P, 0.75)));
       const probe = (P, end) => { const u = Math.min(0.02, 0.5 / Math.max(1, Math.hypot(P[P.length - 1][0] - P[0][0], P[P.length - 1][1] - P[0][1]))), q = hid(P, end ? 1 - u : u); return q && chord(ri, q); };   // about half a unit along the segment from the node
-      let any = false;
+      const list = [], nodes = segs.map(P => P[0]);
       for (let j = 0; j < m; j++) {
-        const jp = (j - 1 + m) % m, V = segs[j][0], c = (sh[j] && probe(segs[j], false)) || (sh[jp] && probe(segs[jp], true)) || (inked(ri, V) && chord(ri, V));
-        if (!c) continue;
-        const x = keep(c, V[0], V[0] * s + dl[j]);
-        if (x !== V[0] * s + dl[j]) { dl[j] = x - V[0] * s; any = true; }
+        const jp = (j - 1 + m) % m, V = segs[j][0], on = (V[1] - reach(nodes, j, -1)[1]) * (reach(nodes, j, 1)[1] - V[1]) > 0;   // on: the outline runs on past this node
+        const c = (sh[j] && probe(segs[j], false)) || (sh[jp] && probe(segs[jp], true)) || (!on && inked(ri, V) && (q => (q && tip(ri, q)) ? q : null)(chord(ri, V)));
+        if (c) list.push([j, c]);
       }
+      const own = list.map(d => segs[d[0]][0][0] * s + dl[d[0]]), x = list.length ? hold(list, list.map(d => segs[d[0]][0][0]), own, m) : [];
+      let any = false;
+      list.forEach((d, k) => { if (x[k] !== own[k]) { dl[d[0]] = x[k] - segs[d[0]][0][0] * s; any = true; } });
       if (any) unpassCv();
     }
     const mv = (p, d) => [p[0] * s + d, p[1]];

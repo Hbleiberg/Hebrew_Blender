@@ -1046,19 +1046,33 @@ corner or tangle a noisy outline.
   contour's ink (the end of a roof bar run into a stem, the root of an n's arch) is not the side of a
   stroke. Corrected as one, a widened bar's end is pulled back out of the stem while the stem's own
   side moves away from it — the pieces come apart — and a narrowed one grows out of the far side of a
-  thin stroke. So a point with a buried leg (`hidden`: a quarter unit outside its own ring there is
-  ink of the other rings, and the ring is not a counter cut out of that ink), or one that lies in
-  such ink itself, is **held inside its cover** (`heldOf`, `chord`, `keep`): inside the horizontal
-  run of ink of the largest ring of its own direction that covers it, at least as deep from each end
-  as it was — up to half the stem, and narrowed with a narrowed letter — the run's ends taken where
-  their own points were moved to (three passes: a cover's own end may be held too). A point that is
-  still that deep where the step put it is not moved, so a stem whose top runs into a roof keeps its
-  sides parallel. Curve nodes are held the same way against the settled polygons (a segment for a
-  leg), and their handles go with them. Two kinds of ring are never asked and come out exactly as
-  before: one with no ring of its own direction near it — every ordinary letter, point for point —
-  and one with less than a third of its outline showing (a fill-in at a joint: held in its two
-  covers it would be stretched into a web across the joint; left alone it thins away as the joint
-  opens, and is reported as lost detail when it goes).
+  thin stroke. So such a point is **held inside its cover** (`heldOf`, `chord`, `keep`, `hold`):
+  inside the horizontal run of ink of the largest ring of its own direction that covers it. Which
+  points are held decides whether the visible strokes beside a joint stay straight:
+  - a point with a buried leg the step moves it for (`hidden`: a quarter unit outside its own ring
+    there is ink of the other rings, and the ring is not a counter cut out of that ink; `up`: a flat
+    leg moves nothing and holds nothing) — the cap of a bar, an arch or a bowl run into a stem;
+  - a point that only *lies* in the other ink, with no buried leg (the tip of a foot that just reaches
+    into a leg), when its outline turns back there rather than running on past, and when the cover
+    holds nothing of its own in this ring (`tip`). The corner of a stem tucked under the root of an
+    arch (r, m, n), or under the end of a bowl (a, b, d), is not held: the arch's buried end is
+    already held in the stem, and holding the stem's corner as well only tilts the stem's visible
+    side — its two sides would no longer be parallel;
+  - when two rings are buried in each other, only the smaller is held (a thin arm of X in the thick
+    diagonal, not the diagonal's notch in the arm).
+
+  A held point that is still buried where the step put it is not moved. One the step pushed out is
+  put back as deep from each end as it was — up to half the stem, and narrowed with a narrowed
+  letter — the run's ends taken where their own points were moved to (three passes: a cover's own
+  end may be held too), and the rest of its buried run moves by the same amount, so a stroke's end
+  shifts as one piece and its two sides keep their spacing (K's leg under its arm). Curve nodes are
+  held the same way against the settled polygons (a segment for a leg), and their handles go with
+  them. Two kinds of ring are never asked and come out exactly as before: one with no ring of its
+  own direction near it — every ordinary letter, point for point — and one with less than a third of
+  its outline showing (a fill-in at a joint: held in its two covers it would be stretched into a web
+  across the joint; left alone it thins away as the joint opens, and is reported as lost detail when
+  it goes). What a held end still costs: where the visible outline next to it is short (the foot of
+  an arm that ends a few units into a diagonal), that outline bends.
 - *The guarantee — a letter never leaves the step in more pieces than it came in (`gxwPieces`,
   `gxwApart`).* For every letter of more than one contour `gxWidthOp` counts the pieces of ink
   before and after: the connected parts of the nonzero fill on slices one unit apart, counted twice
