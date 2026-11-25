@@ -19364,17 +19364,20 @@ function kernVisualGap(la, lb) {
 function setKernTarget(v) { udBurstBegin([{t:'spacing'}], 'kern tightness'); fontSpacing().kernTarget = Math.max(-40, Math.min(160, +v||0)); const s = document.getElementById('kernTgtV'); if (s) s.textContent = fontSpacing().kernTarget; }
 function suggestKernPairs() {
   const cps = [...(fontSpacing().sample || '')]
-    .map(ch => ch.codePointAt(0)).filter(c => !(c>=0x0591 && c<=0x05C7) && !SMR_MARK_INTS.has(c) && c!==0x20)        // base letters only (drop the Hebrew and Samaritan marks + space)
-    .map(c => c.toString(16).toUpperCase().padStart(4,'0'));
+    .map(ch => ch.codePointAt(0)).filter(c => !(c>=0x0591 && c<=0x05C7) && !SMR_MARK_INTS.has(c))        // base letters only (drop the Hebrew and Samaritan marks)
+    .map(c => (c === 0x20 || c === 0xA0 || c === 0x0A) ? null : c.toString(16).toUpperCase().padStart(4,'0'));   // a space stays as a break: the letters either side of it are not a pair
   const target = kernTargetGap(), MIN_CLEAR = 10, EPS = 6;
   const seen = new Set(), cand = [];
   for (let i = 0; i < cps.length - 1; i++) {
-    const a = cps[i], b = cps[i+1], key = a + '|' + b;       // reading order: a first (right), b second (left)
+    const a = cps[i], b = cps[i+1], key = a + '|' + b;       // reading order: a first, b second
+    if (!a || !b) continue;                                  // across a space
     if (seen.has(key)) continue; seen.add(key);
     if (kernPairIndex([a],[b]) >= 0) continue;               // already defined
+    if (kernIsChecked(a, b)) continue;                       // the teacher ticked it as fine without kerning
     const la = project.letters.find(x=>x.codepoint===a), lb = project.letters.find(x=>x.codepoint===b);
     if (!la || !lb || !la.contours || !lb.contours) continue;
-    const inkGap = kernOpticalGap(la, lb);   // optical clearance from the real outlines (per-height; falls back to box geometry)
+    const inkGap = kernVisualGap(la, lb);    // optical clearance from the real outlines (per-height; falls back to box geometry), measured the way the pair is set
+    if (inkGap === null) continue;           // two different scripts never kern
     let v = Math.max(-200, Math.min(200, Math.round(target - inkGap)));   // pull toward the target gap, within slider range
     v = Math.max(v, -Math.max(0, inkGap - MIN_CLEAR));                     // never tighten past the ink (keep ≥ MIN_CLEAR clearance)
     cand.push({ a, b, v });
