@@ -1098,7 +1098,14 @@ slant pivots on the baseline through `m.py`), so the nodes, the range check and 
 use different ones. A whole-glyph **slant** also carries the letter's photo and pen strokes
 (`xformSlantCarry`, the engine's own patch) and updates its lean record; the other whole-glyph
 transforms keep the record true (`xformSlantAfter`: a flip mirrors it, a Width/Height scale changes
-its tangent, a rotation turns it). A selection moves only its points. **Width % with *Keep stem
+its tangent, a rotation turns it). A rotation's angle is taken modulo 180° into (−90°, 90°] — a
+sheared shape turned half way round leans exactly as before — and past `XF_LEAN_MAX` (45°) either
+way the letter gets **no** record (`xformLeanPut`), never a clamped one: a quarter-turned letter is
+not an upright shape that leans, and every reader of the record un-leans the outline by it. The
+angle such a turn took out of range is remembered for the session only (`_xformTurned`, a WeakMap by
+letter — nothing in the project) and only while the outline is still exactly what that turn left
+(`xformLeanFor`), so a second quarter turn makes the half turn's record again; after anything else
+changes the outline, or a reload, the letter simply has no record. A selection moves only its points. **Width % with *Keep stem
 thickness*** (`xformStemsOn`, `xformWidthStems`) is not a node-model transform at all: it is the
 engine's width operation for this one letter — the advance and side bearings follow, the pivot is the
 glyph origin, one undo step — offered only for the whole glyph with the pen off; Height and Keep

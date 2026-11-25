@@ -15716,14 +15716,39 @@ function xformWhole() { return !nodeSel.size && !_hiddenContours.size; }
 function xformAnchorsFollow(kind) { return (kind === 'scale' || kind === 'scale2' || kind === 'fliph' || kind === 'slant') && xformWhole(); }
 /* A whole-glyph transform also keeps the letter's lean RECORD true (l.slant — what the Italic export
    declares, and what re-tracing, anchor seeding and wide forms read): a slant adds to it, a flip
-   mirrors it, a Width/Height scale changes its tangent, a rotation turns it. → the new value. */
+   mirrors it, a Width/Height scale changes its tangent, a rotation turns it. → the new value.
+   A rotation's value is an angle in (−90°, 90°], not yet a record: a sheared shape turned half way
+   round leans exactly as before (so the angle is taken modulo 180°), and turned a quarter it is no
+   longer an upright shape that leans at all — past XF_LEAN_MAX either way the letter gets NO record
+   (xformLeanPut), never a clamped one: every reader of the record un-leans the outline by it. */
+const XF_LEAN_MAX = 45;
 function xformSlantAfter(kind, arg, cur) {
   if (kind === 'slant') return slantCompose(cur, _XFORM_CLAMP.slant(arg));
   if (!cur) return 0;
   if (kind === 'fliph' || kind === 'flipv') return -cur;
   if (kind === 'scale2') { const sx = _XFORM_CLAMP.scale(+(arg && arg[0]) || 0), sy = _XFORM_CLAMP.scale(+(arg && arg[1]) || 0); return slantDegOf(slantTan(cur) * sx / sy); }
-  if (kind === 'rot') return Math.max(-60, Math.min(60, Math.round((cur - (+arg || 0)) * 10) / 10));   // rotation is counter-clockwise positive; a lean to the right is clockwise
+  if (kind === 'rot') {                                      // rotation is counter-clockwise positive; a lean to the right is clockwise
+    let d = (cur - (+arg || 0)) % 180;
+    if (d > 90) d -= 180; else if (d <= -90) d += 180;
+    return Math.round(d * 10) / 10;
+  }
   return cur;
+}
+/* Two quarter turns are a half turn, so the angle a quarter turn took out of range is remembered —
+   for this session only, never in the project, and only while the outline is still exactly what
+   that turn left: the next rotation starts from it (xformLeanFor), and anything else that changes
+   the outline makes it moot. Without it the 90° button pressed twice would leave a leaning letter
+   with no record. */
+const _xformTurned = new WeakMap();                          // letter → { deg, sig }
+function xformOutlineSig(l) { return JSON.stringify(l.contours || null); }
+function xformLeanFor(l, kind) {                             // the lean this transform starts from
+  const s = letterSlant(l); if (s || kind !== 'rot') return s;
+  const t = _xformTurned.get(l);
+  return (t && t.sig === xformOutlineSig(l)) ? t.deg : 0;
+}
+function xformLeanPut(l, kind, deg) { setLetterSlant(l, (kind === 'rot' && Math.abs(deg) > XF_LEAN_MAX) ? 0 : deg); }   // inside the caller's udDo / burst
+function xformTurnNote(l, kind, deg) {                       // after the outline is written
+  if (kind === 'rot' && Math.abs(deg) > XF_LEAN_MAX) _xformTurned.set(l, { deg, sig: xformOutlineSig(l) }); else _xformTurned.delete(l);
 }
 /* …and a whole-glyph SLANT carries the letter's photo and pen strokes, exactly as the engine does
    (gxLetterPatch), so a later re-trace or one more stroke agrees with the record. `base` is the letter
@@ -15819,15 +15844,18 @@ function transformSelectedNodes(kind, angleDeg) {            // button / number-
   const forms = xformFormsFollow(kind) ? xformMappedForms(xformFormsBase(l), m, piv) : [];
   const carry = (kind === 'slant' && whole) ? xformSlantCarry(l, xformCarryBase(l), m.deg) : null;
   if (xformOutOfRange(piv, m) || (anch && xformAnchorsTooFar(anch)) || xformFormsTooFar(forms) || (carry && carry.drawOut)) { status(I18n.t('fontmaker.status.xform_too_big')); return; }   // refused whole: nothing written, no undo entry
-  const lean = whole ? xformSlantAfter(kind, angleDeg, letterSlant(l)) : null;
+  const lean = whole ? xformSlantAfter(kind, angleDeg, xformLeanFor(l, kind)) : null;
+  let done = false;
   udDo([xformScope(l, kind)].concat(xformFormScopes(forms)), m.label + l.name, () => {
     if (!applyXformToKeys(keys, m)) return;                  // stale keys resolved to nothing — udPush drops the no-op slice
     if (anch) xformPutAnchors(l, anch);
     xformPutForms(forms);
     if (carry) xformPutCarry(l, carry);
-    if (lean != null) setLetterSlant(l, lean);
+    if (lean != null) xformLeanPut(l, kind, lean);
     renestNodeModel(); writeThroughRebuild(l);               // flips reverse winding; a transformed subset can change nesting
+    done = true;
   });
+  if (done && lean != null) xformTurnNote(l, kind, lean);
   if (kind === 'slant') status(XF_KINDS.slant.done(m.deg));
   renderGrids(); renderStage(); renderControls(); syncItalicRow();
 }
@@ -15905,6 +15933,7 @@ function xformLive(kind, v) {
     udBurstBegin([xformScope(l, kind)].concat(xformFormScopes(forms)), XF_KINDS[kind].label + l.name);
     _xformBase = { kind, ik: curKind, cp: curCp, burst: _burst, keys, model: JSON.parse(JSON.stringify(nodeModel)), sel: new Set(nodeSel), val: XF_KINDS[kind].neutral,
                    whole: xformWhole(), carry: xformCarryBase(l),   // the letter's photo, strokes and lean record as they were — re-derived from these, never compounded
+                   lean0: xformLeanFor(l, kind),                    // the lean the gesture starts from (for a rotation: also an angle the last turn took out of range)
                    // a whole-glyph scale carries the anchors and pins: keep the pre-drag pair, re-map it from scratch each tick
                    anch: xformAnchorsFollow(kind) ? JSON.parse(JSON.stringify({ anchors: l.anchors || null, markAnchors: l.markAnchors || null })) : null, forms };
   }
@@ -15949,10 +15978,12 @@ function xformCommit(kind) {
     return;
   }
   if (carry) xformPutCarry(l, carry);
-  if (B.whole) setLetterSlant(l, xformSlantAfter(kind, val, B.carry.slant));   // from the pre-drag record — a whole-glyph slant adds to it, a rotation turns it
+  const lean = B.whole ? xformSlantAfter(kind, val, B.lean0) : null;   // from the pre-drag record — a whole-glyph slant adds to it, a rotation turns it
+  if (lean != null) xformLeanPut(l, kind, lean);
   renestNodeModel(); writeThroughRebuild(l);                 // BEFORE udBurstCommit — its `after` snapshot must be the settled,
   udBurstCommit();                                           // renested state (same order as the bbox drag-scale pointerup)
   _xformBase = null;
+  if (lean != null) xformTurnNote(l, kind, lean);
   status(XF_KINDS[kind].done(val));
   renderGrids(); renderStage(); renderControls(); syncItalicRow();
 }
