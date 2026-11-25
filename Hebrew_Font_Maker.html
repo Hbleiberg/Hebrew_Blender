@@ -4374,7 +4374,13 @@ function udNavTo(s) {                                    // show the affected it
   if (curKind === s.kind && curCp === s.cp) return;
   curKind = s.kind; curCp = s.cp; catTab = catTabFor(s.kind, s.cp);   // the same precedence a click uses — an undo on a punctuation glyph stays on that tab
 }
-function udCapture(scopes, label) { return { label, slices: scopes.map(s => ({ scope: s, before: udSnap(s) })) }; }
+/* Every edit starts with a capture — udDo, a slider burst, a pointer drag — and an arrow nudge still
+   inside its debounce is settled first: a nudge never spans another edit. Left pending, its entry
+   was pushed AFTER the next edit's, with a "before" from before the nudge and an "after" that held
+   the next edit too, so the two undo steps came out in the wrong order and each did something other
+   than its message said. (udNudgeTick captures only while no nudge is pending, and udNudgeCommit
+   only pushes, so this cannot recurse.) */
+function udCapture(scopes, label) { udNudgeCommit(); return { label, slices: scopes.map(s => ({ scope: s, before: udSnap(s) })) }; }
 function udPush(p) {
   if (!p) return;
   const slices = p.slices.map(sl => ({ scope: sl.scope, before: sl.before, after: udSnap(sl.scope) }))
@@ -4407,7 +4413,7 @@ function udNudgeTick(scopes, label) {
   clearTimeout(_udNudgeTimer); _udNudgeTimer = setTimeout(udNudgeCommit, 500);
 }
 function udNudgeCommit() { if (_udNudge) { clearTimeout(_udNudgeTimer); const p = _udNudge; _udNudge = null; udPush(p); } }
-function udFlushPending() { udBurstCommit(); udNudgeCommit(); }   // settle any open burst/nudge before undo/redo/nav
+function udFlushPending() { xformDrop(); udBurstCommit(); udNudgeCommit(); }   // settle any open burst/nudge before undo/redo/nav — an unreleased Transform-slider preview is taken back first, never committed (xformDrop)
 function udApply(entry, useAfter) {
   const oneItem = entry.slices.filter(sl => sl.scope.t === 'item').length === 1;   // navigate only for single-item entries
   entry.slices.forEach(sl => { udRestore(sl.scope, useAfter ? sl.after : sl.before); if (oneItem) udNavTo(sl.scope); });
@@ -4463,7 +4469,7 @@ function updateUndoButtons() {   // top-toolbar + node-bar twins (bar buttons ex
     if (to) { focused.tabIndex = -1; to.tabIndex = 0; to.focus(); }   // keep the one-tab-stop roving invariant
   }
 }
-function udClear() { undoStack = []; redoStack = []; _udNudge = null; _burst = null; updateUndoButtons(); exportSizeSync();   /* a project just arrived or left: the size beside Export was another one's */ }
+function udClear() { undoStack = []; redoStack = []; _udNudge = null; _burst = null; _xformBase = null;   /* a Transform-slider snapshot is another project's outline now */ updateUndoButtons(); exportSizeSync();   /* a project just arrived or left: the size beside Export was another one's */ }
 
 function blankLetter(L) {
   const it = {
@@ -13872,7 +13878,7 @@ let _reduceOpen = wsReadPrefs().nodeReduceOpen === true;       // Reduce-points 
 let _reduceEps = 8;              // last-used reduce tolerance in font units (session)
 let _reduceBase = null;          // deep-clone snapshot of nodeModel during a live reduce-slider burst
 let _reduceLast = null;          // last reducePointsOp result during a burst (for the commit toast)
-let _xformBase = null;           // { kind:'rot'|'scale', keys, model, sel, val } — snapshot during a live transform-slider burst
+let _xformBase = null;           // { kind:'rot'|'scale'|'slant', ik, cp, burst, keys, model, sel, val, … } — snapshot during a live transform-slider burst; it belongs to one item (ik, cp) and lives only while its own undo burst is the open one (xformStale)
 const NODE_TINTS = ['#e05252', '#2a8f5b', '#2a6dd9', '#c9922a', '#9245c9', '#0f9bb0', '#c94590', '#6b7c2a'];   // editing aid only — never exported or persisted
 function nodeKey(ci, ni) { return ci + ':' + ni; }
 function nodeIsSmooth(nd) {
@@ -15716,14 +15722,39 @@ function xformWhole() { return !nodeSel.size && !_hiddenContours.size; }
 function xformAnchorsFollow(kind) { return (kind === 'scale' || kind === 'scale2' || kind === 'fliph' || kind === 'slant') && xformWhole(); }
 /* A whole-glyph transform also keeps the letter's lean RECORD true (l.slant — what the Italic export
    declares, and what re-tracing, anchor seeding and wide forms read): a slant adds to it, a flip
-   mirrors it, a Width/Height scale changes its tangent, a rotation turns it. → the new value. */
+   mirrors it, a Width/Height scale changes its tangent, a rotation turns it. → the new value.
+   A rotation's value is an angle in (−90°, 90°], not yet a record: a sheared shape turned half way
+   round leans exactly as before (so the angle is taken modulo 180°), and turned a quarter it is no
+   longer an upright shape that leans at all — past XF_LEAN_MAX either way the letter gets NO record
+   (xformLeanPut), never a clamped one: every reader of the record un-leans the outline by it. */
+const XF_LEAN_MAX = 45;
 function xformSlantAfter(kind, arg, cur) {
   if (kind === 'slant') return slantCompose(cur, _XFORM_CLAMP.slant(arg));
   if (!cur) return 0;
   if (kind === 'fliph' || kind === 'flipv') return -cur;
   if (kind === 'scale2') { const sx = _XFORM_CLAMP.scale(+(arg && arg[0]) || 0), sy = _XFORM_CLAMP.scale(+(arg && arg[1]) || 0); return slantDegOf(slantTan(cur) * sx / sy); }
-  if (kind === 'rot') return Math.max(-60, Math.min(60, Math.round((cur - (+arg || 0)) * 10) / 10));   // rotation is counter-clockwise positive; a lean to the right is clockwise
+  if (kind === 'rot') {                                      // rotation is counter-clockwise positive; a lean to the right is clockwise
+    let d = (cur - (+arg || 0)) % 180;
+    if (d > 90) d -= 180; else if (d <= -90) d += 180;
+    return Math.round(d * 10) / 10;
+  }
   return cur;
+}
+/* Two quarter turns are a half turn, so the angle a quarter turn took out of range is remembered —
+   for this session only, never in the project, and only while the outline is still exactly what
+   that turn left: the next rotation starts from it (xformLeanFor), and anything else that changes
+   the outline makes it moot. Without it the 90° button pressed twice would leave a leaning letter
+   with no record. */
+const _xformTurned = new WeakMap();                          // letter → { deg, sig }
+function xformOutlineSig(l) { return JSON.stringify(l.contours || null); }
+function xformLeanFor(l, kind) {                             // the lean this transform starts from
+  const s = letterSlant(l); if (s || kind !== 'rot') return s;
+  const t = _xformTurned.get(l);
+  return (t && t.sig === xformOutlineSig(l)) ? t.deg : 0;
+}
+function xformLeanPut(l, kind, deg) { setLetterSlant(l, (kind === 'rot' && Math.abs(deg) > XF_LEAN_MAX) ? 0 : deg); }   // inside the caller's udDo / burst
+function xformTurnNote(l, kind, deg) {                       // after the outline is written
+  if (kind === 'rot' && Math.abs(deg) > XF_LEAN_MAX) _xformTurned.set(l, { deg, sig: xformOutlineSig(l) }); else _xformTurned.delete(l);
 }
 /* …and a whole-glyph SLANT carries the letter's photo and pen strokes, exactly as the engine does
    (gxLetterPatch), so a later re-trace or one more stroke agrees with the record. `base` is the letter
@@ -15766,6 +15797,34 @@ function xformAnchorsTooFar(r) {
   const far = o => !!o && Object.keys(o).some(k => o[k] && (Math.abs(o[k].x) > GX_COORD_MAX || Math.abs(o[k].y) > GX_COORD_MAX));
   return far(r.anchors) || far(r.markAnchors);
 }
+/* …and a whole-glyph SCALE or SLANT carries what the letter's composed forms place for themselves:
+   pc.anchor (the dot placed on שׁ / שׂ, a holam on vav, a placed accent — its `auto` flag rides along)
+   and pc.holam of every form whose base is this letter, through the same pivot map, rounded — the
+   list the engine builds for a letter (gxPlan, composed forms). A form with no placement of its own
+   reads the letter's anchors and follows by itself. Not on a flip: a shin dot keeps its side.
+   xformFormsBase → [{ target, set }], a copy of the placements as they are (the live slider maps
+   from it each tick); every write is a new object — the precomp undo snapshot shares nothing. */
+function xformFormsFollow(kind) { return (kind === 'scale' || kind === 'scale2' || kind === 'slant') && xformWhole(); }
+function xformFormsBase(l) {
+  const ok = p => !!p && Number.isFinite(p.x) && Number.isFinite(p.y), out = [];
+  (project.precomposed || []).forEach(pc => {
+    if (precompBaseCp(pc) !== l.codepoint) return;
+    const set = {};
+    ['anchor', 'holam'].forEach(key => { if (ok(pc[key])) set[key] = JSON.parse(JSON.stringify(pc[key])); });
+    if (Object.keys(set).length) out.push({ target: pc.target, set });
+  });
+  return out;
+}
+function xformMappedForms(base, m, piv) {                    // base: xformFormsBase's list (never mutated) → the mapped list
+  return base.map(f => {
+    const set = {};
+    for (const key in f.set) { const p = f.set[key]; set[key] = Object.assign({}, p, { x: Math.round(piv.cx + m.a * (p.x - piv.cx) + m.b * (p.y - piv.cy)), y: Math.round(piv.cy + m.c * (p.x - piv.cx) + m.d * (p.y - piv.cy)) }); }
+    return { target: f.target, set };
+  });
+}
+function xformPutForms(list) { list.forEach(f => { const pc = getPrecomp(f.target); if (pc) Object.assign(pc, JSON.parse(JSON.stringify(f.set))); }); }
+function xformFormScopes(list) { return list.map(f => ({ t: 'precomp', target: f.target })); }
+function xformFormsTooFar(list) { return list.some(f => Object.keys(f.set).some(key => Math.abs(f.set[key].x) > GX_COORD_MAX || Math.abs(f.set[key].y) > GX_COORD_MAX)); }
 function applyXformToKeys(keys, m) {                         // affine about the keys' anchor-bbox center; → count of nodes mapped
   const piv = xformPivot(keys, m);
   if (!piv) return 0;
@@ -15779,6 +15838,8 @@ function applyXformToKeys(keys, m) {                         // affine about the
 }
 function transformSelectedNodes(kind, angleDeg) {            // button / number-field Apply path — one udDo per click
   if (!nodeModel) return;
+  udFlushPending();                                          // before anything is read: a slider preview that was never released is taken back, so this starts from the letter as it is
+  if (!nodeModel) return;
   const l = curLetter();
   const m = xformMatrix(kind, angleDeg);
   if (!m) return;
@@ -15788,16 +15849,21 @@ function transformSelectedNodes(kind, angleDeg) {            // button / number-
   if (!piv) return;
   const whole = xformWhole();
   const anch = xformAnchorsFollow(kind) ? xformMappedAnchors(l, m, piv, kind === 'fliph') : null;
+  const forms = xformFormsFollow(kind) ? xformMappedForms(xformFormsBase(l), m, piv) : [];
   const carry = (kind === 'slant' && whole) ? xformSlantCarry(l, xformCarryBase(l), m.deg) : null;
-  if (xformOutOfRange(piv, m) || (anch && xformAnchorsTooFar(anch)) || (carry && carry.drawOut)) { status(I18n.t('fontmaker.status.xform_too_big')); return; }   // refused whole: nothing written, no undo entry
-  const lean = whole ? xformSlantAfter(kind, angleDeg, letterSlant(l)) : null;
-  udDo([xformScope(l, kind)], m.label + l.name, () => {
+  if (xformOutOfRange(piv, m) || (anch && xformAnchorsTooFar(anch)) || xformFormsTooFar(forms) || (carry && carry.drawOut)) { status(I18n.t('fontmaker.status.xform_too_big')); return; }   // refused whole: nothing written, no undo entry
+  const lean = whole ? xformSlantAfter(kind, angleDeg, xformLeanFor(l, kind)) : null;
+  let done = false;
+  udDo([xformScope(l, kind)].concat(xformFormScopes(forms)), m.label + l.name, () => {
     if (!applyXformToKeys(keys, m)) return;                  // stale keys resolved to nothing — udPush drops the no-op slice
     if (anch) xformPutAnchors(l, anch);
+    xformPutForms(forms);
     if (carry) xformPutCarry(l, carry);
-    if (lean != null) setLetterSlant(l, lean);
+    if (lean != null) xformLeanPut(l, kind, lean);
     renestNodeModel(); writeThroughRebuild(l);               // flips reverse winding; a transformed subset can change nesting
+    done = true;
   });
+  if (done && lean != null) xformTurnNote(l, kind, lean);
   if (kind === 'slant') status(XF_KINDS.slant.done(m.deg));
   renderGrids(); renderStage(); renderControls(); syncItalicRow();
 }
@@ -15830,7 +15896,7 @@ function xformWidthStems(pct) {
   pct = Math.round(+pct || 0);
   if (pct < GXW_MIN || pct > GXW_MAX) { status(I18n.t('fontmaker.widthall.note_range')); return; }
   if (pct === 100) return;
-  udFlushPending(); _xformBase = null;   // a slider burst still open would write its old model back over the result
+  udFlushPending();   // a slider preview still open would write its old model back over the result — taken back here, before the plan is made
   const res = gxWidthPlan(pct, { scope: 'letter', stems: true, spacing: false, marks: false, name: l.name }, { scope: 'letter', cp: l.codepoint, cat: _drawCatOf(l.codepoint) });
   if (gxRefused(res.plan) || !res.plan.scopes.length) { status(gxRefusalText(res.plan, 'width', pct) || I18n.t('fontmaker.scaleall.note_nothing')); return; }
   const warn = res.plan.warn.closed.length > 0;
@@ -15841,19 +15907,44 @@ function xformWidthStems(pct) {
    is the total rotation/scale since drag start (reset-from-base each tick), and it snaps back to
    neutral (0° / 100%) after every commit because the transform is baked into the outline. A drag
    released AT neutral must leave zero undo entries — udBurstCancel restores the exact before-state
-   (a live writeThrough already set handEdited + re-flattened points, which udPush wouldn't drop). */
+   (a live writeThrough already set handEdited + re-flattened points, which udPush wouldn't drop).
+   A range input whose drag ends on the value it started from fires `input` and NO `change`, so the
+   gesture is settled on release whatever the value (the slider's pointerup / pointercancel / keyup /
+   blur lead to xformCommit as well — XF_END), and a snapshot never outlives its gesture: it names its
+   item and its undo burst, xformLive never restores one that is another item's or whose burst is no
+   longer the open one (xformStale), and whatever settles the undo state first (udFlushPending — a
+   step or letter change, undo / redo, a dialog), a whole-font operation (gxCommit) or a new project
+   (udClear) drops it (xformDrop). An unreleased preview is taken back, never committed: a burst
+   pushed without xformCommit's own settling would be half a transform. */
+function xformStale() { const B = _xformBase; return !!B && (B.burst !== _burst || B.ik !== curKind || B.cp !== curCp); }
+function xformDrop() {
+  const B = _xformBase; if (!B) return;
+  _xformBase = null;
+  if (!_burst || B.burst !== _burst) return;                 // its burst is gone — whatever closed it has dealt with the preview
+  udBurstCancel();                                           // exact restore of the item the gesture began on (curves, points, anchors, photo, handEdited)
+  if (nodeModel && workMode === 'nodes' && B.ik === curKind && B.cp === curCp) {   // still looking at it: the editor's model and the slider go back too
+    nodeModel = JSON.parse(JSON.stringify(B.model)); nodeSel = new Set(B.sel);
+    renderStage(); renderControls();
+  }
+}
+function xformRelease(kind) { setTimeout(() => xformCommit(kind), 0); }   // a pointer release settles one task later — after the browser's own `change` when it fires one (pointerup comes before it), so an ordinary drag is still committed there and this only catches the drag that fired none
+const XF_END = kind => `onchange="xformCommit('${kind}')" onpointerup="xformRelease('${kind}')" onpointercancel="xformRelease('${kind}')" onkeyup="xformCommit('${kind}')" onblur="xformCommit('${kind}')"`;
 function xformLive(kind, v) {
   if (!nodeModel || _penMode) return;
+  if (xformStale()) xformDrop();                             // never restore another glyph's outline into this one, nor an outline from before whatever happened since
   if (_xformBase && _xformBase.kind !== kind) return;        // the other transform slider owns the burst (multitouch) — ignore
   const l = curLetter();
   if (!_xformBase) {
     const keys = nodeSel.size ? [...nodeSel] : _flatNodeKeys();
     if (!keys.length) return;                                // blank glyph — nothing to transform
-    udBurstBegin([xformScope(l, kind)], XF_KINDS[kind].label + l.name);
-    _xformBase = { kind, keys, model: JSON.parse(JSON.stringify(nodeModel)), sel: new Set(nodeSel), val: XF_KINDS[kind].neutral,
+    udFlushPending();                                        // this gesture gets a burst of its own: one left open by another slider would swallow the entry, and a pending nudge would come out after it
+    const forms = xformFormsFollow(kind) ? xformFormsBase(l) : [];   // …and what its composed forms place for themselves (the dot on שׁ), re-mapped from this copy each tick
+    udBurstBegin([xformScope(l, kind)].concat(xformFormScopes(forms)), XF_KINDS[kind].label + l.name);
+    _xformBase = { kind, ik: curKind, cp: curCp, burst: _burst, keys, model: JSON.parse(JSON.stringify(nodeModel)), sel: new Set(nodeSel), val: XF_KINDS[kind].neutral,
                    whole: xformWhole(), carry: xformCarryBase(l),   // the letter's photo, strokes and lean record as they were — re-derived from these, never compounded
+                   lean0: xformLeanFor(l, kind),                    // the lean the gesture starts from (for a rotation: also an angle the last turn took out of range)
                    // a whole-glyph scale carries the anchors and pins: keep the pre-drag pair, re-map it from scratch each tick
-                   anch: xformAnchorsFollow(kind) ? JSON.parse(JSON.stringify({ anchors: l.anchors || null, markAnchors: l.markAnchors || null })) : null };
+                   anch: xformAnchorsFollow(kind) ? JSON.parse(JSON.stringify({ anchors: l.anchors || null, markAnchors: l.markAnchors || null })) : null, forms };
   }
   let val = _XFORM_CLAMP[kind](v);
   nodeModel = JSON.parse(JSON.stringify(_xformBase.model));  // reset to the pre-drag snapshot, re-apply at the new value
@@ -15861,13 +15952,16 @@ function xformLive(kind, v) {
   let m = xformMatrix(kind, val);                            // null at neutral (0° / 100%) → identity preview
   const piv = xformPivot(_xformBase.keys, m);
   let anch = (m && piv && _xformBase.anch) ? xformMappedAnchors(_xformBase.anch, m, piv, false) : null;
-  if (m && piv && (xformOutOfRange(piv, m) || (anch && xformAnchorsTooFar(anch)))) {   // past what a font can hold — stay at the last good value
+  let forms = (m && piv) ? xformMappedForms(_xformBase.forms, m, piv) : _xformBase.forms;
+  if (m && piv && (xformOutOfRange(piv, m) || (anch && xformAnchorsTooFar(anch)) || xformFormsTooFar(forms))) {   // past what a font can hold — stay at the last good value
     val = _xformBase.val; m = xformMatrix(kind, val);
     anch = (m && _xformBase.anch) ? xformMappedAnchors(_xformBase.anch, m, piv, false) : null;
+    forms = m ? xformMappedForms(_xformBase.forms, m, piv) : _xformBase.forms;
   }
   _xformBase.val = val;
   if (m) applyXformToKeys(_xformBase.keys, m);               // same keys every tick ⇒ same bbox pivot every tick
   if (_xformBase.anch) xformPutAnchors(l, anch || JSON.parse(JSON.stringify(_xformBase.anch)));
+  xformPutForms(forms);
   if (kind === 'slant' && _xformBase.whole && Array.isArray(_xformBase.carry.transform)) {   // the photo behind the outline leans live; strokes are settled once, at commit
     const k = m ? m.b : 0;
     l.transform = k ? M.mul(gxStageMatrix([1, k, 0, 1, -k * effMetrics().baseline, 0]), _xformBase.carry.transform) : _xformBase.carry.transform.slice();
@@ -15879,6 +15973,7 @@ function xformLive(kind, v) {
 }
 function xformCommit(kind) {
   if (!_xformBase || _xformBase.kind !== kind) return;
+  if (xformStale() || !nodeModel) { xformDrop(); renderStage(); renderControls(); return; }   // not this letter's open gesture any more — nothing of it is kept
   const l = curLetter(), val = _xformBase.val, B = _xformBase;
   const carry = (kind === 'slant' && B.whole && val !== 0) ? xformSlantCarry(l, B.carry, val) : null;
   const refused = !!(carry && carry.drawOut);                // the pen strokes would leave the drawing area — nothing is kept
@@ -15892,10 +15987,12 @@ function xformCommit(kind) {
     return;
   }
   if (carry) xformPutCarry(l, carry);
-  if (B.whole) setLetterSlant(l, xformSlantAfter(kind, val, B.carry.slant));   // from the pre-drag record — a whole-glyph slant adds to it, a rotation turns it
+  const lean = B.whole ? xformSlantAfter(kind, val, B.lean0) : null;   // from the pre-drag record — a whole-glyph slant adds to it, a rotation turns it
+  if (lean != null) xformLeanPut(l, kind, lean);
   renestNodeModel(); writeThroughRebuild(l);                 // BEFORE udBurstCommit — its `after` snapshot must be the settled,
   udBurstCommit();                                           // renested state (same order as the bbox drag-scale pointerup)
   _xformBase = null;
+  if (lean != null) xformTurnNote(l, kind, lean);
   status(XF_KINDS[kind].done(val));
   renderGrids(); renderStage(); renderControls(); syncItalicRow();
 }
@@ -15975,7 +16072,7 @@ function nodeEditPanelHTML(l) {
       <label style="font-size:0.76rem;display:flex;align-items:center;gap:4px;flex:1;">${I18n.t('fontmaker.node_editor.angle_label')} <span id="nodeRotV" class="readout">0°</span>
         <input type="range" min="-180" max="180" step="1" value="0" style="flex:1;min-width:70px;"
                aria-label="${esc(I18n.t('fontmaker.node_editor.rot_slider_aria'))}"
-               oninput="xformLive('rot', this.value)" onchange="xformCommit('rot')"></label>
+               oninput="xformLive('rot', this.value)" ${XF_END('rot')}></label>
       <input type="number" id="nodeRotAngle" value="0" step="1" style="width:56px;" aria-label="${esc(I18n.t('fontmaker.node_editor.angle_aria'))}">
       <button class="ctl-btn" data-fk="xf:2" onclick="transformSelectedNodes('rot', +(document.getElementById('nodeRotAngle')||{}).value || 0)" title="${esc(I18n.t('fontmaker.node_editor.rot_apply_title'))}">${I18n.t('fontmaker.node_editor.apply')}</button>
     </div>
@@ -15983,7 +16080,7 @@ function nodeEditPanelHTML(l) {
       <label style="font-size:0.76rem;display:flex;align-items:center;gap:4px;flex:1;">${I18n.t('fontmaker.node_editor.slant_label')} <span id="nodeSlantV" class="readout">0°</span>
         <input type="range" min="0" max="30" step="0.5" value="0" style="flex:1;min-width:70px;"
                aria-label="${esc(I18n.t('fontmaker.node_editor.slant_slider_aria'))}"
-               oninput="xformLive('slant', xformSlantSigned(this.value))" onchange="xformCommit('slant')"></label>
+               oninput="xformLive('slant', xformSlantSigned(this.value))" ${XF_END('slant')}></label>
       <input type="number" id="nodeSlantDeg" value="0" min="0" max="30" step="0.5" style="width:56px;" aria-label="${esc(I18n.t('fontmaker.node_editor.slant_aria'))}" title="${esc(I18n.t('fontmaker.node_editor.slant_title'))}">
       <button class="ctl-btn" data-fk="xf:3" onclick="transformSelectedNodes('slant', xformSlantSigned((document.getElementById('nodeSlantDeg')||{}).value))" title="${esc(I18n.t('fontmaker.node_editor.slant_apply_title'))}">${I18n.t('fontmaker.node_editor.apply')}</button>
     </div>
@@ -15994,7 +16091,7 @@ function nodeEditPanelHTML(l) {
       <label style="font-size:0.76rem;display:flex;align-items:center;gap:4px;flex:1;">${I18n.t('fontmaker.node_editor.scale_label')} <span id="nodeScaleV" class="readout">100%</span>
         <input type="range" min="25" max="400" step="1" value="100" style="flex:1;min-width:70px;"
                aria-label="${esc(I18n.t('fontmaker.node_editor.scale_slider_aria'))}"
-               oninput="xformLive('scale', this.value)" onchange="xformCommit('scale')"></label>
+               oninput="xformLive('scale', this.value)" ${XF_END('scale')}></label>
     </div>
     <div class="xf-presets" role="group" aria-label="${esc(I18n.t('fontmaker.node_editor.scale_presets_aria'))}">
       ${GX_SCALE_PRESETS.map(p => `<button class="ctl-btn" onclick="transformSelectedNodes('scale', ${p})" title="${esc(I18n.t('fontmaker.node_editor.scale_preset_title', {pct: p}))}">${p}%</button>`).join('')}
@@ -17690,6 +17787,7 @@ function boldGenApply() {
   const scopes = letters.map(l => ({ t: 'item', kind: 'letter', cp: l.codepoint }))
     .concat(markCps.map(([kind, cp]) => ({ t: 'item', kind, cp })))
     .concat(srcForms.map(pc => ({ t: 'precomp', target: pc.target })));
+  const top0 = undoStack[undoStack.length - 1];
   udDo(scopes, 'generate bold', () => {
     srcForms.forEach(pc => { delete pc.src; delete pc.srcDagesh; });
     letters.forEach(l => {
@@ -17703,7 +17801,15 @@ function boldGenApply() {
     if (markCps.some(m => m[0] === 'nikkud')) project.font.nikkud.mode = 'custom';
     if (markCps.some(m => m[0] === 'trop')) project.font.trop.mode = 'custom';
   });
-  if (S > 0) { project.font.style = fontStyleMake(true, fontIsItalic()); syncMetaToForm(); }   // meta field — not undo-covered, like all meta edits (an Italic made bolder is the Bold Italic)
+  if (S > 0) {   // an Italic made bolder is the Bold Italic. The Style is a meta field, outside every undo scope, so the entry carries its two values the way a gx entry does (gxMeta): undo / redo put the other one back while the field is still what this left it at (gxAfterHistory) — without that, undoing a slant and this left an upright Regular named Bold Italic
+    const io = GX_META.style, before = io.get(project.font), after = fontStyleMake(true, fontIsItalic());
+    if (before !== after) {
+      io.put(project.font, after);
+      const top = undoStack[undoStack.length - 1];
+      if (top && top !== top0) { top.gx = true; top.gxMeta = [{ key: 'style', before, after: io.get(project.font) }]; }
+      syncMetaToForm();
+    }
+  }
   if (workMode === 'nodes') { nodeModel = null; nodeSel.clear(); }
   boldGenClose();
   renderGrids(); renderStage(); renderControls();
@@ -18060,6 +18166,7 @@ function gxAfterHistory(e, isUndo) {
 }
 function gxCommit(plan, meta) {   // → true when the change was made (one undo entry); meta: the Font Details fields to set with it ({ style, width, italicLean } — GX_META)
   if (!plan || gxRefused(plan) || !plan.scopes.length) return false;
+  xformDrop();   // a Transform-slider snapshot holds an outline from before this change — its next tick would write that back over the result
   const F = project.font, f = plan.font;
   (f.accents || []).forEach(a => { if (a.create) customMark('accent', a.cp); });   // create BEFORE the snapshot, so undo has an item to put back (the Generate Bold idiom); empty, it still reads as the built-in accent
   const n0 = undoStack.length, top0 = undoStack[n0 - 1];

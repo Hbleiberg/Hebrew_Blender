@@ -429,7 +429,10 @@ nudges, the six mark sizes, the marks' placement / lean under a slanted font (`m
 width factor (`markWide`) — and
 `'sheetFit'`, each letter sheet's units-per-pixel scale, which
 only the glyph transform engine writes under undo). Continuous inputs: slider drags use `udBurstBegin`/`udBurstCommit` (one
-undo entry per drag); arrow-key nudges use `udNudgeTick`/`udNudgeCommit`. `udPush` calls
+undo entry per drag); arrow-key nudges use `udNudgeTick`/`udNudgeCommit`. A nudge still inside its
+debounce is settled by the next capture — `udCapture` commits it first, and every `udDo`, slider
+burst and pointer drag starts with one — so a nudge never spans another edit and the undo steps come
+out in the order of the edits. `udPush` calls
 `markDirty()` automatically (debounced IndexedDB autosave), so going through `udDo`/burst/nudge
 covers undo + dirty + autosave in one. Pure-UI state (panel collapse, toggles) calls `markDirty()`
 directly with no undo entry. Read-only features (tour, QA grid, shortcuts sheet) must touch none of
@@ -927,7 +930,11 @@ written — and remembers each one's two values on the undo entry (`gxMeta`, a l
 the other value back **only while the field is still what the operation left it at**, so a choice the
 teacher made since is never overwritten. These fields are metadata — outside every undo scope — so
 every non-form writer of one calls `syncMetaToForm()`: `onMetaChange` reads the values back from the
-form, and is called as a flush by Save-as and the cloud save.
+form, and is called as a flush by Save-as and the cloud save. **Generate Bold** is not an engine
+operation, but the Style it sets rides the same record: its undo entry is marked `gx` and carries
+`gxMeta` for `style`, so `gxAfterHistory` puts the Style back with the letters — a slant and a bold
+undone in turn end on the Regular's Style, form and file name, and redo returns each. An operation
+that sets one of these fields with a change records it this way, never by a bare assignment.
 
 **Findings.** *Refuse* (nothing changes): a coordinate, anchor, pin, advance, kerning value or guide
 line past `GX_COORD_MAX`; a pen stroke past the loader's −2000…3000; a glyph that would lose every
@@ -1074,21 +1081,48 @@ marks are not stem-corrected.
 affected nodes' box, as before. A whole-glyph **scale or horizontal flip** (nothing selected, no
 contour hidden) also maps `l.anchors` and the pins about that pivot in the same undo step
 (`xformMappedAnchors`; on a flip the left / right columns keep their sides and a side column's pin
-keeps its mirrored offset). A rotation, a vertical flip and any selection leave them alone — an
+keeps its mirrored offset). A whole-glyph **scale or slant** carries, through the same pivot map and
+rounded, what the letter's composed forms place for themselves — `pc.anchor` (its `auto` flag rides
+along) and `pc.holam` of every form whose base is this letter, the list the engine builds for a
+letter (`xformFormsBase` / `xformMappedForms`; `xformFormsFollow` says when) — and the matching
+`precomp` scopes join the letter's in the one `udDo` or slider burst; a flip leaves them, since a
+shin dot keeps its side. A rotation, a vertical flip and any selection leave all of these alone — an
 "above" point must stay above, and part of a letter is not the letter. The live slider keeps the
-pre-drag anchors in `_xformBase` and re-maps from them each tick, so a release at neutral still
-leaves zero undo entries. The sliders run from one table of kinds (`XF_KINDS`: neutral value, undo
+pre-drag anchors and placements in `_xformBase` and re-maps from them each tick, so a release at
+neutral still leaves zero undo entries. **The gesture is settled on release, whatever the value:** a
+range input whose
+drag ends on the value it started from fires `input` and no `change`, so each slider also reaches
+`xformCommit` from its pointerup, pointercancel, keyup and blur (`XF_END`; the neutral branch is the
+cancel, and a second call finds no snapshot). A pointer release settles one task later
+(`xformRelease`): pointerup comes before the browser's own `change`, so an ordinary drag is still
+committed by `change` and the release only catches the drag that fired none. The Apply buttons
+(`transformSelectedNodes`) start with `udFlushPending`, so they never work on a preview. **A snapshot never outlives its gesture:** it records
+its item and its undo burst, and `xformLive` drops one that belongs to another item or whose burst
+is no longer the open one instead of restoring it (`xformStale`). `xformDrop` takes an unreleased
+preview back — the burst cancelled, never committed, because a burst pushed without `xformCommit`'s
+own settling is half a transform — and runs from `udFlushPending` (so before a step or letter
+change, undo / redo, a dialog), from `gxCommit`, and `udClear` forgets the snapshot with the
+project. A gesture also opens with `udFlushPending`, so it never rides a burst another slider left
+open. The sliders run from one table of kinds (`XF_KINDS`: neutral value, undo
 label, readout, done-message), and the pivot comes from the map itself (`xformPivot(keys, m)` — a
 slant pivots on the baseline through `m.py`), so the nodes, the range check and the anchors can never
 use different ones. A whole-glyph **slant** also carries the letter's photo and pen strokes
 (`xformSlantCarry`, the engine's own patch) and updates its lean record; the other whole-glyph
 transforms keep the record true (`xformSlantAfter`: a flip mirrors it, a Width/Height scale changes
-its tangent, a rotation turns it). A selection moves only its points. **Width % with *Keep stem
+its tangent, a rotation turns it). A rotation's angle is taken modulo 180° into (−90°, 90°] — a
+sheared shape turned half way round leans exactly as before — and past `XF_LEAN_MAX` (45°) either
+way the letter gets **no** record (`xformLeanPut`), never a clamped one: a quarter-turned letter is
+not an upright shape that leans, and every reader of the record un-leans the outline by it. The
+angle such a turn took out of range is remembered for the session only (`_xformTurned`, a WeakMap by
+letter — nothing in the project) and only while the outline is still exactly what that turn left
+(`xformLeanFor`), so a second quarter turn makes the half turn's record again; after anything else
+changes the outline, or a reload, the letter simply has no record. A selection moves only its points. **Width % with *Keep stem
 thickness*** (`xformStemsOn`, `xformWidthStems`) is not a node-model transform at all: it is the
 engine's width operation for this one letter — the advance and side bearings follow, the pivot is the
 glyph origin, one undo step — offered only for the whole glyph with the pen off; Height and Keep
 proportions are switched off while its box is ticked, and it settles any open slider burst first
-(`_xformBase = null` — a stale base would write the old model back over the result).
+(`udFlushPending`, before the plan is made — a snapshot left behind would write the old model back
+over the result).
 
 ### Font styles — Regular, Bold, Italic, Bold Italic — and width names
 `project.font.style` is one of `regular | bold | italic | bolditalic`, and **`FONT_STYLES` is the only
