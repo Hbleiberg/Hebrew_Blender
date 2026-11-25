@@ -549,8 +549,15 @@ every route in — a file upload, a sheet, auto-split, a sheet re-read when a pr
   import. `svgInkLoops` drops a loop that encloses nothing before any fit measures its box. A sheet is
   re-parsed when its project loads (`cacheSvgSheet`), so these readings apply to a saved sheet's next
   crop or auto-split too — letters already assigned keep the contours they have.
-- **`opts.paste`** switches on only the caps (`SVG_PASTE_MAX_*`, counted over the shapes that are
-  kept): a cap must never refuse a sheet a saved project already holds.
+- **`opts.paste`** switches on the caps (`SVG_PASTE_MAX_*`, counted over the shapes that are kept)
+  and a time budget, and nothing else: neither may ever refuse an uploaded file or a sheet a saved
+  project already holds. The caps bound the size, not the time — a shape costs up to 600
+  measurements, so a sheet or an illustration pasted by mistake stayed under every cap and held the
+  tab for minutes. `parseSvgEntries` therefore gives a pasted read `SVG_PASTE_BUDGET_MS` (about four
+  seconds) for the sanitizer pass and the measuring together; `svgBudgetCheck` is asked at every
+  element, every subpath and every sixteenth sample, and past the deadline the read stops with
+  `svg_too_complex`. `svgPasteParse` gives the same message for a `RangeError` (groups nested deeper
+  than the sanitizer's walk can follow), never the engine's own text.
 
 **The project file is the other way in, and it is as untrusted as the sheet inside it.** The page
 writes an item's numbers into markup — the Letter metrics fields, the Trace sliders and their readout,
@@ -597,7 +604,11 @@ the difference from an upload, whose `svgSpanFor` puts a tail at −30 % of the 
 reaches the descender line itself. The choice is remembered per device in `hebrewFontMaker_uiPrefs`
 — `svgPasteFit` for ordinary letters, `svgPasteFitDesc` for letters with a tail, `svgPasteMode` — and
 validated against the closed set on read. Validation is inline (the `aria-live` note and
-`aria-disabled` on Insert); nothing is ever raised over the dialog.
+`aria-disabled` on Insert); nothing is ever raised over the dialog. The code box is read
+`SVG_PASTE_TYPE_MS` (300 ms) after the last keystroke — a read is synchronous and can take seconds —
+and a text is read once (`st.readText`): the box losing focus and Insert read at once, but only a
+text newer than the last read (`st.stale`), so Insert never acts on an older one. Past
+`SVG_PASTE_LIVE_CHARS` the box is read only then.
 
 - **Replace** (`svgPasteReplace`) is `assignSvgContours` with one difference: the advance is the ink
   plus both default margins with the ink centred (an upload seats the ink at the default left margin).

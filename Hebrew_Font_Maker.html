@@ -9928,6 +9928,7 @@ const SVG_GROUP_TAGS = { svg: 1, g: 1, a: 1, switch: 1 };                       
 const SVG_STYLE_PROPS = ['display', 'visibility', 'fill', 'stroke', 'fill-opacity'];
 const SVG_CSS_XFORM = ['transform', 'transform-origin', 'transform-box'];
 const SVG_PASTE_MAX_CHARS = 2000000, SVG_PASTE_MAX_SHAPES = 3000, SVG_PASTE_MAX_SUBPATHS = 4000;   // pasted artwork only (opts.paste) — a cap must never refuse a sheet a saved project already holds
+const SVG_PASTE_BUDGET_MS = 4000;           // …and how long reading it may take (svgBudgetCheck): the caps bound the size, not the time
 const SVG_IMPORT_FLAGS = ['engSource', 'cyrSource', 'phnSource', 'aramSource', 'smrSource'];   // "this letter came with the imported font", one per glyph set
 function svgInlineDecls(el) {                // style="a:b; c:d" → {a:'b', c:'d'}, by hand: an element of an inert document may have no .style at all
   const out = {}, s = el.getAttribute('style');
@@ -9989,6 +9990,7 @@ function svgSanitize(root, opts) {           // inert parsed root → { svg: a g
   const walk = (src, parentOut, inh) => {
     const tag = src.localName;
     if (!SVG_GROUP_TAGS[tag] && !SVG_SHAPE_ATTRS[tag]) return;          // everything else, with its whole subtree, is not rebuilt
+    svgBudgetCheck(o);                                                  // a paste's time budget covers this pass too (every element is matched against every <style> rule)
     const own = svgOwnStyle(src, rules);
     if (/^none$/i.test(own.display || '')) return;                      // display:none hides the whole subtree (a hidden layer); the rest inherit
     const st = { visibility: own.visibility || inh.visibility, fill: own.fill || inh.fill, stroke: own.stroke || inh.stroke, 'fill-opacity': own['fill-opacity'] || inh['fill-opacity'] };
@@ -10062,7 +10064,10 @@ function polyToD(el, close) {
   let d = `M${n[0]} ${n[1]}`; for (let i = 2; i + 1 < n.length; i += 2) d += `L${n[i]} ${n[i + 1]}`;
   return d + (close ? 'Z' : '');
 }
-function elementToLoops(el, rootScreenCTM) {            // one renderable element → contours [[ [x,y]... ]] in root (viewBox) user units, y-down
+function svgBudgetCheck(o) {                // pasted artwork is read against the clock (o.deadline, set by parseSvgEntries for opts.paste only): past it the read stops with a message, instead of a tab that does not answer
+  if (o && o.deadline && performance.now() > o.deadline) throw new Error(I18n.t('fontmaker.modals.svg_too_complex'));
+}
+function elementToLoops(el, rootScreenCTM, opts) {      // one renderable element → contours [[ [x,y]... ]] in root (viewBox) user units, y-down
   const tag = el.localName;
   let dList;
   if (tag === 'path') dList = splitSubpaths(el.getAttribute('d') || '');
@@ -10076,18 +10081,21 @@ function elementToLoops(el, rootScreenCTM) {            // one renderable elemen
   const parent = el.parentNode, loops = [];
   dList.forEach(d => {
     if (!d) return;
+    svgBudgetCheck(opts);
     const p = document.createElementNS(SVG_NS, 'path'); p.setAttribute('d', d);
     parent.appendChild(p);
-    let len = 0; try { len = p.getTotalLength(); } catch (e) {}
-    if (len > 0.5) {
-      const n = Math.max(12, Math.min(600, Math.round(len / SVG_SAMPLE_PX))), pts = [];
-      for (let i = 0; i < n; i++) {
-        let pt = null; try { pt = p.getPointAtLength(len * i / n); } catch (e) {}
-        if (pt) pts.push(ctm ? [ctm.a * pt.x + ctm.c * pt.y + ctm.e, ctm.b * pt.x + ctm.d * pt.y + ctm.f] : [pt.x, pt.y]);
+    try {
+      let len = 0; try { len = p.getTotalLength(); } catch (e) {}
+      if (len > 0.5) {
+        const n = Math.max(12, Math.min(600, Math.round(len / SVG_SAMPLE_PX))), pts = [];
+        for (let i = 0; i < n; i++) {
+          if ((i & 15) === 15) svgBudgetCheck(opts);                   // one very long subpath is slow to measure all by itself
+          let pt = null; try { pt = p.getPointAtLength(len * i / n); } catch (e) {}
+          if (pt) pts.push(ctm ? [ctm.a * pt.x + ctm.c * pt.y + ctm.e, ctm.b * pt.x + ctm.d * pt.y + ctm.f] : [pt.x, pt.y]);
+        }
+        if (pts.length >= 3) loops.push(pts);
       }
-      if (pts.length >= 3) loops.push(pts);
-    }
-    p.remove();
+    } finally { p.remove(); }
   });
   return loops;
 }
@@ -10097,12 +10105,16 @@ function loopsBBox(loops) {
   return { x: minX, y: minY, w: maxX - minX, h: maxY - minY };
 }
 function parseSvgEntries(text, opts) {      // { entries:[{id,label,loops,bbox}], viewBox, skipped } — the source of truth for import
+  // Pasted artwork gets a time budget as well as the caps: a shape costs up to 600 measurements, so a
+  // sheet or an illustration pasted by mistake stayed far under every cap and still held the tab for
+  // minutes. A file upload and a sheet a project already holds are never refused for taking long.
+  if (opts && opts.paste) opts = Object.assign({}, opts, { deadline: performance.now() + SVG_PASTE_BUDGET_MS });
   const clean = svgSanitize(parseSvgText(text), opts);   // only the rebuilt, geometry-only tree is mounted; hidden shapes and non-rendering definitions are already gone from it
   return withSvgHost(clean.svg, svg => {
     const rootCTM = svg.getScreenCTM() || svg.getCTM();
     const entries = [];
     svg.querySelectorAll('path,rect,circle,ellipse,line,polygon,polyline').forEach(el => {
-      const loops = elementToLoops(el, rootCTM);
+      const loops = elementToLoops(el, rootCTM, opts);
       if (!loops.length) return;
       const id = el.getAttribute('data-fm-id') || '';
       entries.push({ id, label: el.getAttribute('data-fm-label') || id, loops, bbox: loopsBBox(loops) });
@@ -10269,7 +10281,7 @@ function finalizeCropSvg(l, parsed, im, rect, csh) {
 
 /* ════════ SVG paste — the clipboard, a file dropped on the canvas, and the "Paste SVG code…" box ════════
    Three ways in, one way through: each ends in svgPasteParse (the sanitizing parser, with the caps
-   only pasted artwork gets; stroke-only shapes left out and counted), then ONE dialog (how to size it,
+   and the time budget only pasted artwork gets; open strokes left out and counted), then ONE dialog (how to size it,
    and Replace or Add when the letter already has an outline), then ONE udDo. None of it looks at
    project.font.svgUpload — that setting only decides what the upload zones accept.
    Replace is an SVG upload (assignSvgContours) with the ink centred in an advance of its own. Add is
@@ -10278,8 +10290,10 @@ const SVG_POINTS_MARKER = 'ivritsuite-fontmaker:points';   // what Copy (points)
 const SVG_PASTE_FITS = ['height', 'desc', 'xheight', 'keep'];
 const SVG_PASTE_MAX_COORD = 16000;                          // half the font format's ±32767 (glyphRangeError) — room for an advance and for marks around it
 const SVG_PASTE_LIVE_CHARS = 200000;                        // the code box re-reads as you type up to here; past it, when the box loses focus or Insert is pressed
-let _svgPaste = null;          // the open dialog's state: { cp, code, parsed:{loops,bb,shapes,skipped}|null, err, built }
+const SVG_PASTE_TYPE_MS = 300;                              // …and it re-reads this long after the last keystroke, not on each one
+let _svgPaste = null;          // the open dialog's state: { cp, code, parsed:{loops,bb,shapes,skipped}|null, err, built, readText: the code box text that was last read, stale: the box holds a newer one }
 let _svgPasteBusy = false;     // a dropped or pasted file is still being read
+let _svgPasteTypeTimer = 0;    // the code box's pending read
 let _ptPasteTimer = 0, _ptPasteFiredAt = 0;
 
 function svgTextFromHtml(html) {             // HTML that wraps an <svg> (a Figma or browser copy; markup too loose for XML) → that svg as XML. Parsed inert: nothing loads, nothing runs
@@ -10311,11 +10325,16 @@ function svgPasteParse(text) {               // → { loops, bb, shapes, skipped
   let t = String(text || '').replace(/^﻿/, '').trim();
   if (t.length > SVG_PASTE_MAX_CHARS) throw new Error(I18n.t('fontmaker.modals.svg_too_big'));
   let parsed;
-  try { parsed = parseSvgEntries(t, { paste: true }); }
-  catch (e) {                                // not well-formed XML: an HTML wrapper, or loose markup. One more try through the HTML parser
-    const alt = e && e.svgSyntax ? svgTextFromHtml(t) : '';
-    if (!alt) throw e;
-    parsed = parseSvgEntries(alt, { paste: true });
+  try {
+    try { parsed = parseSvgEntries(t, { paste: true }); }
+    catch (e) {                              // not well-formed XML: an HTML wrapper, or loose markup. One more try through the HTML parser
+      const alt = e && e.svgSyntax ? svgTextFromHtml(t) : '';
+      if (!alt) throw e;
+      parsed = parseSvgEntries(alt, { paste: true });
+    }
+  } catch (e) {                              // groups nested deeper than the walk can follow: the engine's own words ("Maximum call stack size exceeded") are not a message for a teacher
+    if (e instanceof RangeError || (e && e.name === 'InternalError')) throw new Error(I18n.t('fontmaker.modals.svg_too_complex'));
+    throw e;
   }
   const loops = svgInkLoops(parsed.entries.reduce((a, en) => a.concat(en.loops), [])), bb = loopsBBox(loops);
   if (!loops.length || !isFinite(bb.x) || !(bb.h > 0) || !(bb.w > 0))
@@ -10389,10 +10408,13 @@ function svgPasteRefresh() {                 // the dialog's one re-read: build 
   document.getElementById('svgPasteGo').setAttribute('aria-disabled', st.built ? 'false' : 'true');
   svgPasteDrawPreview(st);
 }
-function svgPasteReadCode() {                // the code box → st.parsed or st.err
+function svgPasteReadCode() {                // the code box → st.parsed or st.err. A text is read once: the same text again (the box losing focus after the typing pause already read it, Insert after that) costs nothing
   const st = _svgPaste; if (!st) return;
+  clearTimeout(_svgPasteTypeTimer); _svgPasteTypeTimer = 0;
   const t = document.getElementById('svgPasteText').value;
-  st.parsed = null; st.err = ''; st.stale = false;
+  st.stale = false;
+  if (st.readText === t) return;
+  st.readText = t; st.parsed = null; st.err = '';
   if (t.trim()) {
     if (!isProbablySvg(null, t)) st.err = I18n.t('fontmaker.modals.svgpaste_not_svg');
     else { try { st.parsed = svgPasteParse(t); } catch (e) { st.err = (e && e.message) || String(e); } }
@@ -10401,9 +10423,15 @@ function svgPasteReadCode() {                // the code box → st.parsed or st
 }
 function svgPasteCodeInput(settled) {        // oninput (settled false) and onchange (true)
   const st = _svgPaste; if (!st || !st.code) return;
-  const big = document.getElementById('svgPasteText').value.length > SVG_PASTE_LIVE_CHARS;
-  if (big && !settled) { st.parsed = null; st.err = ''; st.stale = true; svgPasteRefresh(); document.getElementById('svgPasteGo').setAttribute('aria-disabled', 'false'); return; }   // a very long paste is read once, on Insert or when the box loses focus — not on every keystroke
-  svgPasteReadCode();
+  clearTimeout(_svgPasteTypeTimer); _svgPasteTypeTimer = 0;
+  if (settled) { svgPasteReadCode(); return; }                        // the box lost focus: read now
+  const t = document.getElementById('svgPasteText').value;
+  if (t === st.readText) { st.stale = false; return; }                // back at the text already read
+  st.stale = true;                                                    // Insert reads it first (svgPasteCommit), so the button never acts on an older text
+  if (t.length > SVG_PASTE_LIVE_CHARS) { st.readText = undefined; st.parsed = null; st.err = ''; svgPasteRefresh(); document.getElementById('svgPasteGo').setAttribute('aria-disabled', 'false'); return; }   // a very long paste is read once, on Insert or when the box loses focus
+  // Reading is synchronous and can take seconds for a large drawing, so it waits for a pause in the
+  // typing instead of running on every keystroke.
+  _svgPasteTypeTimer = setTimeout(() => { _svgPasteTypeTimer = 0; if (_svgPaste === st) svgPasteReadCode(); }, SVG_PASTE_TYPE_MS);
 }
 function svgPasteOpenDialog(st) {
   const l = project.letters.find(x => x.codepoint === st.cp); if (!l) return;
@@ -10428,7 +10456,7 @@ function svgPasteOpenDialog(st) {
     if (tgt && _svgPaste === st) tgt.focus();
   }, 0);
 }
-function closeSvgPaste() { _svgPaste = null; aCloseModal('svgPasteOverlay'); }
+function closeSvgPaste() { clearTimeout(_svgPasteTypeTimer); _svgPasteTypeTimer = 0; _svgPaste = null; aCloseModal('svgPasteOverlay'); }
 function svgPasteKey(e) {                     // Enter confirms from a radio (a button keeps its own Enter, the code box its line break)
   if (e.key !== 'Enter' || e.isComposing) return;
   const tg = e.target && e.target.tagName;
