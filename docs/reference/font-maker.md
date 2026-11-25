@@ -1295,7 +1295,11 @@ render, which used to drop focus to `<body>` after any press. A control that car
 wraps `renderControlsNow`). The Shapes buttons, the Contours switches (`ct:<index>`) and the
 Transform buttons opt in; a new keyboard-operable control in that column should too. A press that
 came from the keyboard (`event.detail === 0`) moves focus to *Place in the middle*, so "Enter,
-Enter" adds a shape.
+Enter" adds a shape. *Place in the middle* and *Cancel* exist only while a shape is picked, so they
+have no rebuilt twin when the tool goes away: `shapePlaceMiddle` and `shapePick` then put focus on
+the button of the shape that had been picked — after a placement, after *Cancel*, and after Esc
+pressed with focus in that column (Esc with focus on the page, or the toolbar's Select button,
+moves no focus).
 
 ### Draw step — strokes, holes, and carve generations
 A drawn letter keeps its ink as `l.draw.strokes` (each `{w, pr, pts, st?, …}`, points in font units);

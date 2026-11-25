@@ -15356,12 +15356,14 @@ function shapeBoxOf(a, b) {                      // two corners → a box of who
 }
 function shapePick(kind, ev) {                   // a Shapes button: pick it (pressing the picked one puts the tool away); null = put it away
   if (!nodeModel) return;
-  const on = !!kind && SHAPE_KINDS.includes(kind) && _shapeTool !== kind;
+  const on = !!kind && SHAPE_KINDS.includes(kind) && _shapeTool !== kind, was = _shapeTool;
+  const L = document.getElementById('ctlLeft'), a = document.activeElement, inPanel = !!(L && a && a !== document.body && L.contains(a));
   if (nodeDrag && nodeDrag.type === 'shape') { nodeDrag = null; _snapHit = null; }
   if (on) { if (_penMode) { penDraft = null; _penMode = false; } _marqueeMode = false; _shapeTool = _shapeLast = kind; }
   else _shapeTool = null;
   renderStage(); renderControls(); renderLegend();
   if (on && ev && ev.detail === 0) shapeFocus('place');   // picked from the keyboard: the next Enter places it
+  else if (!on && was && inPanel && (!document.activeElement || document.activeElement === document.body)) shapeFocus(was);   // put away from Cancel, or by Esc with focus on Place: those two buttons went with the tool, so focus goes to the shape that had been picked instead of falling to the page
 }
 function shapeFocus(which) { const b = document.querySelector('#ctlLeft [data-fk="shp:' + which + '"]'); if (b && !b.disabled) b.focus({ preventScroll: true }); }
 function shapeHoleToggle() { _shapeHole = !_shapeHole; renderControls(); }
