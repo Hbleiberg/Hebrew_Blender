@@ -1446,7 +1446,10 @@ placement as `l.photoSlant`, which waits beside the record until the next trace 
 (`finalizeFromRaw` → `photoSlantTake`) makes it the record. `l.photoSlant` composes and narrows with
 the record under Slant and Width, and under a whole-letter Slant, Scale, Width/Height or Flip H in Edit
 points changes as the record does (the carry, `xformCarryBase` → `xformCarry` → `xformPutCarry`) — the
-photo's matrix moves with each — and goes wherever the record
+photo's matrix moves with each. A whole-letter rotation or Flip V in Edit points carries no photo and no
+strokes, so the lean they give the record waits the other way round: the picture's or the strokes' own
+lean goes into `l.photoSlant` (`xformLeanPut` → `setOutlineSlant`, as for pasted points) and the rebuild
+that discards the turn makes it the record again. `l.photoSlant` goes wherever the record
 goes for a new placement (a new photo, crop or auto-split, Center image). A new path that replaces
 or copies an outline does the same. The photo "skew" nudges in Align leave no record.
 
@@ -1733,7 +1736,8 @@ carry whose strokes would leave the drawing area refuses the whole transform, as
 its own status line; undo and redo bring the matrix and the strokes back with the outline (the item
 scope takes `withDraw` when there are strokes). A rotation and a vertical flip move no anchor and
 carry nothing: a rebuild discards them with the other point edits, and the anchors still fit what
-comes back. A slant also updates the lean record; the other whole-glyph
+comes back — and so does the lean record, since the lean of the picture's placement or of the strokes
+waits in `l.photoSlant` meanwhile (`xformLeanPut`). A slant also updates the lean record; the other whole-glyph
 transforms keep the record true (`xformSlantAfter`: a flip mirrors it, a Width/Height scale changes
 its tangent, a rotation turns it). A rotation's angle is taken modulo 180° into (−90°, 90°] — a
 sheared shape turned half way round leans exactly as before — and past `XF_LEAN_MAX` (45°) either

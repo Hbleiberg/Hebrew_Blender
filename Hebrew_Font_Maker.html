@@ -16589,7 +16589,14 @@ function xformLeanFor(l, kind) {                             // the lean this tr
   const t = _xformTurned.get(l);
   return (t && t.sig === xformOutlineSig(l)) ? t.deg : 0;
 }
-function xformLeanPut(l, kind, deg) { setLetterSlant(l, (kind === 'rot' && Math.abs(deg) > XF_LEAN_MAX) ? 0 : deg); }   // inside the caller's udDo / burst
+function xformLeanPut(l, kind, deg) {                        // inside the caller's udDo / burst
+  const d = (kind === 'rot' && Math.abs(deg) > XF_LEAN_MAX) ? 0 : deg;
+  // A transform that carries the photo and the strokes (xformCarry) changed their lean as it changed the
+  // record. A rotation or a vertical flip carries neither: the record describes the new outline, and the
+  // lean of the picture's placement or of the strokes waits for the rebuild that discards the turn
+  // (l.photoSlant — setOutlineSlant, as for pasted points), so a re-trace or a re-save gets its record right.
+  if (xformAnchorsFollow(kind)) setLetterSlant(l, d); else setOutlineSlant(l, d);
+}
 function xformTurnNote(l, kind, deg) {                       // after the outline is written
   if (kind === 'rot' && Math.abs(deg) > XF_LEAN_MAX) _xformTurned.set(l, { deg, sig: xformOutlineSig(l) }); else _xformTurned.delete(l);
 }
