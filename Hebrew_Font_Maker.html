@@ -6574,7 +6574,7 @@ function userGuidesSVG(){
   // (raised for a tall glyph) rather than the default box these numbers were once inlined from.
   const gy1 = _stageVB.y + 2, gy2 = _stageVB.y + _stageVB.h - 4, gyh = _stageVB.y + 12;
   g.items.forEach(it => {
-    const col = it.color || '#19b3c6';
+    const col = esc(it.color || '#19b3c6'), gid = esc(it.id);   // a project file's text: migrateProject keeps both in the page's own shape, and they are escaped here as well
     const snapped = _snapHit && ((_snapHit.x && _snapHit.x.id === it.id) || (_snapHit.y && _snapHit.y.id === it.id));   // a node drag is captured on this guide → brighten it
     const w = Math.max(0.25, Math.min(4, +it.weight || 1)) + (snapped ? 1.5 : 0);
     const op = snapped ? 1 : 0.85;
@@ -6585,12 +6585,12 @@ function userGuidesSVG(){
     if (it.axis === 'v') {                       // vertical line — drag left/right (font X)
       const x = fx(it.pos);
       h += `<line x1="${x.toFixed(1)}" y1="${gy1}" x2="${x.toFixed(1)}" y2="${gy2}" stroke="${col}" stroke-width="${w}"${dash} opacity="${op}" pointer-events="none"/>`;
-      h += `<circle class="guide-h" data-guide-id="${it.id}" cx="${x.toFixed(1)}" cy="${gyh}" r="6" fill="${col}" stroke="#fff" stroke-width="2.5" paint-order="stroke" style="cursor:ew-resize;filter:drop-shadow(0 0 1px rgba(0,0,0,0.5));"><title>${esc(_pT('guide_x_drag', `Guide x=${Math.round(it.pos)} — drag`, { pos: Math.round(it.pos) }))}</title></circle>`;
+      h += `<circle class="guide-h" data-guide-id="${gid}" cx="${x.toFixed(1)}" cy="${gyh}" r="6" fill="${col}" stroke="#fff" stroke-width="2.5" paint-order="stroke" style="cursor:ew-resize;filter:drop-shadow(0 0 1px rgba(0,0,0,0.5));"><title>${esc(_pT('guide_x_drag', `Guide x=${Math.round(it.pos)} — drag`, { pos: Math.round(it.pos) }))}</title></circle>`;
       h += `<text class="guide-h-lbl" x="${(x+8).toFixed(1)}" y="${gyh + 4}" fill="${col}" font-size="9" font-family="monospace" pointer-events="none">${Math.round(it.pos)}</text>`;
     } else {                                     // horizontal line — drag up/down (font Y)
       const y = fy(it.pos);
       h += `<line x1="8" y1="${y.toFixed(1)}" x2="592" y2="${y.toFixed(1)}" stroke="${col}" stroke-width="${w}"${dash} opacity="${op}" pointer-events="none"/>`;
-      h += `<circle class="guide-h" data-guide-id="${it.id}" cx="18" cy="${y.toFixed(1)}" r="6" fill="${col}" stroke="#fff" stroke-width="2.5" paint-order="stroke" style="cursor:ns-resize;filter:drop-shadow(0 0 1px rgba(0,0,0,0.5));"><title>${esc(_pT('guide_y_drag', `Guide y=${Math.round(it.pos)} — drag`, { pos: Math.round(it.pos) }))}</title></circle>`;
+      h += `<circle class="guide-h" data-guide-id="${gid}" cx="18" cy="${y.toFixed(1)}" r="6" fill="${col}" stroke="#fff" stroke-width="2.5" paint-order="stroke" style="cursor:ns-resize;filter:drop-shadow(0 0 1px rgba(0,0,0,0.5));"><title>${esc(_pT('guide_y_drag', `Guide y=${Math.round(it.pos)} — drag`, { pos: Math.round(it.pos) }))}</title></circle>`;
       h += `<text class="guide-h-lbl" x="30" y="${(y-5).toFixed(1)}" fill="${col}" font-size="9" font-family="monospace" pointer-events="none">${Math.round(it.pos)}</text>`;
     }
   });
@@ -6632,17 +6632,22 @@ function guideStylePreviewSVG(style, color, w){     // one dash definition share
   const dash = style === 'solid'  ? ''
              : style === 'dotted' ? ` stroke-dasharray="${sw} ${sw*2}" stroke-linecap="round"`
              : ` stroke-dasharray="${sw*2} ${sw*2}"`;
-  return `<svg width="46" height="12" viewBox="0 0 46 12" style="display:block;"><line x1="2" y1="6" x2="44" y2="6" stroke="${color}" stroke-width="${sw}"${dash}/></svg>`;
+  return `<svg width="46" height="12" viewBox="0 0 46 12" style="display:block;"><line x1="2" y1="6" x2="44" y2="6" stroke="${esc(color)}" stroke-width="${sw}"${dash}/></svg>`;
 }
+// The guide a control belongs to. The guide cards' inline handlers are constant code that reads the id
+// from the card's data-guide-id: a guide's id is a project file's text, and inside a handler attribute
+// esc() would not be enough (the attribute is decoded before it runs as script).
+function guideIdOf(el){ const c = el && el.closest && el.closest('[data-guide-id]'); return c ? c.dataset.guideId : null; }
+function guideStyleDd(id){ return document.querySelector(`.guide-style-dd[data-guide-id="${CSS.escape(String(id))}"]`); }
 function toggleGuideStyleMenu(id){
-  const wrap = document.querySelector(`.guide-style-dd[data-guide-id="${id}"]`);
+  const wrap = guideStyleDd(id);
   if (!wrap) return;
   const open = wrap.classList.contains('open');
   document.querySelectorAll('.guide-style-dd.open').forEach(w => w.classList.remove('open'));
   if (!open) wrap.classList.add('open');
 }
 function pickGuideStyle(id, style){
-  const wrap = document.querySelector(`.guide-style-dd[data-guide-id="${id}"]`);
+  const wrap = guideStyleDd(id);
   if (wrap) wrap.classList.remove('open');
   setGuideStyle(id, style);
 }
@@ -6705,27 +6710,29 @@ function guidesPanelHTML(){
     const col = it.color || '#19b3c6';
     const st = it.style || 'dashed';
     const nm = it.name || (window.I18n ? I18n.t(it.axis==='v' ? 'fontmaker.panels.guide_default_v' : 'fontmaker.panels.guide_default_h') : (it.axis==='v' ? 'Vertical' : 'Horizontal'));
+    // The id and colour are a project file's text: they reach the markup only through esc(), and the
+    // handlers below never hold the id — they read it from the card's data-guide-id (guideIdOf).
     const menu = GUIDE_STYLES.map(s => `
-        <div class="guide-style-opt${s===st?' sel':''}" onclick="pickGuideStyle('${it.id}','${s}')" title="${s.charAt(0).toUpperCase()+s.slice(1)}">${guideStylePreviewSVG(s, col, it.weight)}</div>`).join('');
+        <div class="guide-style-opt${s===st?' sel':''}" onclick="pickGuideStyle(guideIdOf(this),'${s}')" title="${s.charAt(0).toUpperCase()+s.slice(1)}">${guideStylePreviewSVG(s, col, it.weight)}</div>`).join('');
     return `
-    <div class="guide-card" data-guide-id="${it.id}">
+    <div class="guide-card" data-guide-id="${esc(it.id)}">
       <div class="guide-card-head">
-        <span class="guide-handle" draggable="true" onclick="toggleGuideCollapse('${it.id}')" title="${esc(window.I18n ? I18n.t('fontmaker.panels.guide_collapse_title') : 'Collapse / drag to reorder')}">${it.collapsed?'＋':'－'}</span>
+        <span class="guide-handle" draggable="true" onclick="toggleGuideCollapse(guideIdOf(this))" title="${esc(window.I18n ? I18n.t('fontmaker.panels.guide_collapse_title') : 'Collapse / drag to reorder')}">${it.collapsed?'＋':'－'}</span>
         <span class="guide-orient" title="${esc(window.I18n ? I18n.t(it.axis==='v'?'fontmaker.panels.guide_orient_v_title':'fontmaker.panels.guide_orient_h_title') : (it.axis==='v'?'Vertical':'Horizontal') + ' guide')}">${it.axis==='v'?'│':'─'}</span>
-        <input type="color" value="${col}" oninput="setGuideColor('${it.id}',this.value)" title="${esc(window.I18n ? I18n.t('fontmaker.panels.guide_color_title') : 'Guide color')}" class="guide-color">
-        <input class="guide-name" type="text" value="${nm.replace(/"/g,'&quot;')}" onchange="setGuideName('${it.id}',this.value)" onkeydown="if(event.key==='Enter')this.blur()" title="${esc(window.I18n ? I18n.t('fontmaker.panels.guide_name_title') : 'Guide name')}" autocapitalize="words" autocorrect="off" spellcheck="false">
+        <input type="color" value="${esc(col)}" oninput="setGuideColor(guideIdOf(this),this.value)" title="${esc(window.I18n ? I18n.t('fontmaker.panels.guide_color_title') : 'Guide color')}" class="guide-color">
+        <input class="guide-name" type="text" value="${esc(nm)}" onchange="setGuideName(guideIdOf(this),this.value)" onkeydown="if(event.key==='Enter')this.blur()" title="${esc(window.I18n ? I18n.t('fontmaker.panels.guide_name_title') : 'Guide name')}" autocapitalize="words" autocorrect="off" spellcheck="false">
         <button class="guide-rename" onclick="this.closest('.guide-card-head').querySelector('.guide-name').focus()" title="${esc(window.I18n ? I18n.t('fontmaker.panels.guide_rename') : 'Rename')}">${esc(window.I18n ? I18n.t('fontmaker.panels.guide_rename') : 'Rename')}</button>
-        <button class="guide-del" onclick="deleteGuide('${it.id}')" title="${esc(window.I18n ? I18n.t('fontmaker.panels.guide_delete_title') : 'Delete this guide')}" aria-label="${esc(window.I18n ? I18n.t('fontmaker.panels.guide_delete_title') : 'Delete this guide')}"><svg class="hi hi-sm hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></button>
+        <button class="guide-del" onclick="deleteGuide(guideIdOf(this))" title="${esc(window.I18n ? I18n.t('fontmaker.panels.guide_delete_title') : 'Delete this guide')}" aria-label="${esc(window.I18n ? I18n.t('fontmaker.panels.guide_delete_title') : 'Delete this guide')}"><svg class="hi hi-sm hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></button>
       </div>
       <div class="guide-card-body"${it.collapsed?' style="display:none;"':''}>
-        <div class="guide-style-dd" data-guide-id="${it.id}">
-          <button class="guide-style-trig" onclick="toggleGuideStyleMenu('${it.id}')" title="${esc(window.I18n ? I18n.t('fontmaker.panels.guide_style_title') : 'Line style')}">${guideStylePreviewSVG(st, col, it.weight)}<span class="guide-style-caret">▾</span></button>
+        <div class="guide-style-dd" data-guide-id="${esc(it.id)}">
+          <button class="guide-style-trig" onclick="toggleGuideStyleMenu(guideIdOf(this))" title="${esc(window.I18n ? I18n.t('fontmaker.panels.guide_style_title') : 'Line style')}">${guideStylePreviewSVG(st, col, it.weight)}<span class="guide-style-caret">▾</span></button>
           <div class="guide-style-menu">${menu}</div>
         </div>
         <span class="guide-lbl">${esc(window.I18n ? I18n.t('fontmaker.panels.guide_size') : 'Size')}</span>
-        <input class="guide-size" type="range" min="0.25" max="4" step="0.25" value="${+it.weight||1}" oninput="setGuideWeight('${it.id}',this.value)" onchange="udBurstCommit()" title="${esc(window.I18n ? I18n.t('fontmaker.panels.guide_weight_title') : 'Line weight (px)')}">
+        <input class="guide-size" type="range" min="0.25" max="4" step="0.25" value="${+it.weight||1}" oninput="setGuideWeight(guideIdOf(this),this.value)" onchange="udBurstCommit()" title="${esc(window.I18n ? I18n.t('fontmaker.panels.guide_weight_title') : 'Line weight (px)')}">
         <span class="guide-lbl">${esc(window.I18n ? I18n.t('fontmaker.panels.guide_pos', {axis: it.axis==='v'?'X':'Y'}) : 'Pos (' + (it.axis==='v'?'X':'Y') + ')')}</span>
-        <input class="guide-pos" type="number" value="${Math.round(it.pos)}" step="1" onchange="setGuidePos('${it.id}',this.value)" title="${esc(window.I18n ? I18n.t('fontmaker.panels.guide_pos_title', {axis: it.axis==='v'?'X':'Y'}) : (it.axis==='v'?'X':'Y') + ' position (font units)')}">
+        <input class="guide-pos" type="number" value="${Math.round(it.pos)}" step="1" onchange="setGuidePos(guideIdOf(this),this.value)" title="${esc(window.I18n ? I18n.t('fontmaker.panels.guide_pos_title', {axis: it.axis==='v'?'X':'Y'}) : (it.axis==='v'?'X':'Y') + ' position (font units)')}">
       </div>
     </div>`;
   }).join('');
@@ -28032,6 +28039,28 @@ function sanitizePrecompNumbers(pc) {
     else if (k === 'defWidth') delete pc[k]; else pc[k] = null;
   });
 }
+/* A project file's strings that the page writes into markup as they are — inside an attribute or a
+   handler, not as text — are kept only in the shape the page itself writes; anything else is replaced
+   or dropped, so a normal project loads exactly as it was saved. A drawing guide (project.guides.items):
+   its id is newGuideId()'s 'g<base36>_<n>' (a repeated or foreign one gets a fresh id), its colour the
+   colour field's '#rrggbb' (#rgb / #rrggbbaa accepted too) or the default, its style one of GUIDE_STYLES
+   or the default, its position a finite number (a guide without one cannot be placed and goes), its name
+   a string. An absent colour, style or name stays absent. */
+const GUIDE_ID_RE = /^g[0-9a-z]+_\d+$/;
+function sanitizeGuides(g) {
+  const seen = new Set();
+  g.items = g.items.filter(it => {
+    const p = (typeof it.pos === 'number' || (typeof it.pos === 'string' && it.pos.trim() !== '')) ? +it.pos : NaN;
+    if (!Number.isFinite(p)) return false;
+    it.pos = p;
+    if (!(typeof it.id === 'string' && GUIDE_ID_RE.test(it.id)) || seen.has(it.id)) it.id = newGuideId();
+    seen.add(it.id);
+    if (it.color != null && !(typeof it.color === 'string' && /^#(?:[0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})$/i.test(it.color))) it.color = '#19b3c6';
+    if (it.style != null && !GUIDE_STYLES.includes(it.style)) it.style = 'dashed';
+    if (it.name != null && typeof it.name !== 'string') delete it.name;
+    return true;
+  });
+}
 function migrateProject(data) {
   // An .hfm / autosave / recents blob is untrusted: a collection of the wrong shape (a string where an
   // array belongs, a null entry, a number for a sub-block) used to throw out of the load with no status,
@@ -28194,6 +28223,7 @@ function migrateProject(data) {
   if (data.view.snapGuides == null) data.view.snapGuides = true;   // node-drag snapping — absent = ON
   if (!data.guides || typeof data.guides !== 'object') data.guides = { show: true, items: [] };   // project-wide drawing guides
   data.guides.items = _objs(data.guides.items);
+  sanitizeGuides(data.guides);
   if (data.guides.show == null) data.guides.show = true;
   if (data.font && data.font.markScale == null) data.font.markScale = 1.0;
   if (data.font) {
