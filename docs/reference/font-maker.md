@@ -702,11 +702,14 @@ them, and anything else is replaced or dropped (again a normal project loads exa
   base64 body (or a body with no quote, angle bracket or space), `data:application/octet-stream;base64,…`
   for a picture file the browser gave no type, or the stripped autosave's `'[omitted]'` — else it
   becomes `null` and the item or sheet loads as if it had no picture.
-- *Guides* (`sanitizeGuides`): an id is `newGuideId()`'s `g<base36>_<n>` (a foreign or repeated one gets
-  a fresh id), a colour `#hex` or the default, a style one of `GUIDE_STYLES` or the default, a position a
-  finite number (a guide without one goes), a name text.
-- *Kerning classes*: an id is `saveKernClass`'s `c_<base36>_<n>` (not repeated), the name non-empty
-  text, the members code points (a member that is not one is left out; a class left with none goes).
+- *Guides* (`sanitizeGuides`): an id is made of the characters `newGuideId()` writes (lower-case
+  letters, digits, `_`; a foreign or repeated one gets a fresh id), a colour `#hex` or the default, a
+  style one of `GUIDE_STYLES` or the default, a position a finite number (a guide without one goes), a
+  name text.
+- *Kerning classes*: an id is `c_` and then the characters `saveKernClass` writes (lower-case letters,
+  digits, `_`; not repeated) — the prefix is what `kernClassCps` reads — or the class goes; the name is
+  non-empty text, the members code points (a member that is not one is left out; a class left with none
+  goes).
 - *Custom glyphs* (`customCpOk`): a `.custom` letter's code point and a `customMarks.custom` key are
   `normalizeCp()`'s shape — four upper-case hex digits, U+0020 or above — or the glyph goes; a
   nikkud / trop store key that is not a code point goes; a mark entry's own `codepoint` is its key; a

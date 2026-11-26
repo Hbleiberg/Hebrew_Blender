@@ -28056,11 +28056,12 @@ function sanitizeDataUrl(o) { if (o && typeof o === 'object' && o.dataUrl != nul
    its tile's buttons, the Spacing tab's menus and buttons, the QA grid and the Copy outline list. It is
    normalizeCp()'s shape — four upper-case hex digits, U+0020 or above — or the glyph is dropped. */
 function customCpOk(cp) { return typeof cp === 'string' && /^[0-9A-F]{4}$/.test(cp) && parseInt(cp, 16) >= 0x20; }
-/* A drawing guide (project.guides.items): its id is newGuideId()'s 'g<base36>_<n>' (a repeated or
-   foreign one gets a fresh id), its colour the colour field's '#rrggbb' (#rgb / #rrggbbaa accepted too)
-   or the default, its style one of GUIDE_STYLES or the default, its position a finite number (a guide
-   without one cannot be placed and goes), its name a string. An absent colour, style or name stays absent. */
-const GUIDE_ID_RE = /^g[0-9a-z]+_\d+$/;
+/* A drawing guide (project.guides.items): its id is made of the characters newGuideId() writes
+   ('g<base36>_<n>': lower-case letters, digits, '_'), else — or when it repeats — it gets a fresh id; its
+   colour the colour field's '#rrggbb' (#rgb / #rrggbbaa accepted too) or the default, its style one of
+   GUIDE_STYLES or the default, its position a finite number (a guide without one cannot be placed and
+   goes), its name a string. An absent colour, style or name stays absent. */
+const GUIDE_ID_RE = /^[0-9a-z_]{1,64}$/;
 function sanitizeGuides(g) {
   const seen = new Set();
   g.items = g.items.filter(it => {
@@ -28411,12 +28412,13 @@ function migrateProject(data) {
         : []; }
     if (!Array.isArray(data.font.kernClasses)) data.font.kernClasses = [];   // user-defined kern classes
     // A class's id is written into the Spacing tab's <option value> and read by kernClassCps by its 'c_'
-    // prefix: it is saveKernClass's 'c_<base36>_<n>' or the class is dropped (a repeated id too); its
-    // members are code points (a member that is not one goes — String.fromCodePoint would throw on it in
-    // the class list — and a class left with none goes), its name non-empty text, as saveKernClass writes.
+    // prefix: it is saveKernClass's shape — 'c_' and then the characters it writes ('c_<base36>_<n>':
+    // lower-case letters, digits, '_') — or the class is dropped (a repeated id too); its members are code
+    // points (a member that is not one goes — String.fromCodePoint would throw on it in the class list —
+    // and a class left with none goes), its name non-empty text, as saveKernClass writes.
     { const seen = new Set();
       data.font.kernClasses = data.font.kernClasses.filter(c => {
-        if (!_isObj(c) || typeof c.id !== 'string' || !/^c_[0-9a-z]+_\d+$/.test(c.id) || seen.has(c.id) || typeof c.name !== 'string' || !c.name.trim() || !Array.isArray(c.members)) return false;
+        if (!_isObj(c) || typeof c.id !== 'string' || !/^c_[0-9a-z_]{1,60}$/.test(c.id) || seen.has(c.id) || typeof c.name !== 'string' || !c.name.trim() || !Array.isArray(c.members)) return false;
         c.members = c.members.filter(m => typeof m === 'string' && /^[0-9A-F]{4,6}$/.test(m));
         if (!c.members.length) return false;
         seen.add(c.id); return true;
