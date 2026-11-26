@@ -1866,8 +1866,12 @@ and the chips read it, so none of them can disagree with the exported font. In `
 the pair being edited shows live while it has something of its own to show — a non-zero Gap, or a
 real saved value being dragged away; at 0 with nothing real saved it falls through to
 `kernEffective`, so a pair saved at 0 under a group pair shows the group's kerning (the status line
-on saving says so). A *group* being edited never hides a saved specific pair. A new reader of
-kerning calls `kernEffective`, never walks the list itself.
+on saving says so). A *group* being edited shows what the font would apply with its row saved as
+it stands: `kernEffective` over the list with that row in its place (Update keeps one row for the
+two sides, Add puts a new one at the end — `kernEffective` and `kernSpecific` take such a list as an
+optional third argument), so the edit shows only for the pairs it would win — never over a saved
+specific pair or an earlier group pair that covers the two letters — and at 0 a later group pair
+shows through. A new reader of kerning calls `kernEffective`, never walks the list itself.
 
 **What the export writes** (`buildFEA`, the `kern` feature). Glyph pairs only, each with the value
 `kernEffective` gives it: `kernExpanded()` works the whole list out in one pass (the same rules, as
@@ -1878,7 +1882,24 @@ of the value follows `kernPairDir`: a left-to-right pair is the bare value (the 
 advance); a right-to-left pair is placement **and** advance on the first glyph, `<v 0 v 0>` — an
 advance change alone would move the letter *before* the pair and leave the pair's own gap as it
 was; a pair of two directions gets no rule. A group whose letters mix directions needs no special
-case, since every pair is written by itself. A pair of two neutrals (punctuation marks, most
+case, since every pair is written by itself. **Pointed text kerns like plain text**, as the sample
+shows it: the feature's first statement is `lookupflag IgnoreMarks;`, so a vowel, a trop mark or a
+dagesh between the two letters no longer hides the pair, and a mark attached to the first letter of
+a right-to-left pair moves with it. The flag is written at feature level, where it ends with the
+block (feaLib carries a flag out of a named lookup block, not out of a feature), and nothing but
+GDEF follows the block. A letter typed with a mark that `ccmp` folds into one glyph (בּ, שׁ, וֹ, וּ, a
+letter's own mark shape, שּׁ, ײַ) is a glyph the shaper kerns by its own name, so the emitter writes
+every pair of the letter for that composed glyph too, first or second in the pair; a rule written
+for the form's own code point (typed into a side as the presentation form) wins over its letter's,
+whatever the list order — the emitter expands the rules for a form's own code point first, its first
+side's before its second's, so a form followed by a composed letter takes the form's rule, as the
+sample shows it. The sample reads the code points as typed, so a letter typed with its mark (בּ)
+shows its letter's rule there, while the font, which composes it to the form, applies the form's —
+a difference only a rule for a presentation form can make. The sample also lays out the two Unicode meteg spellings as the font forms them: a
+joiner (CGJ U+034F, ZWJ U+200D) is never a cell of its own (no advance, no ink, so the pair around
+it still kerns), ⟨hataf, ZWJ, meteg⟩ draws the one spliced glyph the export builds
+(`hatafMetegSplice`, shared by both), and ⟨meteg, CGJ, vowel⟩ takes the mirrored pair
+(`metegPairRightFor`). A pair of two neutrals (punctuation marks, most
 symbols) is written for Hebrew text: no one value record closes a pair's own gap in both directions,
 and in a left-to-right run the record a right-to-left pair needs closes the gap before the pair
 instead. A known limit: two letters of one direction but different scripts — a Private Use custom
