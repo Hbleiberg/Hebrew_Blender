@@ -26754,7 +26754,7 @@ function templateCellHTML(item, kind) {
   const label =
     '<div style="position:absolute;top:5px;left:7px;display:flex;align-items:center;gap:6px;'
       + 'color:' + TPL_INK + ';font-family:\'Source Sans 3\',sans-serif;line-height:1.05;pointer-events:none;">'
-      + '<span style="font-family:' + fontFam + ';font-size:22px;direction:rtl;">' + glyph + '</span>'
+      + '<span style="font-family:' + esc(fontFam) + ';font-size:22px;direction:rtl;">' + glyph + '</span>'
       + '<span style="font-size:10px;"><strong>' + esc(item.name) + '</strong><br>'
       + '<span style="font-size:8.5px;opacity:.9;">' + code + esc(cls) + '</span></span>'
     + '</div>';
@@ -28242,8 +28242,12 @@ function migrateProject(data) {
   // The reference font's family is written into style="font-family:…" attributes: it is a family list as the font menu and the
   // reference uploads write one ('Name', serif — letters, digits, spaces, quotes, commas, hyphens, underscores), else the default.
   // No length limit: an uploaded reference's family carries its whole file name, however long.
-  if (data.template.font != null && !(typeof data.template.font === 'string' && /^[A-Za-z0-9 ',_-]+$/.test(data.template.font))) data.template.font = "'Noto Sans Hebrew', sans-serif";
+  const _tplFamOk = f => typeof f === 'string' && /^[A-Za-z0-9 ',_-]+$/.test(f);
+  if (data.template.font != null && !_tplFamOk(data.template.font)) data.template.font = "'Noto Sans Hebrew', sans-serif";
   data.template.customFonts = _objs(data.template.customFonts);   // uploaded tracing fonts (bytes) persist here; one picked from the installed fonts persists as a name
+  // Each one's family is the font menu's value for it, and picking it (or picking the same installed face again) makes it the
+  // reference family above, past this check: the same rule holds it, and an entry with any other family is dropped.
+  data.template.customFonts = data.template.customFonts.filter(cf => _tplFamOk(cf.family));
   data.template.customFonts.forEach(cf => { if (cf.local !== undefined && !(typeof cf.local === 'string' && LF_PS_RE.test(cf.local))) delete cf.local; });   // the name goes inside local("…"): only the strict pattern
   if (!_isObj(data.view)) data.view = { imgOpacityAlign:0.92, imgOpacityTrace:0.28, glyphOpacity:1.0 };
   ['imgOpacityAlign','imgOpacityTrace','glyphOpacity'].forEach((k,i)=>{ data.view[k] = _opacity(data.view[k], [0.92,0.28,1.0][i]); });

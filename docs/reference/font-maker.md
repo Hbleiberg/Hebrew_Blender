@@ -720,9 +720,13 @@ them, and anything else is replaced or dropped (again a normal project loads exa
 - *The reference font's family* (`template.font`, written into `style="font-family:…"`): a family list
   as the font menu and the reference uploads write one (letters, digits, spaces, quotes, commas,
   hyphens, underscores, at any length — an upload's family carries its whole file name), else the
-  default.
+  default. Each entry of the reference font list (`template.customFonts`, an uploaded file or an
+  installed face) is held to the same rule by its `family`, or the entry goes: that family is the font
+  menu's value for it, and picking it — or picking the same installed face again — makes it
+  `template.font` after the load.
 
-Every sink of these escapes them as well (`esc()`), and so do the sinks of the numbers above (the
+Every sink of these escapes them as well (`esc()`; for the reference family that includes the
+printable template sheets, `templateCellHTML`), and so do the sinks of the numbers above (the
 photo's matrix and opacity, the metric fields, the Trace sliders and readouts, the X / Y fields, the dot
 sizes, the spacing sliders). No inline handler holds a project's text: the guide cards read the guide
 from the card's `data-guide-id` (`guideIdOf`), and the kerning class buttons, the custom glyph tiles'
