@@ -1133,7 +1133,10 @@ One engine applies a geometric change to many glyphs in **one** undo step. A new
 
 A set is `{ scope: 'letter' | 'tab' | 'all', cp, cat }`; `tab` is `tabDrawCps(cat)`, `all` is every
 item in `project.letters` whatever its tab's switch says (a tab turned on later must not be the old
-size — the Generate Bold rule). The font-wide factors and `markFactor` apply only with `all`.
+size — the Generate Bold rule). The font-wide factors and `markFactor` apply only with `all`. In the
+dialog a box for one of those (`all: true` in `SA_TOOLS`) is disabled for one tab or one letter and
+shown unticked, which is what will happen there; the whole font's choice is kept, never saved from the
+disabled box, and comes back with the whole-font scope.
 
 **`gxPlan(op, set)` is pure** — it reads the project and returns every new value plus its findings.
 **`gxCommit(plan)`** refuses a plan with a blocking finding, then makes one `udDo` whose body is only
@@ -1147,7 +1150,8 @@ afresh at commit time, never from a preview's copy.
   Generate Bold has to drop them, this does not. A contour that collapses is dropped **with** its
   `curves[i]` (the export ships curves only while the two arrays are the same length).
 - *Width:* `advance`, `lsb`, `rsb` when stored.
-- *Marks' positions:* `anchors[*]` and the pins in `markAnchors`, rounded at the source. A side trop
+- *Marks' positions:* `anchors[*]` and the pins in `markAnchors`, rounded at the source, each moved
+  by where its marks land rather than as a point of the letter (*Where a mark lands*, below). A side trop
   column still at its default (centre ± `tropSideOffset`) is re-tied to the new centre ± the spread
   — the new one when the spread scales, the same one when it does not (one letter, one tab) —
   because `setTropSideOffset` recognises "still the default" by exact equality: mapped on its own, the
@@ -1199,6 +1203,70 @@ letter that carries accents, `engSupportsAccents`; an accented form taken whole 
 accent in its own outline, so it changes with it and gets no such hint). A slant needs no factor: an
 accent leans by its own letter's record.
 
+**Where a mark lands (`MARK_LAND_Y`, `markLandC`, `markLandTable`).** A letter's anchor is where a
+mark's attach point (mark-local 0,0) goes; the mark's ink lands at the anchor plus `c`, the offset
+inside the mark from its attach point to its **landing point** — the top centre of a mark below, the
+bottom centre of one above, the middle of the dagesh, each trop and Samaritan column by its row
+(`MARK_LAND_Y`, beside `MARK_CLASS`). `markLandC` measures it at the size the mark is drawn, its width
+and lean settings applied (the public readers' map), the per-mark nudge left out (a fine-tune on top
+of the landing point, as for a drawn mark). For every built-in, drawn or pieced mark `c` is exactly 0:
+the bbox convention puts the attach point on the landing point. A mark imported from a font keeps the
+source font's attach point (`m.attachAnchor`), often hundreds of units from its ink — Alef's vowels
+attach at the glyph origin with the ink about 215 to the right, a Culmus holam's ink starts about 600
+above its attach point — and then mapping the anchor as a point of the letter would send the mark
+somewhere unrelated. So the engine maps the landing point: `a' = M(a + c) − c2` (`gxLandD`,
+`gxLandPt`), with `M` the letter's map (`TA`) and `c2` the offset once the operation's own complement
+for the marks is done — the size, width and lean settings the plan writes (`markLandTable`'s `after`).
+That runs in every scope, marks box on or off; when the marks are resized by the letters' own factor,
+or `c` is 0, it is the plain map bit for bit (the drawn-font exports are byte-identical). A whole-font
+slant keeps the plain map: its exact per-mark complement is `markLean.place`.
+
+A letter has **one anchor per key**, so a key moves by its **primary mark's own `c`**, never by a vote
+of every mark that could read it (`MARK_LAND_PRIMARY`, beside `MARK_LAND_Y`): `above` follows the holam
+— or, on a letter where the holam does not read the key, the first of the holam haser, rafe, shin dot
+and sin dot that does; `center` the dagesh; `below` the component-wise median of the main vowels
+(sheva, hiriq, tsere, segol, patah, qamats — the hatafs, qubuts, qamats qatan and meteg do not vote),
+clamped across between 0 and twice every voter's own offset, so that no main vowel ever lands farther
+from its place than the plain map leaves it (where the narrow vowels attach far from the wide ones —
+Ezra SIL SR, Shlomo — the clamp keeps the sheva and hiriq from paying for the qamats), and vertically
+between 0 and the voter offset nearest 0, so that every main vowel lands between its own exact height
+and the plain map's: none is brought nearer its letter than its exact place unless the plain map brings
+it nearer, and none comes to touch a letter it did not touch on the plain map (Arimo, Cousine, Tinos and
+the Liberation fonts attach the sheva and segol about 20 units over their ink and the hiriq and tsere
+about 90; the median would lift the sheva into the letter where the letters shrink). In most fonts the
+vowels agree, and both are the median itself. Whether a mark reads the key on a letter is the
+export's own rule (`markLandAway`, `markLandReads`): not when the pair composes into a form that ships
+the source font's drawing whole (`pc.src`) or places its dot at a point of its own (`pc.anchor`) — on
+vav the holam is the form וֹ, so the holam haser leads there; a form with neither bakes its dot at the
+letter's anchor, so it still reads it. Each voter counts with its own `c`, and a built-in or drawn
+mark's is 0: a key whose primary is built-in keeps the plain map bit for bit, whatever the other marks
+are (Cardo's built-in holam beside its imported shin dot, sin dot and rafe), and a key whose primary is
+imported follows that mark exactly (the Culmus holam about 550–600 above its attach point, Taamey Frank
+CLM's and Keter YG's 104 units to the right as well). The trop and Samaritan rows take the median of
+their row over the marks of a store in custom mode (a trop side column takes its row's, so a column at
+its default stays exactly centre ± the spread). The two Samaritan side columns keep their own offsets
+across but share one vertical offset, the nearer zero of the two: a flip exchanges the side columns, and
+a flip moves no mark up or down. A source font stands a letter's column points level and draws the
+marks of one column lower than another's (Hebrew Square Samaritan's start column about 60 units below
+its end column); with a vertical offset per column the exchange would carry that difference to the
+other side. Seeds share it as well, so a seeded letter's side points stand level too: the column nearer
+the letter lands on the seed point, the other as much higher as its marks are drawn. Each letter takes its own shape for a vowel. A pin and
+a composed form's dot (`pc.anchor`, at the form's own dot size; `pc.holam`, the holam typed after
+שׁ / שׂ) use their own mark's `c` exactly (`precompLandCC`). Only letters the marks attach to take it:
+a Latin or Cyrillic letter keeps its accents' convention (an accent's `c` is 0), a Samaritan letter
+takes only its family's columns.
+
+**The limit of one anchor per key.** A mark that shares a key with a primary of a different `c` keeps
+the difference unmapped: under a resize of the letters alone it drifts by (1 − the factor) × the
+difference, under a flip by twice it, and a seed puts it that far from the seed point — a built-in
+holam haser, shin dot or sin dot beside an imported holam, an imported rafe beside a built-in holam, the
+hatafs and qubuts beside the main vowels, a trop mark off its row's median (Taamey Frank's pashta 150
+units beside its row), a built-in trop fallback in an imported row. Placing every mark exactly would
+need a pin per mark (`l.markAnchors`), which no transform creates. And when the letters shrink, narrow
+or lean while the marks keep their size, a full-size mark at the letter's own place can newly touch a
+smaller letter's descender tail, ascender or a composed form's own dot: the project's QA count can rise
+there, by the same rule that keeps the mark on its letter.
+
 **An operation may stamp a record and carry Font Details fields.** `op.stamp(letter)` returns fields
 to set on every letter the operation changes (`null` removes a key) — still only assignments and
 deletes at commit. `gxCommit(plan, meta)` sets Font Details fields with the change — `style`, `width`
@@ -1235,6 +1303,31 @@ undo scope carries it and Reset metrics returns it to 1 with the lines; an impor
 outlines removes it too (the letters it described are gone). A new constant that means "a
 distance at the standard letter size" goes through the same two helpers.
 
+**A seed is a landing point (`markLandSeed`).** Every seed rule above names where a mark should sit
+on the letter, so the stored anchor is the seed less each key's landing offset `c` (*Where a mark
+lands*), rounded at the source: an SVG replace (`assignSvgContours`), Reset anchors, the first trace or
+drawing of a letter, and the back-fills (`ensureNikkudAnchors`, `smrAnchorSeed`, and QA's mirror
+`qaAnchors`) put a font's own imported marks where a drawn font's would sit. The trop back-fill
+(`ensureTropAnchors`, for a letter saved before trop) is one too: its rows are derived from where the
+holam **lands** — the vowel anchor plus the holam's own offset — and stored less each trop row's offset
+(`tropFillLand`, which QA's mirror of the back-fill shares), so a back-filled letter seeds exactly as a
+fresh one. With every `c` at 0
+nothing changes. It runs on the finished seed, **after** `leanAnchorSet`: the seed is a point of the
+leaning letter and `c` is the mark as it is drawn — a mark does not lean with one letter's record (its
+lean, if any, is font-level `markLean`, already in `c`), so leaning the offset too would move an upright
+mark sideways by the lean times its height. A font import seeds its letters bare (`seedAnchors(l,
+true)`), because they are seeded before the marks it brings come in — and an import that brings no
+marks keeps the ones on hand. It remembers every point it leaves on that seed, the ones the font gives
+no anchor for (`impBareNote`; `applyImportedAnchors` says which it took from the font), and once every
+mark the letters will carry is in — shape, attach point, size and lean — makes each one still there a
+landing point the same way (`impLandBare`, through `markLandSeed`): a letter the font gives no anchor
+for carries the font's marks where Reset anchors would put them (David CLM's holam over ז ט י ע ם,
+Cardo's vowels under א ב ה ל מ, and the side trop columns of Taamey Frank CLM, Keter YG, Shlomo, Ezra
+SIL SR and Cardo, which no font gives — 600 to 750 units too high before), and letters imported over
+marks kept from another font carry those. A point the font gives
+stays exactly as it came, and a placement baseline the import wrote (`savedAnchors`) follows the points
+it moves.
+
 **Scale all letters** (`gxScaleOp`, `#scaleAllOverlay`, `scaleAll*`) is the first operation: a uniform
 scale from the baseline. With *spacing and guide lines* on, x scales from the glyph origin, so the
 side bearings scale too; off, the ink keeps its left edge and both bearings keep their width. A size
@@ -1261,14 +1354,20 @@ is the identity at 0:
   on the un-leaned ink, so a slanted letter traced again keeps its advance instead of gaining its
   overhang.
 - `seedAnchors`, `ensureNikkudAnchors`, `ensureTropAnchors` and the QA mirror seed on
-  `uprightContours(l)` and then lean the points (`leanAnchorSet`) — the Samaritan columns too
+  `uprightContours(l)` and then lean the points (`leanAnchorSet`), and only then take the marks'
+  landing offsets off them (`markLandSeed`) — the Samaritan columns too
   (`smrAnchorSeed`, from the upright extent, so Reset anchors and the QA grid agree with the engine),
   and the default holam slot after שׁ / שׂ leans its 55 units of height by the base letter's record
   (`precompHolamAnchor`).
 - Wide letterforms and digraphs: an x-scale would turn a lean of k into k·w, so `buildWideGlyph`
   un-leans, widens and leans again (`wideXY`), and hands every other site the one map, `g.tx(x, y,
   i)` — the donor's anchors and pins, QA's wide rows. A new site that widens uses `g.tx`, never
-  `wideX` on a leaned coordinate.
+  `wideX` on a leaned coordinate. The donor's points go through it by where their marks land
+  (`wideLand`, `wideLandPt`: `x' = tx(a + c) − c`, the marks unchanged): a wide form is a new base for
+  every mark typed after it, so it takes its keys as a letter of its own (a holam after a wide vav
+  reads its anchor — it composes only on vav) with the font's own marks, never the donor's per-letter
+  shapes; `wideDonorAnchors` (the export, the FB1F bake, Convert to editable glyph, the tile preview)
+  and `qaSynthWideRow` share it, so QA and the font agree.
 - Latin accents are baked into their letter, so `markContoursFor(letter, 'accent', cp)` leans the
   accent by that letter's own record.
 The record is **cleared** where an outline is replaced from outside (`importLetterOutline`, which
@@ -1535,12 +1634,16 @@ font or the English tab, whether or not this box is ticked. Importing a kind's s
 marks are not stem-corrected.
 
 **In the point editor** the Transform section works on the node model, about the centre of the
-affected nodes' box, as before. A whole-glyph **scale or horizontal flip** (nothing selected, no
+affected nodes' box, as before. A whole-glyph **scale, slant or horizontal flip** (nothing selected, no
 contour hidden) also maps `l.anchors` and the pins about that pivot in the same undo step
-(`xformMappedAnchors`; on a flip the left / right columns keep their sides and a side column's pin
-keeps its mirrored offset). A whole-glyph **scale or slant** carries, through the same pivot map and
-rounded, what the letter's composed forms place for themselves — `pc.anchor` (its `auto` flag rides
-along) and `pc.holam` of every form whose base is this letter, the list the engine builds for a
+(`xformMappedAnchors`), each by where its marks land (`xformLand` — *Where a mark lands*; the marks
+themselves do not change, so `c2 = c` and a flip mirrors the landing point, never the mark); on a flip
+the left / right columns keep their sides (each takes the other's landing point, less its own offset —
+the two share their vertical offset, so a mark's height changes only by what the two column points'
+own heights exchange) and a side column's pin keeps its mirrored offset from its column. A whole-glyph **scale or slant**
+carries, through the same pivot map and rounded, what the letter's composed forms place for themselves
+— `pc.anchor` (its `auto` flag rides along) and `pc.holam` of every form whose base is this letter,
+each by its own mark's landing point, the list the engine builds for a
 letter (`xformFormsBase` / `xformMappedForms`; `xformFormsFollow` says when) — and the matching
 `precomp` scopes join the letter's in the one `udDo` or slider burst; a flip leaves them, since a
 shin dot keeps its side. A rotation, a vertical flip and any selection leave all of these alone — an
@@ -2139,7 +2242,11 @@ convention applies byte-for-byte. Lifecycle: `importMarkGlyph` drops any stale `
 (re-set from the new font's GPOS by `applyFontImport`); `finalizeFromRaw` (the trace commit) and
 `assignSvgContours` drop it too; the Edit-shape modal carries it through upload-mode applies and
 drops it for editor-mode (pieces) applies; boldGen mutates contours in place and deliberately
-leaves it fixed. It rides autosave/`.hfm`/recent-projects for free (deep clones, no whitelists).
+leaves it fixed — so such a mark's ink grows about the source font's attach point, and Generate Bold
+moves each letter's anchors and pins by where their marks land (`boldGenLetter`'s bbox remap applied
+to the landing point, `a' = M(a + c) − c2`: `boldGenApply` thickens the marks first and measures
+`markLandTable` before and after, then emboldens the letters), just as a drawn mark's bbox attach point
+follows its own heavier ink (*Glyph transforms* → *Where a mark lands*). It rides autosave/`.hfm`/recent-projects for free (deep clones, no whitelists).
 The base side has the same guard. `applyImportedAnchors` gives a letter's imported anchors a `savedAnchors`
 baseline, as `migrateProject` gives a reloaded project's. The placement step's carry-forward
 (`maybeInheritAnchors`, which copies the last letter's anchors onto the next one opened) only touches letters
@@ -2206,7 +2313,7 @@ measured truth exactly (this is what fixes the `classResidual` combos). Rules th
   gold ✎ badge, Unpin / Clear-pins, all undoable); a fresh outline/anchor import deletes pins —
   gated on the import's OUTCOME, not its checkboxes (per letter, `opts.outlines || imp`), so an
   anchors-only import whose read yielded nothing changes nothing;
-  `boldGenLetter` rescales them with the anchors; `maybeInheritAnchors` skips pinned letters;
+  `boldGenLetter` rescales them with the anchors, each by its own mark's landing point; `maybeInheritAnchors` skips pinned letters;
   `migrateProject` sanitizes them (`sanitizeMarkAnchors`). Pins ride undo/autosave/`.hfm` for
   free (item deep-clones).
 - **Values are ROUNDED at the source** (`implied()`, `row.fix`, and `fidelityMeasure`'s `dev` —
