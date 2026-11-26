@@ -18328,7 +18328,7 @@ function boldGenOffsetRing(points, d) {
    the ink-width gain — deliberately NOT re-imposing default margins). Anchors ride a
    proportional bbox remap so they track the heavier ink. Returns {ok, warn, hadCurves};
    ok:false = every ring collapsed → the letter was left untouched. */
-function boldGenLetter(l, d, keepHeight) {
+function boldGenLetter(l, d, keepHeight, land) {
   const pre = polysBounds(l.contours.map(c => c.points));
   const preW = pre.maxX - pre.minX, preH = pre.maxY - pre.minY;
   let warn = false;
@@ -18351,15 +18351,23 @@ function boldGenLetter(l, d, keepHeight) {
   const fin = polysBounds(newContours.map(c => c.points));
   l.advance = Math.round(letterAdvance(l) + ((fin.maxX - fin.minX) - preW));
   l.lsb = null;                                               // position lives in the contours (as translateLetterX)
+  // The points move by where their marks LAND (land — boldGenApply's markLandTable before and after the marks
+  // are thickened, { keys: { key: [c, c2] }, pins: { cp: [c, c2] } }): a' = M(a + c) − c2, M this bbox remap —
+  // so a mark that keeps the source font's attach point sits on the heavier letter as a drawn one does (whose
+  // attach point follows its own thicker ink). Without an offset, the plain remap exactly as before.
+  const rx = x => fin.minX + (x - pre.minX) * (fin.maxX - fin.minX) / preW, ry = y => fin.minY + (y - pre.minY) * (fin.maxY - fin.minY) / preH;
+  const remap = (p, cc) => {
+    const c = cc && cc[0], c2 = cc && cc[1];
+    if (!c || !(c.x || c.y || c2.x || c2.y)) { p.x = Math.round(rx(p.x)); if (!keepHeight) p.y = Math.round(ry(p.y)); return; }
+    p.x = Math.round(rx(p.x + c.x) - c2.x); p.y = Math.round((keepHeight ? p.y + c.y : ry(p.y + c.y)) - c2.y);
+  };
   if (l.anchors && preW > 0 && preH > 0) for (const k in l.anchors) {
     const a = l.anchors[k]; if (!a) continue;
-    a.x = Math.round(fin.minX + (a.x - pre.minX) * (fin.maxX - fin.minX) / preW);
-    if (!keepHeight) a.y = Math.round(fin.minY + (a.y - pre.minY) * (fin.maxY - fin.minY) / preH);
+    remap(a, land && land.keys[k]);
   }
-  if (l.markAnchors && preW > 0 && preH > 0) for (const cp in l.markAnchors) {   // fidelity pins rescale exactly like the class anchors
+  if (l.markAnchors && preW > 0 && preH > 0) for (const cp in l.markAnchors) {   // fidelity pins rescale exactly like the class anchors — each by its own mark's landing point
     const p = l.markAnchors[cp]; if (!p) continue;
-    p.x = Math.round(fin.minX + (p.x - pre.minX) * (fin.maxX - fin.minX) / preW);
-    if (!keepHeight) p.y = Math.round(fin.minY + (p.y - pre.minY) * (fin.maxY - fin.minY) / preH);
+    remap(p, land && land.pins[cp]);
   }
   const hadCurves = !!(l.curves && l.curves.length);
   l.curves = null;                                            // offset points would desync a parallel Bézier model
@@ -18397,6 +18405,11 @@ function boldGenMarkCps() {
   return out;
 }
 function bgIsPunct(cp) { const L = LETTERS.find(x => x.cp === cp); return !!(L && L.cat === 'punct'); }
+function boldGenPinLand(t, l) {   // { cp: [c, c] } — each pin's own mark's landing offset (t: markLandTable)
+  const out = {};
+  if (l.markAnchors) for (const cp in l.markAnchors) { const p = l.markAnchors[cp]; if (p) out[cp] = t.mark(l, catOfCp(cp), cp, p.key); }
+  return out;
+}
 function bgMarkLocalD(kind, cp, d) {   // marks render scaled — thicken in mark-local units
   const s = kind === 'trop' ? tropScale() : nikScale(cp);
   return Math.round(d / Math.max(0.3, s));
@@ -18513,8 +18526,10 @@ function boldGenApply() {
   const top0 = undoStack[undoStack.length - 1];
   udDo(scopes, 'generate bold', () => {
     srcForms.forEach(pc => { delete pc.src; delete pc.srcDagesh; });
+    // Where each letter's marks land, before and after the marks are thickened (their ink grows about an attach
+    // point a font's own mark keeps): the marks first, then the letters, whose anchors move by both (boldGenLetter).
+    const t0 = markLandTable(null), lands = t0 ? letters.map(l => ({ keys: t0.keys(l), pins: boldGenPinLand(t0, l) })) : null;
     letters.forEach(l => {
-      if (l.contours && l.contours.length) boldGenLetter(l, d, keepHeight);
       if (withMarks && l.markShapes) Object.keys(l.markShapes).forEach(cp => {
         const kind = catOfCp(cp) === 'trop' ? 'trop' : 'nikkud';
         boldGenMarkShape(l.markShapes[cp], bgMarkLocalD(kind, cp, d), kind, cp);
@@ -18523,6 +18538,18 @@ function boldGenApply() {
     markCps.forEach(([kind, cp]) => boldGenMarkShape(project.font[kind].custom[cp], bgMarkLocalD(kind, cp, d), kind, cp));
     if (markCps.some(m => m[0] === 'nikkud')) project.font.nikkud.mode = 'custom';
     if (markCps.some(m => m[0] === 'trop')) project.font.trop.mode = 'custom';
+    const t1 = t0 ? markLandTable(null) : null;
+    letters.forEach((l, i) => {
+      if (!(l.contours && l.contours.length)) return;
+      let land = null;
+      if (t0) {   // [c, c2] per key and per pin: c as the marks were, c2 as they now are
+        const k1 = t1 ? t1.keys(l) : {}, p1 = t1 ? boldGenPinLand(t1, l) : {}, z = { x: 0, y: 0 }, pair = (a, b) => [a ? a[0] : z, b ? b[0] : z];
+        land = { keys: {}, pins: {} };
+        new Set(Object.keys(lands[i].keys).concat(Object.keys(k1))).forEach(k => { land.keys[k] = pair(lands[i].keys[k], k1[k]); });
+        new Set(Object.keys(lands[i].pins).concat(Object.keys(p1))).forEach(cp => { land.pins[cp] = pair(lands[i].pins[cp], p1[cp]); });
+      }
+      boldGenLetter(l, d, keepHeight, land);
+    });
   });
   if (S > 0) {   // an Italic made bolder is the Bold Italic. The Style is a meta field, outside every undo scope, so the entry carries its two values the way a gx entry does (gxMeta): undo / redo put the other one back while the field is still what this left it at (gxAfterHistory) — without that, undoing a slant and this left an upright Regular named Bold Italic
     const io = GX_META.style, before = io.get(project.font), after = fontStyleMake(true, fontIsItalic());

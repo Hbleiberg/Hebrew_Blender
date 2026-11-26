@@ -2119,7 +2119,11 @@ convention applies byte-for-byte. Lifecycle: `importMarkGlyph` drops any stale `
 (re-set from the new font's GPOS by `applyFontImport`); `finalizeFromRaw` (the trace commit) and
 `assignSvgContours` drop it too; the Edit-shape modal carries it through upload-mode applies and
 drops it for editor-mode (pieces) applies; boldGen mutates contours in place and deliberately
-leaves it fixed. It rides autosave/`.hfm`/recent-projects for free (deep clones, no whitelists).
+leaves it fixed — so such a mark's ink grows about the source font's attach point, and Generate Bold
+moves each letter's anchors and pins by where their marks land (`boldGenLetter`'s bbox remap applied
+to the landing point, `a' = M(a + c) − c2`: `boldGenApply` thickens the marks first and measures
+`markLandTable` before and after, then emboldens the letters), just as a drawn mark's bbox attach point
+follows its own heavier ink (*Glyph transforms* → *Where a mark lands*). It rides autosave/`.hfm`/recent-projects for free (deep clones, no whitelists).
 The base side has the same guard. `applyImportedAnchors` gives a letter's imported anchors a `savedAnchors`
 baseline, as `migrateProject` gives a reloaded project's. The placement step's carry-forward
 (`maybeInheritAnchors`, which copies the last letter's anchors onto the next one opened) only touches letters
@@ -2186,7 +2190,7 @@ measured truth exactly (this is what fixes the `classResidual` combos). Rules th
   gold ✎ badge, Unpin / Clear-pins, all undoable); a fresh outline/anchor import deletes pins —
   gated on the import's OUTCOME, not its checkboxes (per letter, `opts.outlines || imp`), so an
   anchors-only import whose read yielded nothing changes nothing;
-  `boldGenLetter` rescales them with the anchors; `maybeInheritAnchors` skips pinned letters;
+  `boldGenLetter` rescales them with the anchors, each by its own mark's landing point; `maybeInheritAnchors` skips pinned letters;
   `migrateProject` sanitizes them (`sanitizeMarkAnchors`). Pins ride undo/autosave/`.hfm` for
   free (item deep-clones).
 - **Values are ROUNDED at the source** (`implied()`, `row.fix`, and `fidelityMeasure`'s `dev` —
