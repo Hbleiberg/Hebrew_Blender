@@ -18189,6 +18189,7 @@ const GXW_LOCAL_MAX = 1500;   // above this many points a letter uses its one st
 const GXW_WIDE = 2;           // a shapes' factor above this (one narrow letter, nearly all stroke, widened on its own) stretches everything but its strokes to more than twice its width: the dialog and Edit points say so
 const GXW_UPRIGHT = 0.95;     // an edge this upright as drawn (the sine of its angle, about 72°) is a side of a stem: where it shows, holding a joint together never moves it (gxwShape's buried ends)
 const GXW_FIT_SLACK = 0.5;    // the gate (gxwFits) measures the shapes before the export rounds them and turns them into the file's curves, which can move an outline about this much: it asks that much more than the measure does
+const GXW_NEAR = 3;           // a held letter the gate turns down (or that comes apart all the same) is stepped once more (gxwShape's `again`) with a joint counted as touching wherever the step's own outline comes this near its cover: the gate measures the shipped curves, rounded, and a polygon a unit or two away can be a curve that touches
 function gxwMedian(a) { if (!a.length) return null; const b = a.slice().sort((x, y) => x - y), m = b.length >> 1; return b.length % 2 ? b[m] : (b[m - 1] + b[m]) / 2; }
 function gxwEdges(rings) {   // every non-flat edge: [x1, y1, x2, y2, ring, the index of its first point in that ring]
   const E = [];
@@ -18500,8 +18501,11 @@ function gxwFits(H, F) {
    (a hand-edited letter) and is rebuilt that way. → gxOutline's record { keep, rings, curves, lost }
    plus closed (a counter closes or nearly does, or strokes meet — the gap columns below — or a stroke runs into its own contour), tau (the shift that put the
    ink's left edge at s × its old place) and b0 / b1 (the polygon's bounds before and after); and, where a hold changed what
-   ships, free: the same record with no hold (the gate's yardstick and fallback — free.settle() completes its checks). */
-function gxwShape(rings, curves, s, t, hand) {
+   ships, free: the same record with no hold (the gate's yardstick and fallback — free.settle() completes its checks).
+   again: gxWidthOp's second try, for a letter the gate turned down — a buried run counts as touching its cover wherever the step's
+   own outline comes within GXW_NEAR of it (a unit otherwise), and a bridge is aimed the way the last 4 units of outline before it
+   run (the gate reads the edge a bridge leaves that way), not along the tangent where it starts. */
+function gxwShape(rings, curves, s, t, hand, again) {
   const hasCv = Array.isArray(curves) && curves.length === rings.length;
   const E = gxwEdges(rings), sides = gxwSides(rings, E), near = gxwBins(E);
   const local = rings.reduce((n, r) => n + r.length, 0) <= GXW_LOCAL_MAX;
@@ -18798,14 +18802,16 @@ function gxwShape(rings, curves, s, t, hand) {
      - where the step leaves a gap there (the stem's side moved away from the arch that ran into it), the outline goes on from each
        exit straight ahead, the way it arrives there, across the gap and into the cover (a bridge: no bend, no bump) — and so it
        does where the parts still touch, if that straight run stays on the step's own outline (it fills the sliver between them);
-     - else, where the step's own outline of the stretch still reaches the cover (in its ink, or within a unit of it), it is kept as
-       the step makes it up to there, and goes on inside the cover from there (touch);
+     - else, where the step's own outline of the stretch still reaches the cover (in its ink, or within a unit of it — GXW_NEAR on
+       gxWidthOp's second try), it is kept as the step makes it up to there, and goes on inside the cover from there (touch); where
+       it reaches the cover at one place only (a corner), from where the outline around it is a unit and a half off;
+     the cover is the contour the run's points are held in, never other ink near the joint (a fill-in in the crotch of an arch);
      inside the cover the outline runs between points half a stem deep (or half way through), so the two overlap. A run whose hold
      moved nothing is left as the step makes it, and so is one that neither can join (two sides that meet before the cover, as at
      the tip of a foot): the guarantee and the gate have the last word on those. */
   const spl = rings.map(() => null);
   if (held.some(Boolean)) {
-    const GM = gxwGrid(moved), G0 = gxwGrid(moved0), nearM = gxwBins(gxwEdges(moved)), D = t / 2, room = t * Math.abs(s - 1) + 8;   // room: the width the step takes back from a stem, and a little — no bridge leaves the step's outline for longer
+    const GM = gxwGrid(moved), G0 = gxwGrid(moved0), nearM = gxwBins(gxwEdges(moved)), GC = new Map(), D = t / 2, room = t * Math.abs(s - 1) + 8, nr = again ? GXW_NEAR : 1;   // room: the width the step takes back from a stem, and a little — no bridge leaves the step's outline for longer; GC: the covers' own edges, per cover; nr: touching distance
     const inkM = (ri, q) => { const B = nearM(q[1]); let w = 0; for (let i = 0; i < B.length; i++) { const e = B[i]; if (e[4] !== ri && (e[1] > q[1]) !== (e[3] > q[1]) && crossX(e, q[1]) < q[0]) w += e[3] > e[1] ? 1 : -1; } return w !== 0; };   // in the other rings' ink as the step (and the holds) left it
     const sunk = (ri, q, m) => inkM(ri, q) && gxwNearest(GM, q, ri, m)[0] >= m;   // … and at least m from its edge
     const shown = (ri, q) => !inkM(ri, q) && gxwNearest(GM, q, ri, 1.5)[0] > 1.5;
@@ -18891,7 +18897,14 @@ function gxwShape(rings, curves, s, t, hand) {
       };
       const look = (v, side) => {   // … and the outline's direction of travel there, read on the side that shows (before v: −1, after: +1)
         const o = spot(v); if (!o) return null;
-        if (c) { const d = cvDir(c, o[1], side); return d && [o[0], d, o[1]]; }
+        if (c) {
+          let d = cvDir(c, o[1], side);
+          if (again && d) {   // the second try: the way the last 4 units of outline run (a curve still turning there would put a bridge along its tangent beyond the edge it leaves)
+            const w = walk(v, side < 0 ? -1 : 1, 4, 4), b = w.length > 1 && spot(w[w.length - 1]);
+            if (b) { const dx = side < 0 ? o[0][0] - b[0][0] : b[0][0] - o[0][0], dy = side < 0 ? o[0][1] - b[0][1] : b[0][1] - o[0][1], L = Math.hypot(dx, dy); if (L > 1) d = [dx / L, dy / L]; }
+          }
+          return d && [o[0], d, o[1]];
+        }
         const i0 = Math.floor(md(v)); let Y = o[0], acc = 0;
         for (let k = 0; k <= n && acc < GXW_WIN; k++) { const p = Pb[md(side < 0 ? i0 - k : i0 + 1 + k)]; acc += Math.hypot(p[0] - Y[0], p[1] - Y[1]); Y = p; }
         const dx = side < 0 ? o[0][0] - Y[0] : Y[0] - o[0][0], dy = side < 0 ? o[0][1] - Y[1] : Y[1] - o[0][1], L = Math.hypot(dx, dy);
@@ -18919,15 +18932,20 @@ function gxwShape(rings, curves, s, t, hand) {
       runs.forEach(([va, vb]) => {
         const L = fd(va, vb);
         if (!(L > 1e-6) || !list.some(d => { const q = fd(va, d[0]); return (q <= L || q > n - 1e-9) && Math.abs(moved[ri][d[0]][0] - moved0[ri][d[0]][0]) > 1e-9; })) return;   // its hold moved nothing (a run's own points may be its exits: a bar's corner touching the stem)
-        let za = null, zb = null;   // where the step's own outline of the stretch reaches the cover, first and last
+        // The cover is the contour (or contours) this run's points are held in — not any other ink nearby: a fill-in at the joint
+        // (Frank Ruhl's h has a small square in the crotch of its arch) can touch the arch where the stem itself has moved away.
+        const cov = new Set(list.filter(d => { const q = fd(va, d[0]); return q <= L || q > n - 1e-9; }).map(d => d[1][5])), ck = [...cov].join();
+        if (!GC.has(ck)) GC.set(ck, gxwGrid(moved.map((P, j) => (cov.has(j) ? P : []))));
+        const gc = GC.get(ck), inC = q => { const B = nearM(q[1]); let w = 0; for (let i = 0; i < B.length; i++) { const e = B[i]; if (cov.has(e[4]) && (e[1] > q[1]) !== (e[3] > q[1]) && crossX(e, q[1]) < q[0]) w += e[3] > e[1] ? 1 : -1; } return w !== 0; };
+        let za = null, zb = null;   // where the step's own outline of the stretch reaches the cover (comes within nr of it), first and last
         for (let i = Math.floor(va); i <= Math.floor(va + L); i++) {
           const a = Pb[md(i)], b = Pb[md(i + 1)], El = Math.hypot(b[0] - a[0], b[1] - a[1]);
-          for (let x = 0, last = false; !last; ) {   // in strides: the outline cannot come within a unit of the cover before it has run as far as the cover is
+          for (let x = 0, last = false; !last; ) {   // in strides: the outline cannot come that near the cover before it has run as far as the cover is
             if (x >= El) { x = El; last = true; }
             const v = i + (El ? x / El : 0); if (v > va + L) break;
-            const p = ptAt(Pb, v), dd = Math.min(16, gxwNearest(GM, p, ri, 16)[0]);
-            if (v >= va && (dd <= 1 || inkM(ri, p))) { if (za == null) za = v; zb = v; }
-            x += Math.max(1, dd - 1);
+            const p = ptAt(Pb, v), dd = Math.min(16, gxwNearest(gc, p, ri, 16)[0]);
+            if (v >= va && (dd <= nr || inC(p))) { if (za == null) za = v; zb = v; }
+            x += Math.max(1, dd - nr);
           }
         }
         // The bridges: straight on from each exit, the way the outline arrives there — or, where that never reaches the cover within
@@ -18968,8 +18986,16 @@ function gxwShape(rings, curves, s, t, hand) {
           if (clean(o)) sp = o;
         }
         if (!(sp && clean(sp)) && za != null) {   // touch: the step's own outline up to the cover, then inside it
-          const sa = look(za, -1), sb = look(zb, 1), Pa = sa && dig(ri, sa[0], sa[1]), Pz = sb && dig(ri, sb[0], [-sb[1][0], -sb[1][1]]);
-          sp = (Pa && Pz && fd(za, zb) > 1e-6 && Math.hypot(sb[0][0] - sa[0][0], sb[0][1] - sa[0][1]) >= 0.5 && inner(ri, Pa, Pz) && !segIntersect(sa[0], Pa, sb[0], Pz)) ? { a: za, b: zb, ca: sa[2], cb: sb[2], mid: [Pa, Pz] } : null;
+          const touch = (a, b) => {
+            const sa = look(a, -1), sb = look(b, 1), Pa = sa && dig(ri, sa[0], sa[1]), Pz = sb && dig(ri, sb[0], [-sb[1][0], -sb[1][1]]);
+            return (Pa && Pz && fd(a, b) > 1e-6 && Math.hypot(sb[0][0] - sa[0][0], sb[0][1] - sa[0][1]) >= 0.5 && inner(ri, Pa, Pz) && !segIntersect(sa[0], Pa, sb[0], Pz)) ? { a, b, ca: sa[2], cb: sb[2], mid: [Pa, Pz] } : null;
+          };
+          const pa = ptAt(Pb, za), pz = ptAt(Pb, zb);
+          sp = touch(za, zb);
+          if (!sp && Math.hypot(pz[0] - pa[0], pz[1] - pa[1]) < 1) {   // it reaches the cover at a single place (a corner that only just touches it): widened to the outline around it that lies within a unit and a half of the cover — outline that near is part of the joint, it does not show — so what goes into the cover is thick enough to hold
+            const zr = Math.max(1.5, nr), ext = (v0, dir) => { const vs = walk(v0, dir, room, 0.25); let v = v0; for (let k = 1; k < vs.length; k++) { const w = vs[k], p = ptAt(Pb, w); if (fd(va, w) > (dir < 0 ? fd(va, v0) : L) || !(inC(p) || gxwNearest(gc, p, ri, zr)[0] <= zr)) break; v = w; } return v; };
+            sp = touch(ext(za, -1), ext(zb, 1));
+          }
         }
         if (sp && clean(sp) && (!c || (sp.ca && sp.cb))) out.push(sp);
       });
@@ -19058,19 +19084,25 @@ function gxWidthOp(pct, o) {
      gxwApart) is not given the step. It is stretched plainly, which cannot separate anything, and the
      plan names it (warn.stretched). Before that, a letter the step held together is measured (gxwFits): where
      its outline that shows strays from the step's own (a lump, or a bridge across a gap that is not there), or
-     where it came apart all the same, it takes the step as an ordinary letter gets it (H.free) when that keeps
-     it in one piece; else the plain stretch. */
+     where it came apart all the same, it is stepped once more (again): its joints counted as touching wherever
+     the step's own outline comes within GXW_NEAR of the cover (the gate reads the curves as they ship, rounded:
+     a polygon a unit from its cover can be a curve that touches it), and its bridges aimed the way the gate
+     reads the edge they leave; that is taken when it passes the gate and stays whole. Else the step as an
+     ordinary letter gets it (H.free) when that keeps it in one piece; else the plain stretch. */
   const tried = new Map(), memo = cen ? (cen.pieces || (cen.pieces = new WeakMap())) : null;   // the "before" counts ride on the census, which the dialog keeps while it is open
   const step = l => {
     let r = tried.get(l); if (r) return r;
     r = { t: gxwStemFor(cen, l), out: null, apart: false };
     if (r.t != null) {
-      const rings = l.contours.map(c => c.points), H = gxwShape(rings, l.curves, k, r.t, !!l.handEdited), F = H.free;
+      const rings = l.contours.map(c => c.points), hand = !!l.handEdited, H = gxwShape(rings, l.curves, k, r.t, hand), F = H.free;
       delete H.free;
-      if (F && !gxwFits(H, F).ok) { r.out = F.settle(); r.apart = !!F.b1 && gxwApart(rings, l.curves, F, memo, l); }
-      else {
-        r.out = H; r.apart = !!H.b1 && gxwApart(rings, l.curves, H, memo, l);
-        if (F && r.apart) { r.out = F.settle(); r.apart = !!F.b1 && gxwApart(rings, l.curves, F, memo, l); }
+      const fit = !F || gxwFits(H, F).ok;
+      if (fit) { r.out = H; r.apart = !!H.b1 && gxwApart(rings, l.curves, H, memo, l); }
+      if (!fit || r.apart) {   // turned down, or apart all the same: once more (a joint near its cover joined inside it, a bridge aimed as the gate reads it) — else the step with no hold, when that keeps the letter whole
+        const H2 = gxwShape(rings, l.curves, k, r.t, hand, true), F2 = H2.free;
+        delete H2.free;
+        if (F2 && gxwFits(H2, F2).ok && !(H2.b1 && gxwApart(rings, l.curves, H2, memo, l))) { r.out = H2; r.apart = false; }
+        else if (F) { r.out = F.settle(); r.apart = !!F.b1 && gxwApart(rings, l.curves, F, memo, l); }
       }
       if (r.out && r.out.settle === undefined) delete r.out.settle;
     }
