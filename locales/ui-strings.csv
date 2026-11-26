@@ -6433,6 +6433,7 @@ fontmaker.status.upload_unreadable.one,{count} file could not be read as an imag
 fontmaker.status.upload_unreadable.other,{count} files could not be read as images.,{count} קבצים לא נקראו כתמונה.,toast,plural; REVIEW: machine-drafted HE — confirm
 fontmaker.status.width_detected,This font is marked {width} — its Width name was set to match (see Font Details).,הגופן הזה מסומן כ{width} — שם הרוחב שלו הוגדר בהתאם (ראו פרטי הגופן).,toast,{width} = a width option name
 fontmaker.status.xform_too_big,"That would push points past what a font file can hold, so nothing was changed.","הפעולה הזאת תדחוף נקודות אל מעבר למה שקובץ גופן יכול להכיל, ולכן שום דבר לא שונה.",toast,
+fontmaker.status.xform_draw_out,"That would push the pen strokes out of the drawing area, so nothing was changed. Choose a smaller size or angle.","הפעולה הזאת תדחוף את משיכות העט אל מחוץ לאזור הציור, ולכן שום דבר לא שונה. בחרו גודל או זווית קטנים יותר.",toast,a whole-letter Transform in Edit points carries the pen strokes; refused when they would leave the drawing area
 fontmaker.undolabel.upload_image,upload image,העלאת תמונה,undo action name,REVIEW: machine-drafted HE — confirm
 fontmaker.undolabel.upload_n_photos,upload {n} photos,העלאת {n} תמונות,undo action name,REVIEW: machine-drafted HE — confirm
 fontmaker.undolabel.width_n,width {n}%,רוחב {n}%,undo action name,

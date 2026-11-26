@@ -1444,8 +1444,9 @@ its own is traced through that placement next, so it takes the placement's lean
 (`photoLean(src)`): with no outline yet as its record, and over an outline traced from the old
 placement as `l.photoSlant`, which waits beside the record until the next trace from the picture
 (`finalizeFromRaw` → `photoSlantTake`) makes it the record. `l.photoSlant` composes and narrows with
-the record under Slant and Width, and composes under a whole-letter Slant in Edit points (the carry,
-`xformCarryBase` → `xformSlantCarry` → `xformPutCarry`) — the photo's matrix moves with each — and goes wherever the record
+the record under Slant and Width, and under a whole-letter Slant, Scale, Width/Height or Flip H in Edit
+points changes as the record does (the carry, `xformCarryBase` → `xformCarry` → `xformPutCarry`) — the
+photo's matrix moves with each — and goes wherever the record
 goes for a new placement (a new photo, crop or auto-split, Center image). A new path that replaces
 or copies an outline does the same. The photo "skew" nudges in Align leave no record.
 
@@ -1721,8 +1722,18 @@ project. A gesture also opens with `udFlushPending`, so it never rides a burst a
 open. The sliders run from one table of kinds (`XF_KINDS`: neutral value, undo
 label, readout, done-message), and the pivot comes from the map itself (`xformPivot(keys, m)` — a
 slant pivots on the baseline through `m.py`), so the nodes, the range check and the anchors can never
-use different ones. A whole-glyph **slant** also carries the letter's photo and pen strokes
-(`xformSlantCarry`, the engine's own patch) and updates its lean record; the other whole-glyph
+use different ones. Every whole-glyph transform that moves the anchors — **scale, Width/Height,
+Flip H and slant** — also carries the letter's photo matrix, capture box, hollow-trace ring and pen
+strokes through the same map about the same pivot (`xformCarry`: `gxLetterPatch`, the engine's own
+patch, so the census is one; on a letter with a picture the photo follows a live slider too, by the
+same test the patch makes, and the strokes are settled at the commit), so Trace → Re-trace, saving the
+drawing again or one more stroke rebuilds the *transformed* letter, and its ink and the anchors that
+moved with it agree. The mirror of Flip H keeps the pen's width (the patch's area factor is |det|). A
+carry whose strokes would leave the drawing area refuses the whole transform, as the engine does, with
+its own status line; undo and redo bring the matrix and the strokes back with the outline (the item
+scope takes `withDraw` when there are strokes). A rotation and a vertical flip move no anchor and
+carry nothing: a rebuild discards them with the other point edits, and the anchors still fit what
+comes back. A slant also updates the lean record; the other whole-glyph
 transforms keep the record true (`xformSlantAfter`: a flip mirrors it, a Width/Height scale changes
 its tangent, a rotation turns it). A rotation's angle is taken modulo 180° into (−90°, 90°] — a
 sheared shape turned half way round leans exactly as before — and past `XF_LEAN_MAX` (45°) either

@@ -16593,22 +16593,27 @@ function xformLeanPut(l, kind, deg) { setLetterSlant(l, (kind === 'rot' && Math.
 function xformTurnNote(l, kind, deg) {                       // after the outline is written
   if (kind === 'rot' && Math.abs(deg) > XF_LEAN_MAX) _xformTurned.set(l, { deg, sig: xformOutlineSig(l) }); else _xformTurned.delete(l);
 }
-/* …and a whole-glyph SLANT carries the letter's photo and pen strokes, exactly as the engine does
-   (gxLetterPatch), so a later re-trace or one more stroke agrees with the record. `base` is the letter
-   as it was before the transform. The lean a photo's placement waits to give its next trace
-   (l.photoSlant) takes the same shear, as the engine's stamp does. → { transform?, captureBox?, draw?,
-   drawSig?, photoSlant?, drawOut } */
-function xformSlantCarry(l, base, deg) {
-  const k = slantTan(deg), b = effMetrics().baseline, was = Object.assign({}, l, base);
-  const r = gxLetterPatch(was, { T: [1, k, 0, 1, -k * b, 0], keepLsb: true }, null), out = { drawOut: r.drawOut };
-  ['transform', 'captureBox', 'draw', 'drawSig'].forEach(key => { if (key in r.set) out[key] = r.set[key]; });
-  if (base.photoSlant != null) out.photoSlant = slantCompose(photoLean(was), deg);
+/* …and every whole-glyph transform that moves the anchors (xformAnchorsFollow: a scale, a Width/Height
+   scale, a horizontal flip, a slant) carries the letter's photo and pen strokes through the same map,
+   exactly as the engine does (gxLetterPatch — one census, not two), so a later re-trace, one more stroke
+   or saving the drawing again reproduces the TRANSFORMED letter, and its ink agrees with the anchors that
+   moved with it. A rotation and a vertical flip move no anchor and carry nothing: rebuilding the outline
+   from its source discards them with the other point edits, and the anchors still fit what comes back.
+   `base` is the letter as it was before the transform; m and piv are the transform's own map and pivot.
+   The lean a photo's placement waits to give its next trace (l.photoSlant) changes as the record does
+   (xformSlantAfter). → { transform?, captureBox?, lineWeight?, draw?, drawSig?, photoSlant?, drawOut } */
+function xformMapT(m, piv) { return [m.a, m.b, m.c, m.d, piv.cx - m.a * piv.cx - m.b * piv.cy, piv.cy - m.c * piv.cx - m.d * piv.cy]; }   // the node map about its pivot, in the engine's layout
+function xformCarry(l, base, kind, arg, m, piv) {
+  const was = Object.assign({}, l, base);
+  const r = gxLetterPatch(was, { T: xformMapT(m, piv), keepLsb: true }, null), out = { drawOut: r.drawOut };
+  ['transform', 'captureBox', 'lineWeight', 'draw', 'drawSig'].forEach(key => { if (key in r.set) out[key] = r.set[key]; });
+  if (base.photoSlant != null) out.photoSlant = xformSlantAfter(kind, arg, photoLean(was));
   return out;
 }
-function xformCarryBase(l) { return JSON.parse(JSON.stringify({ transform: l.transform, captureBox: l.captureBox || null, draw: l.draw || null, drawSig: l.drawSig == null ? null : l.drawSig, slant: letterSlant(l), photoSlant: l.photoSlant == null ? null : l.photoSlant })); }
-function xformPutCarry(l, c) { ['transform', 'captureBox', 'draw', 'drawSig', 'photoSlant'].forEach(key => { if (key in c) l[key] = c[key]; }); }
-function xformScope(l, kind) {   // a slant that carries pen strokes must snapshot them too (draw is outside a plain item scope)
-  return (kind === 'slant' && xformWhole() && l.draw && l.draw.strokes && l.draw.strokes.length) ? Object.assign(itemScope(), { withDraw: true }) : itemScope();
+function xformCarryBase(l) { return JSON.parse(JSON.stringify({ transform: l.transform, captureBox: l.captureBox || null, lineWeight: l.lineWeight, draw: l.draw || null, drawSig: l.drawSig == null ? null : l.drawSig, slant: letterSlant(l), photoSlant: l.photoSlant == null ? null : l.photoSlant })); }
+function xformPutCarry(l, c) { ['transform', 'captureBox', 'lineWeight', 'draw', 'drawSig', 'photoSlant'].forEach(key => { if (key in c) l[key] = c[key]; }); }
+function xformScope(l, kind) {   // a transform that carries pen strokes must snapshot them too (draw is outside a plain item scope)
+  return (xformAnchorsFollow(kind) && strokesOwn(l)) ? Object.assign(itemScope(), { withDraw: true }) : itemScope();
 }
 /* The points move by where their marks LAND (land — xformLand; null when every mark lands on its attach point):
    a' = M(a + c) − c, the mark itself unchanged, so a flip mirrors the landing point and never the mark. A side
@@ -16711,8 +16716,9 @@ function transformSelectedNodes(kind, angleDeg) {            // button / number-
   const whole = xformWhole(), land = (xformAnchorsFollow(kind) || xformFormsFollow(kind)) ? xformLand(l) : null;
   const anch = xformAnchorsFollow(kind) ? xformMappedAnchors(l, m, piv, kind === 'fliph', land) : null;
   const forms = xformFormsFollow(kind) ? xformMappedForms(xformFormsBase(l), m, piv, land) : [];
-  const carry = (kind === 'slant' && whole) ? xformSlantCarry(l, xformCarryBase(l), m.deg) : null;
-  if (xformOutOfRange(piv, m) || (anch && xformAnchorsTooFar(anch)) || xformFormsTooFar(forms) || (carry && carry.drawOut)) { status(I18n.t('fontmaker.status.xform_too_big')); return; }   // refused whole: nothing written, no undo entry
+  const carry = anch ? xformCarry(l, xformCarryBase(l), kind, angleDeg, m, piv) : null;   // the photo and the strokes go where the anchors go
+  if (xformOutOfRange(piv, m) || (anch && xformAnchorsTooFar(anch)) || xformFormsTooFar(forms)) { status(I18n.t('fontmaker.status.xform_too_big')); return; }   // refused whole: nothing written, no undo entry
+  if (carry && carry.drawOut) { status(I18n.t('fontmaker.status.xform_draw_out')); return; }   // …and so when the pen strokes it carries would leave the drawing area (the engine's own refusal)
   const lean = whole ? xformSlantAfter(kind, angleDeg, xformLeanFor(l, kind)) : null;
   let done = false;
   udDo([xformScope(l, kind)].concat(xformFormScopes(forms)), m.label + l.name, () => {
@@ -16804,6 +16810,8 @@ function xformLive(kind, v) {
     udBurstBegin([xformScope(l, kind)].concat(xformFormScopes(forms)), XF_KINDS[kind].label + l.name);
     _xformBase = { kind, ik: curKind, cp: curCp, burst: _burst, keys, model: JSON.parse(JSON.stringify(nodeModel)), sel: new Set(nodeSel), val: XF_KINDS[kind].neutral,
                    whole: xformWhole(), carry: xformCarryBase(l),   // the letter's photo, strokes and lean record as they were — re-derived from these, never compounded
+                   carries: xformAnchorsFollow(kind), m: null, piv: null,   // the photo and strokes go where the anchors go (xformCarry), by the map and pivot of the last tick
+                   photo: !!(l.source && l.source.dataUrl) && Array.isArray(l.transform) && l.transform.length === 6,   // a picture to follow live — gxLetterPatch's own test, so the preview never moves a matrix the commit would not
                    lean0: xformLeanFor(l, kind),                    // the lean the gesture starts from (for a rotation: also an angle the last turn took out of range)
                    // a whole-glyph scale carries the anchors and pins: keep the pre-drag pair, re-map it from scratch each tick
                    anch: xformAnchorsFollow(kind) ? JSON.parse(JSON.stringify({ anchors: l.anchors || null, markAnchors: l.markAnchors || null })) : null, forms,
@@ -16821,13 +16829,12 @@ function xformLive(kind, v) {
     anch = (m && _xformBase.anch) ? xformMappedAnchors(_xformBase.anch, m, piv, false, _xformBase.land) : null;
     forms = m ? xformMappedForms(_xformBase.forms, m, piv, _xformBase.land) : _xformBase.forms;
   }
-  _xformBase.val = val;
+  _xformBase.val = val; _xformBase.m = m; _xformBase.piv = piv;   // what this tick shows is what a commit carries
   if (m) applyXformToKeys(_xformBase.keys, m);               // same keys every tick ⇒ same bbox pivot every tick
   if (_xformBase.anch) xformPutAnchors(l, anch || JSON.parse(JSON.stringify(_xformBase.anch)));
   xformPutForms(forms);
-  if (kind === 'slant' && _xformBase.whole && Array.isArray(_xformBase.carry.transform)) {   // the photo behind the outline leans live; strokes are settled once, at commit
-    const k = m ? m.b : 0;
-    l.transform = k ? M.mul(gxStageMatrix([1, k, 0, 1, -k * effMetrics().baseline, 0]), _xformBase.carry.transform) : _xformBase.carry.transform.slice();
+  if (_xformBase.carries && _xformBase.photo) {              // the photo behind the outline follows live (the engine's own stage map); strokes are settled once, at commit
+    l.transform = (m && piv) ? M.mul(gxStageMatrix(xformMapT(m, piv)), _xformBase.carry.transform) : _xformBase.carry.transform.slice();
   }
   writeThrough(l);                                           // plain write-through — indices/orientation untouched mid-drag
   renderStage();
@@ -16838,10 +16845,10 @@ function xformCommit(kind) {
   if (!_xformBase || _xformBase.kind !== kind) return;
   if (xformStale() || !nodeModel) { xformDrop(); renderStage(); renderControls(); return; }   // not this letter's open gesture any more — nothing of it is kept
   const l = curLetter(), val = _xformBase.val, B = _xformBase;
-  const carry = (kind === 'slant' && B.whole && val !== 0) ? xformSlantCarry(l, B.carry, val) : null;
+  const carry = (B.carries && val !== XF_KINDS[kind].neutral && B.m && B.piv) ? xformCarry(l, B.carry, kind, val, B.m, B.piv) : null;
   const refused = !!(carry && carry.drawOut);                // the pen strokes would leave the drawing area — nothing is kept
   if (val === XF_KINDS[kind].neutral || refused) {           // released at neutral — leave ZERO undo entries
-    if (refused) status(I18n.t('fontmaker.status.xform_too_big'));
+    if (refused) status(I18n.t('fontmaker.status.xform_draw_out'));
     udBurstCancel();                                         // exact restore of l (curves, points, handEdited)
     nodeModel = JSON.parse(JSON.stringify(_xformBase.model));
     nodeSel = new Set(_xformBase.sel);
@@ -18837,7 +18844,7 @@ function gxLetterPatch(l, spec, ctx) {   // PURE: one letter's new field values 
   // redraw the letter from its strokes.
   if (hasDraw) {
     let bad = false;
-    const wk = spec.penK != null ? spec.penK : (k != null ? k : Math.sqrt(Math.max(0, T[0] * T[3] - T[1] * T[2])));   // penK: the operation keeps the pen as it is (stems kept — only the centre lines move)
+    const wk = spec.penK != null ? spec.penK : (k != null ? k : Math.sqrt(Math.abs(T[0] * T[3] - T[1] * T[2])));   // penK: the operation keeps the pen as it is (stems kept — only the centre lines move); |det|: a mirror (the point editor's Flip H) keeps the pen's width
     const mp = q => { const p = gxMap(T, q[0], q[1]); if (p[0] < GX_DRAW_MIN || p[0] > GX_DRAW_MAX || p[1] < GX_DRAW_MIN || p[1] > GX_DRAW_MAX) bad = true; return p; };
     const strokes = d.strokes.map(s => {
       const o = Object.assign({}, s, { w: Math.round(s.w * wk * 100) / 100, pts: (s.pts || []).map(q => { const p = mp(q); return [p[0], p[1], q[2]]; }) });
