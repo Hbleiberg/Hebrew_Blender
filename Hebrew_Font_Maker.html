@@ -22506,7 +22506,10 @@ function wireDrop(id, cb, multi) {
    · o.own — the one field whose focus does not count as typing for this key: a view toggle's checkbox
      shows its key beside it (Shift+G on the grid box), and the state right after clicking it is that
      focus. Every other field still blocks — arrows on a slider must never nudge points;
-   · o.editShape — the Edit-shape window does not refuse (below).
+   · o.editShape — the Edit-shape window does not refuse (below);
+   · o.notText — a field that takes no text (UD_KEYLESS_INPUT: a slider, a checkbox, a radio) does not
+     count as typing: only undo / redo pass it, so a Transform slider that keeps its focus after a drag
+     or an arrow step still lets Ctrl+Z through (its arrows stay its own: no nudge handler passes it).
    ANY open dialog refuses — every `.overlay` in the page is a modal over the whole workspace, so no
    key pressed on one may reach the editor behind it: focus on a dialog's button or list is not typing,
    and undo, the arrow nudges, Delete and pen-mode Enter used to act on the letter under the shortcuts
@@ -22518,12 +22521,14 @@ function wireDrop(id, cb, multi) {
    toggle the grid and rulers its stage shares. Every other shortcut is refused there as behind any
    dialog — the letter steps ([ ] { }), the point editor's Delete and arrows, draw mode's keys would act
    on the letter behind the window. A dialog raised over it (a confirmation, Help) refuses even those three. */
+const UD_KEYLESS_INPUT = { range: 1, checkbox: 1, radio: 1 };
 function udShortcutBlocked(o) {
   o = o || {};
   if (!project) return true;
   if (keyClosedADialog()) return true;   // this very key press just closed a dialog: it was the dialog's, not a shortcut's
   const ae = document.activeElement;
-  if (!o.ownFocusRule && ae && ae !== o.own && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA' || ae.isContentEditable)) return true;
+  const keyless = o.notText && ae && ae.tagName === 'INPUT' && UD_KEYLESS_INPUT[ae.type];   // a slider, a box or a radio takes no text: Ctrl+Z on one is nobody's but the editor's
+  if (!o.ownFocusRule && ae && ae !== o.own && !keyless && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA' || ae.isContentEditable)) return true;
   if (document.querySelector('.ivsav-overlay')) return true;   // the account screen (js/ivrit-saves.js) is open over the editor
   if (document.querySelector(o.editShape ? '.overlay.open:not(#markEditOverlay)' : '.overlay.open')) return true;
   return false;
@@ -22533,7 +22538,7 @@ document.addEventListener('keydown', e => {
   if (!(e.ctrlKey || e.metaKey) || e.altKey) return;
   const k = e.key.toLowerCase();
   if (k !== 'z' && k !== 'y') return;
-  if (udShortcutBlocked({ editShape: true })) return;                            // also inside the Edit-shape window, whose undo this is
+  if (udShortcutBlocked({ editShape: true, notText: true })) return;             // also inside the Edit-shape window, whose undo this is; a focused slider or box is not typing
   if (meActive) {                                                                // the "Edit shape" modal has its own working-copy undo
     if (meDrag) return;                                                          // not mid-drag
     e.preventDefault();

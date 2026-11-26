@@ -1979,7 +1979,11 @@ before it, *Clear outline* the step it lands on. A dialog remembers its opener b
 inside the nearest ancestor with an id (`modalOpenerKey`), so `aCloseModal` gives focus back to the
 rebuilt twin when the column was redrawn while it was open (`modalOpenerFind`, which also tries the
 opener's `data-fk-else`). Every Transform button posts what it did on the status line (`xformDoneText`
-— the focus stays on the button, so the status line is what a screen reader announces). A press that
+— the focus stays on the button, so the status line is what a screen reader announces). A slider,
+checkbox or radio that keeps its focus this way is not typing for undo and redo (`udShortcutBlocked`'s
+`notText`, passed only by the Ctrl+Z / Ctrl+Y handler), so Ctrl+Z still undoes right after a slider
+drag or an arrow step; a text or number field keeps its own Ctrl+Z, and every other shortcut (the arrow
+nudges above all) stays off every field. A press that
 came from the keyboard (`event.detail === 0`) moves focus to *Place in the middle*, so "Enter,
 Enter" adds a shape. *Place in the middle* and *Cancel* exist only while a shape is picked, so they
 have no rebuilt twin when the tool goes away: `shapePlaceMiddle` and `shapePick` then put focus on
