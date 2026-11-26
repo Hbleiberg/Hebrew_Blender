@@ -20214,7 +20214,7 @@ function renderKerningSectionNow() {
         <option value=""       ${s.cls===''       ? 'selected' : ''}>${I18n.t('fontmaker.panels.kern_single_glyph')}</option>
         <option value="finals" ${s.cls==='finals' ? 'selected' : ''}>${I18n.t('fontmaker.panels.kern_finals')}</option>
         <option value="desc"   ${s.cls==='desc'   ? 'selected' : ''}>${I18n.t('fontmaker.panels.kern_descenders')}</option>
-        ${userKernClasses().map(c => `<option value="${c.id}" ${s.cls===c.id?'selected':''}>${esc(c.name)}</option>`).join('')}
+        ${userKernClasses().map(c => `<option value="${esc(c.id)}" ${s.cls===c.id?'selected':''}>${esc(c.name)}</option>`).join('')}
         ${(project.font.addCustomGlyphs && customBaseLetters().length) ? `<optgroup label="${esc(I18n.t('fontmaker.panels.kern_custom_glyphs'))}">${customBaseLetters().map(l => `<option value="cp:${l.codepoint}">${esc(l.name || ('U+' + l.codepoint))}</option>`).join('')}</optgroup>` : ''}
       </select>
     </div>`;
@@ -20492,8 +20492,8 @@ function kernClassManagerHTML() {
   const user = userKernClasses().map(c => `<div class="readline" style="gap:8px;align-items:center;">
       <span style="min-width:0;">${esc(c.name)} <span style="font-family:var(--heb-font);color:var(--muted);font-size:0.92rem;">${esc((c.members||[]).map(cp=>String.fromCodePoint(parseInt(cp,16))).join(' '))}</span></span>
       <span style="display:flex;gap:6px;flex-shrink:0;">
-        <button class="ctl-btn" style="padding:2px 8px;" onclick="openKernClass('${c.id}')">${I18n.t('fontmaker.panels.kern_class_edit')}</button>
-        <button class="ctl-btn" style="padding:2px 8px;" onclick="deleteKernClass('${c.id}')" title="${esc(I18n.t('fontmaker.panels.kern_class_delete_title'))}" aria-label="${esc(I18n.t('fontmaker.panels.kern_class_delete_title'))}"><svg class="hi hi-sm hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></button>
+        <button class="ctl-btn" style="padding:2px 8px;" data-kc="${esc(c.id)}" onclick="openKernClass(this.dataset.kc)">${I18n.t('fontmaker.panels.kern_class_edit')}</button>
+        <button class="ctl-btn" style="padding:2px 8px;" data-kc="${esc(c.id)}" onclick="deleteKernClass(this.dataset.kc)" title="${esc(I18n.t('fontmaker.panels.kern_class_delete_title'))}" aria-label="${esc(I18n.t('fontmaker.panels.kern_class_delete_title'))}"><svg class="hi hi-sm hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></button>
       </span></div>`);
   return `
     <div class="ctl-label" style="margin-top:14px;">${I18n.t('fontmaker.panels.kern_classes')}</div>
@@ -28391,6 +28391,17 @@ function migrateProject(data) {
             .map(k => ({ left: k.left, right: k.right, value: Math.round(k.value) || 0 }))   // || 0: a −0.4 rounds to −0
         : []; }
     if (!Array.isArray(data.font.kernClasses)) data.font.kernClasses = [];   // user-defined kern classes
+    // A class's id is written into the Spacing tab's <option value> and read by kernClassCps by its 'c_'
+    // prefix: it is saveKernClass's 'c_<base36>_<n>' or the class is dropped (a repeated id too); its
+    // members are code points (a member that is not one goes — String.fromCodePoint would throw on it in
+    // the class list — and a class left with none goes), its name non-empty text, as saveKernClass writes.
+    { const seen = new Set();
+      data.font.kernClasses = data.font.kernClasses.filter(c => {
+        if (!_isObj(c) || typeof c.id !== 'string' || !/^c_[0-9a-z]+_\d+$/.test(c.id) || seen.has(c.id) || typeof c.name !== 'string' || !c.name.trim() || !Array.isArray(c.members)) return false;
+        c.members = c.members.filter(m => typeof m === 'string' && /^[0-9A-F]{4,6}$/.test(m));
+        if (!c.members.length) return false;
+        seen.add(c.id); return true;
+      }); }
     data.font.kernChecked = Array.isArray(data.font.kernChecked)             // Common pairs ticks — keys only, well-formed, bounded (a project file is untrusted)
       ? [...new Set(data.font.kernChecked.filter(k => typeof k === 'string' && /^[0-9A-F]{4,6}\|[0-9A-F]{4,6}$/.test(k)))].slice(0, 2000) : [];
   }
