@@ -1377,7 +1377,9 @@ corner or tangle a noisy outline.
   put back as deep from each end as it was — up to half the stem, and narrowed with a narrowed
   letter — the run's ends taken where their own points were moved to (three passes: a cover's own
   end may be held too), and the rest of its buried run moves by the same amount, so a stroke's end
-  shifts as one piece and its two sides keep their spacing (K's leg under its arm).
+  shifts as one piece and its two sides keep their spacing (K's leg under its arm). These held places
+  decide which runs a hold moves and which upright sides are let go (below); the outline that ships
+  does not take them — it is the splices' (below).
 
   **An upright side that shows is the step's alone** (`shows`, `GXW_UPRIGHT`). A hold that would move
   any part of a near-upright edge (as drawn, steeper than about 72°) by more than a unit, where that
@@ -1392,22 +1394,87 @@ corner or tangle a noisy outline.
   an upright side of the cover; the two still meet. A joint that comes apart all the same is the
   guarantee's (below): the letter is stretched plainly and named.
 
-  **The curves follow the polygon's holds** (`moveCurve`): a held ring's curve is first cut where its
-  polygon's holds begin and end (the polygon point is found on the curve that runs its way, so the
-  two sides of a hairline are not confused; `gxwAt`, `gxwCut`). A cut node takes the shift the step
-  already gave that point of the curve, so a cut alone changes nothing. Then a node where the polygon
-  is held goes where the held polygon is — across the edge where a hold ends, blended into the
-  curve's own place — and its handles go with it. A curve therefore bends only where its polygon
-  bends, and never holds what the polygon let go. Two kinds of ring are never asked and
-  come out exactly as before: one with no ring of its own direction near it — every ordinary letter,
-  point for point — and one with less than a third of its outline showing (a fill-in at a joint: held
-  in its two covers it would be stretched into a web across the joint; left alone it thins away as
-  the joint opens, and is reported as lost detail when it goes). What a held end still costs: the
-  outline beside it that is not upright bends near the joint — the arch of an n leaving its stem,
-  the end of u's bowl at its stem, the bowl of ø where the slash crosses it, the foot of an arm that
-  ends a few units into a diagonal: a few units at 115%, up to about a dozen at 150% — and a buried
-  run moved as one piece can show a little past a narrower part of its cover (æ's a-stem in the e's
-  counter at 150%).
+  **What ships: the step's own outline, and a splice per buried run.** Every ring goes out as the step
+  makes it for an ordinary letter — its polygon `moved0`, and its curve moved control point by control
+  point (`cvPrep`: cut at its interior extrema, each node taking the mean of its two legs' shifts, each
+  handle riding with its own end point) — except inside the splices. Walking out along the outline
+  from a run of held points, the place where it starts to show (the rule of `shows`) is the run's
+  exit; along an edge between two held points that shows in its middle (a bar whose four corners are
+  buried, A's crossbar) there are two. Between a run's two exits, and nowhere else, the ring is
+  replaced (`polySplice`, and `cvSplice` on the curve — cut exactly at the two places, found on the
+  curve that runs the polygon's way among the segments around them; `cvFind`, `cvCut`, `gxwCut`):
+  - **a bridge** — where the step leaves a gap there (the stem's side moved away from the arch of n
+    that ran into it), the outline goes on from each exit straight ahead, the way it arrives there,
+    across the gap and into the cover, and inside the cover runs between points half a stem deep (or
+    half way through the cover), so the two parts overlap. A bridge leaves the step's outline for no
+    longer than the room the stem gave up (`t·|k − 1| + 8`), and off it makes for the cover rather than
+    running along beside it (no longer than three times its gap: a spur up a stem's side is not a
+    bridge). Where an exit's own line cannot do that, or the two sides' lines would cross before the
+    cover (the root of r's ear runs down beside its stem), the bridge starts a little further out along
+    the outline that shows (every 3 units, up to that room), nearest the exits first; an edge that runs
+    flush along the cover's (a roof bar's top along its stem's top) only grazes it, and is dug in where
+    it touches;
+  - where the parts still **touch** (the step's own outline of the stretch comes within a unit of the
+    cover, or into it), the straight run is taken only if it stays on the step's outline (within 1.5
+    units, 3 by the cover: it fills the sliver at the end of n's arch at 115%); else the step's outline
+    is kept up to where it reaches the cover, and the splice runs from there into the cover and back
+    (the end of u's bowl at 130% curls into its stem as the step makes it). Where it reaches the cover
+    at one place only — a corner that just touches it, as the end of u's bowl does at about 131% — the
+    splice starts and ends where the outline around that corner is a unit and a half from the cover, so
+    what goes into the cover is thick enough to hold. "The cover" is the contour the run's points are
+    held in, never other ink near the joint: Frank Ruhl fills the crotch of h's arch with a small square,
+    which can touch the arch where the stem has moved away from it — that is a gap, and it is bridged;
+  - a run whose hold moved nothing, or that neither can join (its two sides meet before the cover, as
+    at the tip of a foot), stays exactly as the step makes it; the gate and the guarantee (below) have
+    the last word on such a letter.
+
+  A welded corner (above) is the one place outside a splice where a held letter's outline is not the
+  step's own: the cover's corner moves to meet the let-go point, and its curve is cut where that
+  begins and ends and its nodes there follow it (`cvWeld`). Two kinds of ring are never asked and come
+  out exactly as before: one with no ring of its own direction near it — every ordinary letter, point
+  for point — and one with less than a third of its outline showing (a fill-in at a joint: left alone
+  it thins away as the joint opens, and is reported as lost detail when it goes).
+
+  **The gate (`gxwFits`).** Beside a held letter whose outline differs from the step's own, `gxwShape`
+  keeps the same letter stepped with no hold (`out.free`), and `gxWidthOp` measures the one against the
+  other on what ships (each contour's curve flattened, else its polygon). Where the held outline shows
+  — outside the other contours' ink and more than 1.5 units from it — it must lie within 2 units of
+  the step's own, or within 4 inside 6 units of the contour it runs into (the joint). The one allowance
+  is a **bridge**: one run that leaves the step's outline and goes into another contour across a gap
+  the step leaves at that joint (along the bridge, the contour it leaves and the one it meets neither
+  overlap nor come within half a unit of each other in the step's own outline — where they touch,
+  there is no allowance), with no S-bend (no points more than a unit off its chord on both sides), no
+  point farther from its chord than max(2, chord ÷ 4), none past either end along the chord, and none
+  more than a unit outside the line of the edge it leaves (no bump rising out of it). The shapes are
+  measured before the export rounds them and turns them into the file's curves, so the gate asks
+  `GXW_FIT_SLACK` (half a unit) more than that. A contour that ships exactly as the step's own is not
+  looked at, and one the step ships as its polygon (its curve crossed itself) counts as the curve it was
+  too. A letter that fails the gate — or that comes apart all the same — is stepped **once more**
+  (`gxwShape`'s `again`): a joint counts as touching wherever the step's own outline comes within
+  `GXW_NEAR` (3 units) of its cover, so it is joined there inside the cover rather than bridged, and a
+  bridge is aimed the way the last 4 units of outline before it run — the way the gate reads the edge
+  it leaves — rather than along the tangent where it starts. That is taken when it passes the gate and
+  comes out whole; a letter that passed the first time is never stepped again. The gate reads the
+  curves as they ship, rounded, and a polygon a unit or so from its cover can be a curve that touches
+  it: the bridge from the bottom of à's bowl into its stem can be turned down for that, and the second
+  try joins it where it touches; the root of r's ear still turns where its bridges leave it, and at
+  129–133% only bridges aimed along its last 4 units pass. Failing that, the letter takes
+  the step as an ordinary letter gets it when that leaves it in no more pieces than it had; else the
+  plain stretch, named (the guarantee, below). The free record's own crossing checks and gap columns
+  are done only when it is taken (`settle`).
+
+  What that leaves, on Frank Ruhl Libre: wherever the step opens a gap at the root of an arch, the
+  shoulder of n, m and h is a straight continuation of the arch into the stem (the notch a little
+  deeper than the plain stretch's), and the end of u's bowl at 150% a straight wedge up into its stem;
+  the outline beside a bridge, and wherever the parts touch, is the step's own, including the curl the
+  step gives the end of u's bowl at 130%. n, m, u, h, a and their accented forms keep their stems at
+  every width the dialog is set to up to 150%, and from 101% to 133% no letter is stretched. r's ear
+  (at 134% and from 138%) and K's leg where it meets the arm (from 145%) cannot be joined without
+  bending, so those letters are stretched plainly and named; past 150%, m and a are at some widths
+  too. A foot that reaches into its stem by its tip alone (Shlomo's Gimel) cannot be bridged either
+  and, wherever the step pulls it away, is stretched plainly too. A few letters the gate turns back
+  (Frank Ruhl's ¢ and $) take the step without holds instead, which keeps them in one piece and keeps
+  their stems.
 - *The guarantee — a letter never leaves the step in more pieces than it came in (`gxwPieces`,
   `gxwApart`).* For every letter of more than one contour `gxWidthOp` counts the pieces of ink
   before and after: the connected parts of the nonzero fill on slices one unit apart, counted twice
@@ -1425,7 +1492,8 @@ corner or tangle a noisy outline.
   The dialog names those letters in their own warn-styled sentence; Edit points
   says it in the status line. The "before" counts ride on the census (`cen.pieces`), which the
   dialog keeps while it is open.
-- *The result* is translated so the ink's left edge lands exactly on s × its old place, rounded, and
+- *The result* is translated so the ink's left edge (the step's own outline's — a held letter stands
+  where the same letter unheld does) lands exactly on s × its old place, rounded, and
   returned as the spec's `out`; `TA` maps old ink edges → new ink edges (`boldGenLetter`'s rule) and
   `penK` is 1, so a re-saved drawing keeps its stems. A **photo** cannot: such a letter is stamped
   `handEdited`, so Trace asks before a re-trace would silently bring the thin stems back.
