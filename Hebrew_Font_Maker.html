@@ -4909,8 +4909,9 @@ function markLandReads(away, l, cp) { return !(l && l.contours && away.has(l.cod
    own complement — a resize, a squeeze, a lean), or null for "as now"; without `after`, c2 = c.
    keys(l) → { key: [c, c2] } for the keys l's marks read: a nikkud key takes its PRIMARY mark's own offset
    (MARK_LAND_PRIMARY — the holam's for `above`, the main vowels' median for `below`, the dagesh's for
-   `center`), each trop and Samaritan row the median over the marks of its store (a side column takes its
-   row's) — so a key whose primary is built-in or drawn gives 0, and only keys with an offset are listed.
+   `center`), each trop and Samaritan row the median over the marks of its store (a trop side column takes
+   its row's; the two Samaritan side columns share one vertical offset, the nearer zero of the two) — so a
+   key whose primary is built-in or drawn gives 0, and only keys with an offset are listed.
    mark(l, kind, cp, key, size) → [c, c2] of one mark exactly: a pin, a composed form's dot. */
 function markLandTable(after) {
   const users = markLandUsers();
@@ -4924,8 +4925,10 @@ function markLandTable(after) {
   const medC = vs => [0, 1].map(i => ({ x: med(vs.map(v => v[i].x)), y: med(vs.map(v => v[i].y)) }));
   // the main vowels' median, clamped so that no main vowel lands farther from its place than the plain map
   // leaves it: each axis between 0 and twice every voter's own offset (a font whose narrow vowels attach far
-  // from its wide ones — Ezra SIL SR, Shlomo — would otherwise trade the sheva and hiriq for the qamats)
-  const clampC = (cc, vs) => cc.map((c, i) => { const o = {}; ['x', 'y'].forEach(a => { let lo = -Infinity, hi = Infinity; vs.forEach(v => { const t = 2 * v[i][a]; lo = Math.max(lo, Math.min(0, t)); hi = Math.min(hi, Math.max(0, t)); }); o[a] = Math.min(hi, Math.max(lo, c[a])); }); return o; });
+  // from its wide ones — Ezra SIL SR, Shlomo — would otherwise trade the sheva and hiriq for the qamats).
+  // f: the factor per axis — 1 keeps the value between 0 and the voter offset nearest 0, so every voter lands
+  // between its own exact place and the plain map's, on the same side of it as the plain map leaves it
+  const clampC = (cc, vs, f) => cc.map((c, i) => { const o = {}; ['x', 'y'].forEach(a => { let lo = -Infinity, hi = Infinity; vs.forEach(v => { const t = f[a] * v[i][a]; lo = Math.max(lo, Math.min(0, t)); hi = Math.min(hi, Math.max(0, t)); }); o[a] = Math.min(hi, Math.max(lo, c[a])); }); return o; });
   const glob = users.filter(u => u[0] !== 'nikkud').map(([kind, cp, key]) => ({ kind, cp, key, row: MARK_LAND_ROW[key] || key, v: mark(null, kind, cp, key) }));
   const nik = {}, away = markLandAway();
   for (const k in MARK_LAND_PRIMARY) (MARK_LAND_PRIMARY[k].first || MARK_LAND_PRIMARY[k].median).forEach(cp => { nik[cp] = mark(null, 'nikkud', cp, k); });
@@ -4938,10 +4941,23 @@ function markLandTable(after) {
       if (fam === 'heb') for (const k in MARK_LAND_PRIMARY) {
         const P = MARK_LAND_PRIMARY[k], own = cp => (l.markShapes && l.markShapes[cp]) ? mark(l, 'nikkud', cp, k) : nik[cp];   // a letter's own shape for a vowel is the one it lands with
         if (P.first) put(k, own(P.first.find(cp => markLandReads(away, l, cp)) || P.first[0]));
-        else { const rd = P.median.filter(cp => markLandReads(away, l, cp)), vs = (rd.length ? rd : P.median).map(own); put(k, clampC(medC(vs), vs)); }
+        else { const rd = P.median.filter(cp => markLandReads(away, l, cp)), vs = (rd.length ? rd : P.median).map(own); put(k, clampC(medC(vs), vs, { x: 2, y: 2 })); }
       }
       glob.forEach(g => { if ((g.kind === 'smrmarks') === (fam === 'smrmarks')) (rows[g.row] = rows[g.row] || []).push(g.v); });
       for (const r in rows) { const cc = medC(rows[r]); Object.keys(MARK_LAND_Y).forEach(k => { if ((MARK_LAND_ROW[k] || k) === r) put(k, cc); }); }
+      // The Samaritan side columns each keep their own offset across, and share one vertical offset — the
+      // nearer zero of the two. A flip H exchanges the two columns (xformMappedAnchors), and a flip moves no
+      // mark up or down: with one vertical offset the exchange keeps every height on a letter whose column
+      // points stand level, the way a source font's own usually do (Hebrew Square Samaritan's stand level
+      // and draw its start-column marks about 60 units lower than its end-column ones; a vertical offset per
+      // column would carry that difference over to the other side). The seeds share it too, so a seeded letter's two side points stand level as well
+      // (the column nearer its letter lands on the seed point, the other as much higher as it is drawn),
+      // and so does every operation in between. Nearer zero: neither column is brought nearer its letter
+      // than its own exact place unless the plain map brings it nearer.
+      if (fam === 'smrmarks') {
+        const S = ['smrAboveR', 'smrAboveL'], Z = [{ x: 0, y: 0 }, { x: 0, y: 0 }], vs = S.map(k => out[k] || Z), y = clampC(medC(vs), vs, { x: 1, y: 1 });
+        S.forEach(k => { if (!out[k]) return; delete out[k]; put(k, vs[S.indexOf(k)].map((c, i) => ({ x: c.x, y: y[i].y }))); });
+      }
       return out;
     }
   };

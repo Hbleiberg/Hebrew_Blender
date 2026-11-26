@@ -1228,7 +1228,13 @@ are (Cardo's built-in holam beside its imported shin dot, sin dot and rafe), and
 imported follows that mark exactly (the Culmus holam about 550–600 above its attach point, Taamey Frank
 CLM's and Keter YG's 104 units to the right as well). The trop and Samaritan rows take the median of
 their row over the marks of a store in custom mode (a trop side column takes its row's, so a column at
-its default stays exactly centre ± the spread). Each letter takes its own shape for a vowel. A pin and
+its default stays exactly centre ± the spread). The two Samaritan side columns keep their own offsets
+across but share one vertical offset, the nearer zero of the two: a flip exchanges the side columns, and
+a flip moves no mark up or down. A source font stands a letter's column points level and draws the
+marks of one column lower than another's (Hebrew Square Samaritan's start column about 60 units below
+its end column); with a vertical offset per column the exchange would carry that difference to the
+other side. Seeds share it as well, so a seeded letter's side points stand level too: the column nearer
+the letter lands on the seed point, the other as much higher as its marks are drawn. Each letter takes its own shape for a vowel. A pin and
 a composed form's dot (`pc.anchor`, at the form's own dot size; `pc.holam`, the holam typed after
 שׁ / שׂ) use their own mark's `c` exactly (`precompLandCC`). Only letters the marks attach to take it:
 a Latin or Cyrillic letter keeps its accents' convention (an accent's `c` is 0), a Samaritan letter
@@ -1539,8 +1545,9 @@ affected nodes' box, as before. A whole-glyph **scale, slant or horizontal flip*
 contour hidden) also maps `l.anchors` and the pins about that pivot in the same undo step
 (`xformMappedAnchors`), each by where its marks land (`xformLand` — *Where a mark lands*; the marks
 themselves do not change, so `c2 = c` and a flip mirrors the landing point, never the mark); on a flip
-the left / right columns keep their sides (each takes the other's landing point, less its own offset)
-and a side column's pin keeps its mirrored offset from its column. A whole-glyph **scale or slant**
+the left / right columns keep their sides (each takes the other's landing point, less its own offset —
+the two share their vertical offset, so a mark's height changes only by what the two column points'
+own heights exchange) and a side column's pin keeps its mirrored offset from its column. A whole-glyph **scale or slant**
 carries, through the same pivot map and rounded, what the letter's composed forms place for themselves
 — `pc.anchor` (its `auto` flag rides along) and `pc.holam` of every form whose base is this letter,
 each by its own mark's landing point, the list the engine builds for a
