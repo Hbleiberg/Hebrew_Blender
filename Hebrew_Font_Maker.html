@@ -4950,10 +4950,17 @@ function gxLandD(T, cc) {
    at 12°). bare: the font import's own seeds, made while the marks are still the ones it is replacing. */
 function markLandSeed(l, a, bare) {
   if (bare || !a) return a;
-  const t = markLandTable(null); if (!t) return a;
-  const ks = t.keys(l);
+  const ks = markLandKeys(l);
   for (const k in a) { const p = a[k], cc = ks[k]; if (cc && p && Number.isFinite(p.x) && Number.isFinite(p.y)) { p.x = Math.round(p.x - cc[0].x); p.y = Math.round(p.y - cc[0].y); } }
   return a;
+}
+function markLandKeys(l) { const t = markLandTable(null); return t ? t.keys(l) : {}; }   // { key: [c, c] } — l's landing offsets with its marks as they are now ({} when none)
+/* The trop back-fill's landing terms (ensureTropAnchors and QA's mirror of it): `ca`, where the holam lands
+   inside itself (the back-filled rows are derived from the vowel anchor's landing point), and at(key, x, y),
+   a landing point stored less that trop key's offset — rounded at the source, and untouched while both are 0. */
+function tropFillLand(l, need) {
+  const ks = need ? markLandKeys(l) : {}, off = k => ks[k] ? ks[k][0] : { x: 0, y: 0 }, ca = off('above');
+  return { ca, at: (k, x, y) => { const o = off(k); return (ca.x || ca.y || o.x || o.y) ? { x: Math.round(x - o.x), y: Math.round(y - o.y) } : { x, y }; } };
 }
 function markGlyphContoursRaw(kind, cp) {
   if (kind === 'accent') {
@@ -17065,11 +17072,12 @@ function seedAnchors(l, bare) {   // bare: the font import's own seed (markLandS
 }
 function ensureTropAnchors(l) {   // back-fill trop anchors on letters seeded before trop / the L/R columns existed
   if (!l.anchors) return;
-  const mid = l.anchors.above ? l.anchors.above.x : Math.round((l.advance != null ? l.advance : Math.round(gxKY(LETTER_TOP)*0.7))/2);
-  const aboveY = l.anchors.above ? l.anchors.above.y : gxKY(ANCHOR_Y.above);
+  const F = tropFillLand(l, !l.anchors.tropAbove || !l.anchors.tropBelow), ca = l.anchors.above ? F.ca : { x: 0, y: 0 };
+  const mid = l.anchors.above ? l.anchors.above.x + ca.x : Math.round((l.advance != null ? l.advance : Math.round(gxKY(LETTER_TOP)*0.7))/2);
+  const aboveY = l.anchors.above ? l.anchors.above.y + ca.y : gxKY(ANCHOR_Y.above);
   const lk = letterLeanK(l), lx = y => lk ? Math.round(mid + lk * (y - aboveY)) : mid;   // a back-filled point continues the letter's lean from the vowel anchor it is derived from
-  if (!l.anchors.tropAbove) { const y = aboveY + gxKLen(TROP_GAP_ABOVE); l.anchors.tropAbove = { x: lx(y), y }; }
-  if (!l.anchors.tropBelow) { const y = gxKY(ANCHOR_Y.below) - gxKLen(TROP_GAP_BELOW); l.anchors.tropBelow = { x: lx(y), y }; }
+  if (!l.anchors.tropAbove) { const y = aboveY + gxKLen(TROP_GAP_ABOVE); l.anchors.tropAbove = F.at('tropAbove', lx(y), y); }
+  if (!l.anchors.tropBelow) { const y = gxKY(ANCHOR_Y.below) - gxKLen(TROP_GAP_BELOW); l.anchors.tropBelow = F.at('tropBelow', lx(y), y); }
   const tOff = (project.font && project.font.tropSideOffset != null) ? project.font.tropSideOffset : TROP_POS_SHIFT, ta = l.anchors.tropAbove, tb = l.anchors.tropBelow;
   if (!l.anchors.tropAboveL) l.anchors.tropAboveL = { x: ta.x - tOff, y: ta.y };
   if (!l.anchors.tropAboveR) l.anchors.tropAboveR = { x: ta.x + tOff, y: ta.y };
@@ -22359,10 +22367,10 @@ function qaAnchors(L) {
     return o;
   };
   if (a && a.below && a.above && a.center) {
-    const mid = a.above.x, aboveY = a.above.y;
+    const F = tropFillLand(L, !a.tropAbove || !a.tropBelow), mid = a.above.x + F.ca.x, aboveY = a.above.y + F.ca.y;   // the back-fill's landing points (ensureTropAnchors)
     return withCols({ below:a.below, above:a.above, center:a.center,
-             tropAbove: a.tropAbove || { x:mid, y:aboveY + gxKLen(TROP_GAP_ABOVE) },
-             tropBelow: a.tropBelow || { x:mid, y:gxKY(ANCHOR_Y.below) - gxKLen(TROP_GAP_BELOW) } });
+             tropAbove: a.tropAbove || F.at('tropAbove', mid, aboveY + gxKLen(TROP_GAP_ABOVE)),
+             tropBelow: a.tropBelow || F.at('tropBelow', mid, gxKY(ANCHOR_Y.below) - gxKLen(TROP_GAP_BELOW)) });
   }
   const meta = letterMeta(L.codepoint);
   const bb = L.contours ? glyphBBox(uprightContours(L), true, meta) : { midX: Math.round((L.advance != null ? L.advance : Math.round(gxKY(LETTER_TOP)*0.7))/2), minY:0, maxY:gxKY(LETTER_TOP) };

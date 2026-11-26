@@ -1285,7 +1285,11 @@ distance at the standard letter size" goes through the same two helpers.
 on the letter, so the stored anchor is the seed less each key's landing offset `c` (*Where a mark
 lands*), rounded at the source: an SVG replace (`assignSvgContours`), Reset anchors, the first trace or
 drawing of a letter, and the back-fills (`ensureNikkudAnchors`, `smrAnchorSeed`, and QA's mirror
-`qaAnchors`) put a font's own imported marks where a drawn font's would sit. With every `c` at 0
+`qaAnchors`) put a font's own imported marks where a drawn font's would sit. The trop back-fill
+(`ensureTropAnchors`, for a letter saved before trop) is one too: its rows are derived from where the
+holam **lands** — the vowel anchor plus the holam's own offset — and stored less each trop row's offset
+(`tropFillLand`, which QA's mirror of the back-fill shares), so a back-filled letter seeds exactly as a
+fresh one. With every `c` at 0
 nothing changes. It runs on the finished seed, **after** `leanAnchorSet`: the seed is a point of the
 leaning letter and `c` is the mark as it is drawn — a mark does not lean with one letter's record (its
 lean, if any, is font-level `markLean`, already in `c`), so leaning the offset too would move an upright
