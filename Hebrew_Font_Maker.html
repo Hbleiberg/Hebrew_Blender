@@ -4991,7 +4991,7 @@ function markLandTable(after) {
         const P = MARK_LAND_PRIMARY[k], own = cp => (l.markShapes && l.markShapes[cp]) ? mark(l, 'nikkud', cp, k) : nik[cp];   // a letter's own shape for a vowel is the one it lands with
         if (P.first) put(k, own(P.first.find(cp => markLandReads(away, l, cp)) || P.first[0]));
         else { const rd = P.median.filter(cp => markLandReads(away, l, cp)), vs = (rd.length ? rd : P.median).map(own);
-          put(k, Number.isFinite(ky) ? clampC(awayC(medC(vs), vs, ky), vs, { x: 2, y: 2 }) : clampC(medC(vs), vs, { x: 2, y: 1 })); }
+          put(k, (Number.isFinite(ky) && ky < 1) ? clampC(awayC(medC(vs), vs, ky), vs, { x: 2, y: 2 }) : clampC(medC(vs), vs, { x: 2, y: 1 })); }   // a seed or a shrink, where a lifted vowel meets its letter; a growing letter keeps the clamped median (Tinos, Liberation Serif at 125% stay within 6 units)
       }
       glob.forEach(g => { if ((g.kind === 'smrmarks') === (fam === 'smrmarks')) (rows[g.row] = rows[g.row] || []).push(g.v); });
       for (const r in rows) { const cc = medC(rows[r]); Object.keys(MARK_LAND_Y).forEach(k => { if ((MARK_LAND_ROW[k] || k) === r) put(k, cc); }); }
