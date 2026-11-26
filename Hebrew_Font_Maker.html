@@ -18188,6 +18188,7 @@ const GXW_WIN = 8;            // a polygon's direction at a vertex is read over 
 const GXW_LOCAL_MAX = 1500;   // above this many points a letter uses its one stem value for every edge (the per-edge look-across is quadratic)
 const GXW_WIDE = 2;           // a shapes' factor above this (one narrow letter, nearly all stroke, widened on its own) stretches everything but its strokes to more than twice its width: the dialog and Edit points say so
 const GXW_UPRIGHT = 0.95;     // an edge this upright as drawn (the sine of its angle, about 72°) is a side of a stem: where it shows, holding a joint together never moves it (gxwShape's buried ends)
+const GXW_FIT_SLACK = 0.5;    // the gate (gxwFits) measures the shapes before the export rounds them and turns them into the file's curves, which can move an outline about this much: it asks that much more than the measure does
 function gxwMedian(a) { if (!a.length) return null; const b = a.slice().sort((x, y) => x - y), m = b.length >> 1; return b.length % 2 ? b[m] : (b[m - 1] + b[m]) / 2; }
 function gxwEdges(rings) {   // every non-flat edge: [x1, y1, x2, y2, ring, the index of its first point in that ring]
   const E = [];
@@ -18376,11 +18377,122 @@ function gxwApart(rings, curves, out, memo, key) {
   const s1 = was[1] ? ship(out.rings, out.curves) : null;
   return !!s1 && more(was[1], gxwPieces(s1));
 }
+function gxwGrid(R) {   // the edges of some rings in 8-unit cells, for nearest-edge questions (gxwNearest)
+  const g = new Map();
+  R.forEach((r, ri) => { const n = r.length; for (let i = 0; i < n; i++) {
+    const a = r[i], b = r[(i + 1) % n], x0 = Math.floor(Math.min(a[0], b[0]) / 8), x1 = Math.floor(Math.max(a[0], b[0]) / 8), y0 = Math.floor(Math.min(a[1], b[1]) / 8), y1 = Math.floor(Math.max(a[1], b[1]) / 8);
+    for (let X = x0; X <= x1; X++) for (let Y = y0; Y <= y1; Y++) { const k = X * 100003 + Y; let c = g.get(k); if (!c) g.set(k, c = []); c.push([a, b, ri]); }
+  } });
+  return g;
+}
+function gxwNearest(g, p, skip, rad) {   // → [the distance from p to the nearest edge of a ring other than `skip`, within rad (∞ beyond), that nearest point, its ring]
+  let best = Infinity, bx = 0, by = 0, ring = null; const px = p[0], py = p[1], X = Math.floor(px / 8), Y = Math.floor(py / 8), k = Math.ceil(rad / 8);
+  for (let r = 0; r <= k; r++) {   // the cells ring by ring outward: nothing in ring r + 1 is nearer than 8·r
+    for (let dx = -r; dx <= r; dx++) for (let dy = -r; dy <= r; dy += (dx === -r || dx === r || !r) ? 1 : 2 * r) {
+      const c = g.get((X + dx) * 100003 + Y + dy); if (!c) continue;
+      for (let i = 0; i < c.length; i++) {
+        const e = c[i]; if (e[2] === skip) continue;
+        const a = e[0], b = e[1], ex = b[0] - a[0], ey = b[1] - a[1], L2 = ex * ex + ey * ey, f = L2 ? Math.max(0, Math.min(1, ((px - a[0]) * ex + (py - a[1]) * ey) / L2)) : 0, qx = a[0] + f * ex - px, qy = a[1] + f * ey - py, d2 = qx * qx + qy * qy;
+        if (d2 < best) { best = d2; bx = qx + px; by = qy + py; ring = e[2]; }
+      }
+    }
+    if (best <= 64 * r * r) break;
+  }
+  best = Math.sqrt(best);
+  return best <= rad ? [best, [bx, by], ring] : [Infinity, null, null];
+}
+/* The gate behind the held step (gxWidthOp). H: gxwShape's result; F: the same letter as the step makes it with no hold (H.free).
+   Where H's outline shows — outside the other contours' ink and more than a unit and a half from it — it must lie on F's: within 2
+   units, or within 4 inside 6 units of the contour it runs into (the joint). The one exception is a BRIDGE: a run that leaves F's
+   outline and goes into another contour across a gap F leaves at that joint (F's two parts there do not touch), with no S-bend (all
+   of it on one side of its chord), no point further from its chord than max(2, chord ÷ 4), none past either end along the chord,
+   and none beyond the line of the edge it leaves (no bump rising out of it). A contour that ships exactly as F's is not looked at,
+   and a contour F ships as its polygon (its curve crossed itself) counts as the curve it was too. → { ok, why, at } */
+function gxwFits(H, F) {
+  const seen = new Map(), flat = cv => {   // a curve as a polyline (8 points per cubic); a contour H and F share is flattened once
+    if (seen.has(cv)) return seen.get(cv);
+    const pts = [cv.start]; let pen = cv.start; cv.segments.forEach(sg => { if (sg.type === 'cubic') flattenCubic(pen, sg.pts[0], sg.pts[1], sg.pts[2], 8).forEach(p => pts.push(p)); else pts.push(sg.pts[0]); pen = sg.pts[sg.pts.length - 1]; });
+    seen.set(cv, pts); return pts;
+  };
+  const ship = o => o.rings.map((r, i) => ((o.curves && o.curves[i] && o.curves[i].segments && o.curves[i].segments.length) ? flat(o.curves[i]) : r));
+  const HS = ship(H), FS = ship(F), FR = FS.map((r, j) => ((F.raw && F.raw[F.keep[j]]) ? flat(F.raw[F.keep[j]]) : []));   // FR: that contour's curve, where F ships its polygon
+  const gH = gxwGrid(HS), gF = gxwGrid(FS), gR = FR.some(r => r.length) ? gxwGrid(FR) : new Map(), nearH = gxwBins(gxwEdges(HS));
+  const nearF = (p, skip, rad) => { const a = gxwNearest(gF, p, skip, rad), b = gxwNearest(gR, p, skip, rad); return a[0] <= b[0] ? a : b; };   // → [distance, point, ring] to F's outline (either form)
+  const ink = (skip, p) => { const B = nearH(p[1]); let w = 0; for (let i = 0; i < B.length; i++) { const e = B[i]; if (e[4] !== skip && (e[1] > p[1]) !== (e[3] > p[1]) && e[0] + (p[1] - e[1]) * (e[2] - e[0]) / (e[3] - e[1]) < p[0]) w += e[3] > e[1] ? 1 : -1; } return w !== 0; };
+  const inRing = (r, p) => { let w = 0; for (let i = 0, n = r.length; i < n; i++) { const a = r[i], b = r[(i + 1) % n]; if ((a[1] > p[1]) !== (b[1] > p[1]) && a[0] + (p[1] - a[1]) * (b[0] - a[0]) / (b[1] - a[1]) < p[0]) w += b[1] > a[1] ? 1 : -1; } return w !== 0; };
+  const toRing = (r, p) => { let m = Infinity; for (let i = 0, n = r.length; i < n; i++) { const a = r[i], b = r[(i + 1) % n], ex = b[0] - a[0], ey = b[1] - a[1], L2 = ex * ex + ey * ey, f = L2 ? Math.max(0, Math.min(1, ((p[0] - a[0]) * ex + (p[1] - a[1]) * ey) / L2)) : 0; m = Math.min(m, Math.hypot(a[0] + f * ex - p[0], a[1] + f * ey - p[1])); } return m; };
+  const same = (a, b) => a.length === b.length && a.every((p, i) => p[0] === b[i][0] && p[1] === b[i][1]);
+  const off = p => nearF(p, -1, 4)[0];   // how far p lies from F's outline (∞ beyond 4: only that it strays is asked then)
+  const fv = new Set(); FS.forEach(r => r.forEach(p => fv.add(p[0] + ',' + p[1])));   // F's own points
+  for (let ri = 0; ri < HS.length; ri++) {
+    const r = HS[ri], n = r.length;
+    if (FS.some(q => same(q, r))) continue;
+    const S = [], E0 = [];   // samples two units apart: [point, 0 hidden / 1 on F's outline / 2 off it, its distance from F's outline, within 6 units of another contour]; E0: is its edge one of F's own
+    for (let k = 0; k < n; k++) {
+      const a = r[k], b = r[(k + 1) % n], L = Math.hypot(b[0] - a[0], b[1] - a[1]); if (!L) continue;
+      const own = fv.has(a[0] + ',' + a[1]) && fv.has(b[0] + ',' + b[1]);
+      for (let q = 0, K = Math.ceil(L / 2); q < K; q++) { const f = (q + 0.5) / K; S.push([[a[0] + f * (b[0] - a[0]), a[1] + f * (b[1] - a[1])], 1, 0, false]); E0.push(own); }
+    }
+    const N0 = S.length, gap0 = new Array(N0).fill(Infinity);   // only samples within 90 units of where H's outline is not F's own are looked at — nothing further is ever asked about
+    for (const dir of [1, -1]) { let last = -Infinity; for (let w = 0; w < 2 * N0; w++) { const j = dir > 0 ? w % N0 : (2 * N0 - 1 - w) % N0; if (!E0[j]) last = w; gap0[j] = Math.min(gap0[j], w - last); } }
+    S.forEach((x, j) => {
+      if (gap0[j] > 45) return;
+      const p = x[0], dc = gxwNearest(gH, p, ri, 6)[0];
+      if (dc <= 1.5 || ink(ri, p)) { x[1] = 0; x[3] = true; return; }
+      const d = E0[j] ? 0 : off(p); x[1] = d <= (dc <= 6 ? 4 : 2) - GXW_FIT_SLACK ? 1 : 2; x[2] = d; x[3] = dc <= 6;
+    });
+    const N = S.length, k0 = S.findIndex(x => x[1] !== 2), done = new Uint8Array(N);
+    if (!N) continue;
+    if (k0 < 0) return { ok: false, why: 'off', at: S[0][0] };
+    const step = (j, dir) => (j + dir + N) % N, far1 = x => x[1] === 1 && !x[3];   // far1: on F's outline away from any joint
+    const reach = (k, dir) => { for (let j = step(k, dir), w = 0, back = 0; w < 40; j = step(j, dir), w++) { if (S[j][1] === 0) return j; back = far1(S[j]) ? back + 1 : 0; if (back >= 20) return -1; } return -1; };   // from k on to another contour (within 80 units), not back on F's outline away from a joint for 40 units running → that sample, or −1
+    const bridge = (k, dir, T) => {   // the run from where H leaves F's outline, through k, to T in the other contour: a bridge? → null, or why not
+      let E = k; for (let w = 0; w < N && !far1(S[E]); w++) E = step(E, -dir);   // back to F's outline, then to the nearest sample within a unit of it (up to 40 units on)
+      for (let j = E, w = 0; w < 40 && S[j][1] === 1; ) { if (S[j][2] <= 1) { E = j; break; } const nj = step(j, -dir); w += Math.hypot(S[nj][0][0] - S[j][0][0], S[nj][0][1] - S[j][0][1]); j = nj; }
+      const pts = [], idx = [];
+      for (let j = E; ; j = step(j, dir)) { pts.push(S[j][0]); idx.push(j); if (j === T) break; }
+      const A = pts[0], B = pts[pts.length - 1], cx = B[0] - A[0], cy = B[1] - A[1], L = Math.hypot(cx, cy);
+      if (L >= 1) {
+        let pos = 0, neg = 0, lo = 0, hi = 0;
+        pts.forEach(p => { const x = p[0] - A[0], y = p[1] - A[1], h = (cx * y - cy * x) / L, a = (cx * x + cy * y) / L; pos = Math.max(pos, h); neg = Math.max(neg, -h); lo = Math.min(lo, a); hi = Math.max(hi, a - L); });
+        const e = GXW_FIT_SLACK;
+        if (Math.max(pos, neg) > Math.max(2, L / 4) - e) return { ok: false, why: 'chord', at: A };
+        if (pos > 1 - e && neg > 1 - e) return { ok: false, why: 'S-bend', at: A };
+        if (lo < e - 1 || hi > 1 - e) return { ok: false, why: 'past an end', at: A };
+        let j = E, w = 0;   // the edge it leaves: its direction into A over 4 units of F's side, and the side of it that is out of the ink
+        while (w < 4) { const nj = step(j, -dir); if (S[nj][1] !== 1 || nj === T) break; w += Math.hypot(S[nj][0][0] - S[j][0][0], S[nj][0][1] - S[j][0][1]); j = nj; }
+        const tx = A[0] - S[j][0][0], ty = A[1] - S[j][0][1], tl = Math.hypot(tx, ty);
+        if (tl > 0.5) {
+          let nx = -ty / tl, ny = tx / tl; if (ink(-1, [A[0] + 0.5 * nx, A[1] + 0.5 * ny])) { nx = -nx; ny = -ny; }
+          if (pts.some(p => (p[0] - A[0]) * nx + (p[1] - A[1]) * ny > 1 - e)) return { ok: false, why: 'bump', at: A };
+        }
+      }
+      const fi = nearF(A, -1, 4)[2], fj = fi == null ? null : nearF(B, fi, 8)[2];   // a gap at this joint in F: along the bridge, the contour F's outline runs on at A does not touch the one the bridge meets
+      let gap = (fi == null || fj == null) ? 0 : Infinity;
+      const R = gap ? FS[fi] : [], bx = polysBounds([pts]);
+      for (let i = 0; i < R.length && gap > 0; i++) { const a = R[i], b = R[(i + 1) % R.length], K = Math.max(1, Math.ceil(Math.hypot(b[0] - a[0], b[1] - a[1]) / 2));
+        for (let q = 0; q < K; q++) { const p = [a[0] + q / K * (b[0] - a[0]), a[1] + q / K * (b[1] - a[1])]; if (p[0] < bx.minX - 8 || p[0] > bx.maxX + 8 || p[1] < bx.minY - 8 || p[1] > bx.maxY + 8 || !pts.some(c => Math.hypot(p[0] - c[0], p[1] - c[1]) <= 8)) continue; if (inRing(FS[fj], p)) { gap = 0; break; } gap = Math.min(gap, toRing(FS[fj], p)); } }
+      if (!(gap > 0.5 + GXW_FIT_SLACK)) return { ok: false, why: 'joined', at: B, from: A, rings: [fi, fj] };
+      idx.forEach(j => { done[j] = 1; });
+      return null;
+    };
+    for (let q = 1; q <= N; q++) {
+      const k = (k0 + q) % N; if (S[k][1] !== 2 || done[k]) continue;   // k strays
+      const fw = reach(k, 1), bw = reach(k, -1);
+      if (fw < 0 && bw < 0) return { ok: false, why: 'lump', at: S[k][0] };   // it strays and comes back to F's outline: not a bridge
+      const a = fw >= 0 ? bridge(k, 1, fw) : { ok: false }, b = a && bw >= 0 ? bridge(k, -1, bw) : null;   // a bridge into whichever contour it reaches (either, between two)
+      if (a && b) return a.why ? a : b;
+      if (a && bw < 0) return a;
+    }
+  }
+  return { ok: true };
+}
 /* The outline step. rings: [[x,y]…] per contour (font units, as stored); curves: 1:1 or null; s: the
    X factor; t: the stem thickness to restore; hand: the polygon is exactly its curves flattened
    (a hand-edited letter) and is rebuilt that way. → gxOutline's record { keep, rings, curves, lost }
    plus closed (a counter closes or nearly does, or strokes meet — the gap columns below — or a stroke runs into its own contour), tau (the shift that put the
-   ink's left edge at s × its old place) and b0 / b1 (the polygon's bounds before and after). */
+   ink's left edge at s × its old place) and b0 / b1 (the polygon's bounds before and after); and, where a hold changed what
+   ships, free: the same record with no hold (the gate's yardstick and fallback — free.settle() completes its checks). */
 function gxwShape(rings, curves, s, t, hand) {
   const hasCv = Array.isArray(curves) && curves.length === rings.length;
   const E = gxwEdges(rings), sides = gxwSides(rings, E), near = gxwBins(E);
@@ -18430,11 +18542,13 @@ function gxwShape(rings, curves, s, t, hand) {
      again without it (shows): a stem whose corner only touches a roof, or the side of a tail below the
      bowl it leaves, keeps the thickness the step gave it. Where the point let go is drawn on a corner of
      its cover (a stem's top corner on a corner of the roof), that corner of the cover goes with it instead,
-     unless that moves an upright side of the cover — the two still meet. A joint that comes apart all the
-     same is the plan's to stretch plainly (gxwApart). A ring's curve follows its polygon's holds (moveCurve). Two kinds of ring are never asked and take exactly the path above: one with no ring of its own
-     direction near it (every ordinary letter), and one with less than a third of its outline still
-     showing — a fill-in at a joint, not a stroke: held in its two covers it would be pulled into a web
-     across the joint, where left alone it thins away as the joint opens. */
+     unless that moves an upright side of the cover — the two still meet. These held places decide which
+     runs are buried and which sides are let go; what ships is the splices' (below). A joint that comes
+     apart all the same is the plan's to stretch plainly (gxwApart). Two kinds of ring are never asked and
+     take exactly the step's path: one with no ring of its own direction near it (every ordinary letter),
+     and one with less than a third of its outline still showing — a fill-in at a joint, not a stroke: held
+     in its two covers it would be pulled into a web across the joint, where left alone it thins away as
+     the joint opens. */
   const turn = rings.map(r => (r.length >= 3 && signedArea(r) > 0) ? 1 : -1);   // +1: the ring's inside is on the left of its direction of travel (and counts −1 in gxwRuns' winding)
   const size = rings.map(r => (r.length >= 3 ? Math.abs(signedArea(r)) : 0)), bx = rings.map(r => polysBounds([r]));
   const deep = rings.map((r, i) => r.length >= 3 && rings.some((q, j) => j !== i && q.length >= 3 && turn[j] === turn[i] &&
@@ -18509,9 +18623,6 @@ function gxwShape(rings, curves, s, t, hand) {
     const tx = dir > 0 ? dx : -dx, ty = dir > 0 ? dy : -dy;   // the ring's own direction of travel along that edge
     return [0.05, 0.2, 0.35, 0.5, 0.65, 0.8, 0.95].some(f => Math.abs((1 - f) * D[i] + f * D[j]) > 1 && Math.abs((1 - f) * D[i]) > 0.5 && !hidden(ri, V[0] + f * dx, V[1] + f * dy, tx, ty) && !nearInk(ri, V[0] + f * dx, V[1] + f * dy, tx, ty));
   };
-  const welded = [];   // rings whose corner went with a let-go point of another ring (below)
-  const RX = rings.slice(), M0X = moved0.slice(), exits = [];   // per ring: its points and their unheld places, with the points where a hold leaves its cover put in, and those exits (below)
-  const inPoly = (P, x, y) => { let w = 0; for (let i = 0, n = P.length; i < n; i++) { const a = P[i], b = P[(i + 1) % n]; if ((a[1] > y) !== (b[1] > y) && a[0] + (y - a[1]) * (b[0] - a[0]) / (b[1] - a[1]) < x) w += b[1] > a[1] ? 1 : -1; } return w !== 0; };
   if (held.some(Boolean)) {
     const was = held.map(Boolean), first = held.map(l => l && l.slice());
     for (let round = 0; round < 24; round++) {
@@ -18537,15 +18648,185 @@ function gxwShape(rings, curves, s, t, hand) {
       D[w] = x - moved0[cj][w][0];
       if (shows(cj, D, w, 1) || shows(cj, D, w, -1)) return;
       if (moved[cj] === moved0[cj]) moved[cj] = moved0[cj].map(p => p.slice());
-      moved[cj][w][0] = x; welded[cj] = true;
+      moved[cj][w][0] = x;
     }); });
-    /* Each hold is spent inside its cover. Walking out along the outline from a held point, the place where the outline starts
-       to show (exit: no other ink a quarter unit outside it, and none within a unit and a half beside it — the rule of shows)
-       gets a point of its own, on the step's own edge there: that point and all the outline beyond it keep the step's own
-       place, and the hold blends out along the buried stretch between (a buried point on the way takes its share by length).
-       So a hold never bends outline that shows — the arch of an n, the end of u's bowl, the bowl of ø under the slash all ship
-       as the step makes them, joined to the stroke they run into within the room that stroke gave up. A held point whose
-       outline starts to show right at it keeps the straight blend to its neighbour. */
+  }
+  /* What ships. A ring the step held nothing of goes exactly as the step makes it: its polygon moved0, and its curve control point by
+     control point (cvPrep — cut at its interior extrema, each node taking the mean of its two legs' shifts, each handle riding with its
+     own end point). A ring whose corner went with a let-go point of another (welded) keeps that corner, the curve's nodes following
+     it (cvWeld). A held ring keeps the step's own outline wherever it shows: it is changed only inside a splice around each buried
+     run (below). Whenever the result differs from the step's own, that is kept beside it (free) — the gate in gxWidthOp measures
+     the one against the other (gxwFits). */
+  const mv = (p, d) => [p[0] * s + d, p[1]];
+  const far = (P, from, to) => { for (let i = from; i !== to; i += (to > from ? 1 : -1)) if (Math.hypot(P[i][0] - P[from][0], P[i][1] - P[from][1]) > 0.01 && i !== from) return P[i]; return P[to]; };
+  const cutS = (v, u) => { const l = (a, b) => a + (b - a) * u; if (v.length === 2) { const q = l(v[0], v[1]); return [[v[0], q], [q, v[1]]]; } const ab = l(v[0], v[1]), bc = l(v[1], v[2]), cd = l(v[2], v[3]), abc = l(ab, bc), bcd = l(bc, cd), q = l(abc, bcd); return [[v[0], ab, abc, q], [q, bcd, cd, v[3]]]; };   // a control polygon's shifts cut at u, as gxwCut cuts its points
+  const cvPrep = (cv, sg) => {   // → { winding, segs: absolute control polygons (cubics cut at their extrema), sh: each control point's own sideways shift }
+    const segs = []; let pen = cv.start;
+    cv.segments.forEach(g => {
+      if (g.type === 'cubic') gxwSplitCubic(pen, g.pts[0], g.pts[1], g.pts[2]).forEach(q => { segs.push([pen, q[0], q[1], q[2]]); pen = q[2]; });
+      else { segs.push([pen, g.pts[0]]); pen = g.pts[0]; }
+    });
+    const m = segs.length;
+    const dl = segs.map((P, j) => {   // the shift of the node each segment STARTS at: its incoming leg (end of the previous segment) and its outgoing one
+      const Q = segs[(j - 1 + m) % m], V = P[0], pin = far(Q, Q.length - 1, 0), pout = far(P, 0, P.length - 1);
+      const si = gxwAt(Q, Q.length === 2 ? 0.5 : 0.8), so = gxwAt(P, P.length === 2 ? 0.5 : 0.2);
+      return mix(leg(V[0] - pin[0], V[1] - pin[1], si[0], si[1], sg), leg(pout[0] - V[0], pout[1] - V[1], so[0], so[1], sg));
+    });
+    for (let j = 0; j < m; j++) {   // the same rule for a curve's nodes (movePoly): a segment whose ends passed each other closes to a point
+      const a = segs[j][0], bn = segs[(j + 1) % m][0], i2 = (j + 1) % m, od = (bn[0] - a[0]) * s, nd = od + dl[i2] - dl[j];
+      if (od * nd < 0) { const mid = (a[0] * s + dl[j] + bn[0] * s + dl[i2]) / 2; dl[j] = mid - a[0] * s; dl[i2] = mid - bn[0] * s; }
+    }
+    return { winding: cv.winding, segs, sh: segs.map((P, j) => { const d0 = dl[j], d1 = dl[(j + 1) % m]; return P.length === 2 ? [d0, d1] : [d0, d0, d1, d1]; }) };   // a handle rides with its end point
+  };
+  const cvSeg = (P, d) => (P.length === 2 ? { type: 'line', pts: [mv(P[1], d[1])] } : { type: 'cubic', pts: [mv(P[1], d[1]), mv(P[2], d[2]), mv(P[3], d[3])] });
+  const cvBuild = c => ({ winding: c.winding, start: mv(c.segs[0][0], c.sh[0][0]), segments: c.segs.map((P, j) => cvSeg(P, c.sh[j])) });
+  const cvAt = (c, q) => gxwAt(c.segs[q[0]].map((p, k) => mv(p, c.sh[q[0]][k])), q[1]);   // the moved curve's point at a place [segment, u]
+  const cvDir = (c, q, side) => {   // its direction of travel there, read just before the place (side −1) or just after it (+1)
+    let j = q[0], u = q[1]; const m = c.segs.length;
+    if (side < 0 && u < 1e-6) { j = (j - 1 + m) % m; u = 1; } else if (side > 0 && u > 1 - 1e-6) { j = (j + 1) % m; u = 0; }
+    const P = c.segs[j].map((p, k) => mv(p, c.sh[j][k])), v = 1 - u;
+    let dx = P[1][0] - P[0][0], dy = P[1][1] - P[0][1];
+    if (P.length === 4) { dx = v * v * (P[1][0] - P[0][0]) + 2 * v * u * (P[2][0] - P[1][0]) + u * u * (P[3][0] - P[2][0]); dy = v * v * (P[1][1] - P[0][1]) + 2 * v * u * (P[2][1] - P[1][1]) + u * u * (P[3][1] - P[2][1]);
+      if (Math.hypot(dx, dy) < 1e-9) { const a = gxwAt(P, Math.max(0, u - 0.01)), b = gxwAt(P, Math.min(1, u + 0.01)); dx = b[0] - a[0]; dy = b[1] - a[1]; } }
+    const L = Math.hypot(dx, dy); return L > 1e-9 ? [dx / L, dy / L] : null;
+  };
+  const cvFind = (c, Q, A, B) => {   // the place on curve c nearest the polygon point Q (both as drawn), among the segments around it and only where the curve runs the polygon's way (A → B: the two sides of a hairline run opposite ways) → [segment, u] or null
+    const segs = c.segs, wx = B[0] - A[0], wy = B[1] - A[1];
+    if (!c.bb) c.bb = segs.map(P => { let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity; P.forEach(p => { if (p[0] < x0) x0 = p[0]; if (p[0] > x1) x1 = p[0]; if (p[1] < y0) y0 = p[1]; if (p[1] > y1) y1 = p[1]; }); return [x0 - 3, y0 - 3, x1 + 3, y1 + 3]; });
+    const dist = (j, u) => { const P = segs[j], p = gxwAt(P, u), a = gxwAt(P, Math.max(0, u - 0.01)), b = gxwAt(P, Math.min(1, u + 0.01)); return ((b[0] - a[0]) * wx + (b[1] - a[1]) * wy < 0) ? Infinity : Math.hypot(p[0] - Q[0], p[1] - Q[1]); };
+    let best = null;
+    for (let j = 0; j < segs.length; j++) { const b = c.bb[j]; if (Q[0] < b[0] || Q[0] > b[2] || Q[1] < b[1] || Q[1] > b[3]) continue; for (let q = 0; q <= 32; q++) { const d = dist(j, q / 32); if (!best || d < best[0]) best = [d, j, q / 32]; } }
+    if (!best) return null;
+    let d = best[0], u = best[2]; const j = best[1];
+    for (let h = 1 / 64; h > 1 / 4096; h /= 2) [u - h, u + h].forEach(v => { if (v >= 0 && v <= 1) { const e = dist(j, v); if (e < d) { d = e; u = v; } } });
+    return d <= 3 ? [j, u] : null;
+  };
+  const cvCut = (c, req, gap) => {   // curve c cut at the places req ([segment, u] or null each) — exactly, each control point's shift cut with it, so a cut alone changes nothing → the node each place now is (a place within `gap` of a node is that node; −1 for null)
+    const by = new Map(), at = req.map(() => -1), late = [], out = [], sout = [];
+    req.forEach((q, k) => { if (!q) return; if (!by.has(q[0])) by.set(q[0], []); by.get(q[0]).push([q[1], k]); });
+    c.segs.forEach((P, j) => {
+      let rest = P, rs = c.sh[j], done = 0, last = P[0]; const end = P[P.length - 1];
+      (by.get(j) || []).sort((x, y) => x[0] - y[0]).forEach(([u, k]) => {
+        const q = gxwAt(P, u);
+        if (Math.hypot(q[0] - last[0], q[1] - last[1]) <= gap) { at[k] = out.length; return; }
+        if (Math.hypot(q[0] - end[0], q[1] - end[1]) <= gap) { late.push(k); return; }
+        const v = (u - done) / (1 - done), cc = gxwCut(rest, v), cs = cutS(rs, v);
+        out.push(cc[0]); sout.push(cs[0]); rest = cc[1]; rs = cs[1]; done = u; last = q; at[k] = out.length;
+      });
+      out.push(rest); sout.push(rs);
+      late.forEach(k => { at[k] = out.length; }); late.length = 0;
+    });
+    at.forEach((v, k) => { if (v >= out.length) at[k] = 0; });
+    c.segs = out; c.sh = sout; c.bb = null;
+    return at;
+  };
+  const cvWeld = (c, ri, P1) => {   // a ring whose polygon moved off the step's own (a welded corner): the curve is cut where that begins and ends, and each node near the moved polygon goes with it, blended along the curve
+    const r = rings[ri], n = r.length, M0 = moved0[ri], Dv = r.map((p, i) => P1[i][0] - M0[i][0]);
+    if (!Dv.some(d => Math.abs(d) > 1e-9)) return;
+    const on = i => Math.abs(Dv[(i + n) % n]) > 1e-9, same = (i, k) => Math.abs(Dv[(i + n) % n] - Dv[(k + n) % n]) <= 1e-6, req = [];
+    for (let i = 0; i < n; i++) if ((on(i) || on(i - 1) || on(i + 1)) && !(on(i - 1) && on(i + 1) && same(i, i - 1) && same(i, i + 1))) req.push(cvFind(c, r[i], r[(i - 1 + n) % n], r[(i + 1) % n]));
+    cvCut(c, req, 1);
+    const segs = c.segs, sh = c.sh, m = segs.length;
+    const node = (j, d) => { const A = sh[j], B = sh[(j - 1 + m) % m]; A[0] += d; if (A.length === 4) A[1] += d; B[B.length - 1] += d; if (B.length === 4) B[2] += d; };   // move node j, and the handles beside it, d further
+    const bins = new Map(), unit = (x, y) => { const L = Math.hypot(x, y); return L ? [x / L, y / L] : [0, 0]; };   // the polygon's edges by height (the nearest edge that runs the curve's way is looked for among them)
+    for (let i = 0; i < n; i++) { const p = r[i], q = r[(i + 1) % n]; for (let k = Math.floor((Math.min(p[1], q[1]) - 3) / 16); k <= Math.floor((Math.max(p[1], q[1]) + 3) / 16); k++) { if (!bins.has(k)) bins.set(k, []); bins.get(k).push(i); } }
+    let any = false;
+    for (let j = 0; j < m; j++) {
+      const V = segs[j][0], Q = segs[(j - 1 + m) % m], pin = far(Q, Q.length - 1, 0), pout = far(segs[j], 0, segs[j].length - 1), a = unit(V[0] - pin[0], V[1] - pin[1]), b = unit(pout[0] - V[0], pout[1] - V[1]), wx = a[0] + b[0], wy = a[1] + b[1];
+      let best = null;
+      (bins.get(Math.floor(V[1] / 16)) || []).forEach(i => {
+        const p = r[i], q = r[(i + 1) % n], ex = q[0] - p[0], ey = q[1] - p[1], L2 = ex * ex + ey * ey; if (!L2 || ex * wx + ey * wy < 0) return;
+        const f = Math.max(0, Math.min(1, ((V[0] - p[0]) * ex + (V[1] - p[1]) * ey) / L2)), d = Math.hypot(p[0] + f * ex - V[0], p[1] + f * ey - V[1]);
+        if (!best || d < best[0]) best = [d, i, f];
+      });
+      if (!best || best[0] > 3) continue;
+      const i = best[1], i2 = (i + 1) % n, f = best[2], w = (on(i) ? 1 - f : 0) + (on(i2) ? f : 0);   // how much of this place moved
+      if (!(w > 1e-9)) continue;
+      const px = r[i][0] + f * (r[i2][0] - r[i][0]), x = P1[i][0] + f * (P1[i2][0] - P1[i][0]) + (V[0] - px) * s;   // the moved polygon's x here (the node's own offset from the polygon kept)
+      node(j, w * (x - V[0] * s - sh[j][0])); any = true;
+    }
+    if (any) for (let j = 0; j < m; j++) {   // the unpass rule again, on the nodes as they now stand
+      const i2 = (j + 1) % m, a = segs[j][0], bn = segs[i2][0], od = (bn[0] - a[0]) * s, nd = od + sh[i2][0] - sh[j][0];
+      if (od * nd < 0) { const mid = (a[0] * s + sh[j][0] + bn[0] * s + sh[i2][0]) / 2; node(j, mid - a[0] * s - sh[j][0]); node(i2, mid - bn[0] * s - sh[i2][0]); }
+    }
+  };
+  const cvSplice = (c, list) => {   // curve c with the stretch between each splice's two places replaced by straight lines through its points → the moved curve (a splice whose two places fall on one node, or on another's stretch, is dropped: o.drop)
+    const at = cvCut(c, [].concat(...list.map(o => [o.ca, o.cb])), 0.5), m = c.segs.length, put = new Map(), gone = new Array(m).fill(false);
+    list.forEach((o, k) => {
+      const ja = at[2 * k], jb = at[2 * k + 1], span = [];
+      for (let j = ja; ja >= 0 && jb >= 0 && j !== jb && span.length < m; j = (j + 1) % m) span.push(j);
+      if (ja < 0 || jb < 0 || ja === jb || span.length >= m || span.some(j => gone[j])) { o.drop = true; return; }
+      span.forEach(j => { gone[j] = true; });
+      put.set(ja, o.mid.map(p => ({ type: 'line', pts: [p] })).concat([{ type: 'line', pts: [mv(c.segs[jb][0], c.sh[jb][0])] }]));
+    });
+    let j0 = 0; while (j0 < m && gone[j0] && !put.has(j0)) j0++;   // start at a node the splices keep
+    const segments = [];
+    for (let q = 0; q < m; q++) { const j = (j0 + q) % m; if (put.has(j)) put.get(j).forEach(g => segments.push(g)); else if (!gone[j]) segments.push(cvSeg(c.segs[j], c.sh[j])); }
+    return { winding: c.winding, start: mv(c.segs[j0][0], c.sh[j0][0]), segments };
+  };
+  const polySplice = (P, list) => {   // a polygon with the stretch between each splice's two places (positions along the ring: edge + fraction) replaced by its points
+    const n = P.length, md = v => ((v % n) + n) % n, ptAt = v => { v = md(v); const i = Math.floor(v), f = v - i, a = P[i], b = P[(i + 1) % n]; return [a[0] + f * (b[0] - a[0]), a[1] + f * (b[1] - a[1])]; };
+    const cut = i => list.some(o => { const q = md(i - o.a); return q > 1e-9 && q < md(o.b - o.a) - 1e-9; });
+    let i0 = 0; while (i0 < n - 1 && cut(i0)) i0++;
+    const out = [];
+    for (let k = 0; k < n; k++) {
+      const i = (i0 + k) % n;
+      if (!cut(i)) out.push(P[i]);
+      list.forEach(o => { if (Math.floor(md(o.a)) !== i) return; if (md(o.a) - i > 1e-9) out.push(ptAt(o.a)); o.mid.forEach(p => out.push(p)); if (md(o.b) - Math.floor(md(o.b)) > 1e-9) out.push(ptAt(o.b)); });
+    }
+    return out;
+  };
+  const base = moved.map((P, ri) => {   // each ring's own outline around its splices: the step's, with a welded corner where it has one
+    if (P === moved0[ri]) return P;
+    const H = new Set((held[ri] || []).map(d => d[0])), Q = P.map((p, i) => (H.has(i) ? moved0[ri][i] : p).slice());
+    return Q.some((p, i) => Math.abs(p[0] - moved0[ri][i][0]) > 1e-9) ? unpass(rings[ri], Q) : moved0[ri];
+  });
+  const cvp = hasCv ? curves.map((cv, i) => ((cv && cv.segments && cv.segments.length) ? cvPrep(cv, sides[i]) : null)) : null;
+  const freeCv = cvp ? cvp.map(c => c && cvBuild(c)) : null;
+  if (cvp) cvp.forEach((c, i) => { if (c && base[i] !== moved0[i]) cvWeld(c, i, base[i]); });
+  /* Each hold is spent inside its cover: a splice per buried run. Walking out along the outline from a held point, the place where
+     the outline starts to show (no other ink a quarter unit outside it, and none within a unit and a half beside it — the rule of
+     shows) ends the run's stretch (an exit). Between a run's two exits, and nowhere else, the ring is changed:
+     - where the step leaves a gap there (the stem's side moved away from the arch that ran into it), the outline goes on from each
+       exit straight ahead, the way it arrives there, across the gap and into the cover (a bridge: no bend, no bump) — and so it
+       does where the parts still touch, if that straight run stays on the step's own outline (it fills the sliver between them);
+     - else, where the step's own outline of the stretch still reaches the cover (in its ink, or within a unit of it), it is kept as
+       the step makes it up to there, and goes on inside the cover from there (touch);
+     inside the cover the outline runs between points half a stem deep (or half way through), so the two overlap. A run whose hold
+     moved nothing is left as the step makes it, and so is one that neither can join (two sides that meet before the cover, as at
+     the tip of a foot): the guarantee and the gate have the last word on those. */
+  const spl = rings.map(() => null);
+  if (held.some(Boolean)) {
+    const GM = gxwGrid(moved), G0 = gxwGrid(moved0), nearM = gxwBins(gxwEdges(moved)), D = t / 2, room = t * Math.abs(s - 1) + 8;   // room: the width the step takes back from a stem, and a little — no bridge leaves the step's outline for longer
+    const inkM = (ri, q) => { const B = nearM(q[1]); let w = 0; for (let i = 0; i < B.length; i++) { const e = B[i]; if (e[4] !== ri && (e[1] > q[1]) !== (e[3] > q[1]) && crossX(e, q[1]) < q[0]) w += e[3] > e[1] ? 1 : -1; } return w !== 0; };   // in the other rings' ink as the step (and the holds) left it
+    const sunk = (ri, q, m) => inkM(ri, q) && gxwNearest(GM, q, ri, m)[0] >= m;   // … and at least m from its edge
+    const shown = (ri, q) => !inkM(ri, q) && gxwNearest(GM, q, ri, 1.5)[0] > 1.5;
+    const dig = (ri, Z, d) => {   // a point of the others' ink up to half a stem in from Z — through the edge nearest Z, or on along d or across it (Z lying on that edge) — or null
+      const q = gxwNearest(GM, Z, ri, 4)[1], inn = inkM(ri, Z), dirs = [];
+      if (q) { const nx = inn ? Z[0] - q[0] : q[0] - Z[0], ny = inn ? Z[1] - q[1] : q[1] - Z[1], L = Math.hypot(nx, ny); if (L > 1e-6) dirs.push([nx / L, ny / L]); }
+      if (d) { const r2 = Math.SQRT1_2; dirs.push(d, [-d[1], d[0]], [d[1], -d[0]], [r2 * (d[0] - d[1]), r2 * (d[1] + d[0])], [r2 * (d[0] + d[1]), r2 * (d[1] - d[0])]); }   // on, across, and on-and-across both ways (Z on a corner of the cover)
+      const o = (q && !inn) ? q : Z;
+      for (const u of dirs) for (let h = D; h >= 1; h /= 2) { const P = [o[0] + h * u[0], o[1] + h * u[1]]; if (sunk(ri, P, 1)) return P; }
+      return sunk(ri, Z, 1) ? Z : null;
+    };
+    const ray = (ri, X, d, graze) => {   // from X along d → [how far until it is a unit inside the others' ink, that place, a point further in: half a stem, or half way through] or null (it would leave the step's own outline for longer than the room). graze: until it touches the others' ink instead (an edge run flush along the cover's), dug in from there
+      let u0 = -1, away = 0;
+      const at = v => [X[0] + v * d[0], X[1] + v * d[1]], nq = gxwNearest(GM, X, ri, 2 * room), gap = nq[0];
+      if (!nq[1]) return null;   // no cover within reach
+      for (let u = 0; u <= 2 * room && away <= room; ) {   // in strides: it cannot reach the cover before it has run as far as the cover is, nor change sides of "2 from the step's outline" before that line
+        const p = at(u), dc = Math.min(16, gxwNearest(GM, p, ri, 16)[0]);
+        if (graze ? dc <= 0.25 : (dc >= 1 && inkM(ri, p))) { u0 = u; break; }
+        const g = Math.min(16, gxwNearest(G0, p, -1, 16)[0]), h = Math.max(graze ? 0.25 : 1, Math.min(dc - (graze ? 0.25 : 1), Math.abs(g - 2)));
+        if (g > 2) away += h;
+        u += h;
+      }
+      if (u0 < 0 || (u0 > 3 * gap + 4 && away > gap + 4)) return null;   // off the step's outline it must make for the cover (at about 20° or more), not run along beside it: that would be a spur up the stem's side
+      const E = at(u0);
+      if (graze) { const P = dig(ri, E, d); return P && [u0, E, P]; }
+      let u = u0; while (u < u0 + D && sunk(ri, at(u + 1), 1)) u += 1;
+      return [u0, E, at(u >= u0 + D ? u0 + D : (u0 + u) / 2)];
+    };
+    const inner = (ri, A, B) => { const K = Math.max(1, Math.ceil(Math.hypot(B[0] - A[0], B[1] - A[1]) / 2)); for (let q = 0; q <= K; q++) if (!sunk(ri, [A[0] + q / K * (B[0] - A[0]), A[1] + q / K * (B[1] - A[1])], 0.5)) return false; return true; };
     const exitAt = (ri, A, B, tx, ty) => {   // along ring ri's outline from A toward B (tx, ty: the ring's own direction there) → the parameter where it stops being covered, or null when it is covered all the way
       const L = Math.hypot(B[0] - A[0], B[1] - A[1]); if (!L) return null;
       const cov = f => { const x = A[0] + f * (B[0] - A[0]), y = A[1] + f * (B[1] - A[1]); return !!hidden(ri, x, y, tx, ty) || nearInk(ri, x, y, tx, ty); };
@@ -18555,157 +18836,150 @@ function gxwShape(rings, curves, s, t, hand) {
       for (let k = 0; k < 10; k++) { const mid = (lo + hi) / 2; if (cov(mid)) lo = mid; else hi = mid; }
       return lo;
     };
-    moved.forEach((P, ri) => {
-      if (P === moved0[ri] || !held[ri]) return;
-      const r = rings[ri], n = r.length, M0 = moved0[ri], D = r.map((p, i) => P[i][0] - M0[i][0]), on = i => Math.abs(D[(i + n) % n]) > 1e-9, Dn = D.slice(), add = [];
-      for (let a = 0; a < n; a++) { if (!on(a)) continue; for (const dir of [1, -1]) {
-        if (on(a + dir)) continue;
-        let cur = a, acc = 0, hit = null; const chain = [];
+    held.forEach((list, ri) => {
+      if (!list) return;
+      const r = rings[ri], n = r.length, Hs = new Set(list.map(d => d[0])), on = i => Hs.has(((i % n) + n) % n), ex = [];
+      const md = v => ((v % n) + n) % n, fd = (a, b) => md(b - a), Pb = base[ri], c = cvp && cvp[ri];
+      const ptAt = (P, v) => { v = md(v); const i = Math.floor(v), f = v - i, a = P[i], b = P[(i + 1) % n]; return [a[0] + f * (b[0] - a[0]), a[1] + f * (b[1] - a[1])]; };
+      list.forEach(d => { for (const dir of [1, -1]) {   // from each end of a run, out to its exit — and both ways along an edge between two held points that shows in its middle (a bar whose four corners are buried)
+        if (on(d[0] + dir)) { const A = r[d[0]], B = r[md(d[0] + dir)], f = exitAt(ri, A, B, dir * (B[0] - A[0]), dir * (B[1] - A[1])); if (f != null) ex.push([md(dir > 0 ? d[0] + f : d[0] - f), dir]); continue; }
+        let cur = d[0], hit = null;
         for (let step = 0; step < n - 1; step++) {
-          const nxt = (cur + dir + n) % n, A = r[cur], B = r[nxt], tx = dir * (B[0] - A[0]), ty = dir * (B[1] - A[1]), L = Math.hypot(tx, ty), f = exitAt(ri, A, B, tx, ty);
-          if (f != null) { hit = [cur, nxt, f, acc + f * L, L]; break; }
-          if (on(nxt)) break;   // covered all the way to another held point: the straight blend between the two
-          acc += L; chain.push([nxt, acc]); cur = nxt;
+          const nxt = (cur + dir + n) % n, A = r[cur], B = r[nxt], f = exitAt(ri, A, B, dir * (B[0] - A[0]), dir * (B[1] - A[1]));
+          if (f != null) { hit = dir > 0 ? cur + f : nxt + 1 - f; break; }
+          if (on(nxt)) break;   // buried all the way to the next run: one stretch with it
+          cur = nxt;
         }
-        if (!hit || hit[3] < 0.5) continue;
-        chain.forEach(([v, d]) => { Dn[v] = D[a] * (1 - d / hit[3]); });
-        const [c0, c1, f, , L] = hit, cj = (held[ri].find(d => d[0] === a) || [0, [0, 0, 0, 0, 0, -1]])[1][5], before = dir > 0;   // before: the held side comes before the exit in ring order
-        if (f * L < 0.5) { Dn[c0] = 0; add.push([c0, -1, cj, before]); } else if ((1 - f) * L < 0.5) add.push([c1, -1, cj, before]); else add.push(dir > 0 ? [c0, f, cj, before] : [c1, 1 - f, cj, before]);
-      } }
-      const R = [], Q0 = [], Q1 = [], ex = [];
-      for (let i = 0; i < n; i++) {
-        add.filter(e => e[0] === i && e[1] < 0).forEach(e => ex.push({ e: R.length, cj: e[2], before: e[3] }));   // an exit at a point of the ring itself
-        R.push(r[i]); Q0.push(M0[i]); Q1.push([M0[i][0] + Dn[i], M0[i][1]]);
-        const j = (i + 1) % n;
-        add.filter(e => e[0] === i && e[1] >= 0).sort((x, y) => x[1] - y[1]).forEach(([, f, cj, before]) => {
-          const p = [r[i][0] + f * (r[j][0] - r[i][0]), r[i][1] + f * (r[j][1] - r[i][1])], q = [M0[i][0] + f * (M0[j][0] - M0[i][0]), p[1]];   // on the step's own edge there
-          ex.push({ e: R.length, cj, before }); R.push(p); Q0.push(q); Q1.push(q.slice());
-        });
-      }
-      RX[ri] = R; M0X[ri] = Q0; moved[ri] = Q1; exits[ri] = ex;
+        if (hit != null) ex.push([md(hit), dir]);
+      } });
+      ex.sort((x, y) => x[0] - y[0]);
+      const k0 = ex.findIndex(e => e[1] < 0), runs = [];
+      if (k0 < 0 || ex.length % 2) return;
+      for (let q = 0; q < ex.length; q += 2) { const A = ex[(k0 + q) % ex.length], B = ex[(k0 + q + 1) % ex.length]; if (A[1] > 0 || B[1] < 0) return; runs.push([A[0], B[0]]); }
+      const spot = v => {   // the place v (along the ring) as it ships: [the moved point, its place on the curve (null with no curve)] or null
+        if (!c) return [ptAt(Pb, v), null];
+        const i = Math.floor(md(v)), q = cvFind(c, ptAt(r, v), r[i], r[(i + 1) % n]);
+        return q && [cvAt(c, q), q];
+      };
+      const look = (v, side) => {   // … and the outline's direction of travel there, read on the side that shows (before v: −1, after: +1)
+        const o = spot(v); if (!o) return null;
+        if (c) { const d = cvDir(c, o[1], side); return d && [o[0], d, o[1]]; }
+        const i0 = Math.floor(md(v)); let Y = o[0], acc = 0;
+        for (let k = 0; k <= n && acc < GXW_WIN; k++) { const p = Pb[md(side < 0 ? i0 - k : i0 + 1 + k)]; acc += Math.hypot(p[0] - Y[0], p[1] - Y[1]); Y = p; }
+        const dx = side < 0 ? o[0][0] - Y[0] : Y[0] - o[0][0], dy = side < 0 ? o[0][1] - Y[1] : Y[1] - o[0][1], L = Math.hypot(dx, dy);
+        return L > 1e-9 ? [o[0], [dx / L, dy / L], null] : null;
+      };
+      const walk = (v0, dir, maxLen, h) => {   // places along the ring's own outline from v0 (dir −1: backward), every h units of it, up to maxLen
+        const out = [v0]; let v = v0, acc = 0, mark = h;
+        for (let k = 0; k <= n && acc < maxLen; k++) {
+          const w = dir < 0 ? (v - Math.floor(v) > 1e-9 ? Math.floor(v) : v - 1) : Math.floor(v) + 1, A = ptAt(Pb, v), B = ptAt(Pb, w), L = Math.hypot(B[0] - A[0], B[1] - A[1]);
+          while (L > 1e-9 && acc + L >= mark && mark <= maxLen) { out.push(v + (mark - acc) / L * (w - v)); mark += h; }
+          acc += L; v = w;
+        }
+        return out;
+      };
+      const clean = sp => {   // the splice's new edges cross none of the ring's own edges outside it
+        const L = fd(sp.a, sp.b), path = [ptAt(Pb, sp.a)].concat(sp.mid, [ptAt(Pb, sp.b)]), ia = Math.floor(md(sp.a)), ib = Math.floor(md(sp.b)), skip = new Set([md(ia - 1), ia, ib, md(ib + 1)]), bx = polysBounds([path]);
+        for (let i = 0; i < n; i++) {
+          const e0 = Pb[i], e1 = Pb[(i + 1) % n];
+          if ((e0[0] < bx.minX && e1[0] < bx.minX) || (e0[0] > bx.maxX && e1[0] > bx.maxX) || (e0[1] < bx.minY && e1[1] < bx.minY) || (e0[1] > bx.maxY && e1[1] > bx.maxY) || skip.has(i) || fd(sp.a, i) <= L || fd(sp.a, i + 1) <= L) continue;
+          for (let k = 0; k + 1 < path.length; k++) if (segIntersect(path[k], path[k + 1], e0, e1)) return false;
+        }
+        return true;
+      };
+      const out = [];
+      runs.forEach(([va, vb]) => {
+        const L = fd(va, vb);
+        if (!(L > 1e-6) || !list.some(d => { const q = fd(va, d[0]); return (q <= L || q > n - 1e-9) && Math.abs(moved[ri][d[0]][0] - moved0[ri][d[0]][0]) > 1e-9; })) return;   // its hold moved nothing (a run's own points may be its exits: a bar's corner touching the stem)
+        let za = null, zb = null;   // where the step's own outline of the stretch reaches the cover, first and last
+        for (let i = Math.floor(va); i <= Math.floor(va + L); i++) {
+          const a = Pb[md(i)], b = Pb[md(i + 1)], El = Math.hypot(b[0] - a[0], b[1] - a[1]);
+          for (let x = 0, last = false; !last; ) {   // in strides: the outline cannot come within a unit of the cover before it has run as far as the cover is
+            if (x >= El) { x = El; last = true; }
+            const v = i + (El ? x / El : 0); if (v > va + L) break;
+            const p = ptAt(Pb, v), dd = Math.min(16, gxwNearest(GM, p, ri, 16)[0]);
+            if (v >= va && (dd <= 1 || inkM(ri, p))) { if (za == null) za = v; zb = v; }
+            x += Math.max(1, dd - 1);
+          }
+        }
+        // The bridges: straight on from each exit, the way the outline arrives there — or, where that never reaches the cover within
+        // the room the stem gave up (the root of r's ear runs down beside its stem) or would cross the other side's, from a little
+        // further out along the outline that shows (every 3 units, up to that room), nearest the exits first.
+        let sp = null;
+        const onStep = (X, d, u0) => { for (let u = 0; u <= u0; u += 1) { const p = [X[0] + u * d[0], X[1] + u * d[1]]; if (shown(ri, p) && gxwNearest(G0, p, -1, 4)[0] > (gxwNearest(GM, p, ri, 6)[0] <= 6 ? 3 : 1.5)) return false; } return true; };   // where the parts touch, a bridge must stay on the step's own outline
+        const side = (v0, sd) => {   // → j ↦ the j-th start out from the exit v0 on its side (sd −1: before it) whose bridge reaches the cover, nearest first ({ v, X, d, q, hit, p }), found as asked — one that only runs flush along the cover's edge when none reaches into it
+          const vs = walk(v0, sd, room, 3), got = [], es = []; let k = 0, graze = false, end = vs.length;
+          return j => {
+            while (got.length <= j && k < end) {
+              const e = es[k] !== undefined ? es[k] : (es[k] = look(vs[k], sd)), d = e && (sd < 0 ? e[1] : [-e[1][0], -e[1][1]]), hit = e && ray(ri, e[0], d, graze);
+              if (hit) got.push({ v: md(vs[k]), X: e[0], d, q: e[2], hit, p: ptAt(Pb, vs[k]) });
+              if (++k === end && !got.length && !graze) { graze = true; k = 0; end = Math.min(3, vs.length); }   // flush along the cover: from the exit, or just behind it
+            }
+            return got[j] || null;
+          };
+        };
+        const SA = side(va, -1), SB = side(vb, 1);
+        for (let tot = 0; tot <= 4 && !sp && SA(0); tot++) for (let ka = 0; ka <= tot && !sp; ka++) {
+          const a = SA(ka), b = a && SB(tot - ka), cross = (A, B) => segIntersect(A[0], A[1], B[0], B[1]) || segIntersect(A[0], A[1], B[1], B[2]) || segIntersect(A[1], A[2], B[0], B[1]) || segIntersect(A[1], A[2], B[1], B[2]);
+          if (!b || cross([a.X, a.hit[1], a.hit[2]], [b.X, b.hit[1], b.hit[2]]) || cross([a.p, a.hit[1], a.hit[2]], [b.p, b.hit[1], b.hit[2]]) || !inner(ri, a.hit[2], b.hit[2])) continue;
+          if (za != null && !(onStep(a.X, a.d, a.hit[0]) && onStep(b.X, b.d, b.hit[0]))) continue;
+          const o = { a: a.v, b: b.v, ca: a.q, cb: b.q, mid: [a.hit[1], a.hit[2], b.hit[2], b.hit[1]] };
+          if (clean(o)) sp = o;
+        }
+        if (!(sp && clean(sp)) && za != null) {   // touch: the step's own outline up to the cover, then inside it
+          const sa = look(za, -1), sb = look(zb, 1), Pa = sa && dig(ri, sa[0], sa[1]), Pz = sb && dig(ri, sb[0], [-sb[1][0], -sb[1][1]]);
+          sp = (Pa && Pz && fd(za, zb) > 1e-6 && Math.hypot(sb[0][0] - sa[0][0], sb[0][1] - sa[0][1]) >= 0.5 && inner(ri, Pa, Pz) && !segIntersect(sa[0], Pa, sb[0], Pz)) ? { a: za, b: zb, ca: sa[2], cb: sb[2], mid: [Pa, Pz] } : null;
+        }
+        if (sp && clean(sp) && (!c || (sp.ca && sp.cb))) out.push(sp);
+      });
+      if (out.length) spl[ri] = out;
     });
-    moved.forEach((P, ri) => { if (P !== moved0[ri]) unpass(RX[ri], P); });
   }
-  const moveCurve = (cv, sg, ri) => {
-    const segs = []; let pen = cv.start;   // absolute control polygons, cubics cut at their extrema
-    cv.segments.forEach(g => {
-      if (g.type === 'cubic') gxwSplitCubic(pen, g.pts[0], g.pts[1], g.pts[2]).forEach(q => { segs.push([pen, q[0], q[1], q[2]]); pen = q[2]; });
-      else { segs.push([pen, g.pts[0]]); pen = g.pts[0]; }
-    });
-    let m = segs.length;
-    const far = (P, from, to) => { for (let i = from; i !== to; i += (to > from ? 1 : -1)) if (Math.hypot(P[i][0] - P[from][0], P[i][1] - P[from][1]) > 0.01 && i !== from) return P[i]; return P[to]; };
-    const at = gxwAt;
-    const dl = segs.map((P, j) => {   // the shift of the node each segment STARTS at: its incoming leg (end of the previous segment) and its outgoing one
-      const Q = segs[(j - 1 + m) % m], V = P[0], pin = far(Q, Q.length - 1, 0), pout = far(P, 0, P.length - 1);
-      const si = at(Q, Q.length === 2 ? 0.5 : 0.8), so = at(P, P.length === 2 ? 0.5 : 0.2);
-      return mix(leg(V[0] - pin[0], V[1] - pin[1], si[0], si[1], sg), leg(pout[0] - V[0], pout[1] - V[1], so[0], so[1], sg));
-    });
-    const unpassCv = () => { for (let j = 0; j < m; j++) {   // the same rule for a curve's nodes (movePoly): a segment whose ends passed each other closes to a point
-      const a = segs[j][0], bn = segs[(j + 1) % m][0], i2 = (j + 1) % m, od = (bn[0] - a[0]) * s, nd = od + dl[i2] - dl[j];
-      if (od * nd < 0) { const mid = (a[0] * s + dl[j] + bn[0] * s + dl[i2]) / 2; dl[j] = mid - a[0] * s; dl[i2] = mid - bn[0] * s; }
-    } };
-    unpassCv();
-    let sh = segs.map((P, j) => { const d0 = dl[j], d1 = dl[(j + 1) % m]; return P.length === 2 ? [d0, d1] : [d0, d0, d1, d1]; });   // each control point's own sideways shift: a handle rides with its end point
-    const node = (j, d) => { const A = sh[j], B = sh[(j - 1 + m) % m]; A[0] += d; if (A.length === 4) A[1] += d; B[B.length - 1] += d; if (B.length === 4) B[2] += d; };   // move node j, and the handles beside it, d further
-    const r = RX[ri], P1 = moved[ri], Dv = P1 !== moved0[ri] ? r.map((p, i) => P1[i][0] - M0X[ri][i][0]) : null;   // the polygon's holds (the polygon is this curve flattened), its exits put in
-    if (Dv && Dv.some(d => Math.abs(d) > 1e-9)) {
-      // The curve is cut where those holds begin, end or change (exits included) — exactly, each control point's shift cut with
-      // it, so a cut alone changes nothing. Searched only among the segments around that place, and only where the curve runs the
-      // polygon's way (the two sides of a hairline run opposite ways).
-      const n = r.length, on = i => Math.abs(Dv[(i + n) % n]) > 1e-9, same = (i, k) => Math.abs(Dv[(i + n) % n] - Dv[(k + n) % n]) <= 1e-6, cuts = new Map();
-      const bb = segs.map(P => { let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity; P.forEach(p => { if (p[0] < x0) x0 = p[0]; if (p[0] > x1) x1 = p[0]; if (p[1] < y0) y0 = p[1]; if (p[1] > y1) y1 = p[1]; }); return [x0 - 3, y0 - 3, x1 + 3, y1 + 3]; });
-      for (let i = 0; i < n; i++) {
-        if (!(on(i) || on(i - 1) || on(i + 1)) || (on(i - 1) && on(i + 1) && same(i, i - 1) && same(i, i + 1))) continue;
-        const Q = r[i], A = r[(i - 1 + n) % n], B = r[(i + 1) % n], wx = B[0] - A[0], wy = B[1] - A[1];
-        const dist = (j, u) => { const P = segs[j], p = gxwAt(P, u), a = gxwAt(P, Math.max(0, u - 0.01)), b = gxwAt(P, Math.min(1, u + 0.01)); return ((b[0] - a[0]) * wx + (b[1] - a[1]) * wy < 0) ? Infinity : Math.hypot(p[0] - Q[0], p[1] - Q[1]); };
-        let best = null;
-        for (let j = 0; j < segs.length; j++) { const b = bb[j]; if (Q[0] < b[0] || Q[0] > b[2] || Q[1] < b[1] || Q[1] > b[3]) continue; for (let q = 0; q <= 32; q++) { const d = dist(j, q / 32); if (!best || d < best[0]) best = [d, j, q / 32]; } }
-        if (!best) continue;
-        let d = best[0], u = best[2]; const j = best[1];
-        for (let h = 1 / 64; h > 1 / 4096; h /= 2) [u - h, u + h].forEach(v => { if (v >= 0 && v <= 1) { const e = dist(j, v); if (e < d) { d = e; u = v; } } });
-        const P = segs[j], p = gxwAt(P, u), a = P[0], b = P[P.length - 1];
-        if (d <= 3 && Math.hypot(p[0] - a[0], p[1] - a[1]) > 1 && Math.hypot(p[0] - b[0], p[1] - b[1]) > 1) { if (!cuts.has(j)) cuts.set(j, []); cuts.get(j).push(u); }
-      }
-      if (cuts.size) {
-        const cutS = (v, u) => { const l = (a, b) => a + (b - a) * u; if (v.length === 2) { const q = l(v[0], v[1]); return [[v[0], q], [q, v[1]]]; } const ab = l(v[0], v[1]), bc = l(v[1], v[2]), cd = l(v[2], v[3]), abc = l(ab, bc), bcd = l(bc, cd), q = l(abc, bcd); return [[v[0], ab, abc, q], [q, bcd, cd, v[3]]]; };
-        const out = [], sout = [];
-        segs.forEach((P, j) => {
-          let rest = P, rs = sh[j], done = 0, last = P[0];
-          (cuts.get(j) || []).sort((x, y) => x - y).forEach(u => { const q = gxwAt(P, u); if (Math.hypot(q[0] - last[0], q[1] - last[1]) <= 1) return; const v = (u - done) / (1 - done), c = gxwCut(rest, v), cs = cutS(rs, v); out.push(c[0]); sout.push(cs[0]); rest = c[1]; rs = cs[1]; done = u; last = q; });
-          out.push(rest); sout.push(rs);
-        });
-        segs.splice(0, segs.length, ...out); sh = sout; m = segs.length;
-      }
-      // A node where the polygon is held goes where the held polygon is (toward an exit, blended into the curve's own place); its
-      // handles go with it. The nearest polygon edge that runs the curve's way is looked for among the edges at that height.
-      const bins = new Map(), unit = (x, y) => { const L = Math.hypot(x, y); return L ? [x / L, y / L] : [0, 0]; };
-      for (let i = 0; i < n; i++) { const p = r[i], q = r[(i + 1) % n]; for (let k = Math.floor((Math.min(p[1], q[1]) - 3) / 16); k <= Math.floor((Math.max(p[1], q[1]) + 3) / 16); k++) { if (!bins.has(k)) bins.set(k, []); bins.get(k).push(i); } }
-      let any = false;
-      for (let j = 0; j < m; j++) {
-        const V = segs[j][0], Q = segs[(j - 1 + m) % m], pin = far(Q, Q.length - 1, 0), pout = far(segs[j], 0, segs[j].length - 1), a = unit(V[0] - pin[0], V[1] - pin[1]), b = unit(pout[0] - V[0], pout[1] - V[1]), wx = a[0] + b[0], wy = a[1] + b[1];
-        let best = null;
-        (bins.get(Math.floor(V[1] / 16)) || []).forEach(i => {
-          const p = r[i], q = r[(i + 1) % n], ex = q[0] - p[0], ey = q[1] - p[1], L2 = ex * ex + ey * ey; if (!L2 || ex * wx + ey * wy < 0) return;
-          const f = Math.max(0, Math.min(1, ((V[0] - p[0]) * ex + (V[1] - p[1]) * ey) / L2)), d = Math.hypot(p[0] + f * ex - V[0], p[1] + f * ey - V[1]);
-          if (!best || d < best[0]) best = [d, i, f];
-        });
-        if (!best || best[0] > 3) continue;
-        const i = best[1], i2 = (i + 1) % n, f = best[2], w = (on(i) ? 1 - f : 0) + (on(i2) ? f : 0);   // how much of this place is held
-        if (!(w > 1e-9)) continue;
-        const px = r[i][0] + f * (r[i2][0] - r[i][0]), held = P1[i][0] + f * (P1[i2][0] - P1[i][0]) + (V[0] - px) * s;   // the held polygon's x here (the node's own offset from the polygon kept)
-        node(j, w * (held - V[0] * s - sh[j][0])); any = true;
-      }
-      if (any) for (let j = 0; j < m; j++) {   // unpassCv's rule again, on the nodes as they now stand
-        const i2 = (j + 1) % m, a = segs[j][0], bn = segs[i2][0], od = (bn[0] - a[0]) * s, nd = od + sh[i2][0] - sh[j][0];
-        if (od * nd < 0) { const mid = (a[0] * s + sh[j][0] + bn[0] * s + sh[i2][0]) / 2; node(j, mid - a[0] * s - sh[j][0]); node(i2, mid - bn[0] * s - sh[i2][0]); }
-      }
-    }
-    const mv = (p, d) => [p[0] * s + d, p[1]], over = new Map();
-    /* Where the room the cover gave up leaves a gap between an exit and the cover (the stem's side moved away from the arch
-       that runs into it), the piece of curve from the exit to the held point crosses it: it leaves the exit the way the outline
-       arrives there and bends round to the held point (handles a third of the way across), so the edge flows into the stroke
-       with no shelf or kink where the step's outline ends. Only when the exit is outside the cover and the held end inside. */
-    (exits[ri] || []).forEach(o => {
-      const E = r[o.e]; let j = -1, bd = 3;
-      for (let q = 0; q < m; q++) { const d = Math.hypot(segs[q][0][0] - E[0], segs[q][0][1] - E[1]); if (d <= bd) { bd = d; j = q; } }
-      if (j < 0 || o.cj < 0) return;
-      const k = o.before ? (j - 1 + m) % m : j, P = segs[k], a = mv(P[0], sh[k][0]), b = mv(P[P.length - 1], sh[k][sh[k].length - 1]), H = o.before ? a : b, X = o.before ? b : a, C = moved[o.cj];
-      if (!inPoly(C, H[0], H[1]) || inPoly(C, X[0], X[1])) return;
-      const f = o.before ? far(P, P.length - 1, 0) : far(P, 0, P.length - 1), Q = o.before ? P[P.length - 1] : P[0], tx = (f[0] - Q[0]) * s, ty = f[1] - Q[1], tl = Math.hypot(tx, ty), L = Math.hypot(H[0] - X[0], H[1] - X[1]) / 3;
-      if (!tl || !L) return;
-      const cX = [X[0] + L * tx / tl, X[1] + L * ty / tl], cH = [H[0] + L * (X[0] - H[0]) / (3 * L), H[1] + L * (X[1] - H[1]) / (3 * L)];
-      over.set(k, o.before ? [cH, cX, b] : [cX, cH, b]);
-    });
-    return { winding: cv.winding, start: mv(segs[0][0], sh[0][0]),
-      segments: segs.map((P, j) => over.has(j) ? { type: 'cubic', pts: over.get(j) } : P.length === 2 ? { type: 'line', pts: [mv(P[1], sh[j][1])] } : { type: 'cubic', pts: [mv(P[1], sh[j][1]), mv(P[2], sh[j][2]), mv(P[3], sh[j][3])] }) };
-  };
-  const movedCv = hasCv ? curves.map((cv, i) => (cv && cv.segments && cv.segments.length) ? moveCurve(cv, sides[i], i) : null) : null;
+  const movedCv = cvp ? cvp.map((c, i) => {
+    if (!c) return null;
+    if (spl[i]) { const o = cvSplice(c, spl[i]); spl[i] = spl[i].filter(x => !x.drop); if (spl[i].length) return o; spl[i] = null; }   // a dropped splice: that run stays as the step makes it
+    return base[i] !== moved0[i] ? cvBuild(c) : freeCv[i];
+  }) : null;
+  const ship = base.map((P, i) => (spl[i] ? polySplice(P, spl[i]) : P));
   const b0 = polysBounds(rings); let mn = Infinity;
-  moved.forEach(r => r.forEach(p => { if (p[0] < mn) mn = p[0]; }));
-  const tau = Number.isFinite(mn) ? Math.round(b0.minX * s) - mn : 0;   // the ink's left edge lands exactly on s × its old place — the side bearing scales with the letter
+  moved0.forEach(r => r.forEach(p => { if (p[0] < mn) mn = p[0]; }));
+  const tau = Number.isFinite(mn) ? Math.round(b0.minX * s) - mn : 0;   // the ink's left edge lands exactly on s × its old place — the side bearing scales with the letter (read on the step's own outline, so the letter held and unheld stand in one place)
   const rp = p => [Math.round(p[0] + tau), Math.round(p[1])];
-  const out = { keep: [], rings: [], curves: hasCv ? [] : null, lost: 0, closed: false, tau, b0, b1: null };
-  moved.forEach((r, i) => {
-    let cv = movedCv && movedCv[i] ? { winding: movedCv[i].winding, start: rp(movedCv[i].start), segments: movedCv[i].segments.map(g => ({ type: g.type, pts: g.pts.map(rp) })) } : null;
-    let pts = (hand && cv) ? gxwFlatten(cv) : bgDedupe(r.map(rp));
-    // The step must not leave an outline crossing itself where it did not: the tip of a sharp notch is cut
-    // back to where its two sides now meet. That contour then ships as its polygon (a null curve entry).
-    // A crossing that cannot be mended that way is a stroke that now runs into another part of its own
-    // contour (the free end of an open bowl reaching the stem). The gap columns below cannot see it — the
-    // gap it closed shares its column with the wide counter beside it — so the letter is reported here.
-    if (pts.length <= 400 && contourSelfIntersects(pts) && !contourSelfIntersects(rings[i])) { const mended = gxwUnloop(pts); if (mended) { pts = mended; cv = null; } else out.closed = true; }
-    const A0 = signedArea(rings[i]), A1 = pts.length >= 3 ? signedArea(pts) : 0;
-    if (pts.length < 3 || Math.abs(A1) < 1 || (A1 > 0) !== (A0 > 0)) { out.lost++; if (A0 * sides[i] > 0) out.closed = true; return; }   // collapsed or turned inside out — and if it was a counter, the counter closed
-    out.keep.push(i); out.rings.push(pts);
-    if (hasCv) out.curves.push(cv);
-  });
+  const fin = new Map();   // a contour that ships the same in both records (the same polygon and curve) is rounded and checked once
+  const finish = (P, C, quick) => {   // the polygons and curves that ship → the record, rounded and checked (closed: by the contours themselves; the gap columns are settle's). quick: not yet checked for crossing itself — the gate's yardstick only
+    const out = { keep: [], rings: [], curves: hasCv ? [] : null, lost: 0, closed: false, tau, b0, b1: null };
+    P.forEach((r, i) => {
+      const c = C && C[i]; let o = fin.get(r);
+      if (!o || o.c !== c || (!quick && o.quick)) {
+        let cv = c ? { winding: c.winding, start: rp(c.start), segments: c.segments.map(g => ({ type: g.type, pts: g.pts.map(rp) })) } : null, raw = null, shut = false;
+        let pts = (hand && cv) ? gxwFlatten(cv) : bgDedupe(r.map(rp));
+        // The step must not leave an outline crossing itself where it did not: the tip of a sharp notch is cut
+        // back to where its two sides now meet. That contour then ships as its polygon (a null curve entry).
+        // A crossing that cannot be mended that way is a stroke that now runs into another part of its own
+        // contour (the free end of an open bowl reaching the stem). The gap columns below cannot see it — the
+        // gap it closed shares its column with the wide counter beside it — so the letter is reported here.
+        if (quick) { /* checked when settled */ } else if (pts.length <= 400 && contourSelfIntersects(pts) && !contourSelfIntersects(rings[i])) { const mended = gxwUnloop(pts); if (mended) { raw = cv; pts = mended; cv = null; } else shut = true; }   // raw: that curve, for the gate's yardstick
+        const A0 = signedArea(rings[i]), A1 = pts.length >= 3 ? signedArea(pts) : 0, gone = pts.length < 3 || Math.abs(A1) < 1 || (A1 > 0) !== (A0 > 0);
+        o = { c, cv, pts, raw, gone, quick: !!quick, shut: shut || (gone && A0 * sides[i] > 0) };   // collapsed or turned inside out — and if it was a counter, the counter closed
+        fin.set(r, o);
+      }
+      if (o.shut) out.closed = true;
+      if (o.raw) (out.raw = out.raw || [])[i] = o.raw;
+      if (o.gone) { out.lost++; return; }
+      out.keep.push(i); out.rings.push(o.pts);
+      if (hasCv) out.curves.push(o.cv);
+    });
+    if (out.rings.length) out.b1 = polysBounds(out.rings);
+    return out;
+  };
   /* Counters that close and strokes that meet. No height moved, so the same horizontal slice cuts the
      letter before and after: every GAP between two runs of ink (a counter, or the space between two
      strokes) is followed slice by slice as a column, and matched to what is left of it afterwards. A
      column is reported when it was open and is now shut (or all but: under a quarter of the stem and
      under half its old width) along its whole height. A wedge-shaped notch only gets shorter at its tip — that is not a closure, and it
      is why this looks at whole columns rather than testing the outline for crossings. */
-  if (!out.closed && out.rings.length) {
+  const settle = out => {
+    if (out.closed || !out.rings.length) return out;
     const E1 = gxwEdges(out.rings), near1 = gxwBins(E1), N = 48, H = b0.maxY - b0.minY, thr = Math.max(4, t / 4), tol = Math.abs(t * (1 - s)) / 2 + 2;
     const gaps = rs => rs.slice(1).map((r, i) => [rs[i][1], r[0]]);
     let open = []; const cols = [];
@@ -18722,8 +18996,13 @@ function gxwShape(rings, curves, s, t, hand) {
       open = next;
     }
     out.closed = cols.some(c => c.n >= 2 && ((c.was >= thr && c.now < thr && c.now < 0.5 * c.was) || (c.was >= 3 && c.now < 1)));   // "all but shut": under a quarter of the stem AND under half of what it was — a gap that merely narrows is not reported
+    return out;
+  };
+  const out = settle(finish(ship, movedCv));
+  if (ship.some((P, i) => P !== moved0[i]) || (movedCv && movedCv.some((cv, i) => cv !== freeCv[i]))) {   // the letter as the step makes it with no hold: the gate's yardstick (quick), and its fallback — gxWidthOp has it settled (checked in full) before it counts its pieces or takes it
+    const free = out.free = finish(moved0, freeCv, true);
+    free.settle = () => settle(Object.assign(free, finish(moved0, freeCv), { settle: undefined }));
   }
-  if (out.rings.length) out.b1 = polysBounds(out.rings);
   return out;
 }
 /* o: { scope, stems, spacing, marks, name, cen (a gxwCensus to reuse), k (the factor the shapes take
@@ -18736,12 +19015,24 @@ function gxWidthOp(pct, o) {
   /* One letter's stem step, worked out once → { t, out, apart }. The guarantee behind the step is that a
      letter never leaves it in more pieces than it came in: one whose ink came apart all the same (apart —
      gxwApart) is not given the step. It is stretched plainly, which cannot separate anything, and the
-     plan names it (warn.stretched). */
+     plan names it (warn.stretched). Before that, a letter the step held together is measured (gxwFits): where
+     its outline that shows strays from the step's own (a lump, or a bridge across a gap that is not there), or
+     where it came apart all the same, it takes the step as an ordinary letter gets it (H.free) when that keeps
+     it in one piece; else the plain stretch. */
   const tried = new Map(), memo = cen ? (cen.pieces || (cen.pieces = new WeakMap())) : null;   // the "before" counts ride on the census, which the dialog keeps while it is open
   const step = l => {
     let r = tried.get(l); if (r) return r;
     r = { t: gxwStemFor(cen, l), out: null, apart: false };
-    if (r.t != null) { const rings = l.contours.map(c => c.points); r.out = gxwShape(rings, l.curves, k, r.t, !!l.handEdited); r.apart = !!r.out.b1 && gxwApart(rings, l.curves, r.out, memo, l); }
+    if (r.t != null) {
+      const rings = l.contours.map(c => c.points), H = gxwShape(rings, l.curves, k, r.t, !!l.handEdited), F = H.free;
+      delete H.free;
+      if (F && !gxwFits(H, F).ok) { r.out = F.settle(); r.apart = !!F.b1 && gxwApart(rings, l.curves, F, memo, l); }
+      else {
+        r.out = H; r.apart = !!H.b1 && gxwApart(rings, l.curves, H, memo, l);
+        if (F && r.apart) { r.out = F.settle(); r.apart = !!F.b1 && gxwApart(rings, l.curves, F, memo, l); }
+      }
+      if (r.out && r.out.settle === undefined) delete r.out.settle;
+    }
     tried.set(l, r); return r;
   };
   return {
