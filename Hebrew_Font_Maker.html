@@ -8505,7 +8505,7 @@ function cropSelectSVG(l) {
   cropFit = computeCropFit(im); const f = cropFit;
   const V = STAGE_VB;
   let h = `<rect x="${V.x}" y="${V.y}" width="${V.w}" height="${V.h}" fill="var(--cream)"/>`;
-  h += `<image id="cropImg" href="${sheetUrl}" x="${f.ox}" y="${f.oy}" width="${f.w}" height="${f.h}" style="cursor:crosshair;"/>`;
+  h += `<image id="cropImg" href="${esc(sheetUrl)}" x="${f.ox}" y="${f.oy}" width="${f.w}" height="${f.h}" style="cursor:crosshair;"/>`;
   const sameSheet = curKind !== 'letter' || !l.source.sheetId || (sh && l.source.sheetId === sh.id);
   const box = (cropDrag && cropDrag.box) || (sameSheet && l.source.cropRect ? imgRectToStage(l.source.cropRect, f) : null);
   if (box && box.w > 0 && box.h > 0) {
@@ -8988,7 +8988,7 @@ function renderAdStage(focusSel) {
   // size is unambiguous in every engine (belt-and-braces for Firefox height:auto sizing); the CSS
   // width:100%;height:auto still drives responsive display and overrides the attributes for layout.
   let h = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;aspect-ratio:${W} / ${H};display:block;" role="group">`;
-  h += `<image href="${adState.url}" x="0" y="0" width="${W}" height="${H}"/>`;
+  h += `<image href="${esc(adState.url)}" x="0" y="0" width="${W}" height="${H}"/>`;   // a sheet's data URL: a project file's text, shape-checked by migrateProject and escaped here
   adState.boxes.forEach(b => {
     const r = b.rect, sel = b.id === adState.selId;
     const meta = b.cp ? letterMeta(b.cp) : null;
@@ -11504,11 +11504,11 @@ function renderMarkStage(it) {
   h += `<rect x="${fx(cb.x0)}" y="${fy(cb.y1)}" width="${fx(cb.x1)-fx(cb.x0)}" height="${fy(cb.y0)-fy(cb.y1)}" fill="none" stroke="var(--gold)" stroke-width="1.2" stroke-dasharray="6 4" opacity="0.7"/>`;
   const url = curImageUrl();
   if (workMode === 'trace') {
-    if (url) h += `<image href="${url}" x="0" y="0" transform="matrix(${it.transform.join(' ')})" opacity="0.28"/>`;
+    if (url) h += `<image href="${esc(url)}" x="0" y="0" transform="matrix(${it.transform.join(' ')})" opacity="0.28"/>`;
     if (it.contours) { const C = stageColors(); h += `<path d="${contoursToPath(it.contours, it.curves)}" fill="${C.inkFill}" fill-rule="nonzero" stroke="${C.inkStroke}" stroke-width="0.6"/>`; }
     else h += `<text x="300" y="520" text-anchor="middle" fill="#9aa0aa" font-size="12">${esc(_pT('not_traced', 'Not traced yet.'))}</text>`;
   } else {
-    if (url) { h += `<image href="${url}" x="0" y="0" transform="matrix(${it.transform.join(' ')})" opacity="0.92"/>`; h += transformHandlesSVG(it); }
+    if (url) { h += `<image href="${esc(url)}" x="0" y="0" transform="matrix(${it.transform.join(' ')})" opacity="0.92"/>`; h += transformHandlesSVG(it); }
     else h += `<text x="300" y="300" text-anchor="middle" fill="#9aa0aa" font-size="14">${esc(_pT('upload_mark_below', 'Upload an image of this mark below.'))}</text>`;
   }
   sv.innerHTML = h;
@@ -11964,7 +11964,7 @@ async function renderStage() {
   if (workMode === 'align') {
     if (url) {
       const m = l.transform;
-      h += `<image href="${url}" x="0" y="0" transform="matrix(${m.join(' ')})" style="image-rendering:auto;" opacity="${project.view.imgOpacityAlign}"/>`;
+      h += `<image href="${esc(url)}" x="0" y="0" transform="matrix(${m.join(' ')})" style="image-rendering:auto;" opacity="${project.view.imgOpacityAlign}"/>`;
       // transform handles drawn after image (corners + rotate); hidden while adjusting metrics on canvas
       if (!metricAdjust) h += transformHandlesSVG(l);
     } else if (l.contours) {
@@ -11996,7 +11996,7 @@ async function renderStage() {
     if (!(l.draw && l.draw.strokes.length))
       h += `<text x="300" y="280" text-anchor="middle" fill="#9aa0aa" font-size="13">${esc(_drawT('empty_hint', 'Draw the letter here — trace the gray reference.'))}</text>`;
   } else if (workMode === 'trace') {
-    if (url) h += `<image href="${url}" x="0" y="0" transform="matrix(${l.transform.join(' ')})" opacity="${project.view.imgOpacityTrace}"/>`;
+    if (url) h += `<image href="${esc(url)}" x="0" y="0" transform="matrix(${l.transform.join(' ')})" opacity="${project.view.imgOpacityTrace}"/>`;
     if (l.contours) { const C = stageColors(); h += `<path d="${contoursToPath(l.contours, l.curves)}" fill="${C.inkFill}" fill-rule="nonzero" stroke="${C.inkStroke}" stroke-width="0.6"/>`; }
     // An untraced drawing would leave this step looking EMPTY — the strokes are safe in l.draw, but
     // nothing here renders them, and the threshold/detail controls have no raster to act on. Ghost
@@ -12036,7 +12036,7 @@ async function renderStage() {
     if (_shapeEntry) { nodeModel = { contours: [] }; _shapeEntry = false; _blankOk = curCp; _shapeTool = _shapeLast; }   // "Build from shapes" on a blank glyph
     if (!l.contours && !(nodeModel && _penMode) && _blankOk !== curCp) { setWorkMode('trace'); return; }   // nothing to edit (e.g. landed here via undo) → bail to trace — unless this blank letter was opened to be built from shapes (an undo of its first shape stays here)
     if (!nodeModel) buildNodeModel(l);
-    if (url) h += `<image href="${url}" x="0" y="0" transform="matrix(${l.transform.join(' ')})" opacity="${project.view.imgOpacityTrace}"/>`;
+    if (url) h += `<image href="${esc(url)}" x="0" y="0" transform="matrix(${l.transform.join(' ')})" opacity="${project.view.imgOpacityTrace}"/>`;
     const C = stageColors();
     if (l.contours) {
       // hidden contours are an EDITING aid — filtered from the stage only; they still export and preview.
@@ -28041,11 +28041,21 @@ function sanitizePrecompNumbers(pc) {
 }
 /* A project file's strings that the page writes into markup as they are — inside an attribute or a
    handler, not as text — are kept only in the shape the page itself writes; anything else is replaced
-   or dropped, so a normal project loads exactly as it was saved. A drawing guide (project.guides.items):
-   its id is newGuideId()'s 'g<base36>_<n>' (a repeated or foreign one gets a fresh id), its colour the
-   colour field's '#rrggbb' (#rgb / #rrggbbaa accepted too) or the default, its style one of GUIDE_STYLES
-   or the default, its position a finite number (a guide without one cannot be placed and goes), its name
-   a string. An absent colour, style or name stays absent. */
+   or dropped, so a normal project loads exactly as it was saved (and the sinks escape them as well).
+
+   A picture's data URL — an item's photo or drawing raster (source.dataUrl), a sheet, a mark store's
+   sheet — is written into an <image href="…"> on the stage, the crop box and the auto-detect dialog. It
+   is kept only in the shape readAsDataURL / toDataURL give it: 'data:image/…' with a base64 body (or a
+   body with no quote, angle bracket or space), 'data:application/octet-stream;base64,…' for a picture
+   file the browser gave no type, or the image-stripped autosave's '[omitted]'. Anything else is set to
+   null and the item (or sheet) loads as if it had no picture. */
+const FM_DATA_URL_RE = /^data:(?:image\/[a-z0-9.+-]+(?:;[a-z0-9.+_=-]+)*?(?:;base64,[a-z0-9+/]*={0,2}|,[^"<>\s]*)|application\/octet-stream;base64,[a-z0-9+/]*={0,2})$/i;
+function fmDataUrlOk(u) { return typeof u === 'string' && (u === '[omitted]' || FM_DATA_URL_RE.test(u)); }
+function sanitizeDataUrl(o) { if (o && typeof o === 'object' && o.dataUrl != null && !fmDataUrlOk(o.dataUrl)) o.dataUrl = null; }
+/* A drawing guide (project.guides.items): its id is newGuideId()'s 'g<base36>_<n>' (a repeated or
+   foreign one gets a fresh id), its colour the colour field's '#rrggbb' (#rgb / #rrggbbaa accepted too)
+   or the default, its style one of GUIDE_STYLES or the default, its position a finite number (a guide
+   without one cannot be placed and goes), its name a string. An absent colour, style or name stays absent. */
 const GUIDE_ID_RE = /^g[0-9a-z]+_\d+$/;
 function sanitizeGuides(g) {
   const seen = new Set();
@@ -28071,6 +28081,7 @@ function migrateProject(data) {
   data.letters = _objs(data.letters);
   data.letters.forEach(l => {
     if (!_isObj(l.source)) l.source = null;
+    sanitizeDataUrl(l.source);                 // the photo / drawing raster goes into an <image href>: a data URL in the page's own shape, or none
     if (!Array.isArray(l.transform) || l.transform.length !== 6) l.transform = null;
     // contours are [{points:[[x,y],…]}] and curves ride 1:1 with them — one malformed entry drops both (the letter re-traces from its image)
     if (l.contours != null && !(Array.isArray(l.contours) && l.contours.every(c => _isObj(c) && Array.isArray(c.points) && c.points.every(pt => Array.isArray(pt) && pt.length >= 2)))) { l.contours = null; l.curves = null; }
@@ -28079,7 +28090,7 @@ function migrateProject(data) {
     if (l.slant != null) { const _s = +l.slant; if (Number.isFinite(_s) && _s !== 0 && Math.abs(_s) <= 60) l.slant = Math.round(_s * 10) / 10; else delete l.slant; }   // the lean record: junk means "upright"
     if (l.photoSlant != null) { const _p = +l.photoSlant; if (Number.isFinite(_p) && Math.abs(_p) <= 60 && ((l.source && l.source.dataUrl) || (l.draw && Array.isArray(l.draw.strokes) && l.draw.strokes.length))) l.photoSlant = Math.round(_p * 10) / 10; else delete l.photoSlant; }   // a placement's (or a drawing's strokes') lean waiting for the next trace (photoLean): only beside a picture or strokes
     sanitizeItemNumbers(l, null);              // width, margins, trace settings, the photo matrix, anchors, every coordinate: numbers or "not set" — they are all written into markup later
-    if (l.markShapes) Object.keys(l.markShapes).forEach(cp => { if (_isObj(l.markShapes[cp])) sanitizeItemNumbers(l.markShapes[cp], 0); });   // a letter's own mark shapes are mark items
+    if (l.markShapes) Object.keys(l.markShapes).forEach(cp => { if (_isObj(l.markShapes[cp])) { sanitizeItemNumbers(l.markShapes[cp], 0); sanitizeDataUrl(l.markShapes[cp].source); } });   // a letter's own mark shapes are mark items
   });
   // ensure all 27 letters exist & fields present (forward-compatible)
   // One item per code point. A save can still carry two at one cp — a custom glyph added where a letter
@@ -28204,6 +28215,7 @@ function migrateProject(data) {
   data.combinedIndex = Math.max(0, Math.min(data.combinedIndex, Math.max(0, data.combinedSheets.length - 1)));
   delete data.combinedImage;
   data.combinedSheets = data.combinedSheets.filter(_isObj);
+  data.combinedSheets.forEach(sanitizeDataUrl);   // the crop box and auto-detect draw the sheet as an <image href>: the page's own data URL shape, or none
   // auto-detect's sheet scale (finalizeCrop sizes a letter boxed by hand with it): a raw 1e999 reads Infinity, which
   // gave that letter a NaN transform — a scale that is not a finite positive number goes, and the letter fits as before.
   data.combinedSheets.forEach(s => { if (!(Number.isFinite(s.fitScale) && s.fitScale > 0)) delete s.fitScale; });
@@ -28347,7 +28359,8 @@ function migrateProject(data) {
       if (a && Number.isFinite(a.x) && Number.isFinite(a.y)) m.attachAnchor = { x: Math.round(a.x), y: Math.round(a.y) };
       else delete m.attachAnchor;
     });
-    MARK_STORE_KINDS.forEach(cat => { const c = data.font[cat].custom; Object.keys(c).forEach(k => { if (!_isObj(c[k])) delete c[k]; else sanitizeItemNumbers(c[k], 0); }); });   // a mark entry is an object with a source — anything else is dropped — and its numbers are numbers (the same rule as a letter's)
+    MARK_STORE_KINDS.forEach(cat => { const c = data.font[cat].custom; Object.keys(c).forEach(k => { if (!_isObj(c[k])) delete c[k]; else { sanitizeItemNumbers(c[k], 0); sanitizeDataUrl(c[k].source); } });   // a mark entry is an object with a source — anything else is dropped — and its numbers are numbers (the same rule as a letter's)
+      sanitizeDataUrl(data.font[cat].combinedImage); });   // the store's sheet, and each mark's picture, in the page's own data URL shape
     data.font.customMarks.mode = 'custom';
     if (!data.font.accent || typeof data.font.accent !== 'object') data.font.accent = { mode: 'custom', custom: {} };
     if (!data.font.accent.custom || typeof data.font.accent.custom !== 'object') data.font.accent.custom = {};
@@ -28359,6 +28372,7 @@ function migrateProject(data) {
       const m = data.font.accent.custom[cp];
       if (!LATIN_ACCENTS[cp] || !m || typeof m !== 'object') { delete data.font.accent.custom[cp]; return; }
       sanitizeItemNumbers(m, 0);               // the accent store is not in MARK_STORE_KINDS
+      sanitizeDataUrl(m.source);
       m.cls = LATIN_ACCENTS[cp].cls;
       m.designMode = (m.designMode === 'editor') ? 'editor' : 'upload';
       const a = m.attachAnchor;
