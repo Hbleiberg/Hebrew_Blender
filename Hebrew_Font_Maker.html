@@ -2452,7 +2452,7 @@ html[lang="he"] .tp-label{letter-spacing:normal;text-transform:none;}
 <div class="overlay" id="boldGenOverlay" onclick="if(event.target===this)boldGenClose()">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="bgTitle" style="max-width:560px;">
     <h3 id="bgTitle" data-i18n="fontmaker.boldgen.title">Generate Bold</h3>
-    <p class="hint" style="margin:0 0 10px;" data-i18n="fontmaker.boldgen.intro">Thickens every traced letter's strokes by the amount below. Nothing changes until you press Apply, one Undo reverts it all, and applying again stacks on top of the current weight. A positive weight also sets the font's Style to Bold.</p>
+    <p class="hint" style="margin:0 0 10px;" data-i18n="fontmaker.boldgen.intro">Thickens every traced letter's strokes by the amount below. Nothing changes until you press Apply, one Undo reverts it all, and applying again stacks on top of the current weight. A positive weight also sets the font's Style to Bold, or to Bold Italic for an Italic font.</p>
     <div style="font-size:0.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;" data-i18n="fontmaker.boldgen.before">Before</div>
     <svg id="bgBefore" dir="ltr" style="width:100%;height:72px;display:block;"></svg>
     <div style="font-size:0.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-top:4px;" data-i18n="fontmaker.boldgen.after">After</div>
@@ -5209,6 +5209,21 @@ function _focusables(el) {
   return [...el.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])')]
     .filter(n => !n.disabled && n.offsetParent !== null);
 }
+/* The Tab stops among them: only a control whose tabIndex is 0 or more — the `button` selector above also
+   matches a roving tab strip's inactive tabs, which carry -1 (QA Check, Help) — and a radio group is ONE
+   stop: its checked radio, else its first. The trap below wraps from the first stop and the last, and
+   Tab or Shift+Tab from ANY radio of a group leaves the whole group. Compared with a control the keyboard
+   never stops on, a wrap landed on it, and Shift+Tab from the real first stop walked out to the page
+   behind: the paste dialog, which opens on its checked Size choice (a letter with a tail, or a
+   remembered "Keep its original size"), and QA Check once its second tab was chosen. */
+const _isRadio = n => !!n && n.tagName === 'INPUT' && n.type === 'radio' && !!n.name;
+const _sameRadioGroup = (a, b) => _isRadio(a) && _isRadio(b) && a.name === b.name && a.form === b.form;
+function _tabStops(el) {
+  const f = _focusables(el).filter(n => n.tabIndex >= 0);
+  return f.filter((n, i) => !_isRadio(n) || f.findIndex(m => _sameRadioGroup(m, n)) === i)
+    .map(n => _isRadio(n) ? (f.find(m => _sameRadioGroup(m, n) && m.checked) || n) : n);
+}
+function _isTabStop(a, stop) { return a === stop || _sameRadioGroup(a, stop); }
 function aOpenModal(id, closeFn) {
   const ov = document.getElementById(id); if (!ov) return;
   _modalsUnder = _modalsUnder.filter(m => m.id !== id);
@@ -5222,7 +5237,7 @@ function aOpenModal(id, closeFn) {
   document.querySelectorAll('.overlay.open').forEach(o => { if (o !== ov) top = Math.max(top, parseInt(getComputedStyle(o).zIndex, 10) || 0); });
   if (top && top >= (parseInt(getComputedStyle(ov).zIndex, 10) || 0)) ov.style.zIndex = String(top + 1);
   ov.classList.add('open');
-  const f = _focusables(ov); if (f.length) setTimeout(() => f[0].focus(), 0);
+  const f = _tabStops(ov); if (f.length) setTimeout(() => f[0].focus(), 0);
 }
 function aCloseModal(id) {
   const ov = document.getElementById(id); if (ov) { ov.classList.remove('open'); ov.style.zIndex = ''; }
@@ -5253,7 +5268,7 @@ function aCloseModal(id) {
   // outside it (the closed dialog was opened from the page, or its opener is gone), bring it in —
   // Enter or Space on a toolbar button behind an open dialog would press that button.
   const top = _activeModal && document.getElementById(_activeModal.id);
-  if (top && top.classList.contains('open') && !top.contains(document.activeElement)) { const f = _focusables(top); try { (f[0] || top.querySelector('[tabindex="-1"]') || top).focus(); } catch (e) {} }
+  if (top && top.classList.contains('open') && !top.contains(document.activeElement)) { const f = _tabStops(top); try { (f[0] || top.querySelector('[tabindex="-1"]') || top).focus(); } catch (e) {} }
 }
 /* A key press that closes a dialog belongs to that dialog — it is not also a shortcut. A dialog
    closes in the middle of the key's own dispatch (the trap below on Escape; a dialog's own handler on
@@ -5288,8 +5303,8 @@ document.addEventListener('keydown', e => {
   if (am && am.classList.contains('open')) {
     if (e.key === 'Escape') { e.preventDefault(); e.stopImmediatePropagation(); _activeModal.close(); return; }   // the Escape is spent here: no later handler on the document sees it
     if (e.key === 'Tab') {
-      const f = _focusables(am);
-      if (!f.length) {
+      const s = _tabStops(am);   // stops, not focusables: see _tabStops
+      if (!s.length) {
         // A modal with nothing focusable is still modal: the import-progress dialog has no controls
         // by design, and surrendering Tab here would let the keyboard walk the workspace BEHIND a
         // dialog that exists precisely because that workspace is mid-import. Hold focus on the
@@ -5298,10 +5313,10 @@ document.addEventListener('keydown', e => {
         try { (am.querySelector('[tabindex="-1"]') || am).focus(); } catch (err) {}
         return;
       }
-      const first = f[0], last = f[f.length - 1];
-      if (!am.contains(document.activeElement)) { e.preventDefault(); first.focus(); }
-      else if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
-      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      const first = s[0], last = s[s.length - 1], a = document.activeElement;
+      if (!am.contains(a)) { e.preventDefault(); first.focus(); }
+      else if (e.shiftKey && _isTabStop(a, first)) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && _isTabStop(a, last)) { e.preventDefault(); first.focus(); }
     }
     return;
   }
@@ -5449,7 +5464,7 @@ const HELP_CONTENT = {
     <p>When your letters are ready, choose a format in the picker next to <span class="ui">⬇ Export TTF</span> (top-right), then click the button. It builds a real font from your work.</p>
     <p><strong>Which format?</strong></p>
     <ul>
-      <li><span class="ui">TTF (recommended)</span> — a normal font file to <strong>install and type with</strong> in Word, Google Docs, Canva — anywhere you choose fonts. Start here.</li>
+      <li><span class="ui">TTF (recommended)</span> — a normal font file to <strong>install and type with</strong> in Word, Pages, LibreOffice — anywhere you choose from installed fonts — or to upload to a design tool like Canva. Google Docs cannot load a font from your computer. Start here.</li>
       <li><span class="ui">WOFF2 (web)</span> — a compressed font for <strong>embedding on a website</strong>.</li>
       <li><span class="ui">TTF + WOFF2 (zip)</span> — both files <em>plus</em> a ready-to-paste <span class="ui">@font-face</span> CSS snippet.</li>
       <li><span class="ui">UFO source (zip)</span> — an <strong>editable source</strong> for font editors (FontForge, Glyphs, RoboFont), with real curves, anchors and a <span class="ui">features.fea</span>.</li>
@@ -6144,6 +6159,19 @@ function shortcutGroups() {
       ['Delete  or  Backspace', t('sc_detect_remove')],
       ['Esc', t('sc_detect_close')],
     ], 'detect'],
+    [g('localfont'), [            // the installed-font picker's own keys (lfKey)
+      ['↑  /  ↓', t('sc_lf_move')],
+      ['Home  /  End', t('sc_lf_ends')],
+      ['PageUp  /  PageDown', t('sc_lf_page')],
+      ['A–Z  /  א–ת', t('sc_lf_type')],
+      ['Enter', t('sc_lf_pick')],
+      ['Esc', t('sc_lf_esc')],
+    ], 'localfont'],
+    [g('kernpairs'), [            // a row of Common pairs chips (kernChipKey)
+      ['←  ↑  →  ↓', t('sc_kp_move')],
+      ['Home  /  End', t('sc_kp_ends')],
+      ['Enter  or  Space', t('sc_kp_load')],
+    ], 'kernpairs'],
   ];
 }
 function scKeysHtml(spec) {
@@ -20861,7 +20889,9 @@ function renderAlignUnder(U, l) {
   } else if (isSvg) {
     hint = `<div class="hint">${ l.contours
       ? _pT('align_svg_hint_loaded', 'Imported from SVG — no tracing needed. Set the <b>Width &amp; margins</b> below, then go to <b>Nikkud</b> to place the vowels.')
-      : _pT('align_svg_hint_missing', 'Upload an SVG for this glyph under <b>Add Letters</b> on the left.') }</div>`;
+      : (svgUploadOn() || curKind !== 'letter')   // with SVG uploading off, Add Letters takes photos: a pasted letter comes back the way it came in
+      ? _pT('align_svg_hint_missing', 'Upload an SVG for this glyph under <b>Add Letters</b> on the left.')
+      : _pT('align_svg_hint_missing_paste', 'Paste an SVG for this letter, or drop an SVG file on the canvas.') }</div>`;
   }
   U.innerHTML = hint;   // the step's buttons live under the canvas — see renderAlignStageBelow
 }
@@ -20911,7 +20941,9 @@ function renderTraceLeft(L, l) {
   if (l.source && l.source.kind === 'svg') {   // imported vector — no raster trace controls, but allow point editing
     L.innerHTML = pending + `
       <div class="ws-side-title">${I18n.t('fontmaker.panels.outline_title', {name: esc(gName(l.name))})}</div>
-      <div class="hint">${_pT('svg_outline_hint', 'Imported from SVG — no tracing needed. Fine-tune the shape with <b>Edit points</b>, or re-upload under <b>Add Letters</b> to replace it.')}</div>
+      <div class="hint">${(svgUploadOn() || curKind !== 'letter')   // with SVG uploading off, Add Letters takes photos: a pasted letter is replaced the way it came in
+        ? _pT('svg_outline_hint', 'Imported from SVG — no tracing needed. Fine-tune the shape with <b>Edit points</b>, or re-upload under <b>Add Letters</b> to replace it.')
+        : _pT('svg_outline_hint_paste', 'Imported from SVG — no tracing needed. Fine-tune the shape with <b>Edit points</b>, or replace it by pasting another SVG or dropping an SVG file on the canvas.')}</div>
       <div class="ctl-row">
         ${ l.contours ? '' : `<button class="ctl-btn primary hi-btn" onclick="drawWithPen()" title="${esc(I18n.t('fontmaker.panels.draw_pen_title'))}">${ICON_PENCIL_SM}${I18n.t('fontmaker.panels.draw_pen')}</button><button class="ctl-btn" onclick="buildWithShapes(event)" title="${esc(I18n.t('fontmaker.panels.build_shapes_title'))}">${I18n.t('fontmaker.panels.build_shapes')}</button>` }
         <button class="ctl-btn" onclick="clearTrace()">${I18n.t('fontmaker.panels.clear')}</button>
@@ -29320,6 +29352,7 @@ function applyI18n() {
   try { renderControls(); } catch (e) {}
   try { renderGrids(); } catch (e) {}
   try { if (project) syncOsFontLock(); } catch (e) {}   // partner license-lock note text is I18n.t-built
+  try { syncItalicRow(); } catch (e) {}   // the note under the Italic angle is I18n.t-built (reads the project, writes the row only)
   // Starting-font picker cards (badges, aria-labels, intro, count) are JS-built — rebuild them read-only;
   // already-loaded preview faces re-attach from the memoized _osPickFaces without a refetch.
   try {

@@ -12,9 +12,10 @@
  * so the page never fetches the 3 MB word list. The rules:
  *   - A pair is two letters of U+05D0–U+05EA (final forms are letters of their own) in reading order — in Hebrew
  *     the first one sits on the right.
- *   - A mark (U+0591–U+05C7 except the maqaf, paseq and sof pasuq) is skipped over: the letters either side of it
- *     are still a pair. Anything else — a maqaf, a space, punctuation, a letter of another script — breaks the
- *     pair, because two letters with something between them are never kerned against each other.
+ *   - A mark (U+0591–U+05C7 except the maqaf, paseq, sof pasuq and nun hafukha: U+05BE, U+05C0, U+05C3, U+05C6)
+ *     is skipped over: the letters either side of it are still a pair. Anything else — a maqaf, a space,
+ *     punctuation, a letter of another script — breaks the pair, because two letters with something between
+ *     them are never kerned against each other.
  *   - Each different spelling counts once, however many entries share it (the list has no word frequencies, and
  *     homographs would only count one spelling twice).
  *   - The list is the top KEEP pairs by count; equal counts are ordered by code point, so the output never depends

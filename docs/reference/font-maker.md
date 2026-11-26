@@ -183,6 +183,13 @@ handler goes through the real setters (`setMarkEnabled`, `setAdd*`, `setInputMod
   neither); the wizard and the starting-font picker also re-arm themselves with their current close
   function, unless a third dialog is still open above them. If the focus then sits outside the dialog
   that got the slot back, it is moved to that dialog's first control.
+  The trap wraps between the dialog's first and last **Tab stops** (`_tabStops`): its visible, enabled
+  controls whose `tabIndex` is 0 or more — so a roving tab strip (QA Check, Help) counts only its active
+  tab, its others carrying -1 — with a radio group as one stop: its checked radio, else its first. Tab
+  or Shift+Tab from any radio of the first or last group wraps, and a wrap, a dialog's first focus and a
+  focus brought back in land on the checked radio or the active tab. Compared with a control the
+  keyboard never stops on, the real end let Shift+Tab walk out to the page behind: the paste dialog,
+  which opens on its checked Size choice, and QA Check once its second tab was chosen.
 - **Confirmations**: `askModal(title, bodyHtml, buttons)` with `[{label, cls:'ghost'?, onClick}]`.
   `#askOverlay` sits one z-index layer above the other `.overlay`s, so a confirmation raised over the
   wizard, help, QA, My Fonts or mobile-warn overlay is the one under the pointer.
@@ -702,7 +709,10 @@ the new outline) and a `*Source: 'import'` flag (`SVG_IMPORT_FLAGS` — a later 
 would otherwise overwrite the letter). Anchors are re-seeded. One Ctrl+Z restores all of it.
 
 **Paste, drop and the code box** (the *SVG paste* block) put artwork into the open letter whatever
-`project.font.svgUpload` says — that setting only decides what the upload zones accept. Three ways in:
+`project.font.svgUpload` says — that setting only decides what the upload zones accept, so the hints
+an SVG letter shows (`svg_outline_hint` on Trace, `align_svg_hint_missing` on an emptied one) name
+*Add Letters* only while it is on; with it off a letter is pointed back to a paste or a drop
+(the `*_paste` keys). Three ways in:
 the document `paste` listener, `wireStageDrop` on `.stage-wrap` (files only; any other file is told
 where it belongs instead of navigating the browser away), and the *Paste SVG code…* buttons beside
 every *Copy outline…* button and in the point editor's nothing-selected stack (`openSvgPasteCode`).
@@ -842,7 +852,8 @@ its list is a focused `div`, which that guard would not read as typing) reuses t
 scroller is `.lf-list`, a real listbox (`role="listbox"`, `aria-activedescendant`, a `role="group"`
 per family, a `role="option"` per face). `lfKey` on the dialog owns the keys: ↑ ↓ Home End PageUp
 PageDown move the active option, Enter chooses, a printable key pressed in the list moves focus to the
-search box (which then takes the character), and ↑ ↓ Enter in the search box act on the list. **Escape
+search box (which then takes the character), and ↑ ↓ Enter in the search box act on the list (the `?`
+sheet lists them as a dialog-local group, `localfont`, beside Auto-detect review's). **Escape
 and Enter are answered there with `stopPropagation()`**: the dialog closes on them, and a key that
 travelled on to the document would be read by the editor behind it (Escape clears a selection in Edit
 points, Enter places a pen point). With *Has Hebrew* on, a face appears once it is confirmed; the
@@ -1529,7 +1540,8 @@ the Regular's.
 - **The declared angle** is `fontItalicLean()` (+ = right; the file gets its negative): the teacher's
   own number from Font Details (`project.font.italicLean`) when set, else the most common lean among
   the drawn letters' records (`fontSlantInfo()`, which also counts how many letters differ — shown
-  in the panel and, when the teacher has not chosen, on the Exported screen). Regular and Bold
+  in the panel by `syncItalicRow()`, which `applyI18n` re-runs so the note follows a live language
+  switch, and, when the teacher has not chosen, on the Exported screen). Regular and Bold
   declare 0 whatever the letters do. The caret slope is `UPM / round(tan(lean) × UPM)`, or 1 / 0.
 - Importing a font sets the style from the source's **style flags alone** (`importFontIdentity`:
   fsSelection bit 0 or macStyle bit 1 for Italic; fsSelection bit 5, macStyle bit 0 or a weight of
@@ -1673,8 +1685,9 @@ in `nodeDrag` (`type: 'shape'`) — never in the model, like the pen's.
   clamped to the drawn window, since a captured pointer can leave the stage; a click without a drag
   and a cancelled pointer add nothing — or **Place in the middle** (`shapePlaceMiddle`,
   `shapeDefaultBox`): a solid at 70% of the letter box (`glyphBand(cp)` × `dispAdvance(l)`), a hole
-  at half the selected contours' box (a shape just added is selected), else the ink's, else the
-  letter box's. There is deliberately **no global Enter key**: the node keydown handler sits on
+  at half the selected contours' box (a shape just added is selected), else half the ink's — and,
+  with nothing to sit in (no ink, or none at least twice `SHAPE_MIN` each way), at 35% of the letter
+  box. There is deliberately **no global Enter key**: the node keydown handler sits on
   `document` and would swallow Enter on a focused panel button.
 - `shapeInsert` is the one writer: **one `udDo([itemScope()], …)`** = `nodeKeepAll()`, push,
   `renestNodeModel()`, `writeThroughRebuild(l)`. Afterwards the tool is away and the new contour is
@@ -1964,7 +1977,7 @@ trop are skipped over — and skips ticked pairs.
   from the saved one (`kernEditSaved`), so walking on never drops a dragged gap.
 - *Keyboard.* Each row is `role="toolbar"` with one Tab stop (the current chip, else the first;
   `kernChipFocus` moves it with focus). `kernChipKey` walks the row with the arrow keys in the page's
-  direction, Home and End, and **stops the event**: the page's arrow-key nudge listens on the document
+  direction, Home and End (rows of the `?` sheet's `kernpairs` group), and **stops the event**: the page's arrow-key nudge listens on the document
   and a focused button does not block it, so without that an arrow on a chip also moves the letter
   open on the stage. A chip is announced by letter name (`kernCpSay`), the value with a real minus
   sign, isolated left-to-right.
