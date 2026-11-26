@@ -1215,10 +1215,15 @@ of every mark that could read it (`MARK_LAND_PRIMARY`, beside `MARK_LAND_Y`): `a
 — or, on a letter where the holam does not read the key, the first of the holam haser, rafe, shin dot
 and sin dot that does; `center` the dagesh; `below` the component-wise median of the main vowels
 (sheva, hiriq, tsere, segol, patah, qamats — the hatafs, qubuts, qamats qatan and meteg do not vote),
-clamped on each axis between 0 and twice every voter's own offset, so that no main vowel ever lands
-farther from its place than the plain map leaves it (in most fonts the vowels agree and that is the
-median itself; where the narrow vowels attach far from the wide ones — Ezra SIL SR, Shlomo — the clamp
-keeps the sheva and hiriq from paying for the qamats). Whether a mark reads the key on a letter is the
+clamped across between 0 and twice every voter's own offset, so that no main vowel ever lands farther
+from its place than the plain map leaves it (where the narrow vowels attach far from the wide ones —
+Ezra SIL SR, Shlomo — the clamp keeps the sheva and hiriq from paying for the qamats), and vertically
+between 0 and the voter offset nearest 0, so that every main vowel lands between its own exact height
+and the plain map's: none is brought nearer its letter than its exact place unless the plain map brings
+it nearer, and none comes to touch a letter it did not touch on the plain map (Arimo, Cousine, Tinos and
+the Liberation fonts attach the sheva and segol about 20 units over their ink and the hiriq and tsere
+about 90; the median would lift the sheva into the letter where the letters shrink). In most fonts the
+vowels agree, and both are the median itself. Whether a mark reads the key on a letter is the
 export's own rule (`markLandAway`, `markLandReads`): not when the pair composes into a form that ships
 the source font's drawing whole (`pc.src`) or places its dot at a point of its own (`pc.anchor`) — on
 vav the holam is the form וֹ, so the holam haser leads there; a form with neither bakes its dot at the

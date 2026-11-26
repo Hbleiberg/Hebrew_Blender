@@ -3251,9 +3251,13 @@ const MARK_LAND_ROW = { tropAboveL: 'tropAbove', tropAboveR: 'tropAbove', tropBe
    dots used only on shin would outvote the holam). `first`: the first mark of the list that reads the key on
    this letter (markLandReads — on vav the holam is the composed form וֹ, which places its own dot, so the
    holam haser leads there), else the list's first. `median`: the component-wise median over the main vowels
-   that read it, each with its own offset (the hatafs, qubuts, qamats qatan and meteg do not vote), clamped on
-   each axis between 0 and twice every voter's offset, so no main vowel ends farther off than with the plain
-   map (where they agree, as in most fonts, that is the median itself). The trop
+   that read it, each with its own offset (the hatafs, qubuts, qamats qatan and meteg do not vote), clamped
+   across between 0 and twice every voter's offset, so no main vowel ends farther off than with the plain
+   map, and vertically between 0 and the voter offset nearest 0, so every main vowel lands between its own
+   exact height and the plain map's — none is brought nearer its letter than its exact place unless the
+   plain map brings it nearer (Arimo's sheva attaches 19 units over its ink, its hiriq 93: the median would
+   lift the sheva into the letter where the letters shrink). Where they agree, as in most fonts, that is
+   the median itself. The trop
    and Samaritan rows take the median of their row (markLandTable). A built-in or drawn mark's offset is 0, so
    a key whose primary is built-in keeps the plain map whatever the other marks are. */
 const MARK_LAND_PRIMARY = {
@@ -4941,7 +4945,7 @@ function markLandTable(after) {
       if (fam === 'heb') for (const k in MARK_LAND_PRIMARY) {
         const P = MARK_LAND_PRIMARY[k], own = cp => (l.markShapes && l.markShapes[cp]) ? mark(l, 'nikkud', cp, k) : nik[cp];   // a letter's own shape for a vowel is the one it lands with
         if (P.first) put(k, own(P.first.find(cp => markLandReads(away, l, cp)) || P.first[0]));
-        else { const rd = P.median.filter(cp => markLandReads(away, l, cp)), vs = (rd.length ? rd : P.median).map(own); put(k, clampC(medC(vs), vs, { x: 2, y: 2 })); }
+        else { const rd = P.median.filter(cp => markLandReads(away, l, cp)), vs = (rd.length ? rd : P.median).map(own); put(k, clampC(medC(vs), vs, { x: 2, y: 1 })); }
       }
       glob.forEach(g => { if ((g.kind === 'smrmarks') === (fam === 'smrmarks')) (rows[g.row] = rows[g.row] || []).push(g.v); });
       for (const r in rows) { const cc = medC(rows[r]); Object.keys(MARK_LAND_Y).forEach(k => { if ((MARK_LAND_ROW[k] || k) === r) put(k, cc); }); }
