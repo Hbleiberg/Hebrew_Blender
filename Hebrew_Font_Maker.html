@@ -4933,19 +4933,36 @@ function markLandTable(after) {
   // f: the factor per axis — 1 keeps the value between 0 and the voter offset nearest 0, so every voter lands
   // between its own exact place and the plain map's, on the same side of it as the plain map leaves it
   const clampC = (cc, vs, f) => cc.map((c, i) => { const o = {}; ['x', 'y'].forEach(a => { let lo = -Infinity, hi = Infinity; vs.forEach(v => { const t = f[a] * v[i][a]; lo = Math.max(lo, Math.min(0, t)); hi = Math.min(hi, Math.max(0, t)); }); o[a] = Math.min(hi, Math.max(lo, c[a])); }); return o; });
+  // With the letter's vertical factor known (ky; 0 for a seed, where the key's point is where the marks should
+  // land), the below key's height is chosen so that no main vowel is brought up toward the letter it hangs under:
+  // with the key at voter m's offset, vowel n lands ky·(c_m − c_n) − (c2_m − c2_n) above its exact place (for a
+  // seed, c_n − c_m above the seed point). The median stands while it lifts none; otherwise the voter whose
+  // choice lifts the least — the highest-attached vowel for a seed or where the letters shrink against their
+  // marks, the lowest where they grow — then held no farther from any vowel's exact place than the plain map
+  // (each axis between 0 and twice every voter's offset). A font whose vowels attach below their ink (Arimo)
+  // and one whose vowels attach far under it (Hebrew Square Samaritan's, 736–900 units) both land every vowel
+  // at or under its place; where the height does not change, every voter lifts nothing and the median stands.
+  const awayC = (cc, vs, ky) => {
+    const rise = m => vs.reduce((e, n) => Math.max(e, ky * (m[0].y - n[0].y) - (m[1].y - n[1].y)), -Infinity);
+    if (rise(cc) <= 1e-6) return cc;
+    let best = null, bestE = Infinity;
+    vs.forEach(m => { const e = rise(m); if (e < bestE - 1e-6) { bestE = e; best = m; } });
+    return best ? [{ x: cc[0].x, y: best[0].y }, { x: cc[1].x, y: best[1].y }] : cc;
+  };
   const glob = users.filter(u => u[0] !== 'nikkud').map(([kind, cp, key]) => ({ kind, cp, key, row: MARK_LAND_ROW[key] || key, v: mark(null, kind, cp, key) }));
   const nik = {}, away = markLandAway();
   for (const k in MARK_LAND_PRIMARY) (MARK_LAND_PRIMARY[k].first || MARK_LAND_PRIMARY[k].median).forEach(cp => { nik[cp] = mark(null, 'nikkud', cp, k); });
   return {
     mark,
-    keys(l) {
+    keys(l, ky) {   // ky: the letter's vertical factor under the operation (0 for a seed); absent, the below key keeps the clamped median
       const fam = smrMarkBase(l) ? 'smrmarks' : markLandHeb(l) ? 'heb' : null, rows = {}, out = {};
       if (!fam) return out;
       const put = (k, cc) => { if (cc[0].x || cc[0].y || cc[1].x || cc[1].y) out[k] = cc; };
       if (fam === 'heb') for (const k in MARK_LAND_PRIMARY) {
         const P = MARK_LAND_PRIMARY[k], own = cp => (l.markShapes && l.markShapes[cp]) ? mark(l, 'nikkud', cp, k) : nik[cp];   // a letter's own shape for a vowel is the one it lands with
         if (P.first) put(k, own(P.first.find(cp => markLandReads(away, l, cp)) || P.first[0]));
-        else { const rd = P.median.filter(cp => markLandReads(away, l, cp)), vs = (rd.length ? rd : P.median).map(own); put(k, clampC(medC(vs), vs, { x: 2, y: 1 })); }
+        else { const rd = P.median.filter(cp => markLandReads(away, l, cp)), vs = (rd.length ? rd : P.median).map(own);
+          put(k, Number.isFinite(ky) ? clampC(awayC(medC(vs), vs, ky), vs, { x: 2, y: 2 }) : clampC(medC(vs), vs, { x: 2, y: 1 })); }
       }
       glob.forEach(g => { if ((g.kind === 'smrmarks') === (fam === 'smrmarks')) (rows[g.row] = rows[g.row] || []).push(g.v); });
       for (const r in rows) { const cc = medC(rows[r]); Object.keys(MARK_LAND_Y).forEach(k => { if ((MARK_LAND_ROW[k] || k) === r) put(k, cc); }); }
@@ -4980,14 +4997,28 @@ function gxLandD(T, cc) {
    seed is a point of the (leaning) letter and c is the mark as it is drawn: a mark does not lean with one
    letter's record (its lean, if any, is font-level markLean and already in c), so leaning the offset with
    the letter would move an upright mark sideways by the lean times its height (127 units for a Culmus holam
-   at 12°). bare: the font import's own seeds, made while the marks are still the ones it is replacing. */
+   at 12°). bare: the font import's own seeds, made while the marks are still the ones it is replacing.
+   A seed point is a height under or over the letter's body (ANCHOR_Y, defaultBelowY), blind to a descender:
+   under ע, ץ or ק a vowel landing ON the point sits in the tail, where the same point as a bare attach point
+   leaves the font's vowel its own offset lower (David CLM, Frank Ruehl CLM, Cardo). So a landing seed is kept
+   only where it sets no main vowel on the letter's ink that the bare seed kept off it (markLandSeedMeets — the
+   QA Check's own test); otherwise that key stays the bare seed, as it was before seeds were landing points. */
 function markLandSeed(l, a, bare) {
   if (bare || !a) return a;
-  const ks = markLandKeys(l);
-  for (const k in a) { const p = a[k], cc = ks[k]; if (cc && p && Number.isFinite(p.x) && Number.isFinite(p.y)) { p.x = Math.round(p.x - cc[0].x); p.y = Math.round(p.y - cc[0].y); } }
+  const ks = markLandKeys(l, 0);
+  for (const k in a) { const p = a[k], cc = ks[k]; if (cc && p && Number.isFinite(p.x) && Number.isFinite(p.y)) {
+    const q = { x: Math.round(p.x - cc[0].x), y: Math.round(p.y - cc[0].y) };
+    if (!markLandSeedMeets(l, k, p, q)) { p.x = q.x; p.y = q.y; } } }
   return a;
 }
-function markLandKeys(l) { const t = markLandTable(null); return t ? t.keys(l) : {}; }   // { key: [c, c] } — l's landing offsets with its marks as they are now ({} when none)
+function markLandSeedMeets(l, key, bareP, landP) {   // does the landing seed landP set a vowel of `key` on l's ink where the bare seed bareP does not?
+  if ((key !== 'below' && key !== 'above') || !l || !l.contours || !l.contours.length) return false;
+  const P = MARK_LAND_PRIMARY[key], away = markLandAway(), rd = cp => markLandReads(away, l, cp);
+  const cps = P.median ? MARK_CPS.filter(cp => MARK_CLASS[cp] === 'below' && rd(cp)) : [P.first.find(rd) || P.first[0]];   // below: every below mark that reads it (the hatafs under ע are as common as its vowels); above: its primary
+  const meta = letterMeta(l.codepoint), hits = pt => cps.some(cp => qaReasons(l, meta, qaPlace(pt, 'nikkud', cp, nikScale(cp), l), key).length);
+  return cps.length > 0 && hits(landP) && !hits(bareP);
+}
+function markLandKeys(l, ky) { const t = markLandTable(null); return t ? t.keys(l, ky) : {}; }   // { key: [c, c] } — l's landing offsets with its marks as they are now ({} when none); ky as keys()
 /* The trop back-fill's landing terms (ensureTropAnchors and QA's mirror of it): `ca`, where the holam lands
    inside itself (the back-filled rows are derived from the vowel anchor's landing point), and at(key, x, y),
    a landing point stored less that trop key's offset — rounded at the source, and untouched while both are 0. */
@@ -16518,12 +16549,12 @@ function xformScope(l, kind) {   // a slant that carries pen strokes must snapsh
    column that swaps takes the other column's landing point, less its own offset. */
 function xformLand(l) {   // → { keys, pin(cp, key), form(pc, key) } — the letter's landing offsets for a point-editor transform (its marks stay as they are: c2 = c) — or null
   const t = markLandTable(null); if (!t) return null;
-  return { keys: t.keys(l), pin: (cp, key) => t.mark(l, catOfCp(cp), cp, key), form: (pc, key) => precompLandCC(t, pc, key) };
+  return { keys: t.keys(l), keysFor: ky => t.keys(l, ky), pin: (cp, key) => t.mark(l, catOfCp(cp), cp, key), form: (pc, key) => precompLandCC(t, pc, key) };   // keysFor(ky): the keys for a map of vertical factor ky (markLandTable)
 }
 function xformMappedAnchors(src, m, piv, flip, land) {       // src: { anchors, markAnchors } (never mutated) → the mapped pair
   const ok = p => !!p && Number.isFinite(p.x) && Number.isFinite(p.y);
   const mp = p => Object.assign({}, p, { x: Math.round(piv.cx + m.a * (p.x - piv.cx) + m.b * (p.y - piv.cy)), y: Math.round(piv.cy + m.c * (p.x - piv.cx) + m.d * (p.y - piv.cy)) });
-  const LT = [m.a, m.b, m.c, m.d, 0, 0], ks = land ? land.keys : {};
+  const LT = [m.a, m.b, m.c, m.d, 0, 0], ks = land ? (land.keysFor ? land.keysFor(m.d) : land.keys) : {};
   const mpTo = (p, from, to) => {                            // M(p + c_from) − c_to, rounded at the source; the plain map when both offsets are 0
     const d = (from || to) ? gxLandD(LT, [from ? from[0] : { x: 0, y: 0 }, to ? to[0] : { x: 0, y: 0 }]) : null;
     return d ? Object.assign({}, p, { x: Math.round(piv.cx + m.a * (p.x - piv.cx) + m.b * (p.y - piv.cy) + d[0]), y: Math.round(piv.cy + m.c * (p.x - piv.cx) + m.d * (p.y - piv.cy) + d[1]) }) : mp(p);
@@ -18704,7 +18735,7 @@ function gxLetterPatch(l, spec, ctx) {   // PURE: one letter's new field values 
   if (l.rsb != null && !spec.keepRsb) out.set.rsb = Math.max(0, Math.round(l.rsb * a));
   // An anchor moves with where its marks LAND (ctx.land — gxPlan's markLandTable): a' = M(a + c) − c2, which
   // is the plain map of the point whenever the marks land on their attach point (c = 0) or follow the letter.
-  const land = ctx && ctx.land, lk = land ? land.keys(l) : null;
+  const land = ctx && ctx.land, lk = land ? land.keys(l, TA[3]) : null;   // TA[3]: the letter's vertical factor (markLandTable's below-key height)
   const mapPt = (p, cc) => { const q = gxLandPt(TA, p, cc); see(q[0]); see(q[1]); return Object.assign({}, p, { x: q[0], y: q[1] }); };
   const okPt = p => !!p && Number.isFinite(p.x) && Number.isFinite(p.y);
   if (l.anchors) {
