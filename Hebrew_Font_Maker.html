@@ -4737,11 +4737,24 @@ function dropKeyPins(ma, key) {   // for a synth whose class anchor was relocate
   for (const cp in ma) if (ma[cp] && ma[cp].key !== key) out[cp] = ma[cp];
   return out;
 }
-function mapPinsX(ma, fn) {       // for a synth whose ink was x-transformed (wide forms / digraphs)
+function mapPinsX(ma, fn, land) {       // for a synth whose ink was x-transformed (wide forms / digraphs); land: wideLand's (the pin's mark moves by where IT lands)
   if (!ma) return ma;
   const out = {};
-  for (const cp in ma) { const p = ma[cp]; if (p) out[cp] = { x: Math.round(fn(p.x, p.y)), y: p.y, key: p.key }; }   // y rides along: a leaning base's map needs the height
+  for (const cp in ma) { const p = ma[cp]; if (p) out[cp] = Object.assign(wideLandPt(fn, p, land ? land.pin(cp, p.key) : null), { key: p.key }); }   // y rides along: a leaning base's map needs the height
   return out;
+}
+/* A wide letterform or digraph is a new base for every mark typed after it, so its anchors and pins move by
+   where those marks LAND (markLandTable — the same rule as the engine's): x' = tx(a + c) − c, y kept, the marks
+   unchanged (c2 = c). The keys are the form's own (a holam after a wide vav attaches to it, never composing as
+   on vav), with the font's own marks, not the donor letter's per-letter shapes (those bake only on the letter
+   itself). → { keys, pin(cp, key) }, or null when every mark lands on its attach point. */
+function wideLand(pc) {
+  const t = markLandTable(null); if (!t) return null;
+  return { keys: t.keys({ codepoint: pc.target }), pin: (cp, key) => t.mark(null, catOfCp(cp), cp, key) };
+}
+function wideLandPt(fn, p, cc) {   // one point {x, y} through the form's x-map fn(x, y) → x', rounded at the source — the plain map, exactly as before, while its offset is 0
+  const c = cc && cc[0];
+  return { x: (c && (c.x || c.y)) ? Math.round(fn(p.x + c.x, p.y + c.y) - c.x) : Math.round(fn(p.x, p.y)), y: p.y };
 }
 /* The donor letter's anchors AND pins mapped through a wide form's ink transform (per-base x offset,
    then wideX about the composed ink-left). For a digraph the donor is the logically-LAST base — drawn
@@ -4757,9 +4770,9 @@ function wideDonorAnchors(pc, g) {
   if (!donor.anchors) return null;
   ensureTropAnchors(donor);
   const tx = (x, y) => g.tx(x, y);   // the donor is the last base — g.tx's default
-  const anchors = {};
-  Object.keys(donor.anchors).forEach(k => { const a = donor.anchors[k]; anchors[k] = a ? { x: tx(a.x, a.y), y: a.y } : a; });
-  return { donor, anchors, markAnchors: mapPinsX(donor.markAnchors, tx) };   // pins ride the SAME ink transform as the anchors they refine
+  const anchors = {}, land = wideLand(pc), ks = land ? land.keys : {};   // each point by where its marks land (wideLand)
+  Object.keys(donor.anchors).forEach(k => { const a = donor.anchors[k]; anchors[k] = a ? wideLandPt(tx, a, ks[k]) : a; });
+  return { donor, anchors, markAnchors: mapPinsX(donor.markAnchors, tx, land) };   // pins ride the SAME ink transform as the anchors they refine
 }
 function pinKeyFor(cp) { return isSmrMark(cp) ? smrMarkKey(cp) : TROP_CLASS[cp] ? tropColKey(TROP_CLASS[cp], tropHalign(cp)) : MARK_CLASS[cp]; }   // the anchor key a mark currently reads
 function fidelityPinnedMarkCps() {
@@ -22199,16 +22212,13 @@ function qaSynthWideRow(pc) {
   const g = buildWideGlyph(pc); if (!g) return null;                  // base untraced → skip
   const baseCp = precompBaseCp(pc);
   const base = project.letters.find(x => x.codepoint === baseCp); if (!base) return null;
-  const baseAnc = qaAnchors(base);
-  const mapPt = a => a ? { x: g.tx(a.x, a.y, 0), y: a.y } : a;   // same transform as the ink
-  const anchors = { below: mapPt(baseAnc.below), above: mapPt(baseAnc.above), center: mapPt(baseAnc.center),
-                    tropAbove: mapPt(baseAnc.tropAbove), tropBelow: mapPt(baseAnc.tropBelow),
-                    tropAboveL: mapPt(baseAnc.tropAboveL), tropAboveR: mapPt(baseAnc.tropAboveR),
-                    tropBelowL: mapPt(baseAnc.tropBelowL), tropBelowR: mapPt(baseAnc.tropBelowR) };
+  const baseAnc = qaAnchors(base), land = wideLand(pc), tx0 = (x, y) => g.tx(x, y, 0);
+  const anchors = {};   // same transform as the ink, each point by where its marks land — wideDonorAnchors' rule, so this row and the exported form agree
+  ['below', 'above', 'center', 'tropAbove', 'tropBelow', 'tropAboveL', 'tropAboveR', 'tropBelowL', 'tropBelowR'].forEach(k => { const a = baseAnc[k]; anchors[k] = a ? wideLandPt(tx0, a, land && land.keys[k]) : a; });
   const meta = letterMeta(baseCp);
   // Pins ride the same x-transform as the anchors above — an untransformed pin wins in qaAnchorFor and
   // would draw the mark at the un-widened x while the exported wide glyph puts it at the widened one.
-  const markAnchors = mapPinsX(base.markAnchors, (x, y) => g.tx(x, y, 0));
+  const markAnchors = mapPinsX(base.markAnchors, tx0, land);
   const L = Object.assign({}, base, { anchors, markAnchors, curves: g.curves, advance: g.advance, contours: g.contours.map(p => ({ points: p })) });
   return { cp: baseCp, name: precompName(pc), labelCh: qaCh(pc.target), desc: meta ? meta.desc : false, L };
 }

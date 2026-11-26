@@ -1331,7 +1331,12 @@ is the identity at 0:
 - Wide letterforms and digraphs: an x-scale would turn a lean of k into k·w, so `buildWideGlyph`
   un-leans, widens and leans again (`wideXY`), and hands every other site the one map, `g.tx(x, y,
   i)` — the donor's anchors and pins, QA's wide rows. A new site that widens uses `g.tx`, never
-  `wideX` on a leaned coordinate.
+  `wideX` on a leaned coordinate. The donor's points go through it by where their marks land
+  (`wideLand`, `wideLandPt`: `x' = tx(a + c) − c`, the marks unchanged): a wide form is a new base for
+  every mark typed after it, so it takes its keys as a letter of its own (a holam after a wide vav
+  reads its anchor — it composes only on vav) with the font's own marks, never the donor's per-letter
+  shapes; `wideDonorAnchors` (the export, the FB1F bake, Convert to editable glyph, the tile preview)
+  and `qaSynthWideRow` share it, so QA and the font agree.
 - Latin accents are baked into their letter, so `markContoursFor(letter, 'accent', cp)` leans the
   accent by that letter's own record.
 The record is **cleared** where an outline is replaced from outside (`importLetterOutline`, which
