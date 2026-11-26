@@ -28241,7 +28241,8 @@ function migrateProject(data) {
   data.template.opacity = _opacity(data.template.opacity, 0.35);
   // The reference font's family is written into style="font-family:…" attributes: it is a family list as the font menu and the
   // reference uploads write one ('Name', serif — letters, digits, spaces, quotes, commas, hyphens, underscores), else the default.
-  if (data.template.font != null && !(typeof data.template.font === 'string' && /^[A-Za-z0-9 ',_-]{1,200}$/.test(data.template.font))) data.template.font = "'Noto Sans Hebrew', sans-serif";
+  // No length limit: an uploaded reference's family carries its whole file name, however long.
+  if (data.template.font != null && !(typeof data.template.font === 'string' && /^[A-Za-z0-9 ',_-]+$/.test(data.template.font))) data.template.font = "'Noto Sans Hebrew', sans-serif";
   data.template.customFonts = _objs(data.template.customFonts);   // uploaded tracing fonts (bytes) persist here; one picked from the installed fonts persists as a name
   data.template.customFonts.forEach(cf => { if (cf.local !== undefined && !(typeof cf.local === 'string' && LF_PS_RE.test(cf.local))) delete cf.local; });   // the name goes inside local("…"): only the strict pattern
   if (!_isObj(data.view)) data.view = { imgOpacityAlign:0.92, imgOpacityTrace:0.28, glyphOpacity:1.0 };
