@@ -183,11 +183,13 @@ handler goes through the real setters (`setMarkEnabled`, `setAdd*`, `setInputMod
   neither); the wizard and the starting-font picker also re-arm themselves with their current close
   function, unless a third dialog is still open above them. If the focus then sits outside the dialog
   that got the slot back, it is moved to that dialog's first control.
-  The trap wraps between the dialog's first and last **Tab stops** (`_tabStops`), counted as the browser
-  counts them: a radio group is one stop — its checked radio, else its first — so Tab or Shift+Tab from
-  any radio of the first or last group wraps, and a wrap, a dialog's first focus and a focus brought
-  back in land on the checked radio (compared with the group's first radio alone, the paste dialog,
-  which opens on its checked Size choice, let Shift+Tab walk out to the page behind it).
+  The trap wraps between the dialog's first and last **Tab stops** (`_tabStops`): its visible, enabled
+  controls whose `tabIndex` is 0 or more — so a roving tab strip (QA Check, Help) counts only its active
+  tab, its others carrying -1 — with a radio group as one stop: its checked radio, else its first. Tab
+  or Shift+Tab from any radio of the first or last group wraps, and a wrap, a dialog's first focus and a
+  focus brought back in land on the checked radio or the active tab. Compared with a control the
+  keyboard never stops on, the real end let Shift+Tab walk out to the page behind: the paste dialog,
+  which opens on its checked Size choice, and QA Check once its second tab was chosen.
 - **Confirmations**: `askModal(title, bodyHtml, buttons)` with `[{label, cls:'ghost'?, onClick}]`.
   `#askOverlay` sits one z-index layer above the other `.overlay`s, so a confirmation raised over the
   wizard, help, QA, My Fonts or mobile-warn overlay is the one under the pointer.

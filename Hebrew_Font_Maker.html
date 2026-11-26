@@ -5180,15 +5180,17 @@ function _focusables(el) {
   return [...el.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])')]
     .filter(n => !n.disabled && n.offsetParent !== null);
 }
-/* The Tab stops among them, as the browser counts them: a radio group is ONE stop — its checked radio,
-   else its first. The trap below wraps from the first stop and the last, and Tab or Shift+Tab from ANY
-   radio of a group leaves the whole group: compared with the group's first radio alone, a dialog that
-   opens on its checked choice (the paste dialog's Size, on a letter with a tail or a remembered "Keep
-   its original size") let Shift+Tab walk out to the page behind it. */
+/* The Tab stops among them: only a control whose tabIndex is 0 or more — the `button` selector above also
+   matches a roving tab strip's inactive tabs, which carry -1 (QA Check, Help) — and a radio group is ONE
+   stop: its checked radio, else its first. The trap below wraps from the first stop and the last, and
+   Tab or Shift+Tab from ANY radio of a group leaves the whole group. Compared with a control the keyboard
+   never stops on, a wrap landed on it, and Shift+Tab from the real first stop walked out to the page
+   behind: the paste dialog, which opens on its checked Size choice (a letter with a tail, or a
+   remembered "Keep its original size"), and QA Check once its second tab was chosen. */
 const _isRadio = n => !!n && n.tagName === 'INPUT' && n.type === 'radio' && !!n.name;
 const _sameRadioGroup = (a, b) => _isRadio(a) && _isRadio(b) && a.name === b.name && a.form === b.form;
 function _tabStops(el) {
-  const f = _focusables(el);
+  const f = _focusables(el).filter(n => n.tabIndex >= 0);
   return f.filter((n, i) => !_isRadio(n) || f.findIndex(m => _sameRadioGroup(m, n)) === i)
     .map(n => _isRadio(n) ? (f.find(m => _sameRadioGroup(m, n) && m.checked) || n) : n);
 }
