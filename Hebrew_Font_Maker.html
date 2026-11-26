@@ -7740,8 +7740,8 @@ function renderCustomGlyphsGrid() {
     grid.innerHTML = `<div class="hint" dir="auto" style="grid-column:1/-1;text-align:start;">${_cgT('empty', 'No custom glyphs yet — add one below')}</div>`;
     return;
   }
-  const delBtn = (cp, type) => `<button title="${esc(window.I18n ? I18n.t('fontmaker.panels.custom_del_title') : 'Delete glyph')}" aria-label="${esc(window.I18n ? I18n.t('fontmaker.panels.custom_del_title') : 'Delete glyph')}" onclick="event.stopPropagation();deleteCustomGlyph('${cp}','${type}')" class="cg-tile-btn cg-tile-del"><svg class="hi hi-sm hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></button>`;
-  const cvtBtn = cp => `<button title="${esc(window.I18n ? I18n.t('fontmaker.tip.convert_to_main') : 'Convert to a main glyph (gives it its own adjustable width)')}" aria-label="${esc(window.I18n ? I18n.t('fontmaker.tip.convert_to_main') : 'Convert to a main glyph (gives it its own adjustable width)')}" onclick="event.stopPropagation();convertMarkToMain('${cp}')" class="cg-tile-btn cg-tile-cvt">↔</button>`;
+  const delBtn = (cp, type) => `<button title="${esc(window.I18n ? I18n.t('fontmaker.panels.custom_del_title') : 'Delete glyph')}" aria-label="${esc(window.I18n ? I18n.t('fontmaker.panels.custom_del_title') : 'Delete glyph')}" data-cp="${esc(cp)}" onclick="event.stopPropagation();deleteCustomGlyph(this.dataset.cp,'${type}')" class="cg-tile-btn cg-tile-del"><svg class="hi hi-sm hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></button>`;
+  const cvtBtn = cp => `<button title="${esc(window.I18n ? I18n.t('fontmaker.tip.convert_to_main') : 'Convert to a main glyph (gives it its own adjustable width)')}" aria-label="${esc(window.I18n ? I18n.t('fontmaker.tip.convert_to_main') : 'Convert to a main glyph (gives it its own adjustable width)')}" data-cp="${esc(cp)}" onclick="event.stopPropagation();convertMarkToMain(this.dataset.cp)" class="cg-tile-btn cg-tile-cvt">↔</button>`;   // a custom glyph's code point is a project file's text: data, never code in the handler
   bases.forEach(l => {
     const st = l.anchors ? 'anchored' : (l.contours ? 'traced' : (l.source && l.source.dataUrl ? 'img' : ''));
     const tile = document.createElement('div');
@@ -19611,7 +19611,7 @@ function renderSpacingPanelNow() {
     <div class="inline">${I18n.t('fontmaker.panels.line_spacing')} <input type="range" min="0" max="500" step="10" value="${sp.lineSpacing}" oninput="setLineSpacing(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.line_spacing'))}"> <span id="lnV" class="readout">${sp.lineSpacing}</span></div>
     </div>
     <label class="fld">${I18n.t('fontmaker.panels.sample_text')} <input type="text" id="spacingSample" autocapitalize="off" autocorrect="off" spellcheck="false" dir="auto" value="${esc(sp.sample)}" oninput="setSpacingSample(this.value)" onchange="udBurstCommit()"></label>
-    ${(project.font.addCustomGlyphs && customBaseLetters().length) ? `<div class="ctl-row" style="flex-wrap:wrap;gap:4px;margin-top:2px;">${customBaseLetters().map(l => `<button class="ctl-btn" style="padding:2px 8px;font-size:0.68rem;" onclick="insertSampleGlyph('${l.codepoint}')" title="${esc(window.I18n ? I18n.t('fontmaker.tip.add_glyph_sample', {name: l.name || ('U+' + l.codepoint)}) : "Add " + (l.name || ('U+' + l.codepoint)) + " to the sample text (it can't be typed on a keyboard)")}">${esc(_pT('add_glyph_sample', '+ ' + (l.name || ('U+' + l.codepoint)), {name: l.name || ('U+' + l.codepoint)}))}</button>`).join('')}</div>` : ''}
+    ${(project.font.addCustomGlyphs && customBaseLetters().length) ? `<div class="ctl-row" style="flex-wrap:wrap;gap:4px;margin-top:2px;">${customBaseLetters().map(l => `<button class="ctl-btn" style="padding:2px 8px;font-size:0.68rem;" data-cp="${esc(l.codepoint)}" onclick="insertSampleGlyph(this.dataset.cp)" title="${esc(window.I18n ? I18n.t('fontmaker.tip.add_glyph_sample', {name: l.name || ('U+' + l.codepoint)}) : "Add " + (l.name || ('U+' + l.codepoint)) + " to the sample text (it can't be typed on a keyboard)")}">${esc(_pT('add_glyph_sample', '+ ' + (l.name || ('U+' + l.codepoint)), {name: l.name || ('U+' + l.codepoint)}))}</button>`).join('')}</div>` : ''}
     ${project.font.nikkud.enabled ? `<div class="ctl-row" style="flex-wrap:wrap;gap:4px;margin-top:2px;align-items:center;"><span class="hint" style="font-size:0.7rem;">${I18n.t('fontmaker.panels.test_combos_label')}</span>${SAMPLE_TEST_COMBOS.map(c => { const s = sampleComboStr(c); return `<button class="ctl-btn" style="padding:2px 8px;font-size:0.8rem;" onclick="insertSampleCombo('${c}')" title="${esc(I18n.t('fontmaker.panels.test_combos_tip', { combo: s }))}">+ <span lang="he" style="font-family:var(--heb-font);direction:rtl;">${s}</span></button>`; }).join('')}</div>` : ''}
     <div class="tp-row" id="fmPhrases"></div>
     <button type="button" class="hk-toggle hi-btn" id="fmKbdToggle" aria-expanded="false" aria-controls="fmKbdPanel"><svg class="hi hi-sm hi-keyboard" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.6" y="6.4" width="18.8" height="11.2" rx="2"/><path d="M6 9.6h.01M9.2 9.6h.01M12.4 9.6h.01M15.6 9.6h.01M18 9.6h.01M6 12.6h.01M9.2 12.6h.01M12.4 12.6h.01M15.6 12.6h.01M18 12.6h.01M8 15.4h8"/></svg>Show Hebrew Keyboard</button>
@@ -20215,7 +20215,7 @@ function renderKerningSectionNow() {
         <option value="finals" ${s.cls==='finals' ? 'selected' : ''}>${I18n.t('fontmaker.panels.kern_finals')}</option>
         <option value="desc"   ${s.cls==='desc'   ? 'selected' : ''}>${I18n.t('fontmaker.panels.kern_descenders')}</option>
         ${userKernClasses().map(c => `<option value="${esc(c.id)}" ${s.cls===c.id?'selected':''}>${esc(c.name)}</option>`).join('')}
-        ${(project.font.addCustomGlyphs && customBaseLetters().length) ? `<optgroup label="${esc(I18n.t('fontmaker.panels.kern_custom_glyphs'))}">${customBaseLetters().map(l => `<option value="cp:${l.codepoint}">${esc(l.name || ('U+' + l.codepoint))}</option>`).join('')}</optgroup>` : ''}
+        ${(project.font.addCustomGlyphs && customBaseLetters().length) ? `<optgroup label="${esc(I18n.t('fontmaker.panels.kern_custom_glyphs'))}">${customBaseLetters().map(l => `<option value="cp:${esc(l.codepoint)}">${esc(l.name || ('U+' + l.codepoint))}</option>`).join('')}</optgroup>` : ''}
       </select>
     </div>`;
   };
@@ -22620,7 +22620,7 @@ function qaRenderGrid() {
       // and reasons; a clear cell stays a plain cell a mouse can still click. qaGridClick hears both through the <td>.
       const svg = qaCellSvg(L, layers, frame);
       const inner = flagged ? `<button type="button" class="qa-cell-btn" aria-label="${esc(I18n.t('fontmaker.qa.cell_label', { letter: nm, mark: col.name, problems: reasons.join(' · ') }))}">${svg}</button>` : svg;
-      html += `<td class="qa-cell${flagged ? ' flag' : ''}" data-cp="${row.cp}" data-kind="${col.kind}" data-mark="${mcp}" data-side="${col.side}"${col.trop ? ` data-trop="${col.trop}"` : ''}${flagged ? ` title="${esc(reasons.join(' · '))}"` : ''}>${inner}</td>`;
+      html += `<td class="qa-cell${flagged ? ' flag' : ''}" data-cp="${esc(row.cp)}" data-kind="${col.kind}" data-mark="${esc(mcp)}" data-side="${esc(col.side)}"${col.trop ? ` data-trop="${esc(col.trop)}"` : ''}${flagged ? ` title="${esc(reasons.join(' · '))}"` : ''}>${inner}</td>`;
     });
     html += '</tr>';
   });
@@ -24899,7 +24899,7 @@ function exportJumpToLetter(cp, mode) {
 // A scrollable grid of clickable letter chips for the export-warning modals.
 function letterChipsHtml(list, mode) {
   return `<div class="lchip-wrap">` + list.map(o =>
-    `<button type="button" class="lchip" data-cp="${o.cp}" data-mode="${mode}">` +
+    `<button type="button" class="lchip" data-cp="${esc(o.cp)}" data-mode="${mode}">` +
     `<span class="lchip-glyph" style="font-family:${esc(project.template.font)};">${String.fromCodePoint(parseInt(o.cp,16))}</span>` +
     `<span class="lchip-name">${esc(o.name)}</span></button>`).join('') + `</div>`;
 }
@@ -28052,6 +28052,10 @@ function sanitizePrecompNumbers(pc) {
 const FM_DATA_URL_RE = /^data:(?:image\/[a-z0-9.+-]+(?:;[a-z0-9.+_=-]+)*?(?:;base64,[a-z0-9+/]*={0,2}|,[^"<>\s]*)|application\/octet-stream;base64,[a-z0-9+/]*={0,2})$/i;
 function fmDataUrlOk(u) { return typeof u === 'string' && (u === '[omitted]' || FM_DATA_URL_RE.test(u)); }
 function sanitizeDataUrl(o) { if (o && typeof o === 'object' && o.dataUrl != null && !fmDataUrlOk(o.dataUrl)) o.dataUrl = null; }
+/* A custom glyph's code point (a .custom letter's codepoint, a key of customMarks.custom) is written into
+   its tile's buttons, the Spacing tab's menus and buttons, the QA grid and the Copy outline list. It is
+   normalizeCp()'s shape — four upper-case hex digits, U+0020 or above — or the glyph is dropped. */
+function customCpOk(cp) { return typeof cp === 'string' && /^[0-9A-F]{4}$/.test(cp) && parseInt(cp, 16) >= 0x20; }
 /* A drawing guide (project.guides.items): its id is newGuideId()'s 'g<base36>_<n>' (a repeated or
    foreign one gets a fresh id), its colour the colour field's '#rrggbb' (#rgb / #rrggbbaa accepted too)
    or the default, its style one of GUIDE_STYLES or the default, its position a finite number (a guide
@@ -28146,6 +28150,7 @@ function migrateProject(data) {
   { const stdCps = new Set(LETTERS.map(L => L.cp));
     Object.values(byCp).forEach(l => {
       if (!l || !(l.custom || l.eng || l.cyr || l.phn || l.aram || l.smr || l.wideGlyph) || stdCps.has(l.codepoint)) return;
+      if (l.custom && !customCpOk(l.codepoint)) return;   // a custom glyph at a code point addCustomGlyph could not have made: its cp reaches markup
       l.source = l.source || { kind: data.inputMode || 'single', dataUrl: null, cropRect: null, sheetId: null };
       if (l.source.sheetId === undefined) l.source.sheetId = null;
       if (!l.transform) l.transform = [1,0,0,1,0,0];
@@ -28359,7 +28364,13 @@ function migrateProject(data) {
       if (a && Number.isFinite(a.x) && Number.isFinite(a.y)) m.attachAnchor = { x: Math.round(a.x), y: Math.round(a.y) };
       else delete m.attachAnchor;
     });
-    MARK_STORE_KINDS.forEach(cat => { const c = data.font[cat].custom; Object.keys(c).forEach(k => { if (!_isObj(c[k])) delete c[k]; else { sanitizeItemNumbers(c[k], 0); sanitizeDataUrl(c[k].source); } });   // a mark entry is an object with a source — anything else is dropped — and its numbers are numbers (the same rule as a letter's)
+    // A mark store's keys are code points (a custom mark's, normalizeCp's shape: it reaches its tile's buttons and the QA grid), and a
+    // key of another shape is dropped; an entry's own codepoint is its key, as markItem writes it (the mark's controls draw it); a
+    // custom mark's class is one the Add form offers (it reaches the QA grid too).
+    MARK_STORE_KINDS.forEach(cat => { const c = data.font[cat].custom; Object.keys(c).forEach(k => { if (!_isObj(c[k]) || !(cat === 'customMarks' ? customCpOk(k) : /^[0-9A-F]{4,6}$/.test(k))) { delete c[k]; return; }
+        if (c[k].codepoint !== undefined && c[k].codepoint !== k) c[k].codepoint = k;
+        if (cat === 'customMarks' && c[k].cls != null && !['below', 'above', 'center'].includes(c[k].cls)) c[k].cls = 'below';
+        sanitizeItemNumbers(c[k], 0); sanitizeDataUrl(c[k].source); });   // a mark entry is an object with a source — anything else is dropped — and its numbers are numbers (the same rule as a letter's)
       sanitizeDataUrl(data.font[cat].combinedImage); });   // the store's sheet, and each mark's picture, in the page's own data URL shape
     data.font.customMarks.mode = 'custom';
     if (!data.font.accent || typeof data.font.accent !== 'object') data.font.accent = { mode: 'custom', custom: {} };
@@ -29126,7 +29137,7 @@ function openCopyOutline(){
   let first = true;
   sources.forEach(L => {
     const lab = document.createElement('label'); lab.className = 'chk'; lab.style.cssText = 'font-size:0.84rem;';
-    lab.innerHTML = `<input type="radio" name="copyOutlineSrc" class="co-cp" value="${L.codepoint}"${first?' checked':''}> <span style="font-family:${esc(project.template.font)};font-size:1.1rem;">${String.fromCodePoint(parseInt(L.codepoint,16))}</span> ${esc(L.name)}`;
+    lab.innerHTML = `<input type="radio" name="copyOutlineSrc" class="co-cp" value="${esc(L.codepoint)}"${first?' checked':''}> <span style="font-family:${esc(project.template.font)};font-size:1.1rem;">${String.fromCodePoint(parseInt(L.codepoint,16))}</span> ${esc(L.name)}`;
     host.appendChild(lab); first = false;
   });
   const w = document.getElementById('copyOutlineWidth'); if (w) w.checked = false;
