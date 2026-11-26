@@ -1957,8 +1957,20 @@ default the moment contours exist), in the same undo step.
 **Keyboard focus in the left column.** `renderControls` rebuilds that column from scratch on every
 render, which used to drop focus to `<body>` after any press. A control that carries
 **`data-fk="<key>"`** gets focus back on its rebuilt twin when nothing else took it (`renderControls`
-wraps `renderControlsNow`). The Shapes buttons, the Contours switches (`ct:<index>`) and the
-Transform buttons opt in; a new keyboard-operable control in that column should too. A press that
+wraps `renderControlsNow`). Every control of Edit points opts in — the Shapes buttons, the Contours
+rows (`ct:`, `cts:`, `ctv:`, `ctd:<index>`), every button, slider, number field, radio and checkbox of
+the Transform section (`xf:*`, so a slider stepped with the arrow keys commits each step and stays
+focused), Round corners, Reduce points and the selection actions (`np:*`) — and so do Re-trace and
+Clear in Trace (`tr:*`) and the *Copy outline…* and *Paste SVG code…* buttons of every step
+(`cp:outline`, `svg:code`, one key across the steps, since an Insert can land on another one); a new
+keyboard-operable control in that column should too. A control whose press takes it away names
+where focus goes instead, **`data-fk-else="<key> <key>…"`**, tried in order: *Select all* and *Paste*
+the selection's first action, *Delete* the empty selection's *Select all*, a contour row's × the row
+before it, *Clear outline* the step it lands on. A dialog remembers its opener by id or by `data-fk`
+inside the nearest ancestor with an id (`modalOpenerKey`), so `aCloseModal` gives focus back to the
+rebuilt twin when the column was redrawn while it was open (`modalOpenerFind`, which also tries the
+opener's `data-fk-else`). Every Transform button posts what it did on the status line (`xformDoneText`
+— the focus stays on the button, so the status line is what a screen reader announces). A press that
 came from the keyboard (`event.detail === 0`) moves focus to *Place in the middle*, so "Enter,
 Enter" adds a shape. *Place in the middle* and *Cancel* exist only while a shape is picked, so they
 have no rebuilt twin when the tool goes away: `shapePlaceMiddle` and `shapePick` then put focus on

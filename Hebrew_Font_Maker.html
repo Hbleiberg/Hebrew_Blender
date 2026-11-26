@@ -5441,11 +5441,30 @@ function _tabStops(el) {
     .map(n => _isRadio(n) ? (f.find(m => _sameRadioGroup(m, n) && m.checked) || n) : n);
 }
 function _isTabStop(a, stop) { return a === stop || _sameRadioGroup(a, stop); }
+/* The opener is remembered as a node AND as what finds it again — its id, or its data-fk key inside the
+   nearest ancestor with an id — because a panel rebuilt while the dialog is open (the left column, on
+   every render) leaves the remembered node disconnected; lfClose finds its button by id the same way. */
+function modalOpenerKey(el) {
+  if (!el || el === document.body || !el.dataset) return null;
+  const root = el.parentElement && el.parentElement.closest('[id]');
+  return { id: el.id || null, fk: el.dataset.fk || null, fe: el.dataset.fkElse || '', root: root ? root.id : null };
+}
+function modalOpenerFind(k) {   // the opener's twin, else the first of its data-fk-else keys (renderControls' own order)
+  if (!k) return null;
+  if (k.id) { const e = document.getElementById(k.id); if (e) return e; }
+  if (!k.fk) return null;
+  const r = (k.root && document.getElementById(k.root)) || document;
+  for (const key of [k.fk].concat(k.fe.split(' '))) {
+    const e = key && [...r.querySelectorAll('[data-fk]')].find(x => x.dataset.fk === key && !x.disabled);
+    if (e) return e;
+  }
+  return null;
+}
 function aOpenModal(id, closeFn) {
   const ov = document.getElementById(id); if (!ov) return;
   _modalsUnder = _modalsUnder.filter(m => m.id !== id);
   if (_activeModal && _activeModal.id !== id && document.getElementById(_activeModal.id)?.classList.contains('open')) _modalsUnder.push(_activeModal);   // opened over a dialog that stays open: remember it
-  _activeModal = { id, close: closeFn || (() => aCloseModal(id)), opener: document.activeElement };
+  _activeModal = { id, close: closeFn || (() => aCloseModal(id)), opener: document.activeElement, openerKey: modalOpenerKey(document.activeElement) };
   // Every .overlay shares one z-index, so DOM order decides which paints on top — a modal opened OVER an
   // open one that sits later in the page (Help from the wizard's license "?", which the user saw as Help
   // stuck behind the wizard) painted beneath it. The newest modal is lifted above every open one.
@@ -5459,7 +5478,8 @@ function aOpenModal(id, closeFn) {
 function aCloseModal(id) {
   const ov = document.getElementById(id); if (ov) { ov.classList.remove('open'); ov.style.zIndex = ''; }
   if (_keyNow) _keyClosedIn = _keyNow;   // a key press is closing this dialog: its auto-repeats will be held back (see the capture listener below)
-  const ret =(_activeModal && _activeModal.id === id) ? _activeModal.opener : null;
+  let ret =(_activeModal && _activeModal.id === id) ? _activeModal.opener : null;
+  if (ret && !ret.isConnected) ret = modalOpenerFind(_activeModal.openerKey);   // the panel that held the button was rebuilt while the dialog was open: its twin
   if (_activeModal && _activeModal.id === id) _activeModal = null;
   // <body> is not an opener: a modal that auto-opens on load (the onboarding wizard) captures it
   // because nothing was focused yet, and re-focusing <body> restores nothing — the browser keeps the
@@ -11983,8 +12003,8 @@ function renderMarkControls(c, it) {
       ${ (it.source && it.source.dataUrl && it.outlineOnly) ? `<div class="inline">${I18n.t('fontmaker.panels.line_weight')} <input type="range" min="10" max="250" step="1" value="${Math.round(it.lineWeight!=null?it.lineWeight:70)}" oninput="liveLineWeight(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.line_weight'))}"> <span id="lwV" class="readout">${Math.round(it.lineWeight!=null?it.lineWeight:70)}</span></div>
       <div class="ctl-row"><button class="ctl-btn" onclick="applyOutlineToAll()">${I18n.t('fontmaker.panels.apply_outline_all')}</button></div>` : '' }
       <div class="ctl-row">
-        <button class="ctl-btn primary" onclick="traceCurrent()">${I18n.t('fontmaker.panels.retrace')}</button>
-        <button class="ctl-btn" onclick="clearTrace()">${I18n.t('fontmaker.panels.clear')}</button>
+        <button class="ctl-btn primary" data-fk="tr:retrace" onclick="traceCurrent()">${I18n.t('fontmaker.panels.retrace')}</button>
+        <button class="ctl-btn" data-fk="tr:clear" onclick="clearTrace()">${I18n.t('fontmaker.panels.clear')}</button>
         <span id="traceInfo" class="readout">${it.contours?I18n.t(it.contours.length===1?'fontmaker.panels.contours_count.one':'fontmaker.panels.contours_count.other',{count:it.contours.length}):_pT('trace_info_no_ink', 'no ink detected')}</span>
       </div>`;
   } else {
@@ -12000,7 +12020,7 @@ function renderMarkControls(c, it) {
       }
     } else {
       if (svgUploadOn() && it.source && it.source.kind === 'svg' && it.contours)
-        h += `<div class="ctl-row" style="align-items:center;"><span class="hint" style="flex:1;">${I18n.t('fontmaker.panels.markctl_svg_imported')}</span><button class="ctl-btn" onclick="clearTrace()">${I18n.t('fontmaker.panels.clear')}</button></div>`;
+        h += `<div class="ctl-row" style="align-items:center;"><span class="hint" style="flex:1;">${I18n.t('fontmaker.panels.markctl_svg_imported')}</span><button class="ctl-btn" data-fk="tr:clear" onclick="clearTrace()">${I18n.t('fontmaker.panels.clear')}</button></div>`;
       h += `<div class="drop" id="markDrop">${_pT('markctl_drop', 'Drop ' + _dropKind(svgUploadOn()) + ' of <b>' + esc(gName(it.name)) + '</b>, or ' + _dropBrowse('markFile') + '.', { kind: _dropKind(svgUploadOn()), name: '<b>' + esc(gName(it.name)) + '</b>', browse: _dropBrowse('markFile') })}</div>
         <div class="allowed">${svgUploadOn()?I18n.t('fontmaker.panels.mark_allowed_svg'):I18n.t('fontmaker.panels.mark_allowed_img')}</div>
         <input type="file" id="markFile" accept="${svgUploadOn()?'.svg,image/svg+xml':'image/*'}" style="display:none;">`;
@@ -16356,15 +16376,15 @@ function contoursPanelHTML() {
     return `<div class="ct-row${hid ? ' hid' : ''}${sel ? ' sel' : ''}"${sel ? ` style="--ct-tint:${tint};"` : ''}>
       <span class="ct-swatch" style="background:${tint};" aria-hidden="true"></span>
       <button type="button" class="ct-kind" data-fk="ct:${ci}" onclick="contourToggleHole(${ci})" title="${esc(I18n.t(hole ? 'fontmaker.node_editor.contour_make_solid_title' : 'fontmaker.node_editor.contour_make_hole_title'))}" aria-label="${esc(I18n.t(hole ? 'fontmaker.node_editor.contour_make_solid_aria' : 'fontmaker.node_editor.contour_make_hole_aria', { count: ci + 1 }))}"><span aria-hidden="true">${hole ? '○' : '●'}</span></button>
-      <button type="button" class="ct-name"${sel ? ' aria-current="true"' : ''} onclick="selectContourNodes(${ci}, event.shiftKey)" title="${I18n.t('fontmaker.node_editor.contour_select_title')}">${I18n.t('fontmaker.node_editor.contour_row', { count: ci + 1, n: ct.nodes.length })}</button>
-      <button type="button" class="ct-eye" aria-pressed="${hid}" onclick="toggleContourVisibility(${ci})" title="${I18n.t('fontmaker.node_editor.contour_hide_title')}" aria-label="${hid ? I18n.t('fontmaker.node_editor.contour_show_aria', { count: ci + 1 }) : I18n.t('fontmaker.node_editor.contour_hide_aria', { count: ci + 1 })}">${hid ? '🚫' : '👁'}</button>
-      <button type="button" class="ct-del" onclick="deleteContourByIndex(${ci})" title="${I18n.t('fontmaker.node_editor.contour_del_title')}" aria-label="${I18n.t('fontmaker.node_editor.contour_del_aria', { count: ci + 1 })}"><svg class="hi hi-sm hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></button>
+      <button type="button" class="ct-name" data-fk="cts:${ci}"${sel ? ' aria-current="true"' : ''} onclick="selectContourNodes(${ci}, event.shiftKey)" title="${I18n.t('fontmaker.node_editor.contour_select_title')}">${I18n.t('fontmaker.node_editor.contour_row', { count: ci + 1, n: ct.nodes.length })}</button>
+      <button type="button" class="ct-eye" data-fk="ctv:${ci}" aria-pressed="${hid}" onclick="toggleContourVisibility(${ci})" title="${I18n.t('fontmaker.node_editor.contour_hide_title')}" aria-label="${hid ? I18n.t('fontmaker.node_editor.contour_show_aria', { count: ci + 1 }) : I18n.t('fontmaker.node_editor.contour_hide_aria', { count: ci + 1 })}">${hid ? '🚫' : '👁'}</button>
+      <button type="button" class="ct-del" data-fk="ctd:${ci}" data-fk-else="${ci ? 'ctd:' + (ci - 1) + ' ' : ''}np:help tr:retrace cp:outline" onclick="deleteContourByIndex(${ci})" title="${I18n.t('fontmaker.node_editor.contour_del_title')}" aria-label="${I18n.t('fontmaker.node_editor.contour_del_aria', { count: ci + 1 })}"><svg class="hi hi-sm hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></button>
     </div>${bad.has(ci) ? `<div class="ct-warn" role="note">${I18n.t('fontmaker.node_editor.hole_warn')}</div>` : ''}`;
   }).join('');
   return `<details class="node-xform npnl-disc node-contours" ${_contoursOpen ? 'open' : ''} ontoggle="_contoursOpen = this.open; npnlSaveOpen('nodeContoursOpen', this.open); renderStage();">
     <summary>${I18n.t('fontmaker.node_editor.contours_summary', { count: nodeModel.contours.length })}</summary>
     <div class="hint" style="margin:4px 0;">${I18n.t('fontmaker.node_editor.contours_hint')}</div>
-    ${ nodeModel.contours.length ? `<div class="ctl-row" style="margin:0 0 6px;"><button class="ctl-btn" onclick="clearTrace()">${I18n.t('fontmaker.panels.clear_outline')}</button></div>` : '' }
+    ${ nodeModel.contours.length ? `<div class="ctl-row" style="margin:0 0 6px;"><button class="ctl-btn" data-fk="ct:clear" data-fk-else="tr:retrace cp:outline np:help" onclick="clearTrace()">${I18n.t('fontmaker.panels.clear_outline')}</button></div>` : '' }
     ${rows || `<div class="hint">${I18n.t('fontmaker.node_editor.contours_empty', {keys: khTitle('nodePen')})}</div>`}
   </details>`;
 }
@@ -16497,7 +16517,7 @@ const _XFORM_CLAMP = { rot:   v => Math.max(-180, Math.min(180, +v || 0)),
                        slant: v => Math.max(-30, Math.min(30, Math.round((+v || 0) * 10) / 10)) };   // signed: + leans right
 /* The live-slider kinds, in one table (xformLive / xformCommit were written for a rotate / scale pair). */
 const XF_KINDS = {
-  rot:   { neutral: 0,   label: 'rotate — ', readout: 'nodeRotV',   fmt: v => v + '°', done: v => I18n.t('fontmaker.status.nodes_rotated', { deg: v }) },
+  rot:   { neutral: 0,   label: 'rotate — ', readout: 'nodeRotV',   fmt: v => v + '°', done: v => I18n.t(v < 0 ? 'fontmaker.status.nodes_rotated_cw' : 'fontmaker.status.nodes_rotated_ccw', { deg: Math.round(Math.abs(v) * 10) / 10 }) },   // counter-clockwise positive
   scale: { neutral: 100, label: 'scale — ',  readout: 'nodeScaleV', fmt: v => v + '%',      done: v => I18n.t('fontmaker.status.nodes_scaled', { pct: v }) },
   slant: { neutral: 0,   label: 'slant — ',  readout: 'nodeSlantV', fmt: v => Math.abs(v) + '°', done: v => I18n.t('fontmaker.status.nodes_slanted', { deg: Math.abs(v), dir: I18n.t(v < 0 ? 'fontmaker.slantall.dir_left' : 'fontmaker.slantall.dir_right') }) }
 };
@@ -16738,8 +16758,15 @@ function transformSelectedNodes(kind, angleDeg) {            // button / number-
     done = true;
   });
   if (done && lean != null) xformTurnNote(l, kind, lean);
-  if (kind === 'slant') status(XF_KINDS.slant.done(m.deg));
+  if (done) status(xformDoneText(kind, angleDeg, m));        // every press says what it did: focus stays on the button, so the status line is what a screen reader hears
   renderGrids(); renderStage(); renderControls(); syncItalicRow();
+}
+function xformDoneText(kind, arg, m) {
+  if (kind === 'slant') return XF_KINDS.slant.done(m.deg);
+  if (kind === 'rot') return XF_KINDS.rot.done(+arg || 0);
+  if (kind === 'scale') return XF_KINDS.scale.done(_XFORM_CLAMP.scale(arg));
+  if (kind === 'scale2') return I18n.t('fontmaker.status.nodes_scaled_wh', { w: _XFORM_CLAMP.scale(arg && arg[0]), h: _XFORM_CLAMP.scale(arg && arg[1]) });
+  return I18n.t(kind === 'fliph' ? 'fontmaker.status.nodes_flipped_h' : 'fontmaker.status.nodes_flipped_v');
 }
 function xformScaleField(which, el) {                        // typing in Width % or Height % — with Keep proportions on, the other field follows
   if (!_nodeScaleLock || xformStemsOn()) return;
@@ -16900,27 +16927,27 @@ function nodeEditPanelHTML(l) {
     : cnt === 0
     ? `<div class="npnl-ctx" role="group" aria-label="${esc(I18n.t('fontmaker.node_editor.sel_actions'))}">
     <div class="npnl-stack">
-      <button class="ctl-btn" onclick="selectAllNodes()" title="${esc(I18n.t('fontmaker.node_editor.select_all_title', {keys: khTitle('selectAll')}))}" aria-keyshortcuts="${khAria('selectAll')}">${I18n.t('fontmaker.node_editor.select_all')}${khHtml('selectAll')}</button>
-      <button class="ctl-btn" onclick="pasteNodes()" title="${esc(I18n.t('fontmaker.node_editor.paste_title', {keys: khTitle('paste')}))}" aria-keyshortcuts="${khAria('paste')}" ${nodeClipboard ? '' : 'disabled'}>${I18n.t('fontmaker.node_editor.paste')}${khHtml('paste')}</button>
-      <button class="ctl-btn" onclick="openSvgPasteCode()" title="${esc(I18n.t('fontmaker.panels.paste_svg_code_title', {keys: khTitle('paste')}))}">${I18n.t('fontmaker.panels.paste_svg_code')}</button>
-      <button class="ctl-btn" onclick="doRemoveSpecks()" title="${esc(I18n.t('fontmaker.node_editor.remove_specks_title'))}">${I18n.t('fontmaker.node_editor.remove_specks')}</button>
+      <button class="ctl-btn" data-fk="np:selall" data-fk-else="np:smooth" onclick="selectAllNodes()" title="${esc(I18n.t('fontmaker.node_editor.select_all_title', {keys: khTitle('selectAll')}))}" aria-keyshortcuts="${khAria('selectAll')}">${I18n.t('fontmaker.node_editor.select_all')}${khHtml('selectAll')}</button>
+      <button class="ctl-btn" data-fk="np:paste" data-fk-else="np:smooth" onclick="pasteNodes()" title="${esc(I18n.t('fontmaker.node_editor.paste_title', {keys: khTitle('paste')}))}" aria-keyshortcuts="${khAria('paste')}" ${nodeClipboard ? '' : 'disabled'}>${I18n.t('fontmaker.node_editor.paste')}${khHtml('paste')}</button>
+      <button class="ctl-btn" data-fk="svg:code" data-fk-else="np:smooth" onclick="openSvgPasteCode()" title="${esc(I18n.t('fontmaker.panels.paste_svg_code_title', {keys: khTitle('paste')}))}">${I18n.t('fontmaker.panels.paste_svg_code')}</button>
+      <button class="ctl-btn" data-fk="np:specks" onclick="doRemoveSpecks()" title="${esc(I18n.t('fontmaker.node_editor.remove_specks_title'))}">${I18n.t('fontmaker.node_editor.remove_specks')}</button>
     </div>
   </div>`
     : `<div class="npnl-ctx" role="group" aria-label="${esc(I18n.t('fontmaker.node_editor.sel_actions'))}">
     <div class="npnl-grid">
       <span class="npnl-pair" role="group" aria-label="${esc(I18n.t('fontmaker.node_editor.point_type'))}">
-        <button class="ctl-btn" onclick="setSelectedNodeType('smooth')" title="${esc(I18n.t('fontmaker.node_editor.smooth_title'))}">${I18n.t('fontmaker.node_editor.smooth')}</button>
-        <button class="ctl-btn" onclick="setSelectedNodeType('corner')" title="${esc(I18n.t('fontmaker.node_editor.corner_title'))}">${I18n.t('fontmaker.node_editor.corner')}</button>
+        <button class="ctl-btn" data-fk="np:smooth" onclick="setSelectedNodeType('smooth')" title="${esc(I18n.t('fontmaker.node_editor.smooth_title'))}">${I18n.t('fontmaker.node_editor.smooth')}</button>
+        <button class="ctl-btn" data-fk="np:corner" onclick="setSelectedNodeType('corner')" title="${esc(I18n.t('fontmaker.node_editor.corner_title'))}">${I18n.t('fontmaker.node_editor.corner')}</button>
       </span>
-      <button class="ctl-btn npnl-right" onclick="retractSelectedHandles()" title="${esc(I18n.t('fontmaker.node_editor.retract_title'))}">${I18n.t('fontmaker.node_editor.retract')}</button>
+      <button class="ctl-btn npnl-right" data-fk="np:retract" onclick="retractSelectedHandles()" title="${esc(I18n.t('fontmaker.node_editor.retract_title'))}">${I18n.t('fontmaker.node_editor.retract')}</button>
       <span class="npnl-pair" role="group" aria-label="${esc(I18n.t('fontmaker.node_editor.segment_type'))}">
-        <button class="ctl-btn" onclick="setSelectedSegsType(true)" title="${esc(I18n.t('fontmaker.node_editor.to_curve_title', {why: segWhy}))}" ${dis2}>${I18n.t('fontmaker.node_editor.to_curve')}</button>
-        <button class="ctl-btn" onclick="setSelectedSegsType(false)" title="${esc(I18n.t('fontmaker.node_editor.to_line_title', {why: segWhy}))}" ${dis2}>${I18n.t('fontmaker.node_editor.to_line')}</button>
+        <button class="ctl-btn" data-fk="np:curve" onclick="setSelectedSegsType(true)" title="${esc(I18n.t('fontmaker.node_editor.to_curve_title', {why: segWhy}))}" ${dis2}>${I18n.t('fontmaker.node_editor.to_curve')}</button>
+        <button class="ctl-btn" data-fk="np:line" onclick="setSelectedSegsType(false)" title="${esc(I18n.t('fontmaker.node_editor.to_line_title', {why: segWhy}))}" ${dis2}>${I18n.t('fontmaker.node_editor.to_line')}</button>
       </span>
       <span aria-hidden="true"></span>
-      <button class="ctl-btn npnl-left" onclick="copySelectedNodes()" title="${esc(I18n.t('fontmaker.node_editor.copy_title', {keys: khTitle('copy')}))}" aria-keyshortcuts="${khAria('copy')}">${I18n.t('fontmaker.node_editor.copy')}${khHtml('copy')}</button>
+      <button class="ctl-btn npnl-left" data-fk="np:copy" onclick="copySelectedNodes()" title="${esc(I18n.t('fontmaker.node_editor.copy_title', {keys: khTitle('copy')}))}" aria-keyshortcuts="${khAria('copy')}">${I18n.t('fontmaker.node_editor.copy')}${khHtml('copy')}</button>
       <span class="npnl-del npnl-right">
-        <button class="ctl-btn npnl-danger" onclick="doNodeDelete()" title="${esc(I18n.t('fontmaker.node_editor.delete_title'))}">${I18n.t('fontmaker.node_editor.delete')}</button>
+        <button class="ctl-btn npnl-danger" data-fk="np:del" data-fk-else="np:selall" onclick="doNodeDelete()" title="${esc(I18n.t('fontmaker.node_editor.delete_title'))}">${I18n.t('fontmaker.node_editor.delete')}</button>
         <button class="ctl-btn npnl-danger npnl-del-caret" aria-haspopup="menu" aria-expanded="false" aria-label="${esc(I18n.t('fontmaker.node_editor.more_delete_aria'))}" onclick="npnlDelToggle(this)" onkeydown="npnlDelKey(event)">▾</button>
         <div class="npnl-del-menu" role="menu" hidden>
           <button role="menuitem" class="npnl-del-item" onclick="doNodeDelete()" onkeydown="npnlDelKey(event)">${I18n.t('fontmaker.node_editor.delete_points')} <span>${I18n.t('fontmaker.node_editor.delete_points_key')}</span></button>
@@ -16941,47 +16968,47 @@ function nodeEditPanelHTML(l) {
       <button class="ctl-btn" data-fk="xf:1" onclick="transformSelectedNodes('flipv')" title="${esc(I18n.t('fontmaker.node_editor.flip_v_title'))}">${I18n.t('fontmaker.node_editor.flip_v')}</button>
     </div>
     <div class="xf-presets" role="group" aria-label="${esc(I18n.t('fontmaker.node_editor.rot_presets_aria'))}">
-      ${[30, 45].map(d => `<button class="ctl-btn" onclick="transformSelectedNodes('rot', -${d})" title="${esc(I18n.t('fontmaker.node_editor.rot_cw_n_title', {deg: d}))}">${I18n.t('fontmaker.node_editor.rot_cw_n', {deg: d})}</button><button class="ctl-btn" onclick="transformSelectedNodes('rot', ${d})" title="${esc(I18n.t('fontmaker.node_editor.rot_ccw_n_title', {deg: d}))}">${I18n.t('fontmaker.node_editor.rot_ccw_n', {deg: d})}</button>`).join('')}
-      <button class="ctl-btn" onclick="transformSelectedNodes('rot', -90)" title="${esc(I18n.t('fontmaker.node_editor.rot_cw_title'))}">${I18n.t('fontmaker.node_editor.rot_cw')}</button>
-      <button class="ctl-btn" onclick="transformSelectedNodes('rot', 90)" title="${esc(I18n.t('fontmaker.node_editor.rot_ccw_title'))}">${I18n.t('fontmaker.node_editor.rot_ccw')}</button>
+      ${[30, 45].map(d => `<button class="ctl-btn" data-fk="xf:rot-${d}" onclick="transformSelectedNodes('rot', -${d})" title="${esc(I18n.t('fontmaker.node_editor.rot_cw_n_title', {deg: d}))}">${I18n.t('fontmaker.node_editor.rot_cw_n', {deg: d})}</button><button class="ctl-btn" data-fk="xf:rot${d}" onclick="transformSelectedNodes('rot', ${d})" title="${esc(I18n.t('fontmaker.node_editor.rot_ccw_n_title', {deg: d}))}">${I18n.t('fontmaker.node_editor.rot_ccw_n', {deg: d})}</button>`).join('')}
+      <button class="ctl-btn" data-fk="xf:rot-90" onclick="transformSelectedNodes('rot', -90)" title="${esc(I18n.t('fontmaker.node_editor.rot_cw_title'))}">${I18n.t('fontmaker.node_editor.rot_cw')}</button>
+      <button class="ctl-btn" data-fk="xf:rot90" onclick="transformSelectedNodes('rot', 90)" title="${esc(I18n.t('fontmaker.node_editor.rot_ccw_title'))}">${I18n.t('fontmaker.node_editor.rot_ccw')}</button>
     </div>
     <div class="ctl-row" style="gap:6px;align-items:center;margin-top:6px;flex-wrap:wrap;">
       <label style="font-size:0.76rem;display:flex;align-items:center;gap:4px;flex:1;">${I18n.t('fontmaker.node_editor.angle_label')} <span id="nodeRotV" class="readout">0°</span>
-        <input type="range" min="-180" max="180" step="1" value="0" style="flex:1;min-width:70px;"
+        <input type="range" data-fk="xf:rotR" min="-180" max="180" step="1" value="0" style="flex:1;min-width:70px;"
                aria-label="${esc(I18n.t('fontmaker.node_editor.rot_slider_aria'))}"
                oninput="xformLive('rot', this.value)" ${XF_END('rot')}></label>
-      <input type="number" id="nodeRotAngle" value="0" step="1" style="width:56px;" aria-label="${esc(I18n.t('fontmaker.node_editor.angle_aria'))}">
+      <input type="number" id="nodeRotAngle" data-fk="xf:rotN" value="0" step="1" style="width:56px;" aria-label="${esc(I18n.t('fontmaker.node_editor.angle_aria'))}">
       <button class="ctl-btn" data-fk="xf:2" onclick="transformSelectedNodes('rot', +(document.getElementById('nodeRotAngle')||{}).value || 0)" title="${esc(I18n.t('fontmaker.node_editor.rot_apply_title'))}">${I18n.t('fontmaker.node_editor.apply')}</button>
     </div>
     <div class="ctl-row" style="gap:6px;align-items:center;margin-top:6px;flex-wrap:wrap;">
       <label style="font-size:0.76rem;display:flex;align-items:center;gap:4px;flex:1;">${I18n.t('fontmaker.node_editor.slant_label')} <span id="nodeSlantV" class="readout">0°</span>
-        <input type="range" min="0" max="30" step="0.5" value="0" style="flex:1;min-width:70px;"
+        <input type="range" data-fk="xf:slantR" min="0" max="30" step="0.5" value="0" style="flex:1;min-width:70px;"
                aria-label="${esc(I18n.t('fontmaker.node_editor.slant_slider_aria'))}"
                oninput="xformLive('slant', xformSlantSigned(this.value))" ${XF_END('slant')}></label>
-      <input type="number" id="nodeSlantDeg" value="0" min="0" max="30" step="0.5" style="width:56px;" aria-label="${esc(I18n.t('fontmaker.node_editor.slant_aria'))}" title="${esc(I18n.t('fontmaker.node_editor.slant_title'))}">
+      <input type="number" id="nodeSlantDeg" data-fk="xf:slantN" value="0" min="0" max="30" step="0.5" style="width:56px;" aria-label="${esc(I18n.t('fontmaker.node_editor.slant_aria'))}" title="${esc(I18n.t('fontmaker.node_editor.slant_title'))}">
       <button class="ctl-btn" data-fk="xf:3" onclick="transformSelectedNodes('slant', xformSlantSigned((document.getElementById('nodeSlantDeg')||{}).value))" title="${esc(I18n.t('fontmaker.node_editor.slant_apply_title'))}">${I18n.t('fontmaker.node_editor.apply')}</button>
     </div>
     <div class="lean-seg" role="radiogroup" aria-label="${esc(I18n.t('fontmaker.panels.lean_dir'))}" title="${esc(I18n.t('fontmaker.slantall.dir_title'))}">
-      ${['left', 'right'].map(d => `<label><input type="radio" name="nodeLean" value="${d}" ${slantDirDefault() === d ? 'checked' : ''} onchange="setSlantDir(this.value)"> ${I18n.t('fontmaker.panels.lean_' + d)}</label>`).join('')}
+      ${['left', 'right'].map(d => `<label><input type="radio" name="nodeLean" data-fk="xf:lean-${d}" value="${d}" ${slantDirDefault() === d ? 'checked' : ''} onchange="setSlantDir(this.value)"> ${I18n.t('fontmaker.panels.lean_' + d)}</label>`).join('')}
     </div>
     <div class="ctl-row" style="gap:6px;align-items:center;margin-top:6px;flex-wrap:wrap;">
       <label style="font-size:0.76rem;display:flex;align-items:center;gap:4px;flex:1;">${I18n.t('fontmaker.node_editor.scale_label')} <span id="nodeScaleV" class="readout">100%</span>
-        <input type="range" min="25" max="400" step="1" value="100" style="flex:1;min-width:70px;"
+        <input type="range" data-fk="xf:scaleR" min="25" max="400" step="1" value="100" style="flex:1;min-width:70px;"
                aria-label="${esc(I18n.t('fontmaker.node_editor.scale_slider_aria'))}"
                oninput="xformLive('scale', this.value)" ${XF_END('scale')}></label>
     </div>
     <div class="xf-presets" role="group" aria-label="${esc(I18n.t('fontmaker.node_editor.scale_presets_aria'))}">
-      ${GX_SCALE_PRESETS.map(p => `<button class="ctl-btn" onclick="transformSelectedNodes('scale', ${p})" title="${esc(I18n.t('fontmaker.node_editor.scale_preset_title', {pct: p}))}">${p}%</button>`).join('')}
+      ${GX_SCALE_PRESETS.map(p => `<button class="ctl-btn" data-fk="xf:s${p}" onclick="transformSelectedNodes('scale', ${p})" title="${esc(I18n.t('fontmaker.node_editor.scale_preset_title', {pct: p}))}">${p}%</button>`).join('')}
     </div>
     <div class="xf-wh">
-      <label>${I18n.t('fontmaker.node_editor.scale_w')} <input type="number" id="nodeScaleW" value="100" step="1" min="25" max="400" oninput="xformScaleField('w', this)" aria-label="${esc(I18n.t('fontmaker.node_editor.scale_w_aria'))}"></label>
-      <label>${I18n.t('fontmaker.node_editor.scale_h')} <input type="number" id="nodeScaleH" value="100" step="1" min="25" max="400" oninput="xformScaleField('h', this)" aria-label="${esc(I18n.t('fontmaker.node_editor.scale_h_aria'))}" ${xformStemsOn() ? 'disabled' : ''}></label>
-      <button type="button" class="ctl-btn xf-lock" aria-pressed="${_nodeScaleLock ? 'true' : 'false'}" onclick="xformScaleLock(this)" title="${esc(I18n.t('fontmaker.node_editor.scale_lock_title'))}" ${xformStemsOn() ? 'disabled' : ''}>${I18n.t('fontmaker.node_editor.scale_lock')}</button>
+      <label>${I18n.t('fontmaker.node_editor.scale_w')} <input type="number" id="nodeScaleW" data-fk="xf:scaleW" value="100" step="1" min="25" max="400" oninput="xformScaleField('w', this)" aria-label="${esc(I18n.t('fontmaker.node_editor.scale_w_aria'))}"></label>
+      <label>${I18n.t('fontmaker.node_editor.scale_h')} <input type="number" id="nodeScaleH" data-fk="xf:scaleH" value="100" step="1" min="25" max="400" oninput="xformScaleField('h', this)" aria-label="${esc(I18n.t('fontmaker.node_editor.scale_h_aria'))}" ${xformStemsOn() ? 'disabled' : ''}></label>
+      <button type="button" class="ctl-btn xf-lock" data-fk="xf:lock" aria-pressed="${_nodeScaleLock ? 'true' : 'false'}" onclick="xformScaleLock(this)" title="${esc(I18n.t('fontmaker.node_editor.scale_lock_title'))}" ${xformStemsOn() ? 'disabled' : ''}>${I18n.t('fontmaker.node_editor.scale_lock')}</button>
       <button class="ctl-btn" data-fk="xf:4" onclick="xformScaleApply()" title="${esc(I18n.t(xformStemsOn() ? 'fontmaker.node_editor.scale_stems_apply_title' : 'fontmaker.node_editor.scale_apply_title'))}">${I18n.t('fontmaker.node_editor.apply')}</button>
-      <label class="xf-stems" title="${esc(I18n.t('fontmaker.node_editor.scale_stems_title'))}"><input type="checkbox" id="nodeScaleStems" ${_nodeScaleStems ? 'checked' : ''} ${(cnt || _penMode) ? 'disabled' : ''} onchange="xformScaleStems(this)"> ${I18n.t('fontmaker.node_editor.scale_stems')}</label>
+      <label class="xf-stems" title="${esc(I18n.t('fontmaker.node_editor.scale_stems_title'))}"><input type="checkbox" id="nodeScaleStems" data-fk="xf:stems" ${_nodeScaleStems ? 'checked' : ''} ${(cnt || _penMode) ? 'disabled' : ''} onchange="xformScaleStems(this)"> ${I18n.t('fontmaker.node_editor.scale_stems')}</label>
     </div>
     <div class="hint" style="font-size:0.68rem;margin-top:6px;">${I18n.t(cnt ? 'fontmaker.node_editor.xform_anchor_note_sel' : 'fontmaker.node_editor.xform_anchor_note_whole')}</div>
-    <div class="ctl-row" style="margin-top:6px;"><button class="ctl-btn" onclick="scaleAllOpen()" title="${esc(I18n.t('fontmaker.panels.scaleall_open_title'))}">${I18n.t('fontmaker.panels.scaleall_open')}</button><button class="ctl-btn" onclick="slantAllOpen()" title="${esc(I18n.t('fontmaker.panels.slantall_open_title'))}">${I18n.t('fontmaker.panels.slantall_open')}</button><button class="ctl-btn" onclick="widthAllOpen()" title="${esc(I18n.t('fontmaker.panels.widthall_open_title'))}">${I18n.t('fontmaker.panels.widthall_open')}</button></div>
+    <div class="ctl-row" style="margin-top:6px;"><button class="ctl-btn" data-fk="xf:allScale" onclick="scaleAllOpen()" title="${esc(I18n.t('fontmaker.panels.scaleall_open_title'))}">${I18n.t('fontmaker.panels.scaleall_open')}</button><button class="ctl-btn" data-fk="xf:allSlant" onclick="slantAllOpen()" title="${esc(I18n.t('fontmaker.panels.slantall_open_title'))}">${I18n.t('fontmaker.panels.slantall_open')}</button><button class="ctl-btn" data-fk="xf:allWidth" onclick="widthAllOpen()" title="${esc(I18n.t('fontmaker.panels.widthall_open_title'))}">${I18n.t('fontmaker.panels.widthall_open')}</button></div>
   </details>
   <details class="node-xform npnl-disc" ${_filletOpen ? 'open' : ''} ontoggle="_filletOpen = this.open; npnlSaveOpen('nodeFilletOpen', this.open)">
     <summary>${cnt ? I18n.t('fontmaker.node_editor.round_summary_sel', {count: cnt}) : I18n.t('fontmaker.node_editor.round_summary')}</summary>
@@ -16989,8 +17016,8 @@ function nodeEditPanelHTML(l) {
       <label style="font-size:0.76rem;display:flex;align-items:center;gap:4px;flex:1;">${I18n.t('fontmaker.node_editor.radius_label')} <span id="filletRadV" class="readout">${_filletRadius}</span>
         <input type="range" min="5" max="120" step="1" value="${_filletRadius}" style="flex:1;min-width:90px;"
                aria-label="${esc(I18n.t('fontmaker.node_editor.radius_aria'))}"
-               oninput="filletLiveInput(this.value)" onchange="filletCommit()" onblur="filletCommit()"></label>
-      <button class="ctl-btn" onclick="filletApply()" ${dis}>${I18n.t('fontmaker.node_editor.apply')}</button>
+               oninput="filletLiveInput(this.value)" onchange="filletCommit()" onblur="filletCommit()" data-fk="fl:r"></label>
+      <button class="ctl-btn" data-fk="fl:apply" onclick="filletApply()" ${dis}>${I18n.t('fontmaker.node_editor.apply')}</button>
     </div>
     <div class="hint" style="margin:4px 0 0;">${I18n.t('fontmaker.node_editor.round_hint')}</div>
   </details>
@@ -17000,8 +17027,8 @@ function nodeEditPanelHTML(l) {
       <label style="font-size:0.76rem;display:flex;align-items:center;gap:4px;flex:1;">${I18n.t('fontmaker.node_editor.reduce_strength_label')} <span id="reduceEpsV" class="readout">${_reduceEps}</span>
         <input type="range" min="1" max="30" step="1" value="${_reduceEps}" style="flex:1;min-width:90px;"
                aria-label="${esc(I18n.t('fontmaker.node_editor.reduce_strength_aria'))}"
-               oninput="reduceLiveInput(this.value)" onchange="reduceCommit()" onblur="reduceCommit()"></label>
-      <button class="ctl-btn" onclick="reduceApply()" title="${esc(I18n.t('fontmaker.node_editor.reduce_apply_title'))}">${I18n.t('fontmaker.node_editor.apply')}</button>
+               oninput="reduceLiveInput(this.value)" onchange="reduceCommit()" onblur="reduceCommit()" data-fk="rd:r"></label>
+      <button class="ctl-btn" data-fk="rd:apply" onclick="reduceApply()" title="${esc(I18n.t('fontmaker.node_editor.reduce_apply_title'))}">${I18n.t('fontmaker.node_editor.apply')}</button>
     </div>
     <div class="hint" style="margin:4px 0 0;"><span id="reducePtsV" class="readout">${I18n.t('fontmaker.node_editor.reduce_count_now', {count: totalPts})}</span></div>
     <div class="hint" style="margin:4px 0 0;">${I18n.t('fontmaker.node_editor.reduce_hint', {keys: khTitle('undo')})}</div>
@@ -17009,7 +17036,7 @@ function nodeEditPanelHTML(l) {
   ${contoursPanelHTML()}
   <div class="npnl-tip">
     <span class="hint">${tip}</span>
-    <button class="ctl-btn npnl-help" onclick="openShortcuts('nodes')" aria-label="${esc(I18n.t('fontmaker.node_editor.shortcuts_help_aria'))}" title="${esc(I18n.t('fontmaker.node_editor.shortcuts_help_title'))}">?</button>
+    <button class="ctl-btn npnl-help" data-fk="np:help" onclick="openShortcuts('nodes')" aria-label="${esc(I18n.t('fontmaker.node_editor.shortcuts_help_aria'))}" title="${esc(I18n.t('fontmaker.node_editor.shortcuts_help_title'))}">?</button>
   </div>`;
 }
 /* Trace is split so dragging the sliders can update live:
@@ -21482,18 +21509,23 @@ function updateNodeEditToggle() {   // one persistent Edit points ⇄ Done editi
 }
 /* The left column is rebuilt from scratch on every render, which drops keyboard focus to <body> —
    a keyboard user would be sent back to the top of the page after every press. A control that opts
-   in with data-fk="<key>" gets focus back on its rebuilt twin (same key), when nothing else took it. */
+   in with data-fk="<key>" gets focus back on its rebuilt twin (same key), when nothing else took it.
+   A control whose press takes it away (Select all, Delete, a row's ×, Clear outline) names where focus
+   goes then: data-fk-else="<key> <key>…", tried in order when the twin is gone. */
 function renderControls() {
   const L0 = document.getElementById('ctlLeft'), a = document.activeElement;
-  const fk = (L0 && a && a !== document.body && L0.contains(a) && a.dataset && a.dataset.fk) || null;
+  const on = !!(L0 && a && a !== document.body && L0.contains(a) && a.dataset);
+  const fk = (on && a.dataset.fk) || null, fe = (on && a.dataset.fkElse) || '';
   try { renderControlsNow(); }
   finally {
     if (fk && (!document.activeElement || document.activeElement === document.body)) {
-      const t = [...L0.querySelectorAll('[data-fk]')].find(el => el.dataset.fk === fk);
-      if (t && !t.disabled) t.focus({ preventScroll: true });
+      let t = fkFind(L0, fk);
+      for (const k of fe.split(' ')) { if (t) break; if (k) t = fkFind(L0, k); }
+      if (t) t.focus({ preventScroll: true });
     }
   }
 }
+function fkFind(root, key) { const t = root && [...root.querySelectorAll('[data-fk]')].find(el => el.dataset.fk === key); return (t && !t.disabled) ? t : null; }
 function renderControlsNow() {
   renderNodeChrome();   // node-mode stage toolbar/status/hint — self-guarding, must run on every path (incl. early-outs) so the chrome hides
   document.body.classList.toggle('mode-draw', !!project && workMode === 'draw' && curKind === 'letter');   // fullscreen canvas focus — same self-guarding contract as renderNodeChrome
@@ -21642,8 +21674,8 @@ function renderAlignLeft(L, l) {
   if (curKind === 'letter') {   // reuse another letter's shape (e.g. Kaf → Kaf sofit) without detouring through the Trace step
     html += `<hr class="ctl-divider">
     <div class="ctl-row" style="flex-wrap:wrap;">
-      <button class="ctl-btn hi-btn" onclick="openCopyOutline()" title="${esc(I18n.t('fontmaker.panels.copy_outline_title'))}">${ICON_COPY_SM}${I18n.t('fontmaker.panels.copy_outline')}</button>
-      <button class="ctl-btn" onclick="openSvgPasteCode()" title="${esc(I18n.t('fontmaker.panels.paste_svg_code_title', {keys: khTitle('paste')}))}">${I18n.t('fontmaker.panels.paste_svg_code')}</button>
+      <button class="ctl-btn hi-btn" data-fk="cp:outline" onclick="openCopyOutline()" title="${esc(I18n.t('fontmaker.panels.copy_outline_title'))}">${ICON_COPY_SM}${I18n.t('fontmaker.panels.copy_outline')}</button>
+      <button class="ctl-btn" data-fk="svg:code" onclick="openSvgPasteCode()" title="${esc(I18n.t('fontmaker.panels.paste_svg_code_title', {keys: khTitle('paste')}))}">${I18n.t('fontmaker.panels.paste_svg_code')}</button>
       ${ l.contours ? `<button class="ctl-btn" onclick="clearTrace()">${I18n.t('fontmaker.panels.clear_outline')}</button>` : '' }
     </div>`;
   }
@@ -21732,9 +21764,9 @@ function renderTraceLeft(L, l) {
         : _pT('svg_outline_hint_paste', 'Imported from SVG — no tracing needed. Fine-tune the shape with <b>Edit points</b>, or replace it by pasting another SVG or dropping an SVG file on the canvas.')}</div>
       <div class="ctl-row">
         ${ l.contours ? '' : `<button class="ctl-btn primary hi-btn" onclick="drawWithPen()" title="${esc(I18n.t('fontmaker.panels.draw_pen_title'))}">${ICON_PENCIL_SM}${I18n.t('fontmaker.panels.draw_pen')}</button><button class="ctl-btn" onclick="buildWithShapes(event)" title="${esc(I18n.t('fontmaker.panels.build_shapes_title'))}">${I18n.t('fontmaker.panels.build_shapes')}</button>` }
-        <button class="ctl-btn" onclick="clearTrace()">${I18n.t('fontmaker.panels.clear')}</button>
-        <button class="ctl-btn hi-btn" onclick="openCopyOutline()" title="${esc(I18n.t('fontmaker.panels.copy_outline_title'))}">${ICON_COPY_SM}${I18n.t('fontmaker.panels.copy_outline')}</button>
-      <button class="ctl-btn" onclick="openSvgPasteCode()" title="${esc(I18n.t('fontmaker.panels.paste_svg_code_title', {keys: khTitle('paste')}))}">${I18n.t('fontmaker.panels.paste_svg_code')}</button>
+        <button class="ctl-btn" data-fk="tr:clear" onclick="clearTrace()">${I18n.t('fontmaker.panels.clear')}</button>
+        <button class="ctl-btn hi-btn" data-fk="cp:outline" onclick="openCopyOutline()" title="${esc(I18n.t('fontmaker.panels.copy_outline_title'))}">${ICON_COPY_SM}${I18n.t('fontmaker.panels.copy_outline')}</button>
+      <button class="ctl-btn" data-fk="svg:code" onclick="openSvgPasteCode()" title="${esc(I18n.t('fontmaker.panels.paste_svg_code_title', {keys: khTitle('paste')}))}">${I18n.t('fontmaker.panels.paste_svg_code')}</button>
         <span id="traceInfo" class="readout">${ l.contours ? _pT('trace_info', `${l.contours.length} contour(s) · adv ${esc(l.advance)}`, {count: l.contours.length, adv: esc(l.advance)}) : _pT('trace_info_no_ink', 'no ink detected') }</span>
       </div>`;
     return;
@@ -21756,11 +21788,11 @@ function renderTraceLeft(L, l) {
     <input type="range" class="side-slider" min="10" max="250" step="1" value="${Math.round(l.lineWeight!=null?l.lineWeight:70)}" oninput="liveLineWeight(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.line_weight'))}">
     <div class="ctl-row"><button class="ctl-btn" onclick="applyOutlineToAll()">${I18n.t('fontmaker.panels.apply_outline_all')}</button></div>` : '' }
     <div class="ctl-row">
-      <button class="ctl-btn primary" onclick="traceCurrent()">${I18n.t('fontmaker.panels.retrace')}</button>
-      <button class="ctl-btn" onclick="clearTrace()">${I18n.t('fontmaker.panels.clear')}</button>
+      <button class="ctl-btn primary" data-fk="tr:retrace" onclick="traceCurrent()">${I18n.t('fontmaker.panels.retrace')}</button>
+      <button class="ctl-btn" data-fk="tr:clear" onclick="clearTrace()">${I18n.t('fontmaker.panels.clear')}</button>
       ${ l.contours ? '' : `<button class="ctl-btn hi-btn" onclick="drawWithPen()" title="${esc(I18n.t('fontmaker.panels.draw_pen_title2'))}">${ICON_PENCIL_SM}${I18n.t('fontmaker.panels.draw_pen')}</button><button class="ctl-btn" onclick="buildWithShapes(event)" title="${esc(I18n.t('fontmaker.panels.build_shapes_title'))}">${I18n.t('fontmaker.panels.build_shapes')}</button>` }
-      <button class="ctl-btn hi-btn" onclick="openCopyOutline()" title="${esc(I18n.t('fontmaker.panels.copy_outline_title'))}">${ICON_COPY_SM}${I18n.t('fontmaker.panels.copy_outline')}</button>
-      <button class="ctl-btn" onclick="openSvgPasteCode()" title="${esc(I18n.t('fontmaker.panels.paste_svg_code_title', {keys: khTitle('paste')}))}">${I18n.t('fontmaker.panels.paste_svg_code')}</button>
+      <button class="ctl-btn hi-btn" data-fk="cp:outline" onclick="openCopyOutline()" title="${esc(I18n.t('fontmaker.panels.copy_outline_title'))}">${ICON_COPY_SM}${I18n.t('fontmaker.panels.copy_outline')}</button>
+      <button class="ctl-btn" data-fk="svg:code" onclick="openSvgPasteCode()" title="${esc(I18n.t('fontmaker.panels.paste_svg_code_title', {keys: khTitle('paste')}))}">${I18n.t('fontmaker.panels.paste_svg_code')}</button>
       <span id="traceInfo" class="readout">${ l.contours ? _pT('trace_info', `${l.contours.length} contour(s) · adv ${esc(l.advance)}`, {count: l.contours.length, adv: esc(l.advance)}) : _pT('trace_info_no_ink', 'no ink detected') }</span>
     </div>
     <div class="hint">${_pT('trace_hint', 'Lower <b>threshold</b> captures lighter ink; higher <b>detail</b> hugs the ink more closely (more nodes). <b>Corners</b> sets how sharp a turn must be to stay a crisp corner — slide right to round more of them into smooth curves. Counters (ס, ם, ע) punch out automatically. Turn on <b>Outline only</b> for hollow “bubble” letters — <b>line weight</b> sets the ring thickness.')}</div>`;
@@ -21973,8 +22005,8 @@ function renderDrawLeft(L, l) {
       <button class="ctl-btn hi-btn" id="drawReplayBtn" onclick="drawReplay()" aria-pressed="false" title="${esc(_drawT('replay_title', 'Replay the strokes in the order they were drawn'))}" ${nStrokes?'':'disabled'}>${ICON_PLAY_SM}${esc(_drawT('replay', 'Replay'))}</button>
       <button class="ctl-btn" id="drawTidyBtn" onclick="drawTidyStrokes()" title="${esc(_drawT('tidy_title', 'Straighten strokes that are nearly straight and snap loose ends onto a guide — one press, one undo'))}" ${nStrokes?'':'disabled'}>${_drawT('tidy', 'Tidy strokes')}</button>
       <button class="ctl-btn" onclick="drawClearCurrent()" ${nStrokes?'':'disabled'}>${_drawT('clear', 'Clear letter')}</button>
-      <button class="ctl-btn hi-btn" onclick="openCopyOutline()" title="${esc(I18n.t('fontmaker.panels.copy_outline_title'))}">${ICON_COPY_SM}${I18n.t('fontmaker.panels.copy_outline')}</button>
-      <button class="ctl-btn" onclick="openSvgPasteCode()" title="${esc(I18n.t('fontmaker.panels.paste_svg_code_title', {keys: khTitle('paste')}))}">${I18n.t('fontmaker.panels.paste_svg_code')}</button>
+      <button class="ctl-btn hi-btn" data-fk="cp:outline" onclick="openCopyOutline()" title="${esc(I18n.t('fontmaker.panels.copy_outline_title'))}">${ICON_COPY_SM}${I18n.t('fontmaker.panels.copy_outline')}</button>
+      <button class="ctl-btn" data-fk="svg:code" onclick="openSvgPasteCode()" title="${esc(I18n.t('fontmaker.panels.paste_svg_code_title', {keys: khTitle('paste')}))}">${I18n.t('fontmaker.panels.paste_svg_code')}</button>
       <span class="readout">${nStrokes ? _drawT(nStrokes === 1 ? 'stroke_count.one' : 'stroke_count.other', nStrokes + (nStrokes === 1 ? ' stroke' : ' strokes'), { count: nStrokes }) : ''}</span>
     </div>
     <div class="hint">${_drawT('hint', 'Draw over the gray reference with a pen, finger, or mouse. Each stroke can be undone with ' + khTitle('undo') + '. Save runs the tracer — fine-tune Detail and Corners in step 2.', { keys: khTitle('undo') })}</div>`;

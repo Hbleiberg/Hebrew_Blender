@@ -3467,6 +3467,11 @@ fontmaker.status.not_fontmaker_file,Not a Font Maker project file.,זה אינו
 fontmaker.status.not_valid_project,Not a valid project file.,זה אינו קובץ פרויקט תקין.,toast,
 fontmaker.status.nodes_rotated,Rotated {deg}°.,בוצע סיבוב של {deg}°.,toast,
 fontmaker.status.nodes_scaled,Scaled to {pct}%.,בוצע שינוי גודל ל־{pct}%.,toast,
+fontmaker.status.nodes_rotated_cw,Rotated {deg}° clockwise.,בוצע סיבוב של {deg}° עם כיוון השעון.,toast,Edit points → Transform: a rotate button or the angle slider
+fontmaker.status.nodes_rotated_ccw,Rotated {deg}° counter-clockwise.,בוצע סיבוב של {deg}° נגד כיוון השעון.,toast,Edit points → Transform: a rotate button or the angle slider
+fontmaker.status.nodes_scaled_wh,Scaled to {w}% wide and {h}% tall.,בוצע שינוי גודל ל־{w}% ברוחב ול־{h}% בגובה.,toast,Edit points → Transform: Width % and Height % with Keep proportions off
+fontmaker.status.nodes_flipped_h,Flipped left–right.,בוצע שיקוף שמאל–ימין.,toast,Edit points → Transform: Flip H
+fontmaker.status.nodes_flipped_v,Flipped top–bottom.,בוצע שיקוף מעלה–מטה.,toast,Edit points → Transform: Flip V
 fontmaker.status.nothing_selected,Nothing selected — import cancelled.,לא נבחר דבר — הייבוא בוטל.,toast,
 fontmaker.status.points_reduced,Reduced points: {before} → {after}.,הנקודות הופחתו: מ־{before} ל־{after}.,toast,
 fontmaker.status.open_create_first,Open or create a project first.,פתחו או צרו קודם פרויקט.,toast,
