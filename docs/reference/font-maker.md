@@ -717,10 +717,12 @@ them, and anything else is replaced or dropped (again a normal project loads exa
   entry); a custom mark's class is one the Add form offers (`below` otherwise).
 - *Combined forms*: `target`, `base` and `mark` are code points and a digraph has exactly two `bases`,
   or the form goes (a tab that is on seeds its forms again).
-- *The reference font's family* (`template.font`, written into `style="font-family:…"`): a family list
-  as the font menu and the reference uploads write one (letters, digits, spaces, quotes, commas,
-  hyphens, underscores, at any length — an upload's family carries its whole file name), else the
-  default. Each entry of the reference font list (`template.customFonts`, an uploaded file or an
+- *The reference font's family* (`template.font`, written into `style="font-family:…"` and asked
+  about with `document.fonts.check()`): a family list as the font menu and the reference uploads write
+  one — quoted names made of letters, digits, spaces, hyphens and underscores, and generic families,
+  separated by commas (`'Name', serif`), at any length, since an upload's family carries its whole
+  file name — else the default (a bare `,` or `123` is made of the same characters, and `check()`
+  throws on it). Each entry of the reference font list (`template.customFonts`, an uploaded file or an
   installed face) is held to the same rule by its `family`, or the entry goes: that family is the font
   menu's value for it, and picking it — or picking the same installed face again — makes it
   `template.font` after the load.

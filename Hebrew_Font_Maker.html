@@ -28239,10 +28239,13 @@ function migrateProject(data) {
   const _opacity = (v, d) => { const n = (typeof v === 'number' || (typeof v === 'string' && v.trim() !== '')) ? +v : NaN; return Number.isFinite(n) ? Math.max(0, Math.min(1, n)) : d; };
   if (!_isObj(data.template)) data.template = { font:"'Noto Sans Hebrew', sans-serif", opacity:0.35, showOverlay:true };
   data.template.opacity = _opacity(data.template.opacity, 0.35);
-  // The reference font's family is written into style="font-family:…" attributes: it is a family list as the font menu and the
-  // reference uploads write one ('Name', serif — letters, digits, spaces, quotes, commas, hyphens, underscores), else the default.
-  // No length limit: an uploaded reference's family carries its whole file name, however long.
-  const _tplFamOk = f => typeof f === 'string' && /^[A-Za-z0-9 ',_-]+$/.test(f);
+  // The reference font's family is written into style="font-family:…" attributes and asked about with document.fonts.check(): it
+  // is a family list as the font menu and the reference uploads write one — quoted names (letters, digits, spaces, hyphens,
+  // underscores) and generic families, separated by commas ('Name', serif) — else the default (a bare ',' or '123' is made of the
+  // same characters, and check() throws on it). No length limit: an uploaded reference's family carries its whole file name.
+  const _tplFamItem = "(?:'[A-Za-z0-9 _-]+'|serif|sans-serif|cursive|monospace|fantasy|system-ui)";
+  const _tplFamRe = new RegExp('^' + _tplFamItem + '(?: *, *' + _tplFamItem + ')*$');
+  const _tplFamOk = f => typeof f === 'string' && _tplFamRe.test(f);
   if (data.template.font != null && !_tplFamOk(data.template.font)) data.template.font = "'Noto Sans Hebrew', sans-serif";
   data.template.customFonts = _objs(data.template.customFonts);   // uploaded tracing fonts (bytes) persist here; one picked from the installed fonts persists as a name
   // Each one's family is the font menu's value for it, and picking it (or picking the same installed face again) makes it the
