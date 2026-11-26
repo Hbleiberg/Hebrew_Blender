@@ -4383,6 +4383,7 @@ let guideDrag  = null;      // active user-guide drag: { id, dragAxis:'x'|'y', g
 let undoStack = [], redoStack = [];
 const UNDO_MAX = 100;
 const ITEM_SKIP = { source: 1, savedAnchors: 1, draw: 1 };   // excluded from snapshots; preserved live on restore (draw: stroke sets are big — withDraw opts in)
+const UD_PC_KEYS = ['anchor', 'holam', 'markScale', 'widthScale'];   // the composed-form fields a precomp snapshot writes back (src / srcDagesh are put or deleted by themselves)
 function itemScope() { return { t:'item', kind: curKind, cp: curCp }; }
 function udItem(s) {                                     // resolve by (kind,cp) WITHOUT creating (never customMark())
   if (s.kind === 'letter') return project.letters.find(x => x.codepoint === s.cp);
@@ -4399,7 +4400,7 @@ function udSnap(s) {
   if (s.t === 'kernChecked') return (project.font.kernChecked || []).slice();
   if (s.t === 'metrics') return JSON.parse(JSON.stringify(project.font.metrics));
   if (s.t === 'guides') return JSON.parse(JSON.stringify(project.guides || { show:true, items:[] }));
-  if (s.t === 'precomp') { const pc = getPrecomp(s.target); return pc ? { anchor: pc.anchor ? JSON.parse(JSON.stringify(pc.anchor)) : null, holam: pc.holam ? JSON.parse(JSON.stringify(pc.holam)) : null, markScale: (pc.markScale != null ? pc.markScale : null), widthScale: (pc.widthScale != null ? pc.widthScale : null), src: pc.src || null, srcDagesh: pc.srcDagesh || null } : null; }   // src/srcDagesh are written once by an import and never mutated in place, so the references are shared rather than deep-cloned on every anchor drag
+  if (s.t === 'precomp') { const pc = getPrecomp(s.target); return pc ? { anchor: pc.anchor ? JSON.parse(JSON.stringify(pc.anchor)) : null, holam: pc.holam ? JSON.parse(JSON.stringify(pc.holam)) : null, markScale: (pc.markScale != null ? pc.markScale : null), widthScale: (pc.widthScale != null ? pc.widthScale : null), src: pc.src || null, srcDagesh: pc.srcDagesh || null, absent: UD_PC_KEYS.filter(k => pc[k] === undefined) } : null; }   // absent: the fields the form did not carry at all, so a restore leaves them out instead of writing null into them. src/srcDagesh are written once by an import and never mutated in place, so the references are shared rather than deep-cloned on every anchor drag
   if (s.t === 'sheetFit') return (project.combinedSheets || []).map(sh => [sh.id, (Number.isFinite(sh.fitScale) && sh.fitScale > 0) ? sh.fitScale : null]);
   if (s.t === 'tropTune') return JSON.parse(JSON.stringify({
     tropSideOffset: (project.font.tropSideOffset != null) ? project.font.tropSideOffset : null,
@@ -4418,7 +4419,13 @@ function udSnap(s) {
   return null;
 }
 function udRestore(s, snap) {
-  if (s.t === 'item') { const it = udItem(s); if (!it || !snap) return;
+  if (s.t === 'item') { let it = udItem(s);
+    // scope.made: the entry made this mark item (a whole-font resize's scaled copy of a built-in accent) — its
+    // `before` is null because there was none. Undo takes it away again and redo makes it again, so the store
+    // is exactly what it was, not one empty item richer per undo.
+    if (!snap) { if (s.made && it && s.kind !== 'letter') delete project.font[s.kind].custom[s.cp]; return; }
+    if (!it && s.made && s.kind !== 'letter') it = customMark(s.kind, s.cp);
+    if (!it) return;
     const keepSrc = it.source, keepSaved = it.savedAnchors, keepDraw = it.draw;
     for (const k in it) if (!ITEM_SKIP[k] || (s.withSource && k === 'source') || (s.withDraw && k === 'draw')) delete it[k];
     Object.assign(it, JSON.parse(JSON.stringify(snap)));
@@ -4434,7 +4441,7 @@ function udRestore(s, snap) {
     Object.assign(project.font.metrics, JSON.parse(JSON.stringify(snap || {})));
   }
   else if (s.t === 'guides') project.guides = JSON.parse(JSON.stringify(snap || { show:true, items:[] }));
-  else if (s.t === 'precomp') { const pc = getPrecomp(s.target); if (pc) { pc.anchor = (snap && snap.anchor) ? JSON.parse(JSON.stringify(snap.anchor)) : null; pc.holam = (snap && snap.holam) ? JSON.parse(JSON.stringify(snap.holam)) : null; pc.markScale = (snap && snap.markScale != null) ? snap.markScale : null; pc.widthScale = (snap && snap.widthScale != null) ? snap.widthScale : null; if (snap && snap.src) pc.src = snap.src; else delete pc.src; if (snap && snap.srcDagesh) pc.srcDagesh = snap.srcDagesh; else delete pc.srcDagesh; } }
+  else if (s.t === 'precomp') { const pc = getPrecomp(s.target); if (pc) { pc.anchor = (snap && snap.anchor) ? JSON.parse(JSON.stringify(snap.anchor)) : null; pc.holam = (snap && snap.holam) ? JSON.parse(JSON.stringify(snap.holam)) : null; pc.markScale = (snap && snap.markScale != null) ? snap.markScale : null; pc.widthScale = (snap && snap.widthScale != null) ? snap.widthScale : null; if (snap && snap.src) pc.src = snap.src; else delete pc.src; if (snap && snap.srcDagesh) pc.srcDagesh = snap.srcDagesh; else delete pc.srcDagesh; ((snap && snap.absent) || []).forEach(k => { if (UD_PC_KEYS.includes(k)) delete pc[k]; }); } }
   else if (s.t === 'sheetFit') (snap || []).forEach(([id, v]) => { const sh = (project.combinedSheets || []).find(x => x.id === id); if (sh) { if (v != null) sh.fitScale = v; else delete sh.fitScale; } });
   else if (s.t === 'tropTune') { const sn = snap || {};
     if (sn.tropSideOffset != null) project.font.tropSideOffset = sn.tropSideOffset; else project.font.tropSideOffset = TROP_POS_SHIFT;
@@ -19111,7 +19118,9 @@ function gxPlan(op, set) {
   /* ── scopes ── */
   plan.scopes = plan.items.map(it => it.set.draw ? { t: 'item', kind: 'letter', cp: it.l.codepoint, withDraw: true } : { t: 'item', kind: 'letter', cp: it.l.codepoint })
     .concat(plan.precomp.map(p => ({ t: 'precomp', target: p.target })))
-    .concat((plan.font.accents || []).map(a => ({ t: 'item', kind: 'accent', cp: a.cp })));
+    .concat((plan.font.accents || []).map(a => (a.create && !(F.accent && F.accent.custom && F.accent.custom[a.cp]))
+      ? { t: 'item', kind: 'accent', cp: a.cp, made: true }   // a scaled copy of a built-in accent the commit makes: undo takes it away again, redo makes it again (udRestore)
+      : { t: 'item', kind: 'accent', cp: a.cp }));
   if (plan.font.metrics) plan.scopes.push({ t: 'metrics' });
   if (plan.font.spacing) plan.scopes.push({ t: 'spacing' });
   if (plan.font.kerning) plan.scopes.push({ t: 'kerning' });
@@ -19145,7 +19154,6 @@ function gxCommit(plan, meta) {   // → true when the change was made (one undo
   if (!plan || gxRefused(plan) || !plan.scopes.length) return false;
   xformDrop();   // a Transform-slider snapshot holds an outline from before this change — its next tick would write that back over the result
   const F = project.font, f = plan.font;
-  (f.accents || []).forEach(a => { if (a.create) customMark('accent', a.cp); });   // create BEFORE the snapshot, so undo has an item to put back (the Generate Bold idiom); empty, it still reads as the built-in accent
   const n0 = undoStack.length, top0 = undoStack[n0 - 1];
   udDo(plan.scopes, plan.label, () => {   // assignments only — nothing in here can fail half-way
     plan.items.forEach(it => { Object.assign(it.l, it.set); (it.del || []).forEach(key => { delete it.l[key]; }); });
@@ -19163,7 +19171,7 @@ function gxCommit(plan, meta) {   // → true when the change was made (one undo
     }
     if (f.guides) project.guides = f.guides;
     if (f.sheets) f.sheets.forEach(([id, v]) => { const sh = (project.combinedSheets || []).find(x => x.id === id); if (sh) sh.fitScale = v; });
-    (f.accents || []).forEach(a => { const m = F.accent && F.accent.custom && F.accent.custom[a.cp]; if (m) Object.assign(m, a.set); });
+    (f.accents || []).forEach(a => { const m = a.create ? customMark('accent', a.cp) : (F.accent && F.accent.custom && F.accent.custom[a.cp]); if (m) Object.assign(m, a.set); });   // a built-in accent's scaled copy is made here, after the snapshot: its scope is `made`, so undo removes it and the project is exactly as it was
   });
   const top = undoStack[undoStack.length - 1], done = !!top && top !== top0;
   if (!done) return false;

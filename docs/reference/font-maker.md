@@ -551,6 +551,12 @@ which is a visible half-undo. The cost is that the entry retains a second copy o
 `upload image` all pay it deliberately, and so does every SVG assignment (*SVG import*, below); full
 combined sheets never do — they live in `project.combinedSheets`, not in the item.
 
+A mark item that an operation **creates** (`customMark`) is made inside its `udDo`, with
+**`made: true`** on its item scope: the `before` snapshot is then null, `udRestore` deletes the item
+on undo and makes it again on redo, so undo leaves the store exactly as it was rather than one empty
+item richer (`gxCommit`'s scaled accent copies). Generate Bold still creates the marks it thickens
+before its snapshot, so its undo leaves them as empty items that read as the built-in.
+
 ### Photo upload — one letter or a whole pick
 `prepImageForItem(it, file)` does all the async work (file read, decode, `autoThresholdFor`,
 `defaultFitTransform`) and hands back the *mutation* as a closure, so a corrupt file changes nothing
@@ -1238,8 +1244,11 @@ and stretches only as far as it must to hold the value it finds (`markSizeRange`
 spread slider (0–500) stretches the same way up to the spread's stored limit of 600, so a scaled
 spread is never clamped by its first touch. Latin accents have no size setting (they
 bake at scale 1), so there the shape *is* scaled: an imported accent in place, a built-in one that
-actually ships through a scaled custom copy created before the undo snapshot (the Generate Bold
-idiom — emptied by undo, it reads as the built-in again). An accent belongs to the Latin letters, not
+actually ships through a scaled custom copy that `gxCommit` makes inside its `udDo`. The copy's item
+scope is marked `made` (its `before` is null — there was no item), so `udRestore` deletes it on undo
+and makes it again on redo: the accent store comes back exactly as it was, and the built-in reads as
+before. (A precomp snapshot likewise lists the fields the form did not carry, `absent`, so a restore
+leaves them out instead of writing `null` into them.) An accent belongs to the Latin letters, not
 to the nikkud box: its shape follows the operation's `accentX` / `accentY` whenever the set holds
 every letter that carries it — the whole font, whatever the marks box says, or *Only the English
 tab* — and one letter leaves the shared shape as it is (the dialog's scope hint says so for a Latin
