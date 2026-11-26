@@ -6480,7 +6480,7 @@ function metricsPanel() {
   const m = effMetrics(), l = curLetter(), meta = curMeta();
   const f = (id,label,val,fn,key) =>
     `<label class="fld metric-fld">${label}
-       <input type="number" id="${id}" class="metric-num" value="${val}" step="10" oninput="${fn}('${key}', this.value)" onchange="udBurstCommit()"></label>`;
+       <input type="number" id="${id}" class="metric-num" value="${esc(val)}" step="10" oninput="${fn}('${key}', this.value)" onchange="udBurstCommit()"></label>`;
   const lamed = (meta && meta.asc && !(meta && meta.case)) ? f('mLamed',I18n.t(isSmr(curCp) ? 'fontmaker.panels.metric_smr_asc' : 'fontmaker.panels.metric_lamed_asc'), m.lamedAscender, 'setMetric','lamedAscender') : '';
   // Cap / x-height / ascender appear only while a cased glyph is open, the way the lamed field does —
   // they mean nothing on a Hebrew, Phoenician, Imperial Aramaic or Samaritan letter.
@@ -11504,11 +11504,11 @@ function renderMarkStage(it) {
   h += `<rect x="${fx(cb.x0)}" y="${fy(cb.y1)}" width="${fx(cb.x1)-fx(cb.x0)}" height="${fy(cb.y0)-fy(cb.y1)}" fill="none" stroke="var(--gold)" stroke-width="1.2" stroke-dasharray="6 4" opacity="0.7"/>`;
   const url = curImageUrl();
   if (workMode === 'trace') {
-    if (url) h += `<image href="${esc(url)}" x="0" y="0" transform="matrix(${it.transform.join(' ')})" opacity="0.28"/>`;
+    if (url) h += `<image href="${esc(url)}" x="0" y="0" transform="matrix(${esc(it.transform.join(' '))})" opacity="0.28"/>`;
     if (it.contours) { const C = stageColors(); h += `<path d="${contoursToPath(it.contours, it.curves)}" fill="${C.inkFill}" fill-rule="nonzero" stroke="${C.inkStroke}" stroke-width="0.6"/>`; }
     else h += `<text x="300" y="520" text-anchor="middle" fill="#9aa0aa" font-size="12">${esc(_pT('not_traced', 'Not traced yet.'))}</text>`;
   } else {
-    if (url) { h += `<image href="${esc(url)}" x="0" y="0" transform="matrix(${it.transform.join(' ')})" opacity="0.92"/>`; h += transformHandlesSVG(it); }
+    if (url) { h += `<image href="${esc(url)}" x="0" y="0" transform="matrix(${esc(it.transform.join(' '))})" opacity="0.92"/>`; h += transformHandlesSVG(it); }
     else h += `<text x="300" y="300" text-anchor="middle" fill="#9aa0aa" font-size="14">${esc(_pT('upload_mark_below', 'Upload an image of this mark below.'))}</text>`;
   }
   sv.innerHTML = h;
@@ -11648,7 +11648,7 @@ function renderMarkControls(c, it) {
     if (selP && selP.type === 'dot') {
       const sh = selP.shape === 'square' ? 'square' : 'circle';
       h += `<div class="ctl-row" style="margin-top:6px;">
-        <div class="inline" style="flex:1;min-width:0;">${I18n.t('fontmaker.panels.markctl_dot_size')} <input type="range" min="8" max="200" step="1" value="${selP.r}" oninput="setDotSize(this.value)" onchange="udBurstCommit()" style="flex:1;min-width:0;" aria-label="${esc(I18n.t('fontmaker.panels.markctl_dot_size'))}"> <span id="dotSizeV" class="readout">${selP.r}</span></div>
+        <div class="inline" style="flex:1;min-width:0;">${I18n.t('fontmaker.panels.markctl_dot_size')} <input type="range" min="8" max="200" step="1" value="${esc(selP.r)}" oninput="setDotSize(this.value)" onchange="udBurstCommit()" style="flex:1;min-width:0;" aria-label="${esc(I18n.t('fontmaker.panels.markctl_dot_size'))}"> <span id="dotSizeV" class="readout">${esc(selP.r)}</span></div>
         <div class="mode-toggle" style="flex:1;min-width:0;" role="group" aria-label="${esc(I18n.t('fontmaker.panels.markctl_dot_shape'))}">
           <button class="mode-btn ${sh==='circle'?'active':''}" aria-pressed="${sh==='circle'}" onclick="setDotShape('circle')">${I18n.t('fontmaker.panels.markctl_circle')}</button>
           <button class="mode-btn ${sh==='square'?'active':''}" aria-pressed="${sh==='square'}" onclick="setDotShape('square')">${I18n.t('fontmaker.panels.markctl_square')}</button>
@@ -11664,11 +11664,11 @@ function renderMarkControls(c, it) {
     }
     h += `<div class="hint">${I18n.t('fontmaker.panels.markctl_hint')}</div>`;
   } else if (workMode === 'trace') {
-    h += `<div class="inline">${I18n.t('fontmaker.panels.ink_threshold')} <input type="range" min="1" max="254" value="${it.binThreshold}" oninput="liveThreshold(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.ink_threshold'))}"> <span id="thV" class="readout">${it.binThreshold}</span></div>
+    h += `<div class="inline">${I18n.t('fontmaker.panels.ink_threshold')} <input type="range" min="1" max="254" value="${esc(it.binThreshold)}" oninput="liveThreshold(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.ink_threshold'))}"> <span id="thV" class="readout">${esc(it.binThreshold)}</span></div>
       <label class="chk"><input type="checkbox" ${it.invert?'checked':''} onchange="liveInvert(this.checked)"> ${I18n.t('fontmaker.panels.invert')}</label>
       ${ (it.source && it.source.dataUrl) ? `<label class="chk"><input type="checkbox" ${itemFlattenOn(it)?'checked':''} onchange="liveFlatten(this.checked)" aria-label="${esc(I18n.t('fontmaker.panels.even_lighting_aria'))}"> ${I18n.t('fontmaker.panels.even_lighting')}</label>` : '' }
       <div class="inline">${I18n.t('fontmaker.panels.detail')} <input type="range" min="0" max="100" step="1" value="${Math.round(100 - it.epsilon*2.5)}" oninput="liveDetail(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.detail'))}"> <span id="epV" class="readout">${Math.round(100 - it.epsilon*2.5)}</span></div>
-      <div class="inline">${I18n.t('fontmaker.panels.corners')} <input type="range" min="0" max="90" step="1" value="${it.cornerAngle != null ? it.cornerAngle : 32}" oninput="liveCorners(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.corners'))}"> <span id="cnV" class="readout">${it.cornerAngle != null ? it.cornerAngle : 32}</span></div>
+      <div class="inline">${I18n.t('fontmaker.panels.corners')} <input type="range" min="0" max="90" step="1" value="${esc(it.cornerAngle != null ? it.cornerAngle : 32)}" oninput="liveCorners(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.corners'))}"> <span id="cnV" class="readout">${esc(it.cornerAngle != null ? it.cornerAngle : 32)}</span></div>
       ${ (it.source && it.source.dataUrl) ? `<label class="chk"><input type="checkbox" ${it.outlineOnly?'checked':''} onchange="liveOutlineOnly(this.checked)"> ${I18n.t('fontmaker.panels.outline_only')}</label>` : '' }
       ${ (it.source && it.source.dataUrl && it.outlineOnly) ? `<div class="inline">${I18n.t('fontmaker.panels.line_weight')} <input type="range" min="10" max="250" step="1" value="${Math.round(it.lineWeight!=null?it.lineWeight:70)}" oninput="liveLineWeight(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.line_weight'))}"> <span id="lwV" class="readout">${Math.round(it.lineWeight!=null?it.lineWeight:70)}</span></div>
       <div class="ctl-row"><button class="ctl-btn" onclick="applyOutlineToAll()">${I18n.t('fontmaker.panels.apply_outline_all')}</button></div>` : '' }
@@ -11721,7 +11721,7 @@ function templateGlyphSVG() {
   const f = _tplFit || computeTemplateFit(curLetter());
   // baseline on base-0; ink-left seated at the margin; sized so the cap reaches the top line
   return `<text id="tplGlyphText" x="${f.cx.toFixed(1)}" y="${fy(effMetrics().baseline)}" text-anchor="middle" dominant-baseline="alphabetic"
-    font-family="${esc(project.template.font)}" font-size="${f.fs.toFixed(1)}" fill="#9aa0aa" opacity="${op}">${ch}</text>`;
+    font-family="${esc(project.template.font)}" font-size="${f.fs.toFixed(1)}" fill="#9aa0aa" opacity="${esc(op)}">${esc(ch)}</text>`;
 }
 /* Measure a template glyph's true ink box (cap height, left edge, width) as fractions of
    font-size by rendering to a canvas and scanning pixels — SVG getBBox returns the font's
@@ -11964,7 +11964,7 @@ async function renderStage() {
   if (workMode === 'align') {
     if (url) {
       const m = l.transform;
-      h += `<image href="${esc(url)}" x="0" y="0" transform="matrix(${m.join(' ')})" style="image-rendering:auto;" opacity="${project.view.imgOpacityAlign}"/>`;
+      h += `<image href="${esc(url)}" x="0" y="0" transform="matrix(${esc(m.join(' '))})" style="image-rendering:auto;" opacity="${esc(project.view.imgOpacityAlign)}"/>`;
       // transform handles drawn after image (corners + rotate); hidden while adjusting metrics on canvas
       if (!metricAdjust) h += transformHandlesSVG(l);
     } else if (l.contours) {
@@ -11996,7 +11996,7 @@ async function renderStage() {
     if (!(l.draw && l.draw.strokes.length))
       h += `<text x="300" y="280" text-anchor="middle" fill="#9aa0aa" font-size="13">${esc(_drawT('empty_hint', 'Draw the letter here — trace the gray reference.'))}</text>`;
   } else if (workMode === 'trace') {
-    if (url) h += `<image href="${esc(url)}" x="0" y="0" transform="matrix(${l.transform.join(' ')})" opacity="${project.view.imgOpacityTrace}"/>`;
+    if (url) h += `<image href="${esc(url)}" x="0" y="0" transform="matrix(${esc(l.transform.join(' '))})" opacity="${esc(project.view.imgOpacityTrace)}"/>`;
     if (l.contours) { const C = stageColors(); h += `<path d="${contoursToPath(l.contours, l.curves)}" fill="${C.inkFill}" fill-rule="nonzero" stroke="${C.inkStroke}" stroke-width="0.6"/>`; }
     // An untraced drawing would leave this step looking EMPTY — the strokes are safe in l.draw, but
     // nothing here renders them, and the threshold/detail controls have no raster to act on. Ghost
@@ -12015,11 +12015,11 @@ async function renderStage() {
     let wideG = null;
     if (wideMode) {
       wideG = buildWideGlyph(pcW);   // live: shows the widened/combined outline as the slider moves
-      if (wideG) h += `<path d="${contoursToPath(wideG.contours.map(pts => ({ points: pts })), wideG.curves)}" fill="${stageColors().ink}" fill-opacity="${project.view.glyphOpacity}" fill-rule="nonzero"/>`;
+      if (wideG) h += `<path d="${contoursToPath(wideG.contours.map(pts => ({ points: pts })), wideG.curves)}" fill="${stageColors().ink}" fill-opacity="${esc(project.view.glyphOpacity)}" fill-rule="nonzero"/>`;
       else h += `<text x="300" y="350" text-anchor="middle" fill="#9aa0aa" font-size="12">${esc(_pT('trace_base_first', 'Trace the base letter(s) first to preview this form.'))}</text>`;
     } else if (pcSrc) {
-      h += `<path d="${contoursToPath(pcSrc.contours.map(pts => ({ points: pts })), pcSrc.curves)}" fill="${stageColors().ink}" fill-opacity="${project.view.glyphOpacity}" fill-rule="nonzero"/>`;
-    } else if (l.contours) h += `<path d="${contoursToPath(l.contours, l.curves)}" fill="${stageColors().ink}" fill-opacity="${project.view.glyphOpacity}" fill-rule="nonzero"/>`;
+      h += `<path d="${contoursToPath(pcSrc.contours.map(pts => ({ points: pts })), pcSrc.curves)}" fill="${stageColors().ink}" fill-opacity="${esc(project.view.glyphOpacity)}" fill-rule="nonzero"/>`;
+    } else if (l.contours) h += `<path d="${contoursToPath(l.contours, l.curves)}" fill="${stageColors().ink}" fill-opacity="${esc(project.view.glyphOpacity)}" fill-rule="nonzero"/>`;
     if (l.contours || project.template.showOverlay) {
       // preview the vowel (or, in precomposed-form mode, that form's mark) on the glyph
       if (pcSrc) { h += `<text x="300" y="520" text-anchor="middle" fill="#9aa0aa" font-size="12">${esc(_pT('form_src_stage', 'This form came ready-made from the imported font — there is no mark to place.'))}</text>`;
@@ -12036,7 +12036,7 @@ async function renderStage() {
     if (_shapeEntry) { nodeModel = { contours: [] }; _shapeEntry = false; _blankOk = curCp; _shapeTool = _shapeLast; }   // "Build from shapes" on a blank glyph
     if (!l.contours && !(nodeModel && _penMode) && _blankOk !== curCp) { setWorkMode('trace'); return; }   // nothing to edit (e.g. landed here via undo) → bail to trace — unless this blank letter was opened to be built from shapes (an undo of its first shape stays here)
     if (!nodeModel) buildNodeModel(l);
-    if (url) h += `<image href="${esc(url)}" x="0" y="0" transform="matrix(${l.transform.join(' ')})" opacity="${project.view.imgOpacityTrace}"/>`;
+    if (url) h += `<image href="${esc(url)}" x="0" y="0" transform="matrix(${esc(l.transform.join(' '))})" opacity="${esc(project.view.imgOpacityTrace)}"/>`;
     const C = stageColors();
     if (l.contours) {
       // hidden contours are an EDITING aid — filtered from the stage only; they still export and preview.
@@ -17596,8 +17596,8 @@ function renderPrecompControls(l) {
   const dotBlock = _src ? srcBlock : `<div class="hint" style="font-size:0.7rem;">${I18n.t('fontmaker.panels.precomp_where_hint')}</div>
     <hr class="ctl-divider">
     <div class="anc-xy">
-      <label>X <input type="number" id="pcX" value="${a.x}" oninput="setPrecompCoord('x',this.value)" onchange="udBurstCommit()"></label>
-      <label>Y <input type="number" id="pcY" value="${a.y}" oninput="setPrecompCoord('y',this.value)" onchange="udBurstCommit()"></label>
+      <label>X <input type="number" id="pcX" value="${esc(a.x)}" oninput="setPrecompCoord('x',this.value)" onchange="udBurstCommit()"></label>
+      <label>Y <input type="number" id="pcY" value="${esc(a.y)}" oninput="setPrecompCoord('y',this.value)" onchange="udBurstCommit()"></label>
     </div>
     <div class="ctl-row" style="margin-top:8px;justify-content:center;">
       ${isOverride ? `<button class="ctl-btn" onclick="resetPrecompAnchor()">${I18n.t('fontmaker.panels.reset_to_auto')}</button>` : `<span class="hint" style="font-size:0.7rem;">${I18n.t('fontmaker.panels.auto_position_hint')}</span>`}
@@ -17608,8 +17608,8 @@ function renderPrecompControls(l) {
     <div class="ws-side-title">${I18n.t('fontmaker.panels.precomp_holam_title')}</div>
     <div class="hint" style="font-size:0.7rem;">${I18n.t('fontmaker.panels.precomp_holam_hint')}</div>
     <div class="anc-xy">
-      <label>X <input type="number" id="pcHolamX" value="${ha.x}" oninput="setPrecompHolamCoord('x',this.value)" onchange="udBurstCommit()"></label>
-      <label>Y <input type="number" id="pcHolamY" value="${ha.y}" oninput="setPrecompHolamCoord('y',this.value)" onchange="udBurstCommit()"></label>
+      <label>X <input type="number" id="pcHolamX" value="${esc(ha.x)}" oninput="setPrecompHolamCoord('x',this.value)" onchange="udBurstCommit()"></label>
+      <label>Y <input type="number" id="pcHolamY" value="${esc(ha.y)}" oninput="setPrecompHolamCoord('y',this.value)" onchange="udBurstCommit()"></label>
     </div>
     <div class="ctl-row" style="margin-top:8px;justify-content:center;">
       ${isHolamOverride ? `<button class="ctl-btn" onclick="resetPrecompHolam()">${I18n.t('fontmaker.panels.reset_to_auto')}</button>` : `<span class="hint" style="font-size:0.7rem;">${I18n.t('fontmaker.panels.auto_position_hint')}</span>`}
@@ -17883,14 +17883,14 @@ function meRenderList() {
     const label = p.type === 'dot' ? ('Dot ' + (++dN)) : ('Bar ' + (++bN));
     const c = meCenterOf(p), sz = meSizeOf(p);
     const size = p.type === 'dot'
-      ? `<label class="me-coord">R:<input type="number" step="1" value="${sz.r}" onchange="meSetPieceR(${i}, this.value)"></label>`
+      ? `<label class="me-coord">R:<input type="number" step="1" value="${esc(sz.r)}" onchange="meSetPieceR(${i}, this.value)"></label>`
       : `<label class="me-coord">W:<input type="number" step="1" value="${sz.w}" onchange="meSetPieceW(${i}, this.value)"></label>`
         + `<label class="me-coord">H:<input type="number" step="1" value="${sz.h}" onchange="meSetPieceH(${i}, this.value)"></label>`;
     return `<div class="me-piece-row ${i===editorSel?'active':''}" onclick="meSelectPiece(${i})">`
       + `<span class="me-name">${label}</span>`
       + `<span class="me-xy" onclick="event.stopPropagation()">`
-      +   `<label class="me-coord">X:<input type="number" step="1" value="${c.x}" onchange="meSetPieceX(${i}, this.value)"></label>`
-      +   `<label class="me-coord">Y:<input type="number" step="1" value="${c.y}" onchange="meSetPieceY(${i}, this.value)"></label>`
+      +   `<label class="me-coord">X:<input type="number" step="1" value="${esc(c.x)}" onchange="meSetPieceX(${i}, this.value)"></label>`
+      +   `<label class="me-coord">Y:<input type="number" step="1" value="${esc(c.y)}" onchange="meSetPieceY(${i}, this.value)"></label>`
       +   size
       + `</span>`
       + `<button class="me-del" title="${esc(window.I18n ? I18n.t('fontmaker.me.delete_piece_title') : 'Delete this piece')}" aria-label="${esc(window.I18n ? I18n.t('fontmaker.me.delete_piece_title') : 'Delete this piece')}" onclick="event.stopPropagation();meDeletePiece(${i})"><svg class="hi hi-sm hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg></button></div>`;
@@ -17902,7 +17902,7 @@ function meRenderControls() {
   if (p && p.type === 'dot') {
     const sh = p.shape === 'square' ? 'square' : 'circle';
     wrap.innerHTML = `<div class="ctl-row" style="margin-top:6px;">
-      <div class="inline" style="flex:1;min-width:0;">${I18n.t('fontmaker.panels.markctl_dot_size')} <input type="range" min="8" max="200" step="1" value="${p.r}" oninput="meSetDotSize(this.value)" onchange="meCommitEdit()" style="flex:1;min-width:0;" aria-label="${esc(I18n.t('fontmaker.panels.markctl_dot_size'))}"> <span id="meDotSizeV" class="readout">${p.r}</span></div>
+      <div class="inline" style="flex:1;min-width:0;">${I18n.t('fontmaker.panels.markctl_dot_size')} <input type="range" min="8" max="200" step="1" value="${esc(p.r)}" oninput="meSetDotSize(this.value)" onchange="meCommitEdit()" style="flex:1;min-width:0;" aria-label="${esc(I18n.t('fontmaker.panels.markctl_dot_size'))}"> <span id="meDotSizeV" class="readout">${esc(p.r)}</span></div>
       <div class="mode-toggle" style="flex:1;min-width:0;" role="group" aria-label="${esc(I18n.t('fontmaker.panels.markctl_dot_shape'))}">
         <button class="mode-btn ${sh==='circle'?'active':''}" aria-pressed="${sh==='circle'}" onclick="meSetDotShape('circle')">${I18n.t('fontmaker.panels.markctl_circle')}</button>
         <button class="mode-btn ${sh==='square'?'active':''}" aria-pressed="${sh==='square'}" onclick="meSetDotShape('square')">${I18n.t('fontmaker.panels.markctl_square')}</button>
@@ -19605,10 +19605,10 @@ function renderSpacingPanelNow() {
     <div>
     <div class="ctl-label" style="margin-bottom:6px;">${I18n.t('fontmaker.panels.spacing_title')}</div>
     <div class="sp-sliders">
-    <div class="inline">${I18n.t('fontmaker.panels.letter_spacing')} <input type="range" min="-40" max="200" step="5" value="${sp.letterSpacing}" oninput="setLetterSpacing(this.value)" onchange="udBurstCommit();renderKernCommon()" aria-label="${esc(I18n.t('fontmaker.panels.letter_spacing'))}"> <span id="lsV" class="readout">${sp.letterSpacing}</span></div>
-    <div class="inline">${I18n.t('fontmaker.panels.word_spacing')} <input type="range" min="80" max="600" step="10" value="${sp.wordSpacing}" oninput="setWordSpacing(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.word_spacing'))}"> <span id="wsV" class="readout">${sp.wordSpacing}</span></div>
+    <div class="inline">${I18n.t('fontmaker.panels.letter_spacing')} <input type="range" min="-40" max="200" step="5" value="${esc(sp.letterSpacing)}" oninput="setLetterSpacing(this.value)" onchange="udBurstCommit();renderKernCommon()" aria-label="${esc(I18n.t('fontmaker.panels.letter_spacing'))}"> <span id="lsV" class="readout">${esc(sp.letterSpacing)}</span></div>
+    <div class="inline">${I18n.t('fontmaker.panels.word_spacing')} <input type="range" min="80" max="600" step="10" value="${esc(sp.wordSpacing)}" oninput="setWordSpacing(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.word_spacing'))}"> <span id="wsV" class="readout">${esc(sp.wordSpacing)}</span></div>
     <div class="hint" style="margin-top:-4px;">${I18n.t('fontmaker.panels.word_spacing_hint')}</div>
-    <div class="inline">${I18n.t('fontmaker.panels.line_spacing')} <input type="range" min="0" max="500" step="10" value="${sp.lineSpacing}" oninput="setLineSpacing(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.line_spacing'))}"> <span id="lnV" class="readout">${sp.lineSpacing}</span></div>
+    <div class="inline">${I18n.t('fontmaker.panels.line_spacing')} <input type="range" min="0" max="500" step="10" value="${esc(sp.lineSpacing)}" oninput="setLineSpacing(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.line_spacing'))}"> <span id="lnV" class="readout">${esc(sp.lineSpacing)}</span></div>
     </div>
     <label class="fld">${I18n.t('fontmaker.panels.sample_text')} <input type="text" id="spacingSample" autocapitalize="off" autocorrect="off" spellcheck="false" dir="auto" value="${esc(sp.sample)}" oninput="setSpacingSample(this.value)" onchange="udBurstCommit()"></label>
     ${(project.font.addCustomGlyphs && customBaseLetters().length) ? `<div class="ctl-row" style="flex-wrap:wrap;gap:4px;margin-top:2px;">${customBaseLetters().map(l => `<button class="ctl-btn" style="padding:2px 8px;font-size:0.68rem;" data-cp="${esc(l.codepoint)}" onclick="insertSampleGlyph(this.dataset.cp)" title="${esc(window.I18n ? I18n.t('fontmaker.tip.add_glyph_sample', {name: l.name || ('U+' + l.codepoint)}) : "Add " + (l.name || ('U+' + l.codepoint)) + " to the sample text (it can't be typed on a keyboard)")}">${esc(_pT('add_glyph_sample', '+ ' + (l.name || ('U+' + l.codepoint)), {name: l.name || ('U+' + l.codepoint)}))}</button>`).join('')}</div>` : ''}
@@ -20867,7 +20867,7 @@ function renderTraceLeft(L, l) {
         <button class="ctl-btn" onclick="clearTrace()">${I18n.t('fontmaker.panels.clear')}</button>
         <button class="ctl-btn hi-btn" onclick="openCopyOutline()" title="${esc(I18n.t('fontmaker.panels.copy_outline_title'))}">${ICON_COPY_SM}${I18n.t('fontmaker.panels.copy_outline')}</button>
       <button class="ctl-btn" onclick="openSvgPasteCode()" title="${esc(I18n.t('fontmaker.panels.paste_svg_code_title', {keys: khTitle('paste')}))}">${I18n.t('fontmaker.panels.paste_svg_code')}</button>
-        <span id="traceInfo" class="readout">${ l.contours ? _pT('trace_info', `${l.contours.length} contour(s) · adv ${l.advance}`, {count: l.contours.length, adv: l.advance}) : _pT('trace_info_no_ink', 'no ink detected') }</span>
+        <span id="traceInfo" class="readout">${ l.contours ? _pT('trace_info', `${l.contours.length} contour(s) · adv ${esc(l.advance)}`, {count: l.contours.length, adv: esc(l.advance)}) : _pT('trace_info_no_ink', 'no ink detected') }</span>
       </div>`;
     return;
   }
@@ -20875,14 +20875,14 @@ function renderTraceLeft(L, l) {
   const corner = (l.cornerAngle != null ? l.cornerAngle : 32);
   L.innerHTML = pending + `
     <div class="ws-side-title">${I18n.t('fontmaker.panels.trace_title', {name: esc(gName(l.name))})}</div>
-    <div class="side-slider-label">${I18n.t('fontmaker.panels.ink_threshold')} <span id="thV" class="readout">${l.binThreshold}</span></div>
-    <input type="range" class="side-slider" min="1" max="254" value="${l.binThreshold}" oninput="liveThreshold(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.ink_threshold'))}">
+    <div class="side-slider-label">${I18n.t('fontmaker.panels.ink_threshold')} <span id="thV" class="readout">${esc(l.binThreshold)}</span></div>
+    <input type="range" class="side-slider" min="1" max="254" value="${esc(l.binThreshold)}" oninput="liveThreshold(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.ink_threshold'))}">
     <label class="chk"><input type="checkbox" ${l.invert?'checked':''} onchange="liveInvert(this.checked)"> ${I18n.t('fontmaker.panels.invert')}</label>
     ${ (l.source && l.source.dataUrl && l.source.kind !== 'draw') ? `<label class="chk"><input type="checkbox" ${itemFlattenOn(l)?'checked':''} onchange="liveFlatten(this.checked)" aria-label="${esc(I18n.t('fontmaker.panels.even_lighting_aria'))}"> ${I18n.t('fontmaker.panels.even_lighting')}</label>` : '' }
     <div class="side-slider-label">${I18n.t('fontmaker.panels.detail')} <span id="epV" class="readout">${detail}</span></div>
     <input type="range" class="side-slider" min="0" max="100" step="1" value="${detail}" oninput="liveDetail(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.detail'))}">
-    <div class="side-slider-label">${I18n.t('fontmaker.panels.corners')} <span id="cnV" class="readout">${corner}</span></div>
-    <input type="range" class="side-slider" min="0" max="90" step="1" value="${corner}" oninput="liveCorners(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.corners'))}">
+    <div class="side-slider-label">${I18n.t('fontmaker.panels.corners')} <span id="cnV" class="readout">${esc(corner)}</span></div>
+    <input type="range" class="side-slider" min="0" max="90" step="1" value="${esc(corner)}" oninput="liveCorners(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.corners'))}">
     ${ (l.source && l.source.dataUrl) ? `<label class="chk"><input type="checkbox" ${l.outlineOnly?'checked':''} onchange="liveOutlineOnly(this.checked)"> ${I18n.t('fontmaker.panels.outline_only')}</label>` : '' }
     ${ (l.source && l.source.dataUrl && l.outlineOnly) ? `<div class="side-slider-label">${I18n.t('fontmaker.panels.line_weight')} <span id="lwV" class="readout">${Math.round(l.lineWeight!=null?l.lineWeight:70)}</span></div>
     <input type="range" class="side-slider" min="10" max="250" step="1" value="${Math.round(l.lineWeight!=null?l.lineWeight:70)}" oninput="liveLineWeight(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.line_weight'))}">
@@ -20893,7 +20893,7 @@ function renderTraceLeft(L, l) {
       ${ l.contours ? '' : `<button class="ctl-btn hi-btn" onclick="drawWithPen()" title="${esc(I18n.t('fontmaker.panels.draw_pen_title2'))}">${ICON_PENCIL_SM}${I18n.t('fontmaker.panels.draw_pen')}</button><button class="ctl-btn" onclick="buildWithShapes(event)" title="${esc(I18n.t('fontmaker.panels.build_shapes_title'))}">${I18n.t('fontmaker.panels.build_shapes')}</button>` }
       <button class="ctl-btn hi-btn" onclick="openCopyOutline()" title="${esc(I18n.t('fontmaker.panels.copy_outline_title'))}">${ICON_COPY_SM}${I18n.t('fontmaker.panels.copy_outline')}</button>
       <button class="ctl-btn" onclick="openSvgPasteCode()" title="${esc(I18n.t('fontmaker.panels.paste_svg_code_title', {keys: khTitle('paste')}))}">${I18n.t('fontmaker.panels.paste_svg_code')}</button>
-      <span id="traceInfo" class="readout">${ l.contours ? _pT('trace_info', `${l.contours.length} contour(s) · adv ${l.advance}`, {count: l.contours.length, adv: l.advance}) : _pT('trace_info_no_ink', 'no ink detected') }</span>
+      <span id="traceInfo" class="readout">${ l.contours ? _pT('trace_info', `${l.contours.length} contour(s) · adv ${esc(l.advance)}`, {count: l.contours.length, adv: esc(l.advance)}) : _pT('trace_info_no_ink', 'no ink detected') }</span>
     </div>
     <div class="hint">${_pT('trace_hint', 'Lower <b>threshold</b> captures lighter ink; higher <b>detail</b> hugs the ink more closely (more nodes). <b>Corners</b> sets how sharp a turn must be to stay a crisp corner — slide right to round more of them into smooth curves. Counters (ס, ם, ע) punch out automatically. Turn on <b>Outline only</b> for hollow “bubble” letters — <b>line weight</b> sets the ring thickness.')}</div>`;
 }
@@ -21177,8 +21177,8 @@ function _anchorXYBlockHTML(l, cls, a, xyWhat) {
   return `<hr class="ctl-divider">
     <div class="ws-side-title">${esc(_pT('pos_title', '{class} position — {name} only', {class: anchorLabelT(cls), name: l.name}))}</div>
     <div class="anc-xy">
-      <label>X <input type="number" id="ancX" value="${a.x}" oninput="setAnchorCoord('x',this.value)" onchange="udBurstCommit()"></label>
-      <label>Y <input type="number" id="ancY" value="${a.y}" oninput="setAnchorCoord('y',this.value)" onchange="udBurstCommit()"></label>
+      <label>X <input type="number" id="ancX" value="${esc(a.x)}" oninput="setAnchorCoord('x',this.value)" onchange="udBurstCommit()"></label>
+      <label>Y <input type="number" id="ancY" value="${esc(a.y)}" oninput="setAnchorCoord('y',this.value)" onchange="udBurstCommit()"></label>
     </div>
     ${pinHint}
     <div class="ctl-row" style="margin-top:6px;justify-content:center;">
@@ -21338,8 +21338,8 @@ function renderAnchorLeft(L, l) {
       <div class="hint" style="font-size:0.7rem;text-align:center;">${_pT('halign_hint', 'Sets where <b>' + esc(tName) + '</b> sits across every letter. Position tweaks belong to the column (Left / Center / Right) — and stay with it if you switch sides.', { name: '<b>' + esc(tName) + '</b>' })}</div>
       <div class="ctl-row" style="margin-top:6px;align-items:center;gap:6px;">
         <span style="font-size:0.72rem;color:var(--muted);white-space:nowrap;">${I18n.t('fontmaker.panels.default_spread')}</span>
-        <input type="range" id="tropSpread" min="0" max="${Math.max(500, Math.ceil(tOff))}" step="10" value="${tOff}" oninput="setTropSideOffset(this.value)" onchange="udSliderCommit('tropSpread')" style="flex:1;" aria-label="${esc(I18n.t('fontmaker.panels.default_spread'))}">
-        <span id="tropSpreadV" class="readout">${tOff}</span>
+        <input type="range" id="tropSpread" min="0" max="${Math.max(500, Math.ceil(tOff))}" step="10" value="${esc(tOff)}" oninput="setTropSideOffset(this.value)" onchange="udSliderCommit('tropSpread')" style="flex:1;" aria-label="${esc(I18n.t('fontmaker.panels.default_spread'))}">
+        <span id="tropSpreadV" class="readout">${esc(tOff)}</span>
       </div>
       <div class="hint" style="font-size:0.7rem;text-align:center;">${_pT('default_spread_hint', 'Default distance Left/Right marks shift from center, on all letters (per-letter tweaks come after).')}</div>
       ${(nCustom => nCustom ? `
