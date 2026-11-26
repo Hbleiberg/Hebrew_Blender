@@ -9465,22 +9465,49 @@ function smrAnchorClassMapForImport() {   // the Samaritan family's own map for 
    class to the center columns, never to L/R), matching the previous full-reseed behavior exactly. */
 const IMP_ANCHOR_KEYS  = { nikkud: ['below','above','center'], trop: ['tropAbove','tropBelow'], smrmarks: SMR_ANCHOR_KEYS };   // + the Samaritan family's three columns
 const SEED_ANCHOR_KEYS = { nikkud: ['below','above','center'], trop: ['tropAbove','tropBelow','tropAboveL','tropAboveR','tropBelowL','tropBelowR'], smrmarks: SMR_ANCHOR_KEYS };
-function applyImportedAnchors(l, imp, kinds) {
+function applyImportedAnchors(l, imp, kinds) {   // → { bare, given }: the keys it re-seeded that the font gave no point for, and the keys the font gave (impBareNote)
   seedAnchorsIfNeeded(l);   // guarantee a complete base to merge into (backfill only, never clobber)
   const t = { codepoint: l.codepoint, contours: l.contours, advance: l.advance, anchors: null, smr: l.smr };   // .smr: a Samaritan letter's seed carries its columns
-  seedAnchors(t, true);     // fresh per-kind base — the same derivation the old full reseed used (bare: the marks may be about to be replaced)
+  seedAnchors(t, true);     // fresh per-kind base — the same derivation the old full reseed used (bare: the marks may be about to be replaced; impLandBare makes it a landing point once they are in)
+  const bare = new Set(), given = new Set();
   ['nikkud', 'trop', 'smrmarks'].forEach(kind => {
     if (!kinds[kind]) return;
-    SEED_ANCHOR_KEYS[kind].forEach(k => { l.anchors[k] = t.anchors[k]; });
+    SEED_ANCHOR_KEYS[kind].forEach(k => { l.anchors[k] = t.anchors[k]; bare.add(k); });
     IMP_ANCHOR_KEYS[kind].forEach(k => {
-      if (imp[k] && Number.isFinite(imp[k].x) && Number.isFinite(imp[k].y))
-        l.anchors[k] = { x: Math.round(imp[k].x), y: Math.round(imp[k].y) };
+      if (imp[k] && Number.isFinite(imp[k].x) && Number.isFinite(imp[k].y)) {
+        l.anchors[k] = { x: Math.round(imp[k].x), y: Math.round(imp[k].y) }; bare.delete(k); given.add(k);
+      }
     });
   });
   // The font's own positions get a baseline, as a reloaded project's do (migrateProject). Without one,
   // maybeInheritAnchors took them for fresh seeds: clicking a letter in the placement step replaced its
   // imported positions with the letter's before it.
   l.savedAnchors = JSON.parse(JSON.stringify(l.anchors));
+  return { bare: [...bare], given };
+}
+/* An import seeds its letters bare (seedAnchors(l, true)): they are seeded before the marks it brings come in, and
+   an import that brings no marks keeps the ones on hand. impBareNote(list, l, keys) remembers the points it left on
+   that seed — the font gave none for them — and impLandBare(list), once every mark the letters will carry is in (its
+   shape, its attach point, its size and its lean), makes each one still there a landing point like every other seed
+   (markLandSeed): the seed less the offset inside the marks, rounded at the source. A point the font gave, or one
+   moved since, stays as it is; with every offset 0 nothing changes. A baseline the import wrote (savedAnchors) follows. */
+function impBareNote(list, l, keys) {
+  if (!l.anchors || !keys.length) return;
+  const o = {}; keys.forEach(k => { const p = l.anchors[k]; if (p && Number.isFinite(p.x) && Number.isFinite(p.y)) o[k] = { x: p.x, y: p.y }; });
+  if (Object.keys(o).length) list.push([l, o]);
+}
+function impLandBare(list) {
+  if (!list.length || !markLandTable(null)) return;
+  list.forEach(([l, pts]) => {
+    if (!l.anchors) return;
+    const a = {};
+    for (const k in pts) { const p = l.anchors[k]; if (p && p.x === pts[k].x && p.y === pts[k].y) a[k] = { x: p.x, y: p.y }; }
+    if (!Object.keys(a).length) return;
+    const base = !!l.savedAnchors && JSON.stringify(l.savedAnchors) === JSON.stringify(l.anchors);
+    markLandSeed(l, a);
+    Object.assign(l.anchors, a);
+    if (base) l.savedAnchors = JSON.parse(JSON.stringify(l.anchors));
+  });
 }
 /* Outlines untouched: drop only the fidelity pins of kinds whose placement this import actually
    rewrote on this letter (outcome-gated, like the class anchors). Pin kind derives from the cp:
@@ -9806,6 +9833,7 @@ async function applyFontImport(file, font, bytes, opts) {
     if (opts.outlines || (imported && hadGpos && opts.anchorsNikkud)) (project.precomposed || []).forEach(pc => { if (pc.anchor && pc.anchor.auto) pc.anchor = null; });
     const scale = 1000 / font.unitsPerEm;
     let n = 0, nPunct = 0, anchorHits = 0;
+    const bareSeeds = [];   // the points this import leaves on its own bare seed (impBareNote) — landing points once the marks are in (impLandBare, below)
     LETTERS.forEach(L => {
       const l = project.letters.find(x => x.codepoint === L.cp);
       const imp = (anchorsAny && imported) ? imported[L.cp] : null;
@@ -9819,7 +9847,10 @@ async function applyFontImport(file, font, bytes, opts) {
         if (L.cat === 'punct') nPunct++; else n++;   // digits/punctuation counted separately (the toast said "N/27 letters" while counting them)
         l.anchors = null; seedAnchors(l, true);   // fresh ink → every kind re-bases; a kind excluded below stays on seeds ("I'll place them myself") — bare: the marks this import brings come in after the letters
       }
-      if (imp) { applyImportedAnchors(l, imp, kinds); anchorHits++; }
+      const r = imp ? applyImportedAnchors(l, imp, kinds) : null;
+      if (imp) anchorHits++;
+      if (opts.outlines) impBareNote(bareSeeds, l, Object.keys(l.anchors || {}).filter(k => !(r && r.given.has(k))));   // fresh ink: every point the font did not give
+      else if (r) impBareNote(bareSeeds, l, r.bare);
     });
     // English (Latin) letters — A-Z/a-z live in project.letters flagged .eng, deliberately kept out of
     // LETTERS (which is Hebrew-specific), so the pass above never reaches them. Without this the English
@@ -9918,7 +9949,8 @@ async function applyFontImport(file, font, bytes, opts) {
           if (smrMarkBase(l)) {   // fresh ink → fresh columns (pins gone, like the Hebrew pass); the font's own column points land on top when the family's read found them
             l.anchors = null; seedAnchors(l, true); delete l.markAnchors;
             const imp = (anchorsSmr && impSmr) ? impSmr[C.cp] : null;
-            if (imp) applyImportedAnchors(l, imp, { smrmarks: true });
+            const r = imp ? applyImportedAnchors(l, imp, { smrmarks: true }) : null;
+            impBareNote(bareSeeds, l, Object.keys(l.anchors || {}).filter(k => !(r && r.given.has(k))));
           }
         }
       });
@@ -10028,6 +10060,10 @@ async function applyFontImport(file, font, bytes, opts) {
         }
       } catch (e) {}
     }
+    // Every mark the letters will carry is in now — its shape, attach point, size and lean — so each point the import
+    // left on its own bare seed becomes a landing point (impLandBare): a letter the font gives no anchor for carries
+    // the font's marks where a fresh seed would put them, not their attach offset away from it.
+    impLandBare(bareSeeds);
     // Vertical metrics: the source font's own nominal line box + line gap, scaled to 1000 UPM, so the
     // exported font sets text at the original's line spacing. sTypo is the box Word and friends use
     // (this app already sets USE_TYPO_METRICS); hhea is the fallback for a font that leaves sTypo at 0.

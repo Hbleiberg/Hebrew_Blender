@@ -1304,9 +1304,18 @@ fresh one. With every `c` at 0
 nothing changes. It runs on the finished seed, **after** `leanAnchorSet`: the seed is a point of the
 leaning letter and `c` is the mark as it is drawn — a mark does not lean with one letter's record (its
 lean, if any, is font-level `markLean`, already in `c`), so leaning the offset too would move an upright
-mark sideways by the lean times its height. The font import's own seeds stay bare
-(`seedAnchors(l, true)`): its letters are seeded before the marks it brings come in, so the offsets
-then on hand belong to the marks it is replacing.
+mark sideways by the lean times its height. A font import seeds its letters bare (`seedAnchors(l,
+true)`), because they are seeded before the marks it brings come in — and an import that brings no
+marks keeps the ones on hand. It remembers every point it leaves on that seed, the ones the font gives
+no anchor for (`impBareNote`; `applyImportedAnchors` says which it took from the font), and once every
+mark the letters will carry is in — shape, attach point, size and lean — makes each one still there a
+landing point the same way (`impLandBare`, through `markLandSeed`): a letter the font gives no anchor
+for carries the font's marks where Reset anchors would put them (David CLM's holam over ז ט י ע ם,
+Cardo's vowels under א ב ה ל מ, and the side trop columns of Taamey Frank CLM, Keter YG, Shlomo, Ezra
+SIL SR and Cardo, which no font gives — 600 to 750 units too high before), and letters imported over
+marks kept from another font carry those. A point the font gives
+stays exactly as it came, and a placement baseline the import wrote (`savedAnchors`) follows the points
+it moves.
 
 **Scale all letters** (`gxScaleOp`, `#scaleAllOverlay`, `scaleAll*`) is the first operation: a uniform
 scale from the baseline. With *spacing and guide lines* on, x scales from the glyph origin, so the
