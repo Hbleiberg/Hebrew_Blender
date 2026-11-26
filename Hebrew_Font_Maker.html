@@ -28382,7 +28382,7 @@ function migrateProject(data) {
     // key of another shape is dropped; an entry's own codepoint is its key, as markItem writes it (the mark's controls draw it); a
     // custom mark's class is one the Add form offers (it reaches the QA grid too).
     MARK_STORE_KINDS.forEach(cat => { const c = data.font[cat].custom; Object.keys(c).forEach(k => { if (!_isObj(c[k]) || !(cat === 'customMarks' ? customCpOk(k) : /^[0-9A-F]{4,6}$/.test(k))) { delete c[k]; return; }
-        if (c[k].codepoint !== undefined && c[k].codepoint !== k) c[k].codepoint = k;
+        if (c[k].codepoint !== k) c[k].codepoint = k;
         if (cat === 'customMarks' && c[k].cls != null && !['below', 'above', 'center'].includes(c[k].cls)) c[k].cls = 'below';
         sanitizeItemNumbers(c[k], 0); sanitizeDataUrl(c[k].source); });   // a mark entry is an object with a source — anything else is dropped — and its numbers are numbers (the same rule as a letter's)
       sanitizeDataUrl(data.font[cat].combinedImage); });   // the store's sheet, and each mark's picture, in the page's own data URL shape
@@ -28398,7 +28398,7 @@ function migrateProject(data) {
       if (!LATIN_ACCENTS[cp] || !m || typeof m !== 'object') { delete data.font.accent.custom[cp]; return; }
       sanitizeItemNumbers(m, 0);               // the accent store is not in MARK_STORE_KINDS
       sanitizeDataUrl(m.source);
-      if (m.codepoint !== undefined && m.codepoint !== cp) m.codepoint = cp;   // its own codepoint is its key, as in every mark store (the accent's controls draw it)
+      if (m.codepoint !== cp) m.codepoint = cp;   // its own codepoint is its key, as in every mark store (the accent's controls draw it); an entry without one gets it, as markItem writes every entry
       m.cls = LATIN_ACCENTS[cp].cls;
       m.designMode = (m.designMode === 'editor') ? 'editor' : 'upload';
       const a = m.attachAnchor;
