@@ -1563,8 +1563,9 @@ corner or tangle a noisy outline.
     is kept up to where it reaches the cover, and the splice runs from there into the cover and back
     (the end of u's bowl at 130% curls into its stem as the step makes it). Where it reaches the cover
     at one place only — a corner that just touches it, as the end of u's bowl does at about 131% — the
-    splice starts and ends where the outline around that corner is a unit and a half from the cover, so
-    what goes into the cover is thick enough to hold. "The cover" is the contour the run's points are
+    splice starts and ends where the outline around that corner is a unit and a half from the cover (on
+    the gate's second try, which counts a joint as touching within 3 units, 3 units from it), so what
+    goes into the cover is thick enough to hold. "The cover" is the contour the run's points are
     held in, never other ink near the joint: Frank Ruhl fills the crotch of h's arch with a small square,
     which can touch the arch where the stem has moved away from it — that is a gap, and it is bridged;
   - a run whose hold moved nothing, or that neither can join (its two sides meet before the cover, as
