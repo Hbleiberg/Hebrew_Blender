@@ -28394,6 +28394,7 @@ function migrateProject(data) {
       if (!LATIN_ACCENTS[cp] || !m || typeof m !== 'object') { delete data.font.accent.custom[cp]; return; }
       sanitizeItemNumbers(m, 0);               // the accent store is not in MARK_STORE_KINDS
       sanitizeDataUrl(m.source);
+      if (m.codepoint !== undefined && m.codepoint !== cp) m.codepoint = cp;   // its own codepoint is its key, as in every mark store (the accent's controls draw it)
       m.cls = LATIN_ACCENTS[cp].cls;
       m.designMode = (m.designMode === 'editor') ? 'editor' : 'upload';
       const a = m.attachAnchor;

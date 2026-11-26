@@ -712,8 +712,9 @@ them, and anything else is replaced or dropped (again a normal project loads exa
   goes).
 - *Custom glyphs* (`customCpOk`): a `.custom` letter's code point and a `customMarks.custom` key are
   `normalizeCp()`'s shape — four upper-case hex digits, U+0020 or above — or the glyph goes; a
-  nikkud / trop store key that is not a code point goes; a mark entry's own `codepoint` is its key; a
-  custom mark's class is one the Add form offers (`below` otherwise).
+  nikkud / trop store key that is not a code point goes; a mark entry's own `codepoint` is its key, in
+  every mark store and in the Latin accents; a custom mark's class is one the Add form offers (`below`
+  otherwise).
 - *Combined forms*: `target`, `base` and `mark` are code points and a digraph has exactly two `bases`,
   or the form goes (a tab that is on seeds its forms again).
 - *The reference font's family* (`template.font`, written into `style="font-family:…"`): a family list
