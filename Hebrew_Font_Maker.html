@@ -22638,7 +22638,7 @@ function qaBuildCheckHtml() {
     const ready = qaFormReady(pc);
     const need = (pc.bases || [pc.base]).filter(cp => { const L = project.letters.find(x => x.codepoint === cp); return !(L && L.contours); }).map(cp => qaCh(cp)).join(' ');
     const status = ready ? `<span class="qa-bc-ok">${I18n.t('fontmaker.qa.buildcheck_ready')}</span>` : `<span class="qa-bc-warn">${I18n.t('fontmaker.qa.buildcheck_needs', { chars: esc(need || qaCh(precompBaseCp(pc))) })}</span>`;
-    h += `<div class="qa-bc-item"><span class="qa-bc-glyph" style="font-family:${tplFont};direction:rtl;">${esc(precompComposed(pc))}</span>`
+    h += `<div class="qa-bc-item"><span class="qa-bc-glyph" style="font-family:${esc(tplFont)};direction:rtl;">${esc(precompComposed(pc))}</span>`
        + `<span class="qa-bc-name">${esc(precompName(pc))}</span>${status}</div>`;
   });
   return h + '</div></div>';
@@ -28238,6 +28238,9 @@ function migrateProject(data) {
   const _opacity = (v, d) => { const n = (typeof v === 'number' || (typeof v === 'string' && v.trim() !== '')) ? +v : NaN; return Number.isFinite(n) ? Math.max(0, Math.min(1, n)) : d; };
   if (!_isObj(data.template)) data.template = { font:"'Noto Sans Hebrew', sans-serif", opacity:0.35, showOverlay:true };
   data.template.opacity = _opacity(data.template.opacity, 0.35);
+  // The reference font's family is written into style="font-family:…" attributes: it is a family list as the font menu and the
+  // reference uploads write one ('Name', serif — letters, digits, spaces, quotes, commas, hyphens, underscores), else the default.
+  if (data.template.font != null && !(typeof data.template.font === 'string' && /^[A-Za-z0-9 ',_-]{1,200}$/.test(data.template.font))) data.template.font = "'Noto Sans Hebrew', sans-serif";
   data.template.customFonts = _objs(data.template.customFonts);   // uploaded tracing fonts (bytes) persist here; one picked from the installed fonts persists as a name
   data.template.customFonts.forEach(cf => { if (cf.local !== undefined && !(typeof cf.local === 'string' && LF_PS_RE.test(cf.local))) delete cf.local; });   // the name goes inside local("…"): only the strict pattern
   if (!_isObj(data.view)) data.view = { imgOpacityAlign:0.92, imgOpacityTrace:0.28, glyphOpacity:1.0 };
