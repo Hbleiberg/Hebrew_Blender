@@ -1103,7 +1103,12 @@ corner or tangle a noisy outline.
     cover, or into it), the straight run is taken only if it stays on the step's outline (within 1.5
     units, 3 by the cover: it fills the sliver at the end of n's arch at 115%); else the step's outline
     is kept up to where it reaches the cover, and the splice runs from there into the cover and back
-    (the end of u's bowl at 130% curls into its stem as the step makes it);
+    (the end of u's bowl at 130% curls into its stem as the step makes it). Where it reaches the cover
+    at one place only — a corner that just touches it, as the end of u's bowl does at about 131% — the
+    splice starts and ends where the outline around that corner is a unit and a half from the cover, so
+    what goes into the cover is thick enough to hold. "The cover" is the contour the run's points are
+    held in, never other ink near the joint: Frank Ruhl fills the crotch of h's arch with a small square,
+    which can touch the arch where the stem has moved away from it — that is a gap, and it is bridged;
   - a run whose hold moved nothing, or that neither can join (its two sides meet before the cover, as
     at the tip of a foot), stays exactly as the step makes it; the gate and the guarantee (below) have
     the last word on such a letter.
@@ -1129,20 +1134,32 @@ corner or tangle a noisy outline.
   measured before the export rounds them and turns them into the file's curves, so the gate asks
   `GXW_FIT_SLACK` (half a unit) more than that. A contour that ships exactly as the step's own is not
   looked at, and one the step ships as its polygon (its curve crossed itself) counts as the curve it was
-  too. A letter that fails the gate — or that comes apart all the same — takes the step as an ordinary
-  letter gets it when that leaves it in no more pieces than it had; else the plain stretch, named (the
-  guarantee, below). The free record's own crossing checks and gap columns are done only when it is
-  taken (`settle`).
+  too. A letter that fails the gate — or that comes apart all the same — is stepped **once more**
+  (`gxwShape`'s `again`): a joint counts as touching wherever the step's own outline comes within
+  `GXW_NEAR` (3 units) of its cover, so it is joined there inside the cover rather than bridged, and a
+  bridge is aimed the way the last 4 units of outline before it run — the way the gate reads the edge
+  it leaves — rather than along the tangent where it starts. That is taken when it passes the gate and
+  comes out whole; a letter that passed the first time is never stepped again. The gate reads the
+  curves as they ship, rounded, and a polygon a unit or so from its cover can be a curve that touches
+  it: the bridge from the bottom of à's bowl into its stem can be turned down for that, and the second
+  try joins it where it touches; the root of r's ear still turns where its bridges leave it, and at
+  129–133% only bridges aimed along its last 4 units pass. Failing that, the letter takes
+  the step as an ordinary letter gets it when that leaves it in no more pieces than it had; else the
+  plain stretch, named (the guarantee, below). The free record's own crossing checks and gap columns
+  are done only when it is taken (`settle`).
 
-  What that leaves, on Frank Ruhl Libre: the shoulders of n, m and h from 130% are a straight
-  continuation of the arch into the stem (the notch a little deeper than the plain stretch's), and the
-  end of u's bowl at 150% a straight wedge up into its stem; the outline beside a bridge, and wherever
-  the parts touch, is the step's own, including the curl the step gives the end of u's bowl at 130%;
-  r's ear at 150%, and K's leg where it meets the arm at 150%, cannot be joined without bending, so
-  those letters are stretched plainly and named; a foot that reaches into its stem by its tip alone
-  (Shlomo's Gimel) cannot be bridged either and, wherever the step pulls it away, is stretched plainly
-  too. A few letters the gate turns back (Frank Ruhl's ¢ and $, b at 130%) take the step without
-  holds instead, which keeps them in one piece and keeps their stems.
+  What that leaves, on Frank Ruhl Libre: wherever the step opens a gap at the root of an arch, the
+  shoulder of n, m and h is a straight continuation of the arch into the stem (the notch a little
+  deeper than the plain stretch's), and the end of u's bowl at 150% a straight wedge up into its stem;
+  the outline beside a bridge, and wherever the parts touch, is the step's own, including the curl the
+  step gives the end of u's bowl at 130%. n, m, u, h, a and their accented forms keep their stems at
+  every width the dialog is set to up to 150%, and from 101% to 133% no letter is stretched. r's ear
+  (at 134% and from 138%) and K's leg where it meets the arm (from 145%) cannot be joined without
+  bending, so those letters are stretched plainly and named; past 150%, m and a are at some widths
+  too. A foot that reaches into its stem by its tip alone (Shlomo's Gimel) cannot be bridged either
+  and, wherever the step pulls it away, is stretched plainly too. A few letters the gate turns back
+  (Frank Ruhl's ¢ and $) take the step without holds instead, which keeps them in one piece and keeps
+  their stems.
 - *The guarantee — a letter never leaves the step in more pieces than it came in (`gxwPieces`,
   `gxwApart`).* For every letter of more than one contour `gxWidthOp` counts the pieces of ink
   before and after: the connected parts of the nonzero fill on slices one unit apart, counted twice
