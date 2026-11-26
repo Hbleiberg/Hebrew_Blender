@@ -692,6 +692,39 @@ project loads exactly as it was saved. The paste dialog's
 preview (`svgPasteDrawPreview`, the one `innerHTML` this feature adds) writes every value through
 `Math.round(+v) || 0`: nothing but a number can reach its markup, whatever the project holds.
 
+**The project's strings that the page writes into markup as they are** — inside an attribute or an
+inline handler, not as text — are kept by `migrateProject` only in the shape the page itself writes
+them, and anything else is replaced or dropped (again a normal project loads exactly as saved):
+- *Pictures* (`fmDataUrlOk` / `sanitizeDataUrl`): an item's `source.dataUrl` (every letter, custom
+  glyph, letter's own mark shape, mark of every store and accent), each `combinedSheets[].dataUrl` and
+  each mark store's `combinedImage.dataUrl` go into an `<image href>` on the stage, in the crop box and
+  in auto-detect. A URL stays only as `readAsDataURL` / `toDataURL` give one — `data:image/…` with a
+  base64 body (or a body with no quote, angle bracket or space), `data:application/octet-stream;base64,…`
+  for a picture file the browser gave no type, or the stripped autosave's `'[omitted]'` — else it
+  becomes `null` and the item or sheet loads as if it had no picture.
+- *Guides* (`sanitizeGuides`): an id is `newGuideId()`'s `g<base36>_<n>` (a foreign or repeated one gets
+  a fresh id), a colour `#hex` or the default, a style one of `GUIDE_STYLES` or the default, a position a
+  finite number (a guide without one goes), a name text.
+- *Kerning classes*: an id is `saveKernClass`'s `c_<base36>_<n>` (not repeated), the name non-empty
+  text, the members code points (a member that is not one is left out; a class left with none goes).
+- *Custom glyphs* (`customCpOk`): a `.custom` letter's code point and a `customMarks.custom` key are
+  `normalizeCp()`'s shape — four upper-case hex digits, U+0020 or above — or the glyph goes; a
+  nikkud / trop store key that is not a code point goes; a mark entry's own `codepoint` is its key; a
+  custom mark's class is one the Add form offers (`below` otherwise).
+- *Combined forms*: `target`, `base` and `mark` are code points and a digraph has exactly two `bases`,
+  or the form goes (a tab that is on seeds its forms again).
+- *The reference font's family* (`template.font`, written into `style="font-family:…"`): a family list
+  as the font menu and the reference uploads write one (letters, digits, spaces, quotes, commas,
+  hyphens, underscores), else the default.
+
+Every sink of these escapes them as well (`esc()`), and so do the sinks of the numbers above (the
+photo's matrix and opacity, the metric fields, the Trace sliders and readouts, the X / Y fields, the dot
+sizes, the spacing sliders). No inline handler holds a project's text: the guide cards read the guide
+from the card's `data-guide-id` (`guideIdOf`), and the kerning class buttons, the custom glyph tiles'
+buttons, the sample-glyph buttons and the combined forms' buttons read theirs from `data-kc` /
+`data-cp`. Every way a project comes in — a file, Recent, the autosave, an account project, Save As —
+goes through `applyProjectData` → `migrateProject`, so this one place covers them all.
+
 **`assignSvgContours` is the one commit** for an upload, a crop, an auto-split and a paste, and the
 `udDo` around it carries `withSource` and `withDraw` on every item scope: it replaces `it.source`,
 which a plain scope leaves out of the snapshot (the undo then brought the outline back and left the
