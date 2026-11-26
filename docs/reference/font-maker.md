@@ -1208,17 +1208,42 @@ somewhere unrelated. So the engine maps the landing point: `a' = M(a + c) − c2
 for the marks is done — the size, width and lean settings the plan writes (`markLandTable`'s `after`).
 That runs in every scope, marks box on or off; when the marks are resized by the letters' own factor,
 or `c` is 0, it is the plain map bit for bit (the drawn-font exports are byte-identical). A whole-font
-slant keeps the plain map: its exact per-mark complement is `markLean.place`. For an anchor key `c` is
-the component-wise median over the marks in use that read it (the marks of a store in custom mode, each
-letter taking its own shape for a vowel); a trop side column takes its row's, so a column at its default
-stays exactly centre ± the spread. A pin and a composed form's dot (`pc.anchor`, at the form's own dot
-size; `pc.holam`, the holam typed after שׁ / שׂ) use their own mark's `c` exactly (`precompLandCC`).
-Only letters the marks attach to take it: a Latin or Cyrillic letter keeps its accents' convention (an
-accent's `c` is 0), a Samaritan letter takes only its family's columns. What one median cannot do: a mark
-whose own offset differs from its key's keeps the difference as it is — under a resize of the letters
-alone it drifts by (1 − the factor) × the difference, under a flip by twice it (Taamey Frank CLM's holam
-is 104 units beside the shin and sin dots and rafe it shares `above` with; its left-column trop up to
-about 200 units beside the row; Alef's qubuts 82).
+slant keeps the plain map: its exact per-mark complement is `markLean.place`.
+
+A letter has **one anchor per key**, so a key moves by its **primary mark's own `c`**, never by a vote
+of every mark that could read it (`MARK_LAND_PRIMARY`, beside `MARK_LAND_Y`): `above` follows the holam
+— or, on a letter where the holam does not read the key, the first of the holam haser, rafe, shin dot
+and sin dot that does; `center` the dagesh; `below` the component-wise median of the main vowels
+(sheva, hiriq, tsere, segol, patah, qamats — the hatafs, qubuts, qamats qatan and meteg do not vote),
+clamped on each axis between 0 and twice every voter's own offset, so that no main vowel ever lands
+farther from its place than the plain map leaves it (in most fonts the vowels agree and that is the
+median itself; where the narrow vowels attach far from the wide ones — Ezra SIL SR, Shlomo — the clamp
+keeps the sheva and hiriq from paying for the qamats). Whether a mark reads the key on a letter is the
+export's own rule (`markLandAway`, `markLandReads`): not when the pair composes into a form that ships
+the source font's drawing whole (`pc.src`) or places its dot at a point of its own (`pc.anchor`) — on
+vav the holam is the form וֹ, so the holam haser leads there; a form with neither bakes its dot at the
+letter's anchor, so it still reads it. Each voter counts with its own `c`, and a built-in or drawn
+mark's is 0: a key whose primary is built-in keeps the plain map bit for bit, whatever the other marks
+are (Cardo's built-in holam beside its imported shin dot, sin dot and rafe), and a key whose primary is
+imported follows that mark exactly (the Culmus holam about 550–600 above its attach point, Taamey Frank
+CLM's and Keter YG's 104 units to the right as well). The trop and Samaritan rows take the median of
+their row over the marks of a store in custom mode (a trop side column takes its row's, so a column at
+its default stays exactly centre ± the spread). Each letter takes its own shape for a vowel. A pin and
+a composed form's dot (`pc.anchor`, at the form's own dot size; `pc.holam`, the holam typed after
+שׁ / שׂ) use their own mark's `c` exactly (`precompLandCC`). Only letters the marks attach to take it:
+a Latin or Cyrillic letter keeps its accents' convention (an accent's `c` is 0), a Samaritan letter
+takes only its family's columns.
+
+**The limit of one anchor per key.** A mark that shares a key with a primary of a different `c` keeps
+the difference unmapped: under a resize of the letters alone it drifts by (1 − the factor) × the
+difference, under a flip by twice it, and a seed puts it that far from the seed point — a built-in
+holam haser, shin dot or sin dot beside an imported holam, an imported rafe beside a built-in holam, the
+hatafs and qubuts beside the main vowels, a trop mark off its row's median (Taamey Frank's pashta 150
+units beside its row), a built-in trop fallback in an imported row. Placing every mark exactly would
+need a pin per mark (`l.markAnchors`), which no transform creates. And when the letters shrink, narrow
+or lean while the marks keep their size, a full-size mark at the letter's own place can newly touch a
+smaller letter's descender tail, ascender or a composed form's own dot: the project's QA count can rise
+there, by the same rule that keeps the mark on its letter.
 
 **An operation may stamp a record and carry Font Details fields.** `op.stamp(letter)` returns fields
 to set on every letter the operation changes (`null` removes a key) — still only assignments and

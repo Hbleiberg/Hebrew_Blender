@@ -3246,6 +3246,20 @@ const MARK_LAND_Y = { below: 1, above: 0, center: 0.5,
   tropAbove: 0, tropAboveL: 0, tropAboveR: 0, tropBelow: 1, tropBelowL: 1, tropBelowR: 1,
   smrAboveR: 0, smrAbove: 0, smrAboveL: 0 };
 const MARK_LAND_ROW = { tropAboveL: 'tropAbove', tropAboveR: 'tropAbove', tropBelowL: 'tropBelow', tropBelowR: 'tropBelow' };   // a trop side column shares its row's offset, so it stays exactly "centre ± the spread" (setTropSideOffset and the engine's re-tie recognise that by equality)
+/* Which mark a nikkud key's landing offset is taken from. A letter has ONE anchor per key, so the key moves
+   by its PRIMARY mark's own offset, never by a vote of every mark that could read it (built-in fallbacks and
+   dots used only on shin would outvote the holam). `first`: the first mark of the list that reads the key on
+   this letter (markLandReads — on vav the holam is the composed form וֹ, which places its own dot, so the
+   holam haser leads there), else the list's first. `median`: the component-wise median over the main vowels
+   that read it, each with its own offset (the hatafs, qubuts, qamats qatan and meteg do not vote), clamped on
+   each axis between 0 and twice every voter's offset, so no main vowel ends farther off than with the plain
+   map (where they agree, as in most fonts, that is the median itself). The trop
+   and Samaritan rows take the median of their row (markLandTable). A built-in or drawn mark's offset is 0, so
+   a key whose primary is built-in keeps the plain map whatever the other marks are. */
+const MARK_LAND_PRIMARY = {
+  above:  { first: ['05B9', '05BA', '05BF', '05C1', '05C2'] },
+  below:  { median: ['05B0', '05B4', '05B5', '05B6', '05B7', '05B8'] },
+  center: { first: ['05BC'] } };
 // "Sheva Na" — an OPTIONAL heavier sheva, exported as a stylistic-set alternate (ss01) + a private
 // code point so a mobile (na) sheva can be shown distinctly from a silent (nach) one. It's not a
 // separate editor mark; it's scaled from the user's own sheva at export (see buildFont / buildFEA).
@@ -4863,13 +4877,27 @@ function markLandUsers() {   // [kind, cp, key] for every mark of a store drawn 
   if (F.smrmarks && F.smrmarks.mode === 'custom') SMR_MARK_CPS.forEach(cp => out.push(['smrmarks', cp, smrMarkKey(cp)]));
   return out;
 }
+/* Does mark cp, typed on letter l, attach to l's own anchor for its key? Not when the export composes the pair
+   into a form of its own that places the dot itself (pc.anchor) or ships the source font's drawing whole
+   (pc.src) — buildFontSpec's precomposed pass and precompAnchor; a composed form with neither bakes the dot at
+   the letter's anchor, so it still reads it. away: markLandAway(), the pairs worked out once. */
+function markLandAway() {
+  const s = new Set();
+  (project.precomposed || []).forEach(pc => {
+    if (isWideForm(pc) || !pc.base || !pc.mark || catOfCp(pc.mark) !== 'nikkud' || !precompExportable(pc)) return;
+    if (precompSrcOutline(pc) || (markClassFor(pc.mark) !== 'center' && pc.anchor && pc.anchor.x != null)) s.add(pc.base + '|' + pc.mark);
+  });
+  return s;
+}
+function markLandReads(away, l, cp) { return !(l && l.contours && away.has(l.codepoint + '|' + cp)); }
 /* The landing offsets, worked out once for a seed or an operation. → null when no mark in use keeps an attach
    point of its own: every offset is then 0 and every caller keeps the plain map, bit for bit.
    after(kind, cp, size) → { size, wide, lean } the mark is drawn with once the operation is done (the marks'
    own complement — a resize, a squeeze, a lean), or null for "as now"; without `after`, c2 = c.
-   keys(l) → { key: [c, c2] } for the keys l's marks read: the component-wise median over the marks in use
-   that read the key (a trop side column takes its row's), so a font of imported marks with a few drawn ones
-   follows the imported convention and a drawn font gives 0 — only keys with an offset are listed.
+   keys(l) → { key: [c, c2] } for the keys l's marks read: a nikkud key takes its PRIMARY mark's own offset
+   (MARK_LAND_PRIMARY — the holam's for `above`, the main vowels' median for `below`, the dagesh's for
+   `center`), each trop and Samaritan row the median over the marks of its store (a side column takes its
+   row's) — so a key whose primary is built-in or drawn gives 0, and only keys with an offset are listed.
    mark(l, kind, cp, key, size) → [c, c2] of one mark exactly: a pin, a composed form's dot. */
 function markLandTable(after) {
   const users = markLandUsers();
@@ -4880,22 +4908,27 @@ function markLandTable(after) {
     return [c, a ? markLandC(l, kind, cp, key, a.size, a) : c];
   };
   const med = vs => { const s = vs.slice().sort((p, q) => p - q), n = s.length; return n ? (n % 2 ? s[n >> 1] : (s[n / 2 - 1] + s[n / 2]) / 2) : 0; };
-  const glob = users.map(([kind, cp, key]) => ({ kind, cp, key, row: MARK_LAND_ROW[key] || key, v: mark(null, kind, cp, key) }));
+  const medC = vs => [0, 1].map(i => ({ x: med(vs.map(v => v[i].x)), y: med(vs.map(v => v[i].y)) }));
+  // the main vowels' median, clamped so that no main vowel lands farther from its place than the plain map
+  // leaves it: each axis between 0 and twice every voter's own offset (a font whose narrow vowels attach far
+  // from its wide ones — Ezra SIL SR, Shlomo — would otherwise trade the sheva and hiriq for the qamats)
+  const clampC = (cc, vs) => cc.map((c, i) => { const o = {}; ['x', 'y'].forEach(a => { let lo = -Infinity, hi = Infinity; vs.forEach(v => { const t = 2 * v[i][a]; lo = Math.max(lo, Math.min(0, t)); hi = Math.min(hi, Math.max(0, t)); }); o[a] = Math.min(hi, Math.max(lo, c[a])); }); return o; });
+  const glob = users.filter(u => u[0] !== 'nikkud').map(([kind, cp, key]) => ({ kind, cp, key, row: MARK_LAND_ROW[key] || key, v: mark(null, kind, cp, key) }));
+  const nik = {}, away = markLandAway();
+  for (const k in MARK_LAND_PRIMARY) (MARK_LAND_PRIMARY[k].first || MARK_LAND_PRIMARY[k].median).forEach(cp => { nik[cp] = mark(null, 'nikkud', cp, k); });
   return {
     mark,
     keys(l) {
       const fam = smrMarkBase(l) ? 'smrmarks' : markLandHeb(l) ? 'heb' : null, rows = {}, out = {};
       if (!fam) return out;
-      glob.forEach(g => {
-        if ((g.kind === 'smrmarks') !== (fam === 'smrmarks')) return;
-        const v = (g.kind === 'nikkud' && l.markShapes && l.markShapes[g.cp]) ? mark(l, g.kind, g.cp, g.key) : g.v;   // a letter's own shape for a vowel is the one it lands with
-        (rows[g.row] = rows[g.row] || []).push(v);
-      });
-      for (const r in rows) {
-        const vs = rows[r], cc = [0, 1].map(i => ({ x: med(vs.map(v => v[i].x)), y: med(vs.map(v => v[i].y)) }));
-        if (!(cc[0].x || cc[0].y || cc[1].x || cc[1].y)) continue;
-        Object.keys(MARK_LAND_Y).forEach(k => { if ((MARK_LAND_ROW[k] || k) === r) out[k] = cc; });
+      const put = (k, cc) => { if (cc[0].x || cc[0].y || cc[1].x || cc[1].y) out[k] = cc; };
+      if (fam === 'heb') for (const k in MARK_LAND_PRIMARY) {
+        const P = MARK_LAND_PRIMARY[k], own = cp => (l.markShapes && l.markShapes[cp]) ? mark(l, 'nikkud', cp, k) : nik[cp];   // a letter's own shape for a vowel is the one it lands with
+        if (P.first) put(k, own(P.first.find(cp => markLandReads(away, l, cp)) || P.first[0]));
+        else { const rd = P.median.filter(cp => markLandReads(away, l, cp)), vs = (rd.length ? rd : P.median).map(own); put(k, clampC(medC(vs), vs)); }
       }
+      glob.forEach(g => { if ((g.kind === 'smrmarks') === (fam === 'smrmarks')) (rows[g.row] = rows[g.row] || []).push(g.v); });
+      for (const r in rows) { const cc = medC(rows[r]); Object.keys(MARK_LAND_Y).forEach(k => { if ((MARK_LAND_ROW[k] || k) === r) put(k, cc); }); }
       return out;
     }
   };
