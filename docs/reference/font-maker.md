@@ -1278,7 +1278,13 @@ and the plain map's: none is brought nearer its letter than its exact place unle
 it nearer, and none comes to touch a letter it did not touch on the plain map (Arimo, Cousine, Tinos and
 the Liberation fonts attach the sheva and segol about 20 units over their ink and the hiriq and tsere
 about 90; the median would lift the sheva into the letter where the letters shrink). In most fonts the
-vowels agree, and both are the median itself. Whether a mark reads the key on a letter is the
+vowels agree, and both are the median itself. That holds where the letters keep their height or grow;
+for a **seed** and a **shrink** the height is chosen by what it does (`keys(l, ky)`, `ky` the letter's
+vertical factor, 0 for a seed): the median stands while it lifts no main vowel toward its letter, and
+otherwise the voter whose choice lifts the least is taken — for a seed or a shrink, the vowel attached
+highest — clamped to twice every voter's offset, so none ends farther off than the plain map. Arimo's
+choice is unchanged; Hebrew Square Samaritan, whose vowels attach 736–900 units under their ink, seeds
+its below key at 900, so no vowel rises into its letter. Whether a mark reads the key on a letter is the
 export's own rule (`markLandAway`, `markLandReads`): not when the pair composes into a form that ships
 the source font's drawing whole (`pc.src`) or places its dot at a point of its own (`pc.anchor`) — on
 vav the holam is the form וֹ, so the holam haser leads there; a form with neither bakes its dot at the
@@ -1356,7 +1362,11 @@ drawing of a letter, and the back-fills (`ensureNikkudAnchors`, `smrAnchorSeed`,
 holam **lands** — the vowel anchor plus the holam's own offset — and stored less each trop row's offset
 (`tropFillLand`, which QA's mirror of the back-fill shares), so a back-filled letter seeds exactly as a
 fresh one. With every `c` at 0
-nothing changes. It runs on the finished seed, **after** `leanAnchorSet`: the seed is a point of the
+nothing changes. A seed point is a height, blind to a descender, so on a Hebrew letter a key keeps its
+**bare** seed (no offset taken off, as before seeds were landing points) wherever the landing seed would
+set some below mark — or the above key's primary — on the letter's ink that the bare seed keeps off it,
+mark by mark, by the QA Check's own test (`markLandSeedMeets`): David CLM and Frank Ruehl CLM ע, Cardo
+ן ץ ק, Alef ן ץ, Drugulin CLM ע. Punctuation and digits have no QA row and always take the landing seed. It runs on the finished seed, **after** `leanAnchorSet`: the seed is a point of the
 leaning letter and `c` is the mark as it is drawn — a mark does not lean with one letter's record (its
 lean, if any, is font-level `markLean`, already in `c`), so leaning the offset too would move an upright
 mark sideways by the lean times its height. A font import seeds its letters bare (`seedAnchors(l,

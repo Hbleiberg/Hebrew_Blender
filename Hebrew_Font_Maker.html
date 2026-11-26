@@ -3257,7 +3257,9 @@ const MARK_LAND_ROW = { tropAboveL: 'tropAbove', tropAboveR: 'tropAbove', tropBe
    exact height and the plain map's — none is brought nearer its letter than its exact place unless the
    plain map brings it nearer (Arimo's sheva attaches 19 units over its ink, its hiriq 93: the median would
    lift the sheva into the letter where the letters shrink). Where they agree, as in most fonts, that is
-   the median itself. The trop
+   the median itself. For a seed and a shrink the height is chosen by what it does instead (markLandTable's
+   awayC: the median while it lifts no main vowel, else the voter that lifts the least, clamped to twice every
+   voter's offset). The trop
    and Samaritan rows take the median of their row (markLandTable). A built-in or drawn mark's offset is 0, so
    a key whose primary is built-in keeps the plain map whatever the other marks are. */
 const MARK_LAND_PRIMARY = {
@@ -5040,12 +5042,12 @@ function markLandSeed(l, a, bare) {
     if (!markLandSeedMeets(l, k, p, q)) { p.x = q.x; p.y = q.y; } } }
   return a;
 }
-function markLandSeedMeets(l, key, bareP, landP) {   // does the landing seed landP set a vowel of `key` on l's ink where the bare seed bareP does not?
-  if ((key !== 'below' && key !== 'above') || !l || !l.contours || !l.contours.length) return false;
+function markLandSeedMeets(l, key, bareP, landP) {   // does the landing seed landP set some vowel of `key` on l's ink that the bare seed bareP keeps off it? (mark by mark: a hataf or meteg that touches at both does not hide a sheva that touches only at landP)
+  if ((key !== 'below' && key !== 'above') || !l || !l.contours || !l.contours.length || !/^05(D[0-9A-F]|E[0-9A])$/.test(l.codepoint || '')) return false;   // Hebrew letters only — the rows the QA Check has
   const P = MARK_LAND_PRIMARY[key], away = markLandAway(), rd = cp => markLandReads(away, l, cp);
   const cps = P.median ? MARK_CPS.filter(cp => MARK_CLASS[cp] === 'below' && rd(cp)) : [P.first.find(rd) || P.first[0]];   // below: every below mark that reads it (the hatafs under ע are as common as its vowels); above: its primary
-  const meta = letterMeta(l.codepoint), hits = pt => cps.some(cp => qaReasons(l, meta, qaPlace(pt, 'nikkud', cp, nikScale(cp), l), key).length);
-  return cps.length > 0 && hits(landP) && !hits(bareP);
+  const meta = letterMeta(l.codepoint), hit = (pt, cp) => qaReasons(l, meta, qaPlace(pt, 'nikkud', cp, nikScale(cp), l), key).length > 0;
+  return cps.some(cp => hit(landP, cp) && !hit(bareP, cp));
 }
 function markLandKeys(l, ky) { const t = markLandTable(null); return t ? t.keys(l, ky) : {}; }   // { key: [c, c] } — l's landing offsets with its marks as they are now ({} when none); ky as keys()
 /* The trop back-fill's landing terms (ensureTropAnchors and QA's mirror of it): `ca`, where the holam lands
@@ -20617,7 +20619,7 @@ function _spacingCellMarks(cell) {   // place a glyph cell's stacked nikkud toge
       return;
     }
     const cls = MARK_CLASS[mcp]; if (!cls || L.smr) return;   // a Samaritan letter carries no Hebrew class in the export (emitBaseAnchors is Hebrew + custom bases)
-    let ancPt = qaAnchorFor(L, anc, cls, mcp), scale = nikScale(mcp);
+    let ancPt = (right && mcp === '05BD') ? anc[cls] : qaAnchorFor(L, anc, cls, mcp), scale = nikScale(mcp);   // the right-side meteg is its own glyph (uniE0B1) in the shared below class: the class anchor, never the meteg's pin
     if (pc) {
       if (mcp === dotCp) { ancPt = precompAnchor(pc); scale = precompMarkScale(pc); }   // the baked dot
       else if (mcp === '05B9' || mcp === '05BA') ancPt = precompHolamAnchor(pc);         // holam → the form's holam slot
@@ -29170,6 +29172,7 @@ function migrateProject(data) {
     if (!data.font.trop.uploadMode) data.font.trop.uploadMode = 'perSymbol';
     if (!_isObj(data.font.trop.combinedImage)) data.font.trop.combinedImage = { dataUrl: null };
     if (!_isObj(data.font.trop.halign)) data.font.trop.halign = {};   // per-mark Left/Center/Right (back-filled; L/R anchor columns added lazily by ensureTropAnchors)
+    for (const cp in data.font.trop.halign) if (!['left', 'center', 'right'].includes(data.font.trop.halign[cp])) delete data.font.trop.halign[cp];   // only the page's own three values: any other made every export throw in buildFEA's trop groups (a missing one is the mark's default)
     if (!_isObj(data.font.trop.vowelPair)) data.font.trop.vowelPair = {};   // vowel+trop pairing (stack | slide) per vertical class
     ['below','above'].forEach(c => {
       const v = data.font.trop.vowelPair[c] || (data.font.trop.vowelPair[c] = {});
