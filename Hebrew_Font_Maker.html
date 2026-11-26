@@ -18377,26 +18377,34 @@ function gxwApart(rings, curves, out, memo, key) {
   const s1 = was[1] ? ship(out.rings, out.curves) : null;
   return !!s1 && more(was[1], gxwPieces(s1));
 }
-function gxwGrid(R) {   // the edges of some rings in 8-unit cells, for nearest-edge questions (gxwNearest)
-  const g = new Map();
+function gxwGrid(R) {   // the edges of some rings in 8-unit cells, for nearest-edge questions (gxwNearest): a flat array over the cells the rings' box spans
+  let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+  R.forEach(r => r.forEach(p => { if (p[0] < x0) x0 = p[0]; if (p[0] > x1) x1 = p[0]; if (p[1] < y0) y0 = p[1]; if (p[1] > y1) y1 = p[1]; }));
+  if (!(x0 <= x1 && y0 <= y1)) return { x0: 0, y0: 0, w: 0, h: 0, c: [] };
+  const X0 = Math.floor(x0 / 8), Y0 = Math.floor(y0 / 8), w = Math.floor(x1 / 8) - X0 + 1, h = Math.floor(y1 / 8) - Y0 + 1, c = new Array(w * h);
   R.forEach((r, ri) => { const n = r.length; for (let i = 0; i < n; i++) {
-    const a = r[i], b = r[(i + 1) % n], x0 = Math.floor(Math.min(a[0], b[0]) / 8), x1 = Math.floor(Math.max(a[0], b[0]) / 8), y0 = Math.floor(Math.min(a[1], b[1]) / 8), y1 = Math.floor(Math.max(a[1], b[1]) / 8);
-    for (let X = x0; X <= x1; X++) for (let Y = y0; Y <= y1; Y++) { const k = X * 100003 + Y; let c = g.get(k); if (!c) g.set(k, c = []); c.push([a, b, ri]); }
+    const a = r[i], b = r[(i + 1) % n], xa = Math.floor(Math.min(a[0], b[0]) / 8), xb = Math.floor(Math.max(a[0], b[0]) / 8), ya = Math.floor(Math.min(a[1], b[1]) / 8), yb = Math.floor(Math.max(a[1], b[1]) / 8);
+    for (let X = xa; X <= xb; X++) for (let Y = ya; Y <= yb; Y++) { const k = (X - X0) * h + Y - Y0; (c[k] || (c[k] = [])).push([a, b, ri]); }
   } });
-  return g;
+  return { x0: X0, y0: Y0, w, h, c };
 }
 function gxwNearest(g, p, skip, rad) {   // → [the distance from p to the nearest edge of a ring other than `skip`, within rad (∞ beyond), that nearest point, its ring]
-  let best = Infinity, bx = 0, by = 0, ring = null; const px = p[0], py = p[1], X = Math.floor(px / 8), Y = Math.floor(py / 8), k = Math.ceil(rad / 8);
-  for (let r = 0; r <= k; r++) {   // the cells ring by ring outward: nothing in ring r + 1 is nearer than 8·r
-    for (let dx = -r; dx <= r; dx++) for (let dy = -r; dy <= r; dy += (dx === -r || dx === r || !r) ? 1 : 2 * r) {
-      const c = g.get((X + dx) * 100003 + Y + dy); if (!c) continue;
-      for (let i = 0; i < c.length; i++) {
-        const e = c[i]; if (e[2] === skip) continue;
-        const a = e[0], b = e[1], ex = b[0] - a[0], ey = b[1] - a[1], L2 = ex * ex + ey * ey, f = L2 ? Math.max(0, Math.min(1, ((px - a[0]) * ex + (py - a[1]) * ey) / L2)) : 0, qx = a[0] + f * ex - px, qy = a[1] + f * ey - py, d2 = qx * qx + qy * qy;
-        if (d2 < best) { best = d2; bx = qx + px; by = qy + py; ring = e[2]; }
+  let best = Infinity, bx = 0, by = 0, ring = null; const px = p[0], py = p[1], X = Math.floor(px / 8), Y = Math.floor(py / 8), k = Math.ceil(rad / 8), gx = g.x0, gy = g.y0, gw = g.w, gh = g.h, C = g.c;
+  for (let r = 0; r <= k; r++) {   // the cells ring by ring outward
+    for (let dx = -r; dx <= r; dx++) {
+      const cx = X + dx - gx; if (cx < 0 || cx >= gw) continue;
+      for (let dy = -r; dy <= r; dy += (dx === -r || dx === r || !r) ? 1 : 2 * r) {
+        const cy = Y + dy - gy; if (cy < 0 || cy >= gh) continue;
+        const c = C[cx * gh + cy]; if (!c) continue;
+        for (let i = 0; i < c.length; i++) {
+          const e = c[i]; if (e[2] === skip) continue;
+          const a = e[0], b = e[1], ex = b[0] - a[0], ey = b[1] - a[1], L2 = ex * ex + ey * ey, f = L2 ? Math.max(0, Math.min(1, ((px - a[0]) * ex + (py - a[1]) * ey) / L2)) : 0, qx = a[0] + f * ex - px, qy = a[1] + f * ey - py, d2 = qx * qx + qy * qy;
+          if (d2 < best) { best = d2; bx = qx + px; by = qy + py; ring = e[2]; }
+        }
       }
     }
-    if (best <= 64 * r * r) break;
+    const m = Math.min(px - 8 * (X - r), 8 * (X + r + 1) - px, py - 8 * (Y - r), 8 * (Y + r + 1) - py);   // nothing outside the cells scanned so far is nearer than p is to their edge (at least 8·r)
+    if (best <= m * m) break;
   }
   best = Math.sqrt(best);
   return best <= rad ? [best, [bx, by], ring] : [Infinity, null, null];
@@ -18416,7 +18424,7 @@ function gxwFits(H, F) {
   };
   const ship = o => o.rings.map((r, i) => ((o.curves && o.curves[i] && o.curves[i].segments && o.curves[i].segments.length) ? flat(o.curves[i]) : r));
   const HS = ship(H), FS = ship(F), FR = FS.map((r, j) => ((F.raw && F.raw[F.keep[j]]) ? flat(F.raw[F.keep[j]]) : []));   // FR: that contour's curve, where F ships its polygon
-  const gH = gxwGrid(HS), gF = gxwGrid(FS), gR = FR.some(r => r.length) ? gxwGrid(FR) : new Map(), nearH = gxwBins(gxwEdges(HS));
+  const gH = gxwGrid(HS), gF = gxwGrid(FS), gR = gxwGrid(FR), nearH = gxwBins(gxwEdges(HS));
   const nearF = (p, skip, rad) => { const a = gxwNearest(gF, p, skip, rad), b = gxwNearest(gR, p, skip, rad); return a[0] <= b[0] ? a : b; };   // → [distance, point, ring] to F's outline (either form)
   const ink = (skip, p) => { const B = nearH(p[1]); let w = 0; for (let i = 0; i < B.length; i++) { const e = B[i]; if (e[4] !== skip && (e[1] > p[1]) !== (e[3] > p[1]) && e[0] + (p[1] - e[1]) * (e[2] - e[0]) / (e[3] - e[1]) < p[0]) w += e[3] > e[1] ? 1 : -1; } return w !== 0; };
   const inRing = (r, p) => { let w = 0; for (let i = 0, n = r.length; i < n; i++) { const a = r[i], b = r[(i + 1) % n]; if ((a[1] > p[1]) !== (b[1] > p[1]) && a[0] + (p[1] - a[1]) * (b[0] - a[0]) / (b[1] - a[1]) < p[0]) w += b[1] > a[1] ? 1 : -1; } return w !== 0; };
@@ -18813,20 +18821,40 @@ function gxwShape(rings, curves, s, t, hand) {
       let u0 = -1, away = 0;
       const at = v => [X[0] + v * d[0], X[1] + v * d[1]], nq = gxwNearest(GM, X, ri, 2 * room), gap = nq[0];
       if (!nq[1]) return null;   // no cover within reach
+      if (!graze) for (let u = 0; ; ) {   // a quick march first: each step as far as the others' nearest edge, and a unit (what it steps over is out of their ink or less than a unit in) — none of the ray within reach in their ink, it cannot reach a unit inside it
+        if (u > 2 * room) return null;
+        const p = at(u); if (inkM(ri, p)) break;
+        u += Math.min(16, gxwNearest(GM, p, ri, 16)[0]) + 1;
+      }
       for (let u = 0; u <= 2 * room && away <= room; ) {   // in strides: it cannot reach the cover before it has run as far as the cover is, nor change sides of "2 from the step's outline" before that line
         const p = at(u), dc = Math.min(16, gxwNearest(GM, p, ri, 16)[0]);
         if (graze ? dc <= 0.25 : (dc >= 1 && inkM(ri, p))) { u0 = u; break; }
-        const g = Math.min(16, gxwNearest(G0, p, -1, 16)[0]), h = Math.max(graze ? 0.25 : 1, Math.min(dc - (graze ? 0.25 : 1), Math.abs(g - 2)));
+        const c0 = graze ? 0.25 : 1, gq = gxwNearest(G0, p, -1, Math.max(2, Math.min(16, dc - c0 + 2)))[0];   // the step's own outline is asked about only as far as the stride could use (none that near: off it by more than 2, and the stride is the cover's)
+        const g = gq === Infinity ? 16 : gq, h = Math.max(c0, Math.min(dc - c0, Math.abs(g - 2)));
         if (g > 2) away += h;
         u += h;
       }
       if (u0 < 0 || (u0 > 3 * gap + 4 && away > gap + 4)) return null;   // off the step's outline it must make for the cover (at about 20° or more), not run along beside it: that would be a spur up the stem's side
       const E = at(u0);
       if (graze) { const P = dig(ri, E, d); return P && [u0, E, P]; }
-      let u = u0; while (u < u0 + D && sunk(ri, at(u + 1), 1)) u += 1;
+      let u = u0;
+      while (u < u0 + D) {   // on a unit at a time while a unit inside — a place's depth less a unit vouches for the places that much further on, so they are stepped over unasked
+        const q = at(u + 1); if (!inkM(ri, q)) break;
+        const dq = Math.min(16, gxwNearest(GM, q, ri, 16)[0]); if (dq < 1) break;
+        u += 1;
+        for (let j = 1; j <= dq - 1 - 1e-9 && u < u0 + D; j++) u += 1;
+      }
       return [u0, E, at(u >= u0 + D ? u0 + D : (u0 + u) / 2)];
     };
-    const inner = (ri, A, B) => { const K = Math.max(1, Math.ceil(Math.hypot(B[0] - A[0], B[1] - A[1]) / 2)); for (let q = 0; q <= K; q++) if (!sunk(ri, [A[0] + q / K * (B[0] - A[0]), A[1] + q / K * (B[1] - A[1])], 0.5)) return false; return true; };
+    const inner = (ri, A, B) => {   // the straight run A → B lies half a unit inside the others' ink (asked every 2 units; a place's depth less half a unit vouches for the places that much further on)
+      const L = Math.hypot(B[0] - A[0], B[1] - A[1]), K = Math.max(1, Math.ceil(L / 2)), st = L / K;
+      for (let q = 0; q <= K; ) {
+        const P = [A[0] + q / K * (B[0] - A[0]), A[1] + q / K * (B[1] - A[1])]; if (!inkM(ri, P)) return false;
+        const dq = Math.min(16, gxwNearest(GM, P, ri, 16)[0]); if (dq < 0.5) return false;
+        q += 1 + (st > 0 ? Math.max(0, Math.floor((dq - 0.5 - 1e-9) / st)) : K);
+      }
+      return true;
+    };
     const exitAt = (ri, A, B, tx, ty) => {   // along ring ri's outline from A toward B (tx, ty: the ring's own direction there) → the parameter where it stops being covered, or null when it is covered all the way
       const L = Math.hypot(B[0] - A[0], B[1] - A[1]); if (!L) return null;
       const cov = f => { const x = A[0] + f * (B[0] - A[0]), y = A[1] + f * (B[1] - A[1]); return !!hidden(ri, x, y, tx, ty) || nearInk(ri, x, y, tx, ty); };
@@ -18906,7 +18934,20 @@ function gxwShape(rings, curves, s, t, hand) {
         // the room the stem gave up (the root of r's ear runs down beside its stem) or would cross the other side's, from a little
         // further out along the outline that shows (every 3 units, up to that room), nearest the exits first.
         let sp = null;
-        const onStep = (X, d, u0) => { for (let u = 0; u <= u0; u += 1) { const p = [X[0] + u * d[0], X[1] + u * d[1]]; if (shown(ri, p) && gxwNearest(G0, p, -1, 4)[0] > (gxwNearest(GM, p, ri, 6)[0] <= 6 ? 3 : 1.5)) return false; } return true; };   // where the parts touch, a bridge must stay on the step's own outline
+        const onStep = (X, d, u0) => {   // where the parts touch, a bridge must stay on the step's own outline (asked every unit; what a place's distances vouch for further on is stepped over)
+          for (let u = 0; u <= u0; ) {
+            const p = [X[0] + u * d[0], X[1] + u * d[1]], c = Math.min(16, gxwNearest(GM, p, ri, 16)[0]);
+            let s;
+            if (inkM(ri, p)) s = c + 1.5;           // in the others' ink: so is what is nearer than its depth, and the rest is within 1.5 of it
+            else if (c <= 1.5) s = 1.5 - c;          // beside it
+            else {                                   // it shows: on the step's outline, or off it
+              const g = gxwNearest(G0, p, -1, 4)[0]; if (g > (c <= 6 ? 3 : 1.5)) return false;
+              s = Math.max(1.5 - g, Math.min(6 - c, 3 - g));
+            }
+            u += 1 + Math.max(0, Math.floor(s - 1e-9));
+          }
+          return true;
+        };
         const side = (v0, sd) => {   // → j ↦ the j-th start out from the exit v0 on its side (sd −1: before it) whose bridge reaches the cover, nearest first ({ v, X, d, q, hit, p }), found as asked — one that only runs flush along the cover's edge when none reaches into it
           const vs = walk(v0, sd, room, 3), got = [], es = []; let k = 0, graze = false, end = vs.length;
           return j => {
