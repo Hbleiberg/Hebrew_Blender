@@ -4081,6 +4081,35 @@ function metegPairRightFor(t) {   // the CGJ right-side form's mirror of metegPa
   const w = markWideK('nikkud');
   return { dv: Math.round(w * (-(g.W + G) / 2 - v.cx)), dm: Math.round(w * ((v.W + G) / 2 - g.cx)) };
 }
+/* The mid-hataf meteg form, <hataf, ZWJ, meteg> → uniE0B2…E0B4: the hataf with the meteg bar spliced between its
+   vowel body and its sheva dots, a gap G on each side. → { contours, curves } in mark-local units (the hataf's attach
+   origin), or null when the hataf has no clean body / dots split or there is no meteg ink — the font then ships no
+   form and no ccmp rule, and the typed sequence stays a side-by-side pair. The export builds the glyph from this and
+   the sample draws it from this, so the two cannot drift. */
+function hatafMetegSplice(hcp) {
+  const sp = hatafSplit(hcp), gInk = _metegInk('05BD');
+  if (!sp || !gInk) return null;
+  const G = metegGap(), gs = nikScale('05BD');
+  const gPolys = markGlyphContoursRaw('nikkud', '05BD').map(poly => poly.map(([x, y]) => [x * gs, y * gs]));   // the splice is assembled UPRIGHT (hatafSplit's space) and leaned as one glyph at the end
+  let gMinX = 1e9; gPolys.forEach(poly => poly.forEach(([x]) => { gMinX = Math.min(gMinX, x); }));
+  const gShift = sp.bodyMaxX + G - gMinX;                      // meteg's left ink edge lands at bodyMaxX + G
+  const dotShift = (sp.bodyMaxX + 2 * G + gInk.W) - sp.dotsMinX;   // dots' left ink edge lands after the meteg + G
+  const upright = sp.polys.map((poly, i) => poly.map(([x, y]) => [x + (sp.dotIdx.has(i) ? dotShift : 0), y]))
+    .concat(gPolys.map(poly => poly.map(([x, y]) => [x + gShift, y])));
+  const hLean = markLeanFn('nikkud', upright);   // null unless the font's marks are placed / leaned
+  const contours = upright.map(poly => poly.map(([x, y]) => [Math.round(hLean ? hLean(x, y) : x), Math.round(y)]));
+  // carry the hataf's curves (x-shift dots), the spliced bar stays polygonal
+  let curves = null;
+  const hs = nikScale(hcp), hcv = markGlyphCurvesRaw('nikkud', hcp);
+  if (hcv && hcv.length === sp.polys.length) {
+    const lx = (x, y) => Math.round(hLean ? hLean(x, y) : x);
+    const shiftCv = (cv, dx) => cv ? { winding: cv.winding, start: [lx(cv.start[0] + dx, cv.start[1]), Math.round(cv.start[1])],
+      segments: cv.segments.map(seg => ({ type: seg.type, pts: seg.pts.map(p => [lx(p[0] + dx, p[1]), Math.round(p[1])]) })) } : null;
+    curves = hcv.map((cv, i) => shiftCv(cv ? scaleRoundCurve(cv, hs) : null, sp.dotIdx.has(i) ? dotShift : 0))
+      .concat(gPolys.map(() => null));
+  }
+  return { contours, curves };
+}
 
 /* ── Punctuation & More: default outlines (font units; baseline 0, letter-top 600).
    Each factory returns { contours:[{winding,points}], advance }. Digits 0–9 are ABSENT →
@@ -19762,10 +19791,24 @@ function _spacingCellMarks(cell) {   // place a glyph cell's stacked nikkud toge
   // meteg — metegPairFor, the shared math chokepoint): both are nikkud marks now, so without this
   // they'd pile on one anchor, breaking this block's preview == font doctrine. Exactly one below
   // vowel + the meteg qualifies; odd clusters fall back to raw anchors, like the shaper's no-match.
+  // The two Unicode meteg spellings, as the font's ccmp reads them (a joiner stays where it was typed: it is ccc 0, so
+  // no reordering crosses it). <hataf, ZWJ, meteg> is ONE glyph in the font — the hataf with the meteg bar spliced in
+  // (hatafMetegSplice) — at the below anchor; <meteg, CGJ, vowel> is the right-side meteg, the pair mirrored
+  // (metegPairRightFor). A letter with its own shape for that hataf / the meteg folds the mark into itself first (its
+  // ccmp rule comes earlier), so the spelling does not form there and the marks stack as they would without it.
+  const own = m => !!(L.markShapes && L.markShapes[m]);
+  const hi = L.smr ? -1 : cps.findIndex((m, i) => HATAF_METEG_CPS[m] && cps[i + 1] === '200D' && cps[i + 2] === '05BD');
+  const sx = hi >= 0 && !own(cps[hi]) ? hatafMetegSplice(cps[hi]) : null;
+  if (sx) {
+    const a = anc.below;   // a glyph of its own in the below class: the letter's class anchor (a pin belongs to one mark, and this is none of them)
+    (cell.marks = cell.marks || []).push(sx.contours.map(poly => poly.map(([x, y]) => [Math.round(x + a.x), Math.round(y + a.y)])));
+    cps.splice(hi, 3);   // the hataf, the joiner and the meteg are that one glyph
+  }
+  const right = !own('05BD') && cps.some((m, i) => m === '05BD' && cps[i + 1] === '034F');
   const pairOff = {};
   if (cps.includes('05BD')) {
     const bv = cps.filter(m => MARK_CLASS[m] === 'below' && m !== '05BD');
-    const pr = bv.length === 1 ? metegPairFor(bv[0]) : null;
+    const pr = bv.length === 1 ? (right ? metegPairRightFor(bv[0]) : metegPairFor(bv[0])) : null;
     if (pr) { pairOff[bv[0]] = pr.dv; pairOff['05BD'] = pr.dm; }
   }
   cps.forEach(mcp => {
@@ -19804,6 +19847,10 @@ function spacingPreviewLayout() {   // shared by the big preview and the waterfa
   let base = null;   // most-recent glyph cell a mark can attach to
   for (const ch of [...(sp.sample || '')]) {
     const c = ch.codePointAt(0);
+    if (c === 0x034F || c === 0x200D) {                  // CGJ / ZWJ: zero advance and no ink, as in the font (empty mark glyphs, and a shaper hides a joiner a font lacks) — never a cell, so the pair around it still kerns;
+      if (base && base.contours) (base._markCps = base._markCps || []).push(c === 0x034F ? '034F' : '200D');   // kept in the cell's mark list in typed order, where it picks the meteg spelling (_spacingCellMarks)
+      continue;
+    }
     if (isMarkCp(c)) {                                   // nikkud → stack on the current base letter (zero advance)
       if (!base || !base.contours) continue;            // no traced base to sit on → skip (preview uses your traced letters)
       const mcp = c.toString(16).toUpperCase().padStart(4,'0');
@@ -23058,30 +23105,12 @@ function buildFontSpec() {
       cmap[METEG_RIGHT_CP] = 'uniE0B1';
       builtMetegForms.right = 'uniE0B1';
     }
-    const gInk = _metegInk('05BD');
     Object.keys(HATAF_METEG_CPS).forEach(hcp => {
-      const sp = hatafSplit(hcp);
-      if (!sp || !gInk) return;   // no clean split (unusual custom hataf) → no baked form, no ccmp rule, typed sequence falls back to the side-by-side pair
-      const G = metegGap(), gs = nikScale('05BD');
-      const gPolys = markGlyphContoursRaw('nikkud', '05BD').map(poly => poly.map(([x, y]) => [x * gs, y * gs]));   // the splice is assembled UPRIGHT (hatafSplit's space) and leaned as one glyph at the end
-      let gMinX = 1e9; gPolys.forEach(poly => poly.forEach(([x]) => { gMinX = Math.min(gMinX, x); }));
-      const gShift = sp.bodyMaxX + G - gMinX;                      // meteg's left ink edge lands at bodyMaxX + G
-      const dotShift = (sp.bodyMaxX + 2 * G + gInk.W) - sp.dotsMinX;   // dots' left ink edge lands after the meteg + G
+      const sx = hatafMetegSplice(hcp);
+      if (!sx) return;   // no clean split (unusual custom hataf) → no baked form, no ccmp rule, typed sequence falls back to the side-by-side pair
       const nm = 'uni' + HATAF_METEG_CPS[hcp].toString(16).toUpperCase();
-      const upright = sp.polys.map((poly, i) => poly.map(([x, y]) => [x + (sp.dotIdx.has(i) ? dotShift : 0), y]))
-        .concat(gPolys.map(poly => poly.map(([x, y]) => [x + gShift, y])));
-      const hLean = markLeanFn('nikkud', upright);   // null unless the font's marks are placed / leaned
-      const contours = upright.map(poly => poly.map(([x, y]) => [Math.round(hLean ? hLean(x, y) : x), Math.round(y)]));
-      glyphs[nm] = { contours, advance: 0 };
-      // carry the hataf's curves (x-shift dots), the spliced bar stays polygonal
-      const hs = nikScale(hcp), hcv = markGlyphCurvesRaw('nikkud', hcp);
-      if (hcv && hcv.length === sp.polys.length) {
-        const lx = (x, y) => Math.round(hLean ? hLean(x, y) : x);
-        const shiftCv = (cv, dx) => cv ? { winding: cv.winding, start: [lx(cv.start[0] + dx, cv.start[1]), Math.round(cv.start[1])],
-          segments: cv.segments.map(seg => ({ type: seg.type, pts: seg.pts.map(p => [lx(p[0] + dx, p[1]), Math.round(p[1])]) })) } : null;
-        glyphs[nm].curves = hcv.map((cv, i) => shiftCv(cv ? scaleRoundCurve(cv, hs) : null, sp.dotIdx.has(i) ? dotShift : 0))
-          .concat(gPolys.map(() => null));
-      }
+      glyphs[nm] = { contours: sx.contours, advance: 0 };
+      if (sx.curves) glyphs[nm].curves = sx.curves;
       glyphOrder.push(nm); markGlyphNames.push(nm);
       cmap[HATAF_METEG_CPS[hcp]] = nm;
       builtMetegForms.hataf.push({ cp: hcp, name: nm });
@@ -23763,7 +23792,8 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLette
   //    · A letter typed with a mark that ccmp folds into one glyph (בּ → FB31, שׁ → FB2A, וֹ → FB4B, a
   //      letter's own mark shape, שּׁ, ײַ) is a new glyph that the shaper kerns by name, so it takes its
   //      letter's kerning — first or second in the pair, from a specific pair or a group pair alike.
-  //      A rule written for the form's own code point (typed as a presentation form) still wins. ──
+  //      A rule written for the form's own code point (typed as a presentation form) still wins, whatever the
+  //      list order (the second pass below takes those rules first). ──
   const builtSet = new Set(baseGlyphNames);
   const formsOf = {};   // letter cp → the composed glyphs ccmp makes from it and a mark
   const addForm = (cp, nm) => { if (builtSet.has(nm)) (formsOf[cp] = formsOf[cp] || []).push(nm); };
@@ -23779,7 +23809,13 @@ function buildFEA(baseGlyphNames, builtPrecomposed, nikOn, tropOn, builtPerLette
     kernLines += dir === 'rtl' ? `  pos ${na} ${nb} <${v} 0 ${v} 0>;\n` : `  pos ${na} ${nb} ${v};\n`;
   };
   kerned.forEach((v, key) => { const [a, b] = key.split('|'), dir = kernPairDir(a, b); if (dir) kernLine(gname(a), gname(b), v, dir); });
-  kerned.forEach((v, key) => {   // then the composed forms, after every rule written for a code point of its own
+  // Then the composed forms, after every rule written for a code point of its own — and among them, a pair written for a
+  // form's own code point before one written for its letter (its first side before its second), whatever the list order:
+  // a form followed by a composed letter takes the form's rule, as the sample (which reads the typed code points) shows it.
+  const formNames = new Set(Object.values(formsOf).flat());
+  const isFormCp = cp => formNames.has(gname(cp));
+  const rank = key => { const [a, b] = key.split('|'); return (isFormCp(a) ? 2 : 0) + (isFormCp(b) ? 1 : 0); };
+  [...kerned.entries()].map((e, i) => [e, rank(e[0]), i]).sort((p, q) => (q[1] - p[1]) || (p[2] - q[2])).forEach(([[key, v]]) => {
     const [a, b] = key.split('|'), dir = kernPairDir(a, b);
     if (!dir || !(formsOf[a] || formsOf[b])) return;
     [gname(a)].concat(formsOf[a] || []).forEach(na => [gname(b)].concat(formsOf[b] || []).forEach(nb => kernLine(na, nb, v, dir)));

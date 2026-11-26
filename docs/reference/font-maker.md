@@ -1890,7 +1890,16 @@ block (feaLib carries a flag out of a named lookup block, not out of a feature),
 GDEF follows the block. A letter typed with a mark that `ccmp` folds into one glyph (בּ, שׁ, וֹ, וּ, a
 letter's own mark shape, שּׁ, ײַ) is a glyph the shaper kerns by its own name, so the emitter writes
 every pair of the letter for that composed glyph too, first or second in the pair; a rule written
-for the form's own code point wins. A pair of two neutrals (punctuation marks, most
+for the form's own code point (typed into a side as the presentation form) wins over its letter's,
+whatever the list order — the emitter expands the rules for a form's own code point first, its first
+side's before its second's, so a form followed by a composed letter takes the form's rule, as the
+sample shows it. The sample reads the code points as typed, so a letter typed with its mark (בּ)
+shows its letter's rule there, while the font, which composes it to the form, applies the form's —
+a difference only a rule for a presentation form can make. The sample also lays out the two Unicode meteg spellings as the font forms them: a
+joiner (CGJ U+034F, ZWJ U+200D) is never a cell of its own (no advance, no ink, so the pair around
+it still kerns), ⟨hataf, ZWJ, meteg⟩ draws the one spliced glyph the export builds
+(`hatafMetegSplice`, shared by both), and ⟨meteg, CGJ, vowel⟩ takes the mirrored pair
+(`metegPairRightFor`). A pair of two neutrals (punctuation marks, most
 symbols) is written for Hebrew text: no one value record closes a pair's own gap in both directions,
 and in a left-to-right run the record a right-to-left pair needs closes the gap before the pair
 instead. A known limit: two letters of one direction but different scripts — a Private Use custom
