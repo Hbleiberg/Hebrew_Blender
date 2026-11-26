@@ -7861,7 +7861,7 @@ function renderFormPanel(panelId, targets, intro, extras) {
     tile.className = 'ltile' + (sel ? ' sel' : '') + (traced ? '' : ' locked');
     const pv = traced ? formTilePreviewSVG(pc) : '';   // live composed outline (reflects the Width slider); font char until composable
     tile.innerHTML = `<span class="lt-dot ${traced ? 'traced' : ''}"></span>
-      ${pv || `<span class="lt-heb" lang="he" style="font-family:${esc(project.template.font)};direction:rtl;">${precompComposed(pc)}</span>`}
+      ${pv || `<span class="lt-heb" lang="he" style="font-family:${esc(project.template.font)};direction:rtl;">${esc(precompComposed(pc))}</span>`}
       <span class="lt-name">${esc(precompName(pc))}</span>${overridden ? `<span class="lt-need" title="${esc(window.I18n ? I18n.t('fontmaker.tip.custom_glyph_overrides', {t}) : 'You added a custom glyph at U+' + t + '; the exported font uses your custom outline, not this composed form.')}">${_pT('form_overrides', 'custom glyph overrides')}</span>` : edited ? `<span class="lt-need" title="${esc(window.I18n ? I18n.t('fontmaker.tip.wide_edited') : 'You converted this wide form to an editable glyph — the exported font ships your edited outline. Click to open it in the editor.')}">${_pT('form_edited', 'edited by hand')}</span>` : traced ? '' : `<span class="lt-need" title="${esc(window.I18n ? I18n.t('fontmaker.tip.trace_needs', {names: need.map(cp => (letterMeta(cp) && letterMeta(cp).name) || chOf(cp)).join(', ')}) : 'Trace ' + need.map(cp => (letterMeta(cp) && letterMeta(cp).name) || chOf(cp)).join(', '))}">${_pT('form_needs', 'needs ' + needChars, {chars: needChars})}</span>`}`;
     tile.onclick = edited ? (() => openWideGlyphEditor(t))                // an edited wide form opens ITS editor — from any tab that surfaces it
                           : (() => pickPrecompForm(pc.from || t));        // ײַ has no editor of its own — it follows ײ, which follows yud
@@ -17258,8 +17258,8 @@ function precompMarkScale(pc) {
 function precompSquareTile(pc) {
   const name = precompName(pc);
   const custom = (markClassFor(pc.mark) !== 'center' && pc.anchor && pc.anchor.x != null) ? ' <span style="color:var(--gold);">✎</span>' : '';
-  return `<button type="button" class="mark-sq ${precompTarget===pc.target?'active':''}" aria-pressed="${precompTarget===pc.target}" onclick="setPrecompTarget('${pc.target}')" title="${esc(I18n.t('fontmaker.panels.combined_form_tile_title', { name, composed: precompComposed(pc) }))}">`
-    + `<span lang="he" style="font-family:var(--heb-font);direction:rtl;font-size:1.5rem;line-height:1.5;">${precompComposed(pc)}</span><span>${esc(name)}${custom}</span></button>`;
+  return `<button type="button" class="mark-sq ${precompTarget===pc.target?'active':''}" aria-pressed="${precompTarget===pc.target}" data-cp="${esc(pc.target)}" onclick="setPrecompTarget(this.dataset.cp)" title="${esc(I18n.t('fontmaker.panels.combined_form_tile_title', { name, composed: precompComposed(pc) }))}">`
+    + `<span lang="he" style="font-family:var(--heb-font);direction:rtl;font-size:1.5rem;line-height:1.5;">${esc(precompComposed(pc))}</span><span>${esc(name)}${custom}</span></button>`;
 }
 /* Fallback discoverability row for combined forms whose mark has no tile in this class's picker
    (e.g. Latin accent forms). The Hebrew forms (שׁ/שׂ, וֹ, וּ, בּ…) render as in-grid tiles via
@@ -17273,8 +17273,8 @@ function precompJumpRow(l, cls, gridCps) {
 }
 function precompFormBtn(pc) {
   const custom = (markClassFor(pc.mark) !== 'center' && pc.anchor && pc.anchor.x != null) ? ' <span style="color:var(--gold);">✎</span>' : '';
-  return `<button class="ctl-btn ${precompTarget===pc.target?'primary':''}" onclick="setPrecompTarget('${pc.target}')" title="${esc(window.I18n ? I18n.t('fontmaker.tip.place_mark_for', {mark: precompName(pc), composed: precompComposed(pc)}) : 'Place the ' + precompName(pc) + ' for ' + precompComposed(pc))}">`
-    + `<span style="font-family:var(--heb-font);direction:rtl;font-size:1.15rem;">${precompComposed(pc)}</span>${custom}</button>`;
+  return `<button class="ctl-btn ${precompTarget===pc.target?'primary':''}" data-cp="${esc(pc.target)}" onclick="setPrecompTarget(this.dataset.cp)" title="${esc(window.I18n ? I18n.t('fontmaker.tip.place_mark_for', {mark: precompName(pc), composed: precompComposed(pc)}) : 'Place the ' + precompName(pc) + ' for ' + precompComposed(pc))}">`
+    + `<span style="font-family:var(--heb-font);direction:rtl;font-size:1.15rem;">${esc(precompComposed(pc))}</span>${custom}</button>`;   // a form's code points are a project file's text: esc() here, and the handler reads them from data-cp
 }
 function setPrecompTarget(t) {
   const pc = getPrecomp(t); if (!pc) return;
@@ -17411,8 +17411,8 @@ function renderWideFormControls(pc) {
   if (wgi) {   // materialized — the maker's edited item is what ships; edit or revert, no Width slider
     return `<div class="ws-side-title">${esc(precompName(pc))}</div>
       <div class="hint" style="font-size:0.7rem;">${_pT('wide_edited_hint', 'Converted to an editable glyph — the exported font ships your edited outline, and this form no longer follows its base letter. Revert to return to the auto-stretched version.')}</div>
-      <button class="ctl-btn primary hi-btn" style="width:100%;margin-top:8px;" onclick="openWideGlyphEditor('${pc.target}')">${ICON_PENCIL_SM}${_pT('wide_edit_glyph', 'Edit the glyph →')}</button>
-      <button class="ctl-btn" style="width:100%;margin-top:6px;" onclick="revertWideFormEdit('${pc.target}')">${_pT('wide_revert', 'Revert to auto-generated…')}</button>
+      <button class="ctl-btn primary hi-btn" style="width:100%;margin-top:8px;" data-cp="${esc(pc.target)}" onclick="openWideGlyphEditor(this.dataset.cp)">${ICON_PENCIL_SM}${_pT('wide_edit_glyph', 'Edit the glyph →')}</button>
+      <button class="ctl-btn" style="width:100%;margin-top:6px;" data-cp="${esc(pc.target)}" onclick="revertWideFormEdit(this.dataset.cp)">${_pT('wide_revert', 'Revert to auto-generated…')}</button>
       <hr class="ctl-divider">
       <button class="ctl-btn primary" style="width:100%;" onclick="clearPrecompTarget()">${_pT('back', '← Back')}</button>`;
   }
@@ -17434,7 +17434,7 @@ function renderWideFormControls(pc) {
       ${isOver ? `<button class="ctl-btn" onclick="resetPrecompWidth()">${_pT('reset_width', 'Reset width')}</button>` : `<span class="hint" style="font-size:0.7rem;">${_pT('default_width_hint', 'Default width — drag the slider to customize.')}</span>`}
     </div>
     ${isCustomCp(pc.target) ? '' : `<div class="ctl-row" style="margin-top:8px;">
-      <button class="ctl-btn" style="width:100%;" onclick="convertWideToEditable('${pc.target}')">${_pT('wide_convert', 'Convert to editable glyph…')}</button>
+      <button class="ctl-btn" style="width:100%;" data-cp="${esc(pc.target)}" onclick="convertWideToEditable(this.dataset.cp)">${_pT('wide_convert', 'Convert to editable glyph…')}</button>
     </div>
     <div class="hint" style="font-size:0.7rem;margin-top:4px;">${_pT('wide_convert_hint', 'Stretch looking wonky? Convert this form into a real glyph you can edit point by point. It stops following the base letter — you can revert anytime.')}</div>`}
     <hr class="ctl-divider">
@@ -17443,7 +17443,7 @@ function renderWideFormControls(pc) {
     <div class="hint" style="font-size:0.7rem;margin-top:4px;">${_pT('preview_vowel', 'Preview vowel')}</div>
     <div class="mark-grid2">${BELOW_VOWELS.map(v => squareMarkBtn('nikkud', v.cp, v.name, activeBelowVowel, 'setBelowVowel')).join('')}</div>
     <div class="ctl-row" style="margin-top:8px;">
-      <button class="ctl-btn primary" style="width:100%;" onclick="gotoBaseNikkud('${donorCp}')">${_pT('edit_nikkud_on', 'Edit nikkud on ' + esc(donorName) + ' →', { name: esc(donorName) })}</button>
+      <button class="ctl-btn primary" style="width:100%;" data-cp="${esc(donorCp)}" onclick="gotoBaseNikkud(this.dataset.cp)">${_pT('edit_nikkud_on', 'Edit nikkud on ' + esc(donorName) + ' →', { name: esc(donorName) })}</button>
     </div>
     <hr class="ctl-divider">
     <button class="ctl-btn primary" style="width:100%;" onclick="clearPrecompTarget()">${_pT('back', '← Back')}</button>`;
@@ -17559,7 +17559,7 @@ function renderPrecompControls(l) {
   // resumes). The holam-slot block stays: precompHolamAnchor still SHIPS for שׁ/שׂ regardless of src.
   const srcBlock = _src ? `<div class="hint" style="font-size:0.68rem;">${esc(I18n.t('fontmaker.panels.form_src_ctl_hint'))}</div>
     <div class="ctl-row" style="margin-top:6px;justify-content:center;">
-      <button class="ctl-btn" onclick="precompRebuildForms(['${pc.target}'])">${esc(_pT('form_src_rebuild', 'Rebuild from my letters'))}</button>
+      <button class="ctl-btn" data-cp="${esc(pc.target)}" onclick="precompRebuildForms([this.dataset.cp])">${esc(_pT('form_src_rebuild', 'Rebuild from my letters'))}</button>
     </div>` : '';
   if (markClassFor(pc.mark) === 'center') {   // dagesh: unified with the letter's own Dagesh (Center) — size adjustable here, position follows the letter
     const g = `<span style="font-family:var(--heb-font);direction:rtl;">${esc(precompComposed(pc))}</span>`;
@@ -17573,7 +17573,7 @@ function renderPrecompControls(l) {
     <hr class="ctl-divider">
     <div class="inline">${I18n.t('fontmaker.panels.dagesh_size')} <input type="range" ${markSizeRange(dagPct, 40, 180)} step="5" value="${dagPct}" oninput="setDageshScale(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.dagesh_size'))}"> <span id="dageshScaleV" class="readout">${dagPct}%</span></div>
     <hr class="ctl-divider">
-    <button class="ctl-btn hi-btn" style="width:100%;" onclick="openMarkEdit('nikkud','${pc.mark}')">${ICON_PENCIL_SM}${I18n.t('fontmaker.panels.edit_shape_btn')}</button>
+    <button class="ctl-btn hi-btn" style="width:100%;" data-cp="${esc(pc.mark)}" onclick="openMarkEdit('nikkud',this.dataset.cp)">${ICON_PENCIL_SM}${I18n.t('fontmaker.panels.edit_shape_btn')}</button>
     <div class="hint" style="font-size:0.7rem;">${I18n.t('fontmaker.panels.edit_shape_square_hint')}</div>
     <hr class="ctl-divider">
     <button class="ctl-btn primary" style="width:100%;" onclick="clearPrecompTarget()">${I18n.t('fontmaker.panels.back_to_vowels')}</button>`;
@@ -17617,7 +17617,7 @@ function renderPrecompControls(l) {
     <hr class="ctl-divider">
     ${sizeBlock}
     <hr class="ctl-divider">
-    <button class="ctl-btn hi-btn" style="width:100%;" onclick="openMarkEdit('nikkud','${pc.mark}')">${ICON_PENCIL_SM}${I18n.t('fontmaker.panels.edit_shape_btn')}</button>
+    <button class="ctl-btn hi-btn" style="width:100%;" data-cp="${esc(pc.mark)}" onclick="openMarkEdit('nikkud',this.dataset.cp)">${ICON_PENCIL_SM}${I18n.t('fontmaker.panels.edit_shape_btn')}</button>
     <div class="hint" style="font-size:0.7rem;">${I18n.t('fontmaker.panels.edit_shape_square_hint')}</div>`}
     <hr class="ctl-divider">
     <button class="ctl-btn primary" style="width:100%;" onclick="clearPrecompTarget()">${I18n.t('fontmaker.panels.back_to_vowels')}</button>`;
@@ -28225,6 +28225,11 @@ function migrateProject(data) {
   // gave that letter a NaN transform — a scale that is not a finite positive number goes, and the letter fits as before.
   data.combinedSheets.forEach(s => { if (!(Number.isFinite(s.fitScale) && s.fitScale > 0)) delete s.fitScale; });
   data.precomposed =Array.isArray(data.precomposed) ? data.precomposed.filter(_isObj) : PRECOMPOSED.map(p => ({...p}));
+  // A form's code points are written into its tiles (composed as text) and into their handlers: each is a code point, as the
+  // form tables write them, and a digraph has its two bases — a form with anything else is dropped (a tab that is on seeds its forms again below).
+  { const cp = v => typeof v === 'string' && /^[0-9A-F]{4,6}$/.test(v);
+    data.precomposed = data.precomposed.filter(pc => cp(pc.target) && (pc.base == null || cp(pc.base)) && (pc.mark == null || cp(pc.mark))
+      && (pc.bases == null || (Array.isArray(pc.bases) && pc.bases.length === 2 && pc.bases.every(cp)))); }
   data.precomposed.forEach(pc => { if (pc.anchor === undefined) pc.anchor = null; if (pc.holam === undefined) pc.holam = null; sanitizePrecompNumbers(pc); });   // per-form mark anchor + holam-attach override — and its numbers are numbers (a string here reached the form's X / Y fields as markup)
   data.precomposed.forEach(sanitizePrecompSrc);   // a form outline taken whole from a source font — shape-checked because it becomes glyph data verbatim
   // The four opacity sliders (the template letter, the photo in Align and in Trace, the outline) are
