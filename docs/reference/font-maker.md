@@ -719,7 +719,8 @@ them, and anything else is replaced or dropped (again a normal project loads exa
   or the form goes (a tab that is on seeds its forms again).
 - *The reference font's family* (`template.font`, written into `style="font-family:…"`): a family list
   as the font menu and the reference uploads write one (letters, digits, spaces, quotes, commas,
-  hyphens, underscores), else the default.
+  hyphens, underscores, at any length — an upload's family carries its whole file name), else the
+  default.
 
 Every sink of these escapes them as well (`esc()`), and so do the sinks of the numbers above (the
 photo's matrix and opacity, the metric fields, the Trace sliders and readouts, the X / Y fields, the dot
