@@ -1890,6 +1890,10 @@ body.fs-idle #fsExitBtn:not(:focus-visible) { opacity: 0; pointer-events: none; 
 /* Two-stage gate, like the dashboard's #fsStrip: `display` follows fullscreen, opacity
    and pointer-events follow the idle timer, so a faded-out bar can never eat a click. */
 body.fullscreen #ttFsBar { display: flex; }
+/* Keyboard focus the browser scrolls to the bottom edge lands above the bar's plate (--tt-fsbar-h, its live height,
+   kept by the script beside showFsBar; 0 outside full screen): Tab left the last "via Sefaria" link wholly under it.
+   (pattern focus-hidden-under-a-sticky-bar) */
+html:has(body.fullscreen) { scroll-padding-block-end: calc(var(--tt-fsbar-h, 0px) + 26px); }
 body.fullscreen #ttFsBar.visible { opacity: 1; }
 body.fullscreen #ttFsBar.visible .tt-fs-plate { pointer-events: auto; }
 .tt-fs-plate {
@@ -3243,6 +3247,14 @@ document.addEventListener('fullscreenchange', () => {
    ══════════════════════════════════════════════════════ */
 const FS_BAR_IDLE_MS = 4000;
 let _fsBarTimer = null;
+// The bar's live height, for the root's scroll-padding (the CSS beside #ttFsBar); 0 while it is display:none.
+(function () {
+  const el = document.getElementById('ttFsBar');
+  if (!el) return;
+  const set = () => document.documentElement.style.setProperty('--tt-fsbar-h', el.offsetHeight + 'px');
+  set();
+  if (window.ResizeObserver) new ResizeObserver(set).observe(el); else window.addEventListener('resize', set);
+})();
 function showFsBar() {
   if (!document.body.classList.contains('fullscreen')) return;
   const bar = document.getElementById('ttFsBar');

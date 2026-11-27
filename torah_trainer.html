@@ -1046,6 +1046,10 @@ body.fullscreen .tt-jumpnav { padding-right:84px; }   /* clear the fullscreen ex
    30 wholly under it, and walking back put 7 under the jump bar (WCAG 2.4.11). --tt-jump-h / --tt-audio-h are their live
    heights (0 while hidden or closed), kept by ttTrackStickies(). (S560 Pass C, pattern focus-hidden-under-a-sticky-bar) */
 html { scroll-padding-block: calc(var(--tt-jump-h, 0px) + 8px) calc(var(--tt-audio-h, 0px) + 8px); }
+/* In full screen the floating presentation bar (--tt-fsbar-h, 18px up; above the audio bar while it plays) is the bottom
+   edge's: Tab left a verse's Read / Chant / Loop / Copy wholly under its plate in 4 of 5 cells. */
+html:has(body.fullscreen) { scroll-padding-block-end: calc(var(--tt-fsbar-h, 0px) + 26px); }
+html:has(body.fullscreen.tt-karaoke-active) { scroll-padding-block-end: calc(var(--tt-audio-h, 0px) + var(--tt-fsbar-h, 0px) + 20px); }
 
 /* Inline aliyah divider (block; full-parsha only). Muted, thin rules, RTL-safe. */
 .tt-aliyah-divider {
