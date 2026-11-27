@@ -115,9 +115,12 @@ Every page ends in the same navy footer. Its rules ride inside the shared header
   it at the page's end.
 - **Phones:** the logo and the social buttons first, then the tool list's button, the links, the credits, the source
   line; the Tab order follows the source.
-- **Paper:** a white footer in navy ink. The home page prints its About links; every other page prints one compact
-  line of credits (and its source line), so the footer never takes a sheet of its own. Social buttons, settings, the
-  tool list and the cracks are off paper everywhere.
+- **Paper:** a white footer in navy ink. The home page prints its About links; every other page that prints its footer
+  prints one compact line of credits (and its source line), so the footer never takes a sheet of its own. Social
+  buttons, settings, the tool list and the cracks are off paper everywhere. A page whose print is a classroom artifact
+  of its own (a worksheet, cards, tags, a coloring sheet, the dashboard, the Tefillah Trainer's reading with its own
+  credits block) hides its footer in its print block; a page that prints someone else's licensed text keeps its
+  credits on the sheet (the Torah Trainer's source line names the Hebrew text's and the translation's licences).
 
 ## Kintsugi cracks
 
