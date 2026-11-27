@@ -2355,12 +2355,17 @@ body.fullscreen.tt-karaoke-active #ttRecFs { bottom: calc(var(--tt-audio-h, 96px
      handler pauses playback + clears the class; this backstops the non-decoration styles
      (deliberately NOT touching text-decoration, which the trope print underline uses). */
   .tt-word.active { background:none !important; box-shadow:none !important; outline:none !important; color:inherit !important; }
-  /* Page chrome: only the reading belongs on paper (generator S30 hide-list pattern).
+  /* Page chrome: only the reading and its credits belong on paper (generator S30 hide-list pattern).
      .tt-controls also covers the Copy bar; the fixed-position drawer/backdrop/toast/tour
-     otherwise re-stamp on EVERY printed page (position:fixed repeats per page in print). */
-  header, .tt-controls, #ttStatus, .tt-readall, .tt-chantall, footer, .tt-empty,
+     otherwise re-stamp on EVERY printed page (position:fixed repeats per page in print).
+     The footer prints: the header-icons block turns it into one compact strip of credits, and its source line names
+     the Hebrew text's and the translation's licences (CC BY-SA asks for that credit on a copy handed out). */
+  header, .tt-controls, #ttStatus, .tt-readall, .tt-chantall, .tt-empty,
   .settings-modal, .settings-backdrop, #tipFloat, .tt-hint-toast, .tour-spot, .tour-card, #fsExitBtn, #ttFsBar, .tt-shem-chip, .tt-notice-chip,
   .tt-fav-backdrop, .tt-fav-dialog, .tt-emo-backdrop, .tt-emo-dialog { display:none !important; }
+  /* …and it credits a translation only where one is on the sheet: off (or a handout), the line credited the Version
+     box's choice or printed the screen's "pick a version" advice under a Hebrew-only reading. */
+  body:not(:has(#ttReading :is(.tt-translation, .tt-col-translation, .tt-bible-translation))) #ttFooterTrans { display:none; }
 
   /* Never split a verse (or a side-by-side row) across a page break; best-effort —
      a verse taller than the page still breaks (browser overrides). */

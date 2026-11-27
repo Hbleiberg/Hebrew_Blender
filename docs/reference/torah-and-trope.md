@@ -240,6 +240,11 @@ coloring by mark, in `TROPES` order with any key the page does not know kept aft
   `.tt-ref-hdr` are print-hidden (the band replaces them on paper); on-screen legend behavior
   is unchanged. The band never prints spuriously — beforeprint hides it when no reading is
   loaded, and its chips render only with trope coloring on.
+- **Credits on paper:** the footer is not on the print hide list, so every printed reading and handout ends with the
+  shared footer's compact print strip (the credit line, then `.hf-src`: the Hebrew text's and the translation's
+  source and licence, as the Tefillah Trainer prints its credits). A last sheet can hold the strip alone (the Trope
+  staff layout on Genesis 1:1–2:3): `break-before:avoid` on the footer does not pull a line back across the
+  already-split reading wrappers.
 
 ---
 
