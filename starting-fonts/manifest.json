@@ -3425,6 +3425,140 @@
       ],
       "licenseSource": "partner-declared",
       "licenseDeclaredBy": "the Open Siddur Project"
+    },
+    {
+      "id": "frank-sofer",
+      "file": "frank-sofer/FrankSofer.ttf",
+      "displayName": "Frank Sofer",
+      "partner": "opensiddur",
+      "partnerName": "the Open Siddur Project",
+      "partnerUrl": "https://opensiddur.org/help/fonts/",
+      "upstream": "https://github.com/aharonium/opensiddur.org/blob/master/fonts/FrankSofer/FrankSofer.zip",
+      "licenseId": "GPL-with-font-exception",
+      "licenseName": "GNU GPL v2 with font exception",
+      "licenseUrl": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.html",
+      "licenseFile": "frank-sofer/LICENSE.txt",
+      "copyright": "Copyright (c) 2021, Ben Denckla (<bdenckla@alum.mit.edu>), with Reserved Font Name 'Taamey D'. Taamey D's glyphs are derived from those of Taamey Frank CLM Medium. Taamey D's OpenType mark positioning logic is original, i.e. *not* derived from that of Taamey Frank CLM Medium. Below are the relevant parts of the copyright of Taamey Frank CLM Medium, with minor edits for clarity. Hebrew glyphs (letters, vowels, & cantillation marks) copyright (c) 2009-2010, Yoram Gnat (<yoram.gnat@gmail.com>). Latin glyphs (letters and part of punctuation) taken from Century Schoolbook L font, copyright (c) 1999 by (URW)++ Design & Development.",
+      "reservedFontNames": [
+        "Taamey D"
+      ],
+      "designer": "Yoram Gnat (modified by Mordechai Shaliehsaboo)",
+      "originalVersion": "0.931",
+      "hasNikkud": true,
+      "hasTrop": true,
+      "sha256": "b8e888bc76fb271c6422c778cc09ca441fbd99359bba32709eb1b9498b27ed5f",
+      "added": "2026-11-27",
+      "obligations": [
+        "copyleft",
+        "changes"
+      ]
+    },
+    {
+      "id": "vilna-sofer",
+      "file": "vilna-sofer/VilnaSofer.ttf",
+      "displayName": "Vilna Sofer",
+      "partner": "opensiddur",
+      "partnerName": "the Open Siddur Project",
+      "partnerUrl": "https://opensiddur.org/help/fonts/",
+      "upstream": "https://github.com/aharonium/opensiddur.org/blob/master/fonts/VilnaSofer/VilnaSofer.zip",
+      "licenseId": "GPL-with-font-exception",
+      "licenseName": "GNU GPL v2 with font exception",
+      "licenseUrl": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.html",
+      "licenseFile": "vilna-sofer/LICENSE.txt",
+      "copyright": "Copyright (c) 2021, Ben Denckla (<bdenckla@alum.mit.edu>), with Reserved Font Name 'Taamey D'. Taamey D's glyphs are derived from those of Taamey Frank CLM Medium. Taamey D's OpenType mark positioning logic is original, i.e. *not* derived from that of Taamey Frank CLM Medium. Below are the relevant parts of the copyright of Taamey Frank CLM Medium, with minor edits for clarity. Hebrew glyphs (letters, vowels, & cantillation marks) copyright (c) 2009-2010, Yoram Gnat (<yoram.gnat@gmail.com>). Latin glyphs (letters and part of punctuation) taken from Century Schoolbook L font, copyright (c) 1999 by (URW)++ Design & Development.",
+      "reservedFontNames": [
+        "Taamey D"
+      ],
+      "designer": "Alan Hoenig/Omega Makor (modified by Mordechai Shaliehsaboo)",
+      "originalVersion": "0.931",
+      "hasNikkud": true,
+      "hasTrop": true,
+      "sha256": "04eeb651d7300b218567b93ec3f9d1efb4e170f0d309eb5392005c248750b99f",
+      "added": "2026-11-27",
+      "obligations": [
+        "copyleft",
+        "changes"
+      ]
+    },
+    {
+      "id": "vilna-classic",
+      "file": "vilna-classic/VilnaClassic.ttf",
+      "displayName": "Vilna Classic",
+      "partner": "opensiddur",
+      "partnerName": "the Open Siddur Project",
+      "partnerUrl": "https://opensiddur.org/help/fonts/",
+      "upstream": "https://github.com/aharonium/opensiddur.org/blob/master/fonts/VilnaClassic/VilnaClassic.zip",
+      "licenseId": "GPL-with-font-exception",
+      "licenseName": "GNU GPL v2 with font exception",
+      "licenseUrl": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.html",
+      "licenseFile": "vilna-classic/LICENSE.txt",
+      "copyright": "Copyright (c) 2021, Ben Denckla (<bdenckla@alum.mit.edu>), with Reserved Font Name 'Taamey D'. Taamey D's glyphs are derived from those of Taamey Frank CLM Medium. Taamey D's OpenType mark positioning logic is original, i.e. *not* derived from that of Taamey Frank CLM Medium. Below are the relevant parts of the copyright of Taamey Frank CLM Medium, with minor edits for clarity. Hebrew glyphs (letters, vowels, & cantillation marks) copyright (c) 2009-2010, Yoram Gnat (<yoram.gnat@gmail.com>). Latin glyphs (letters and part of punctuation) taken from Century Schoolbook L font, copyright (c) 1999 by (URW)++ Design & Development.",
+      "reservedFontNames": [
+        "Taamey D"
+      ],
+      "designer": "Maxim Iorsh (modified by Mordechai Shaliehsaboo)",
+      "originalVersion": "0.931",
+      "hasNikkud": true,
+      "hasTrop": true,
+      "sha256": "c897d06bab9f4bf680bb11f0255cc58a39cd5b07be27be2a4ee8b781f5563c03",
+      "added": "2026-11-27",
+      "obligations": [
+        "copyleft",
+        "changes"
+      ]
+    },
+    {
+      "id": "hadassah",
+      "file": "hadassah/Hadassah.ttf",
+      "displayName": "Hadassah",
+      "partner": "opensiddur",
+      "partnerName": "the Open Siddur Project",
+      "partnerUrl": "https://opensiddur.org/help/fonts/",
+      "upstream": "https://github.com/aharonium/opensiddur.org/blob/master/fonts/Hadassah/Hadassah.zip",
+      "licenseId": "GPL-with-font-exception",
+      "licenseName": "GNU GPL v2 with font exception",
+      "licenseUrl": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.html",
+      "licenseFile": "hadassah/LICENSE.txt",
+      "copyright": "Copyright (c) 2021, Ben Denckla (<bdenckla@alum.mit.edu>), with Reserved Font Name 'Taamey D'. Taamey D's glyphs are derived from those of Taamey Frank CLM Medium. Taamey D's OpenType mark positioning logic is original, i.e. *not* derived from that of Taamey Frank CLM Medium. Below are the relevant parts of the copyright of Taamey Frank CLM Medium, with minor edits for clarity. Hebrew glyphs (letters, vowels, & cantillation marks) copyright (c) 2009-2010, Yoram Gnat (<yoram.gnat@gmail.com>). Latin glyphs (letters and part of punctuation) taken from Century Schoolbook L font, copyright (c) 1999 by (URW)++ Design & Development.",
+      "reservedFontNames": [
+        "Taamey D"
+      ],
+      "designer": "Yoram Gnat (modified by Mordechai Shaliehsaboo)",
+      "originalVersion": "0.931",
+      "hasNikkud": true,
+      "hasTrop": true,
+      "sha256": "12a7fd71c91c95a55283a90ff35ff8275fd5f49d25c7278a14e2d30e43205143",
+      "added": "2026-11-27",
+      "obligations": [
+        "copyleft",
+        "changes"
+      ]
+    },
+    {
+      "id": "hatkafa",
+      "file": "hatkafa/Hatkafa-Regular.ttf",
+      "displayName": "Hatkafa",
+      "partner": "opensiddur",
+      "partnerName": "the Open Siddur Project",
+      "partnerUrl": "https://opensiddur.org/help/fonts/",
+      "upstream": "https://github.com/aharonium/opensiddur.org/blob/master/fonts/Hatkafa/Hatkafa.zip",
+      "licenseId": "OFL-1.1",
+      "licenseName": "SIL Open Font License 1.1",
+      "licenseUrl": "https://openfontlicense.org",
+      "licenseFile": "hatkafa/LICENSE.txt",
+      "copyright": "Copyright (c) 2026, Umar Ben / Ben Nafi (umarbenidris@gmail.com), with Reserved Font Name \"Hatkafa\".",
+      "reservedFontNames": [
+        "Hatkafa"
+      ],
+      "designer": "Umar ben / Ben Nafi",
+      "originalVersion": "1.003",
+      "hasNikkud": true,
+      "hasTrop": false,
+      "sha256": "3bc41ed017c1e165cdab159a3399d522e93a0f01b0d686db1895695ff3a46596",
+      "added": "2026-11-27",
+      "obligations": [
+        "copyleft"
+      ]
     }
   ]
 }
