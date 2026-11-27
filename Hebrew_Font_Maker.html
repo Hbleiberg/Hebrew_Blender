@@ -12003,12 +12003,12 @@ function renderMarkControls(c, it) {
   } else if (workMode === 'trace') {
     h += `<div class="inline">${I18n.t('fontmaker.panels.ink_threshold')} <input type="range" min="1" max="254" value="${esc(it.binThreshold)}" oninput="liveThreshold(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.ink_threshold'))}"> <span id="thV" class="readout">${esc(it.binThreshold)}</span></div>
       <label class="chk"><input type="checkbox" ${it.invert?'checked':''} onchange="liveInvert(this.checked)"> ${I18n.t('fontmaker.panels.invert')}</label>
-      ${ (it.source && it.source.dataUrl) ? `<label class="chk"><input type="checkbox" ${itemFlattenOn(it)?'checked':''} onchange="liveFlatten(this.checked)" aria-label="${esc(I18n.t('fontmaker.panels.even_lighting_aria'))}"> ${I18n.t('fontmaker.panels.even_lighting')}</label>` : '' }
+      ${ (it.source && it.source.dataUrl) ? `<label class="chk"><input type="checkbox" data-fk="tr:flatten" ${itemFlattenOn(it)?'checked':''} onchange="liveFlatten(this.checked)" aria-label="${esc(I18n.t('fontmaker.panels.even_lighting_aria'))}"> ${I18n.t('fontmaker.panels.even_lighting')}</label>` : '' }
       <div class="inline">${I18n.t('fontmaker.panels.detail')} <input type="range" min="0" max="100" step="1" value="${Math.round(100 - it.epsilon*2.5)}" oninput="liveDetail(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.detail'))}"> <span id="epV" class="readout">${Math.round(100 - it.epsilon*2.5)}</span></div>
       <div class="inline">${I18n.t('fontmaker.panels.corners')} <input type="range" min="0" max="90" step="1" value="${esc(it.cornerAngle != null ? it.cornerAngle : 32)}" oninput="liveCorners(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.corners'))}"> <span id="cnV" class="readout">${esc(it.cornerAngle != null ? it.cornerAngle : 32)}</span></div>
-      ${ (it.source && it.source.dataUrl) ? `<label class="chk"><input type="checkbox" ${it.outlineOnly?'checked':''} onchange="liveOutlineOnly(this.checked)"> ${I18n.t('fontmaker.panels.outline_only')}</label>` : '' }
+      ${ (it.source && it.source.dataUrl) ? `<label class="chk"><input type="checkbox" data-fk="tr:outline" ${it.outlineOnly?'checked':''} onchange="liveOutlineOnly(this.checked)"> ${I18n.t('fontmaker.panels.outline_only')}</label>` : '' }
       ${ (it.source && it.source.dataUrl && it.outlineOnly) ? `<div class="inline">${I18n.t('fontmaker.panels.line_weight')} <input type="range" min="10" max="250" step="1" value="${Math.round(it.lineWeight!=null?it.lineWeight:70)}" oninput="liveLineWeight(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.line_weight'))}"> <span id="lwV" class="readout">${Math.round(it.lineWeight!=null?it.lineWeight:70)}</span></div>
-      <div class="ctl-row"><button class="ctl-btn" onclick="applyOutlineToAll()">${I18n.t('fontmaker.panels.apply_outline_all')}</button></div>` : '' }
+      <div class="ctl-row"><button class="ctl-btn" data-fk="tr:outlineall" onclick="applyOutlineToAll()">${I18n.t('fontmaker.panels.apply_outline_all')}</button></div>` : '' }
       <div class="ctl-row">
         <button class="ctl-btn primary" data-fk="tr:retrace" onclick="traceCurrent()">${I18n.t('fontmaker.panels.retrace')}</button>
         <button class="ctl-btn" data-fk="tr:clear" onclick="clearTrace()">${I18n.t('fontmaker.panels.clear')}</button>
@@ -21797,15 +21797,15 @@ function renderTraceLeft(L, l) {
     <div class="side-slider-label">${I18n.t('fontmaker.panels.ink_threshold')} <span id="thV" class="readout">${esc(l.binThreshold)}</span></div>
     <input type="range" class="side-slider" min="1" max="254" value="${esc(l.binThreshold)}" oninput="liveThreshold(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.ink_threshold'))}">
     <label class="chk"><input type="checkbox" ${l.invert?'checked':''} onchange="liveInvert(this.checked)"> ${I18n.t('fontmaker.panels.invert')}</label>
-    ${ (l.source && l.source.dataUrl && l.source.kind !== 'draw') ? `<label class="chk"><input type="checkbox" ${itemFlattenOn(l)?'checked':''} onchange="liveFlatten(this.checked)" aria-label="${esc(I18n.t('fontmaker.panels.even_lighting_aria'))}"> ${I18n.t('fontmaker.panels.even_lighting')}</label>` : '' }
+    ${ (l.source && l.source.dataUrl && l.source.kind !== 'draw') ? `<label class="chk"><input type="checkbox" data-fk="tr:flatten" ${itemFlattenOn(l)?'checked':''} onchange="liveFlatten(this.checked)" aria-label="${esc(I18n.t('fontmaker.panels.even_lighting_aria'))}"> ${I18n.t('fontmaker.panels.even_lighting')}</label>` : '' }
     <div class="side-slider-label">${I18n.t('fontmaker.panels.detail')} <span id="epV" class="readout">${detail}</span></div>
     <input type="range" class="side-slider" min="0" max="100" step="1" value="${detail}" oninput="liveDetail(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.detail'))}">
     <div class="side-slider-label">${I18n.t('fontmaker.panels.corners')} <span id="cnV" class="readout">${esc(corner)}</span></div>
     <input type="range" class="side-slider" min="0" max="90" step="1" value="${esc(corner)}" oninput="liveCorners(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.corners'))}">
-    ${ (l.source && l.source.dataUrl) ? `<label class="chk"><input type="checkbox" ${l.outlineOnly?'checked':''} onchange="liveOutlineOnly(this.checked)"> ${I18n.t('fontmaker.panels.outline_only')}</label>` : '' }
+    ${ (l.source && l.source.dataUrl) ? `<label class="chk"><input type="checkbox" data-fk="tr:outline" ${l.outlineOnly?'checked':''} onchange="liveOutlineOnly(this.checked)"> ${I18n.t('fontmaker.panels.outline_only')}</label>` : '' }
     ${ (l.source && l.source.dataUrl && l.outlineOnly) ? `<div class="side-slider-label">${I18n.t('fontmaker.panels.line_weight')} <span id="lwV" class="readout">${Math.round(l.lineWeight!=null?l.lineWeight:70)}</span></div>
     <input type="range" class="side-slider" min="10" max="250" step="1" value="${Math.round(l.lineWeight!=null?l.lineWeight:70)}" oninput="liveLineWeight(this.value)" onchange="udBurstCommit()" aria-label="${esc(I18n.t('fontmaker.panels.line_weight'))}">
-    <div class="ctl-row"><button class="ctl-btn" onclick="applyOutlineToAll()">${I18n.t('fontmaker.panels.apply_outline_all')}</button></div>` : '' }
+    <div class="ctl-row"><button class="ctl-btn" data-fk="tr:outlineall" onclick="applyOutlineToAll()">${I18n.t('fontmaker.panels.apply_outline_all')}</button></div>` : '' }
     <div class="ctl-row">
       <button class="ctl-btn primary" data-fk="tr:retrace" onclick="traceCurrent()">${I18n.t('fontmaker.panels.retrace')}</button>
       <button class="ctl-btn" data-fk="tr:clear" onclick="clearTrace()">${I18n.t('fontmaker.panels.clear')}</button>

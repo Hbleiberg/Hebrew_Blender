@@ -1976,8 +1976,9 @@ wraps `renderControlsNow`). Every control of Edit points opts in — the Shapes 
 rows (`ct:`, `cts:`, `ctv:`, `ctd:<index>`), every button, slider, number field, radio and checkbox of
 the Transform section (`xf:*`, so a slider stepped with the arrow keys commits each step and stays
 focused), Round corners, Reduce points and the selection actions (`np:*`, the split *Delete*'s ▾ and
-its menu's two items among them: `np:delmenu`, `np:delpts`, `np:delct`) — and so do Re-trace and
-Clear in Trace (`tr:*`) and the *Copy outline…* and *Paste SVG code…* buttons of every step
+its menu's two items among them: `np:delmenu`, `np:delpts`, `np:delct`) — and so do the controls of
+Trace that rebuild the column (`tr:*`: Re-trace, Clear, *Even out lighting*, *Outline only* and
+*Apply outline to all*, in a letter's Trace and the mark editor's alike) and the *Copy outline…* and *Paste SVG code…* buttons of every step
 (`cp:outline`, `svg:code`, one key across the steps, since an Insert can land on another one); a new
 keyboard-operable control in that column should too. A control whose press takes it away names
 where focus goes instead, **`data-fk-else="<key> <key>…"`**, tried in order: *Select all* and *Paste*
