@@ -66,7 +66,7 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P3 (**NEW 2026-09-26**) | torah_trainer.html | **The karaoke highlight likely runs a word off in the 19 TIMING_SLIPS stretches** (Shemini 6 from Leviticus 11:8 on), where a timing file slips while its count still matches. | found 2026-09-26
 
-- [ ] P4 (**NEW S685 D**) | js/i18n.js, 10 tool pages | **A failed locale fetch leaves every JS-built string a raw key until a retry lands** (the census's failed arm: 25 cells on the tool pages — quick-start chips, nusach names, filter heads; static text keeps its English, the retry heals on `online` / a visible tab / 3 tries): an English fallback for JS strings is a shared-script question …[full text: IMPROVEMENT_ARCHIVE.md]
+- [ ] P4 (**NEW S686 C**) | tefillah_trainer.html | **In full screen in the Hebrew UI the focused skip link sits partly under the Exit button** (both at the physical top right; partly, never wholly). | found S686
 
 - [ ] P4 (**NEW S685 — after `4cafae3a`**) | flash_cards.html | **17 of the dictionary's 13,080 words are wider than a listening tile even in two columns** (6 at 560px; e.g. אֶפִּיסְטֵמוֹלוֹגְיָה 243 px in 231): a Words round with one of them runs it past its tile's edge. | found S685
 
@@ -84,11 +84,9 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S676 G — after `016e91ef`**) | tefillah_trainer.html | **10 of 312 prints still end on the credits alone: Page view and Side by side** (on the grid the rule pushed the reading off sheet 1). | found S676
 
-- [ ] P4 (**NEW S675 C; pattern `focus-hidden-under-a-sticky-bar`**) | tefillah_trainer.html, torah_trainer.html | **The fullscreen bar covers a focused credits link and, at 1024px, the open drawer's bottom corner.** | found S675
+- [ ] P4 (**NEW S675 C; S686: the focus half FIXED `de669c2e`**) | tefillah_trainer.html, torah_trainer.html | **In full screen at 1024px the presentation bar (z-index 200, kept up while the drawer it opened is open) lies over the open drawer's bottom-start corner.** | found S675
 
 - [ ] P4 (**NEW S674 H — gate 2, a default**) | tefillah_trainer.html, torah_trainer.html | **"Select lines to copy…" opens the copy bar with Select lines off.** | found S674
-
-- [ ] P4 (**NEW S673 N — M's**) | tefillah_trainer.html | **In Page view an instruction paragraph takes the prayer text's line pitch** (Ashrei's note: 12px rows 66px apart). | found S673
 
 - [ ] P4 (**NEW S673 N — verify first; pattern `install-banner-over-a-sheet's-bottom-controls`**) | dashboard, dictionary, generator, name_tags, torah_trainer | **Their drawers and sidebars (the Trainer's audio bar) were never opened under the forced install hint**; the S673 probe is the recipe. | found S673
 
@@ -133,6 +131,8 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S599 H**) | torah_trainer.html | **After Create, the Assign dialog's fields stay live** (New code word changes only the box); the feedback label sits at its textarea's foot. | found S599
 
 - [ ] P4 (**NEW S597 G; S677 re-measured under the navy footer — not small**) | trope_tutor.html | **8 of 56 prints gain a sheet holding only the footer** (6 Phrases, 2 HE Learn Letter): a full last sheet leaves ~22px for its ~105; the footer's `break-before:avoid` moves nothing (the last card is 5 wrappers deep in a flex body; findings S677). | found S597
+
+- [ ] P4 (**NEW S685 D**) | js/i18n.js, 10 tool pages | **A failed locale fetch leaves every JS-built string a raw key until a retry lands** (the census's failed arm: 25 cells on the tool pages — quick-start chips, nusach names, filter heads; static text keeps its English, the retry heals on `online` / a visible tab / 3 tries): an English fallback for JS strings is a shared-script question …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - [ ] P4 (**NEW S672 P — verify first; pattern `synced-reading-follows-the-other-tab`**) | flash_cards.html, name_tags.html, letter_learner.html, hebrew_dictionary.html | **A synced settings row that names what is open may follow the other tab, as the two trainers' did**: run smoke-sync's `readingStays` shape on the deck or profile in use, the open list, the mode and card, the filters. | found …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -386,6 +386,8 @@ _(none)_
 
 ## Done
 
+- [x] 2026-11-27 | (S686 close-out) | branch/deploy note | **S686 = C on `trope_tutor.html` (S591 → S686, 14 commits to the page) + `hebrew_blend_generator.html` (S594 → S686, 48 commits): CLEAN on both (FOUND 0 new; 4 leads settled) + 2 from the queue on the two trainers.** Branch `claude/brave-hopper-ugnafa`, continuing draft PR #429; `sw.js` v1569; nothing live.
+
 - [x] 2026-11-27 | (S685 close-out) | branch/deploy note | **S685 = D on the chrome bundle (S590 → S685, 709 commits; 16–41 to each page): FOUND 1, FIXED 1 (16 pages) + 3 from the queue.** Branch `claude/brave-hopper-ugnafa`, continuing draft PR #429; `sw.js` v1568; nothing live.
 
 - [x] 2026-11-27 | `36f294a7` | torah_trainer.html, probe | (S682 queue; pattern `contrast-below-AA-on-a-tinted-or-coloured-plate`) **A flashed verse keeps its Read / Chant / Loop / Copy labels legible** (3.9:1 light / 2.5 dark at the flash's start; light was unrecorded) | probe 8 / 8, ≥ 9.35 light / 5.9 dark (before 0 / 8); hover and the after-flash grey read back
@@ -420,15 +422,11 @@ _(none)_
 
 - [x] 2026-11-24 | `1c5ddb13` | torah_trainer.html, tefillah_trainer.html, sw.js | (S682 C; pattern `contrast-below-AA-on-a-tinted-or-coloured-plate`) **The Latin under a trope-coloured word takes the word's ink** (3.0–4.1:1 light, 2.5–3.0 dark → 5.6+) | `c682/fix1.mjs`: under AA 0 in 22 states (before 175–1,976 a state)
 
-- [x] 2026-11-24 | (S681 close-out) | branch/deploy note | **S681 = H on `hebrew_dictionary.html` (S585 → S681, 46 commits to the page): 5 lessons + the student cell; FOUND 4 (a P2 corpus call to the maintainer, 2 FIXED, 1 P4 logged at the cap), FIXED 2 more from the queue.** Draft PR #427 continues, `sw.js` v1543 → v1547, corpus ?v=8 → 9; nothing live changed.
-
-- [x] 2026-11-24 | `54dce54c` | hebrew_dictionary.html, sw.js, probe | (S681 H) **A card's headword never runs under its corner controls** (the copy / Google / Hear trio and Bulk Copy Mode's box) | census, every card × 4 cells × 4 states: 0 under a control (before 323–13,081); probe 18 / 18 (before 9 fail)
-
-- [x] 2026-11-24 | `71e8f6b4` | data/hebrew_words.json, 3 fetchers, README.md, ops.md, sw.js, probe | (S681 H) **A vowel's dotted circle shows that vowel alone: the ten vowel-name glosses lose a stray chirik (corpus ?v=9)** | probe 8 / 8 (before 5 / 8); S629's probe passes; recipe 12 / 12
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-11-27 | **S686** | iters: 3 | tools: tefillah_trainer ×2, torah_trainer, sw | patterns fixed: focus-hidden-under-a-sticky-bar ×1 | pass run: C (trope + generator; CLEAN, FOUND 0) | gates: none
 
 - 2026-11-27 | **S685** | iters: 5 | tools: js/i18n.js (16 pages), flash_cards ×2, torah_trainer, sw, probes ×4 | patterns fixed: pre-ready-i18n / never-re-rendered ×1, contrast-below-AA-on-a-tinted-or-coloured-plate ×1 | pass run: D (chrome, S590 → S685; FOUND 1, FIXED 1; 2 P4) | gates: none
 
@@ -468,11 +466,9 @@ _(none)_
 
 - 2026-11-20 | **S667** | iters: 5 | tools: letter_discrimination ×2, trope_atlas ×2, 2 reference docs, sw ×4, probes S667 ×4 | patterns fixed: viewport-height-fit-without-a-floor ×1 (new) | pass run: N (letter_discrimination, first; FOUND 4 + 1, FIXED 2 + 2 on the atlas; 2 logged) | gates: gate 4 …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- 2026-11-20 | **S665** | iters: 5 | tools: trope_atlas ×2, flash_cards, hebrew_blend_generator, torah-and-trope.md, sw ×4, probes S665 ×4 | patterns fixed: focus-hidden-under-a-sticky-bar ×1, skip-target-rings-the-whole-column ×1 (new), dark-navy-fill-matches-its-ground ×1 | pass run: C …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S685 (2026-11-27):** js/i18n.js (16 pages), flash_cards ×2, torah_trainer, sw.js, probes ×4 · S684: torah_trainer, ivrit-classes.js, home.md, torah-and-trope.md, sw.js, probes ×2
+- **Snapshot S686 (2026-11-27):** tefillah_trainer ×2, torah_trainer, sw.js · S685: js/i18n.js (16 pages), flash_cards ×2, torah_trainer, sw.js, probes ×4
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
 
@@ -496,7 +492,7 @@ _(none)_
 
 - `auto-hidden-bar-takes-focus-unseen` | ACTIVE | owner C | det: scripts/loop/probes/S675-fullscreen-bar-wakes-for-the-keyboard.mjs | last S675 | streak 0
 
-- `focus-hidden-under-a-sticky-bar` | ACTIVE | owner C | det: recipe | last S666 | streak 0
+- `focus-hidden-under-a-sticky-bar` | ACTIVE | owner C | det: recipe | last S686 | streak 0
 
 - `hover-tip-not-dismissible-or-hoverable` | ACTIVE | owner C | det: recipe | last S594 | streak 0
 
@@ -858,7 +854,7 @@ _(none)_
 
 - K i18n / localization audit: 2026-11-06 (**S623 — 37th K, `843984b3..2d9e7e23` (525 commits; the Trope Atlas', Name Tags', the assignments and review pages' and the `parsha/` pages' first K): CSV +925 / −2 / 67 reworded (parity, arrows, plurals read); static 5,956 refs (0 missing) + 3,460 fallback sites; blind 0/12,102 added lines; 42 live-switch cells on the tree and the base (raw keys 0, …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- C accessibility (one tool): 2026-11-24 (**S682 — `torah_trainer.html` (S586 → S682, 68 commits to the page): 92 census views × 4 cells with Sefaria's real texts + 2 outages; Tab walks 240 stops a cell; 30 keyboard scenarios. FOUND 2 + 2 P4, FIXED 2 (the first on both trainers) + 2 from the queue; 2 logged. C-next: trope (S591), generator …[full text: IMPROVEMENT_ARCHIVE.md]
+- C accessibility (one tool): 2026-11-27 (**S686 — `trope_tutor.html` (S591 → S686, 14 commits: the navy footer, the cracks, the skip link, forced colours) + `hebrew_blend_generator.html` (S594 → S686, 48 commits): census (contrast, 24px targets, names, `aria-hidden` focus, unmarked Hebrew, rings) over 4 tutor views + drill, results, tour, tips and 11 generator states × 4 cells; Tab walks, roving …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - A recurring-pattern sweep: 2026-11-20 (**S666 — 43rd A with the A2 parse classification, `6f9a5992..26421db7` (the first full sweep since S530: 18,315 added lines over 37 files; Name Tags', the Trope Atlas', the Holiday Guide's, `letter_discrimination.html`'s, the coloring hub's and `trope_review.html`'s first A): 32 static arms over the added lines (plants 32 / 32), 10 new storage keys, 44 …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -882,4 +878,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-11-08 (**S630 — 41st F, long-build progress (S542's F-next; the affordance's first F): 13 presses that build before they answer, by real clicks with an animation-frame recorder, real PDF libraries from a cache, a held CDN, double presses at raw points. FOUND 2, FIXED 2 (+1 P4). F-next: destructive-action confirms.**)
 
-**Next session (S686):** **Branch `claude/brave-hopper-ugnafa` (S684–S685, draft PR #429): open → continue; merged → fresh branch off `origin/main`.** `sw.js` **v1568**, FM **6.0**, corpus ?v=**9**, catalog ?v=**9**. ⚑ drift: main=a579686 sw=v1568 fm=6.0 migration=0014_saves_tool_tefillah_trainer.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest next: C trope (S591; pointer: C); then G fontmaker (S593), N fontmaker (S595), D trope (S598). ⚑ Suite passes are aging: E S621, K S623, I S628, F S630, B S631 — the Font Maker 6.0 (`d2d922c..a579686`) and the class roster, hub, footer and cracks (`9e702ae..a402f72`) are still unseen by E, K, I, F, B. ⚑ The corpus's senses: S681's Awaiting P2. ⚑ Queue: Flash Cards' S683 profile-row P4; the staff's credits-only sheet (S684); the dictionary's Filter by Letter tiles; the failed-locale raw keys (S685). ⚑ Awaiting: S681, S662, S653, S652.
+**Next session (S687):** **Branch `claude/brave-hopper-ugnafa` (S684–S686, draft PR #429): open → continue; merged → fresh branch off `origin/main`.** `sw.js` **v1569**, FM **6.0**, corpus ?v=**9**, catalog ?v=**9**. ⚑ drift: main=a579686 sw=v1569 fm=6.0 migration=0014_saves_tool_tefillah_trainer.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest next: G fontmaker (S593; pointer: G); then N fontmaker (S595), D trope (S598), H torah (S599), C chrome (S600). ⚑ Suite passes are aging: E S621, K S623, I S628, F S630, B S631 — the Font Maker 6.0 (`d2d922c..a579686`) and the class roster, hub, footer and cracks (`9e702ae..a402f72`) are still unseen by E, K, I, F, B. ⚑ The corpus's senses: S681's Awaiting P2. ⚑ Queue: Flash Cards' S683 profile-row P4; the staff's credits-only sheet (S684); the dictionary's Filter by Letter tiles (a visible change: ask first); the failed-locale raw keys (S685); the trainers' fullscreen bar over the drawer (S675). ⚑ Awaiting: S681, S662, S653, S652.

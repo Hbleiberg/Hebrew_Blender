@@ -99488,3 +99488,29 @@ _(prior)_ **Next session (S684):** **Branch `claude/zen-goldberg-1lov9k` (S676�
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 - D performance (one tool): 2026-11-27 (**S685 — chrome (S590 → S685; the new hub, the navy footer, the cracks): cold 7 pages × EN 1280 / HE 800 × 1× / 4× on HEAD and the S590-era tree (56 loads, the planted 300 ms click read 300–310 in each), 58 interactions @4×, a locale-held / locale-failed census of 25 pages. 0 tasks over 200 ms after the first cold cell, max interaction task 104 ms. FOUND 1 (the dark label's raw key, 16 pages), FIXED 1 + 3 from the queue; 2 P4. D-next: trope (S598), dictionary (S605), letter_learner (S612).**)
+
+- _(prior)_ **Next session (S686):** **Branch `claude/brave-hopper-ugnafa` (S684–S685, draft PR #429): open → continue; merged → fresh branch off `origin/main`.** `sw.js` **v1568**, FM **6.0**, corpus ?v=**9**, catalog ?v=**9**. ⚑ drift: main=a579686 sw=v1568 fm=6.0 migration=0014_saves_tool_tefillah_trainer.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest next: C trope (S591; pointer: C); then G fontmaker (S593), N fontmaker (S595), D trope (S598). ⚑ Suite passes are aging: E S621, K S623, I S628, F S630, B S631 — the Font Maker 6.0 (`d2d922c..a579686`) and the class roster, hub, footer and cracks (`9e702ae..a402f72`) are still unseen by E, K, I, F, B. ⚑ The corpus's senses: S681's Awaiting P2. ⚑ Queue: Flash Cards' S683 profile-row P4; the staff's credits-only sheet (S684); the dictionary's Filter by Letter tiles; the failed-locale raw keys (S685). ⚑ Awaiting: S681, S662, S653, S652.
+
+
+<!-- archived by compact-ledger at the S687 boundary, 2026-11-27 -->
+## Compaction (S687, 2026-11-27) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-11-27 | `381f9921` | tefillah_trainer.html | (S673 queue) **In Page view an instruction note keeps its own line spacing** (13px rows 46px apart: an inline span took the running text's line box) | `inst.mjs`: 78 / 140 notes at the text pitch → 0 / 140 (pitch 20px), 3 prayers × 5 cells; Lecha Dodi (no note) verse positions identical; Hide instructions still hides it
+
+- [x] 2026-11-27 | `de669c2e` | torah_trainer.html, tefillah_trainer.html, sw.js | (S675 queue; pattern `focus-hidden-under-a-sticky-bar`) **In full screen a focused control clears the presentation bar** (the root's bottom scroll padding reserves `--tt-fsbar-h` + its offset; the Tefillah Trainer gains the height tracker) | `fswalk.mjs` Tab + Shift+Tab, 5 cells: torah 12 wholly + 24 partly → 0 / 0, tefillah (the full Amidah) 2 + 2 → 0 / 0; `fsgeom.mjs` 8 cells to 320px and with the audio bar the clear band ends 8px above the plate; outside full screen unchanged
+
+- [x] 2026-11-24 | (S681 close-out) | branch/deploy note | **S681 = H on `hebrew_dictionary.html` (S585 → S681, 46 commits to the page): 5 lessons + the student cell; FOUND 4 (a P2 corpus call to the maintainer, 2 FIXED, 1 P4 logged at the cap), FIXED 2 more from the queue.** Draft PR #427 continues, `sw.js` v1543 → v1547, corpus ?v=8 → 9; nothing live changed.
+
+- [x] 2026-11-24 | `54dce54c` | hebrew_dictionary.html, sw.js, probe | (S681 H) **A card's headword never runs under its corner controls** (the copy / Google / Hear trio and Bulk Copy Mode's box) | census, every card × 4 cells × 4 states: 0 under a control (before 323–13,081); probe 18 / 18 (before 9 fail)
+
+- [x] 2026-11-24 | `71e8f6b4` | data/hebrew_words.json, 3 fetchers, README.md, ops.md, sw.js, probe | (S681 H) **A vowel's dotted circle shows that vowel alone: the ten vowel-name glosses lose a stray chirik (corpus ?v=9)** | probe 8 / 8 (before 5 / 8); S629's probe passes; recipe 12 / 12
+
+### from Per-session log (one line per session)
+
+- 2026-11-20 | **S665** | iters: 5 | tools: trope_atlas ×2, flash_cards, hebrew_blend_generator, torah-and-trope.md, sw ×4, probes S665 ×4 | patterns fixed: focus-hidden-under-a-sticky-bar ×1, skip-target-rings-the-whole-column ×1 (new), dark-navy-fill-matches-its-ground ×1 | pass run: C …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- C accessibility (one tool): 2026-11-27 (**S686 — `trope_tutor.html` (S591 → S686, 14 commits: the navy footer, the cracks, the skip link, forced colours) + `hebrew_blend_generator.html` (S594 → S686, 48 commits): census (contrast, 24px targets, names, `aria-hidden` focus, unmarked Hebrew, rings) over 4 tutor views + drill, results, tour, tips and 11 generator states × 4 cells; Tab walks, roving tabs, skip link, motion with its control. CLEAN on both, FOUND 0 (4 leads settled); + 2 queue fixes on the trainers. C-next: chrome (S600), dashboard (S607), fontmaker (S614).**)
