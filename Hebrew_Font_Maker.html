@@ -22544,10 +22544,6 @@ function udShortcutBlocked(o) {
   if (document.querySelector(o.editShape ? '.overlay.open:not(#markEditOverlay)' : '.overlay.open')) return true;
   return false;
 }
-/* Enter on a focused button, link, summary or menu item is that control's own press: a document-level
-   handler that gives Enter a meaning of its own (pen mode places a point with it) leaves it alone, or
-   the press is swallowed by its preventDefault and nothing happens. */
-function keyPressesControl(e) { const t = e.target; return !!(t && t !== document.body && t.closest && t.closest('button, a[href], summary, select, [role="button"], [role="menuitem"]')); }
 /* Ctrl/Cmd+Z = undo · Ctrl/Cmd+Shift+Z or Ctrl+Y = redo */
 document.addEventListener('keydown', e => {
   if (!(e.ctrlKey || e.metaKey) || e.altKey) return;
@@ -22688,7 +22684,6 @@ document.addEventListener('keydown', e => {
   }
   if (e.ctrlKey || e.metaKey) return;                    // let Ctrl/Cmd+Z (undo/redo) fall through
   if (_penMode) {                                        // ── pen mode owns the keyboard ──
-    if (e.key === 'Enter' && keyPressesControl(e)) return;   // …except Enter on a focused button: it presses that button (Cancel path in the left column), never places a point
     if (e.key === 'Enter') { e.preventDefault();
       if (e.shiftKey) closePenContour();
       else if (_penCursor) penPlacePoint(_penCursor.slice(), e.altKey);
