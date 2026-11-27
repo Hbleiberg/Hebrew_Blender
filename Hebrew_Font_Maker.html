@@ -519,12 +519,13 @@ header{--kin-pt:10px;--kin-pb:10px;--kin-gap:14px;}   /* this header's block pad
     .tb-group.tb-export { flex-wrap: wrap; row-gap: 8px; }
     #exportBtn { white-space: nowrap; }
   }
-  /* Status line (export/save messages) — its own row below the toolbar, present only when there's a message. */
-  #statusMsg { color: var(--gold-light); font-size: 0.78rem; padding: 5px 18px; background: var(--navy); }
+  /* Status line (export/save messages, and what each Edit points press did) — its own row below the toolbar,
+     one line tall whether or not it holds a message: a strip that appeared with each message pushed the whole
+     page down under the pointer, so a second click on the same button missed it. Never display:none — a
+     hidden role=status leaves the accessibility tree, so the first message could land in a region the screen
+     reader was never watching. */
+  #statusMsg { color: var(--gold-light); font-size: 0.78rem; line-height: 1.4; min-block-size: 1.4em; padding: 5px 18px; background: var(--navy); }
   body.dark #statusMsg { background: #0d1220; }
-  /* Empty, it collapses by height, not display:none: a hidden role=status leaves the accessibility tree, so the
-     first message can land in a region the screen reader was never watching. */
-  #statusMsg:empty { padding-block: 0; }
 
   /* ── App layout ── */
   .app { display: flex; align-items: flex-start; gap: 0; min-height: calc(100vh - 150px); }
