@@ -27567,9 +27567,12 @@ async function _generatePreviewPDF() {
       chunk.forEach((L, ri) => {
         const ry = top + headH + ri*rowH, cy = ry + rowH/2, ch = String.fromCodePoint(parseInt(L.cp,16));
         const lx = x0 + labelW/2, pl = project.letters.find(q => q.codepoint === L.cp), an = pl && pl.anchors;
+        // The row's letter name in the UI's language, as the page's own grids show it (gName): the chart's column heads were
+        // already Hebrew in a Hebrew UI while its rows still said "Alef", "Bet".
+        const nm = gName(L.name);
         ctx.direction = 'ltr'; ctx.fillStyle = '#888'; ctx.font = "9px 'Source Sans 3', sans-serif";
         if (an && an.below && an.above && an.center) {
-          ctx.fillText(L.name, lx, ry + 13);
+          ctx.fillText(nm, lx, ry + 13);
           ctx.font = "7px 'Source Sans 3', sans-serif"; ctx.fillStyle = '#999';
           // The pair in one left-to-right isolate (U+2066 … U+2069: a canvas has no unicode-bidi), the line in the UI's own
           // direction: after the Hebrew word, "106,-45" drew as "45-,106" (the comma and minus between numbers took the
@@ -27580,7 +27583,7 @@ async function _generatePreviewPDF() {
           ctx.fillText(I18n.t('fontmaker.canvas.anchor_above',  { xy: xy(an.above) }),  lx, ry + 40);
           ctx.fillText(I18n.t('fontmaker.canvas.anchor_center', { xy: xy(an.center) }), lx, ry + 52);
         } else {
-          ctx.fillText(L.name, lx, cy);
+          ctx.fillText(nm, lx, cy);
         }
         ctx.fillStyle = '#111'; ctx.direction = 'rtl'; ctx.font = HEB(26);
         CHART_COLS.forEach((c, ci) => {
@@ -27691,7 +27694,7 @@ function templateCellHTML(item, kind) {
     '<div style="position:absolute;top:5px;left:7px;display:flex;align-items:center;gap:6px;'
       + 'color:' + TPL_INK + ';font-family:\'Source Sans 3\',sans-serif;line-height:1.05;pointer-events:none;">'
       + '<span style="font-family:' + esc(fontFam) + ';font-size:22px;direction:rtl;">' + glyph + '</span>'
-      + '<span style="font-size:10px;"><strong>' + esc(item.name) + '</strong><br>'
+      + '<span style="font-size:10px;"><strong>' + esc(gName(item.name)) + '</strong><br>'   // in the UI's language, like the sheet's title
       + '<span style="font-size:8.5px;opacity:.9;">' + code + esc(cls) + '</span></span>'
     + '</div>';
   return '<div style="position:relative;box-sizing:border-box;width:100%;height:100%;'
