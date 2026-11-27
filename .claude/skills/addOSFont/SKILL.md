@@ -61,6 +61,14 @@ The workhorse is `scripts/add_os_font.py` (Python 3 + fontTools; if it exits 2, 
      not this font's license — never walk up past the font's own `Foundry (LICENSE)` folder.
    - **Never scan a binary as text.** An `.eot` inside a zip once matched the CC0 marker and
      produced a fabricated classification. Require a real text file (no NUL bytes).
+   - **The font exception is its own wording, not the phrase "as a special exception".** The GPL v2
+     body says "as a special exception, the source code distributed need not include…" in section
+     3, so the phrase alone reads every plain GPL v2 text as GPL+FE. The gate matches "as a special
+     exception, if you create a document…". When the exception is stated only outside the GPL body
+     (Sofer's `README.md` quotes it and its fonts' name tables state it; GNU FreeFont's README grants
+     the GPL and quotes it), the staged `LICENSE.txt` must still carry it: FreeFont's README alone,
+     or Sofer's exception paragraph verbatim followed by the GPL body verbatim. A derivative's export
+     carries only `LICENSE.txt`, never the original name table.
    - **A license listing is a cross-check, never the primary source.** <https://opensiddur.org/help/fonts/>
      is actively maintained and its per-font License field is the best corroboration available —
      but its labels are coarser than the shipped text (it lists GNU FreeFont and Tnua-Libre as

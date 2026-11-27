@@ -157,11 +157,46 @@ def html_license_present(members):
     return [m for m in members if re.search(r'licen[cs]e|readme', Path(m).name, re.I) and Path(m).suffix.lower() in ('.htm', '.html')]
 
 
+# The FONT exception by its own wording (same pattern as add_os_font.py's EXCEPTION_RE). The bare
+# phrase "as a special exception" is not enough: the GPL v2 body uses it in section 3 about source code.
+FONT_EXCEPTION_RE = re.compile(r'as[\s>]+a[\s>]+special[\s>]+exception,?[\s>]+if[\s>]+you[\s>]+create[\s>]+a[\s>]+document', re.I)
+
+
 def has_exception(path):
     try:
-        return re.search(r'as a special exception', path.read_text(encoding='utf-8', errors='replace'), re.I) is not None
+        return FONT_EXCEPTION_RE.search(path.read_text(encoding='utf-8', errors='replace')) is not None
     except OSError:
         return False
+
+
+def licence_section(path):
+    """A Markdown README's own Licence section, verbatim (heading to the next heading of the same or a
+    higher level); the whole file when it has none. Never rewritten — only sliced."""
+    text = path.read_text(encoding='utf-8', errors='replace')
+    if path.suffix.lower() != '.md':
+        return text
+    lines = text.split('\n')
+    for i, ln in enumerate(lines):
+        m = re.match(r'^(#{1,6})\s*licen[cs]e\b', ln, re.I)
+        if m:
+            lvl = len(m.group(1))
+            for j in range(i + 1, len(lines)):
+                h = re.match(r'^(#{1,6})\s', lines[j])
+                if h and len(h.group(1)) <= lvl:
+                    return '\n'.join(lines[i:j]).rstrip() + '\n'
+            return '\n'.join(lines[i:]).rstrip() + '\n'
+    return text
+
+
+def exception_paragraph(path):
+    """The one paragraph (a blank-line-separated block) that states the font exception, verbatim, or ''.
+    Used when the surrounding text also speaks about other fonts or licences (Sofer's README covers
+    Mekorot Rashi's OFL in the same section), which the licence gate rightly refuses as ambiguous."""
+    text = path.read_text(encoding='utf-8', errors='replace')
+    for block in re.split(r'\n[ \t]*\n', text):
+        if FONT_EXCEPTION_RE.search(block):
+            return block.strip('\n') + '\n'
+    return ''
 
 
 def clean_name(name):
@@ -248,16 +283,41 @@ def main():
                 last_err = (err.strip() or out.strip()).splitlines()[-1] if (err.strip() or out.strip()) else 'exit %d' % code
             if not entry:
                 skip('the license gate did not accept any shipped text (%s)' % ', '.join(Path(t).name for t in texts), extra=last_err); continue
-            # GNU FreeFont: COPYING is the bare GPL body and README carries the exception clause. When the
-            # verdict is GPL+FE but the chosen text does not itself state the exception, prefer a text
-            # that does — the staged LICENSE.txt is what every derivative's export will carry.
-            if entry['licenseId'] == 'GPL-with-font-exception' and not has_exception(work / chosen_lic):
-                for t in texts:
-                    if t != chosen_lic and has_exception(work / t):
-                        code, out, _ = run_intake([str(font_path), '--license-file', str(work / t), '--dry-run'] + common)
-                        alt = parse_dry_entry(out) if code == 0 else None
-                        if alt and alt['licenseId'] == entry['licenseId']:
-                            entry, chosen_lic = alt, t; break
+            # The staged LICENSE.txt is what every derivative's export carries, so when the font carries the
+            # GPL font exception the staged text must state it. Two shipped layouts keep the exception out of
+            # the GPL body: GNU FreeFont (COPYING is the bare body; README grants the GPL AND quotes the
+            # exception) and Sofer (LICENSE is the bare body; README.md's Licence section quotes the
+            # exception, and the font's own name table states it too). So whenever the verdict is GPL and the
+            # chosen text does not state the exception but another shipped text does, try that text alone
+            # (FreeFont: matches the manual intakes), then that text's Licence section, verbatim, followed by
+            # the GPL body it points to, verbatim, and last only the paragraph that quotes the exception,
+            # verbatim, followed by that body (Sofer, whose Licence section also speaks of Mekorot Rashi's
+            # OFL, which the gate refuses as ambiguous). The first attempt that classifies GPL+FE wins;
+            # none does → the verdict and the chosen text stand as they were.
+            license_note = ''
+            if entry['licenseId'].startswith('GPL') and not has_exception(work / chosen_lic):
+                fe_texts = [t for t in texts if t != chosen_lic and has_exception(work / t)]
+                attempts = [(t, t, '') for t in fe_texts]
+                joined = work / ('_joined-licence-%s.txt' % (slug or 'font'))
+                for t in fe_texts:
+                    attempts.append((t, 'section', '%s%s + %s' % (Path(t).name, ' (Licence section)' if Path(t).suffix.lower() == '.md' else '',
+                                                                  Path(chosen_lic).name)))
+                for t in fe_texts:
+                    attempts.append((t, 'paragraph', '%s (its font-exception paragraph) + %s' % (Path(t).name, Path(chosen_lic).name)))
+                body = chosen_lic
+                for t, use, note in attempts:
+                    if use in ('section', 'paragraph'):
+                        head = licence_section(work / t) if use == 'section' else exception_paragraph(work / t)
+                        if not head.strip():
+                            continue
+                        joined.write_text(head.rstrip('\n') + '\n\n'
+                                          + (work / body).read_text(encoding='utf-8', errors='replace'), encoding='utf-8')
+                        use = str(joined.relative_to(work))
+                    code, out, _ = run_intake([str(font_path), '--license-file', str(work / use), '--dry-run'] + common)
+                    alt = parse_dry_entry(out) if code == 0 else None
+                    if alt and alt['licenseId'] == 'GPL-with-font-exception':
+                        entry, chosen_lic, license_note = alt, use, note
+                        break
 
             ours = family_of_id(entry['licenseId'])
             listed = lic_families(label)
@@ -272,7 +332,7 @@ def main():
             if typographer and typographer != entry.get('designer', ''):
                 real += ['--designer', typographer]
             record = {'name': name, 'slug': entry['id'], 'family': family, 'label': label, 'licenseId': entry['licenseId'],
-                      'licenseName': entry.get('licenseName', ''), 'face': Path(face).name, 'licenseFile': Path(chosen_lic).name,
+                      'licenseName': entry.get('licenseName', ''), 'face': Path(face).name, 'licenseFile': license_note or Path(chosen_lic).name,
                       'upstream': provenance, 'rfns': entry.get('reservedFontNames') or [], 'coarse': coarse,
                       'url': 'https://ivritsuite.com/Hebrew_Font_Maker.html?start=%s' % entry['id'],
                       'faces': len(faces), 'designer': typographer or entry.get('designer', ''),
@@ -287,9 +347,13 @@ def main():
                 ns = json.loads(NOT_STAGED.read_text(encoding='utf-8'))
                 ns.setdefault('discrepancies', []).append({
                     'name': name, 'id': entry['id'], 'pageLicense': label, 'staged': entry['licenseId'],
-                    'note': 'The partner list labels this "%s", but the license text shipped in the archive (%s) states the font '
-                            'exception verbatim, so it is staged as GPL+FE. Primary text wins; the label is coarser. '
-                            'Recorded by the automated intake.' % (label, Path(chosen_lic).name)})
+                    'note': (('The partner list labels this "%s", but the license text shipped in the archive (%s) states the font '
+                              'exception verbatim, so it is staged as GPL+FE. Primary text wins; the label is coarser. ')
+                             if ours[1] else
+                             ('The partner list labels this "%s", but no license text shipped in the archive (%s) states the '
+                              'font exception, so it is staged under the plain GPL it does carry. Primary text wins; worth '
+                              'asking the partner for the exception statement. ')) % (label, license_note or Path(chosen_lic).name)
+                            + 'Recorded by the automated intake.'})
                 NOT_STAGED.write_text(json.dumps(ns, indent=2, ensure_ascii=False) + '\n', encoding='utf-8')
                 # LINKS.md renders not-staged.json, so regenerate it once more.
                 run_intake(['--regen-links'])

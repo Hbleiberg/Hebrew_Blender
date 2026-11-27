@@ -79,7 +79,11 @@ def read_names(font):
 
 
 SECTION_RE = re.compile(r'\n(?=[A-Z][^\n]{0,70}?(?:font|fonts|family)[^\n]{0,45}?(?:is|are)\s+[Cc]opyright)')
-EXCEPTION_RE = re.compile(r'[Aa]s a special exception')
+# The FONT exception, by its own wording — never the bare phrase. The GPL v2 body has its own "as a
+# special exception, the source code distributed need not include ..." (section 3), so a search for
+# the phrase alone reads every plain GPL v2 text as GPL+FE. `>` and line breaks are allowed between
+# the words because a README quotes the clause as a Markdown block.
+EXCEPTION_RE = re.compile(r'as[\s>]+a[\s>]+special[\s>]+exception,?[\s>]+if[\s>]+you[\s>]+create[\s>]+a[\s>]+document', re.I)
 
 
 def _norm(s):
@@ -229,9 +233,11 @@ def copyright_block(license_text, name_copyright):
     # honestly absent (nesher-gadol/-katon already are). Nor does the declaration always come
     # first: FontForge put its "Created by … with FontForge" note ahead of it in Yoram Gnat's
     # historic faces, and reading only that paragraph left their derivatives with no upstream
-    # copyright at all — so the first paragraph that IS a copyright is the one.
+    # copyright at all — so the first paragraph that IS a copyright is the one. A paragraph that is only
+    # the word as a heading ("COPYRIGHT" above Taamey D's notice in the Sofer fonts) is not one.
     for p in paras:
-        if re.search(r'copyright|\(c\)|\u00a9', p, re.I) and not re.match(r'^copyright missing$', p, re.I):
+        if (re.search(r'copyright|\(c\)|\u00a9', p, re.I) and not re.match(r'^copyright missing$', p, re.I)
+                and not re.match(r'^\s*copyright\s*:?\s*$', p, re.I)):
             return p
     return ''
 
