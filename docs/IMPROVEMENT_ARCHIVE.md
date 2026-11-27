@@ -99422,3 +99422,11 @@ _(prior)_ **Next session (S683):** **Branch `claude/zen-goldberg-1lov9k` (S676�
 ### from Done
 
 - [x] 2026-11-25 | `420e9dcf` `e58c46a1` `9f5ade9f` | Hebrew_Font_Maker.html, locales, sw.js, docs/reference/font-maker.md, docs/reference/shared-components.md, CLAUDE.md | (outside the loop; Font Maker v6.0) **Shortcut keys on the buttons, and a font size readout**: one table `KH` feeds the caps (`khHtml`), the title's `{keys}` (`khTitle`) and `aria-keyshortcuts` (`khAria`); single keys sit on the button (Draw tools in the corner), combinations pop up on hover / keyboard focus (Undo / Redo ×4, bar Grid), ⌘ + `Meta` on a Mac (titles said Ctrl there), caps only at `pointer: fine`; pop-up hosts fade by `color-mix` not `opacity` when greyed out. Size: the Exported ✓ screen states the downloaded file's size; `#exportSize` beside Export shows the last build's size only while `window._lastBuild` (project object + `_editGen` read with the spec + stem) still holds, and is emptied, title too, when hidden (it is the button's `aria-describedby`) | t30 230 / 230, t31 46 / 46 (EN + HE); TTF tables identical to the pre-change page's build; `sw.js` v1564 → v1565
+
+
+<!-- archived by compact-ledger at the S684 boundary, 2026-11-27 -->
+## Compaction (S684, 2026-11-27) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-11-27 | `4e133b18` `a1182657` `1057d1d1` | Hebrew_Font_Maker.html, locales, sw.js, docs/reference/font-maker.md, CLAUDE.md | (outside the loop; Font Maker v6.0) **Adversarial review and regression of the whole v6.0 session**: eleven reviewers and a coverage critic, about 55 reproduced faults, repaired in 13 areas, each by a fixer and an independent verifier (up to three rounds), then merged — right-to-left kerning on its own pair (`<v 0 v 0>`) and across marks (`lookupflag IgnoreMarks`, composed forms kerned as their letter), imported nikkud and trop moved by where the key's primary mark lands (`markLandTable`, seeds `markLandSeed` / `markLandSeedMeets`), kept-stem widening held smooth by a measured gate, the SVG Add/Replace winding, the licence gate, the shortcut guard's options object, project-file injection sinks, the Transform carry / focus / exact undo | 31 kit suites + t31 in Hebrew + 13 repair suites; gates clean; smoke-fontmaker 63 / 63, smoke-tools 248 / 249 (the Torah Trainer check that fails on main)
