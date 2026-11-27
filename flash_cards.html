@@ -6257,8 +6257,11 @@ function renderProfiles() {
         un.addEventListener('click', () => { fcSetStudentLink(name, ''); renderProfiles(); });
         f.appendChild(un);
       }
-      if (name !== act) {   // the active row's ★ already says it; its Set Active did nothing
-        const setb = document.createElement('button'); setb.type = 'button'; setb.className = 'btn sm primary'; setb.textContent = I18n.t('flashcards.profile.set_active'); setb.addEventListener('click', () => setActiveProfile(name)); f.appendChild(setb);
+      {   // the active row's ★ already says it, so its Set Active is only kept as a slot (hidden: no press, no Tab stop, out of the accessibility tree) — Unlink and the rest then line up row to row
+        const setb = document.createElement('button'); setb.type = 'button'; setb.className = 'btn sm primary'; setb.textContent = I18n.t('flashcards.profile.set_active');
+        if (name !== act) setb.addEventListener('click', () => setActiveProfile(name));
+        else { setb.style.visibility = 'hidden'; setb.disabled = true; setb.setAttribute('aria-hidden', 'true'); }
+        f.appendChild(setb);
       }
       const del = document.createElement('button'); del.type = 'button'; del.className = 'btn sm danger'; del.innerHTML = ICON_CLOSE_SM; del.setAttribute('aria-label', I18n.t('flashcards.actions.delete_aria', { name })); del.addEventListener('click', () => deleteProfile(name)); f.appendChild(del);
       return f;
