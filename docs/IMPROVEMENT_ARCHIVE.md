@@ -99430,3 +99430,23 @@ _(prior)_ **Next session (S683):** **Branch `claude/zen-goldberg-1lov9k` (S676�
 ### from Done
 
 - [x] 2026-11-27 | `4e133b18` `a1182657` `1057d1d1` | Hebrew_Font_Maker.html, locales, sw.js, docs/reference/font-maker.md, CLAUDE.md | (outside the loop; Font Maker v6.0) **Adversarial review and regression of the whole v6.0 session**: eleven reviewers and a coverage critic, about 55 reproduced faults, repaired in 13 areas, each by a fixer and an independent verifier (up to three rounds), then merged — right-to-left kerning on its own pair (`<v 0 v 0>`) and across marks (`lookupflag IgnoreMarks`, composed forms kerned as their letter), imported nikkud and trop moved by where the key's primary mark lands (`markLandTable`, seeds `markLandSeed` / `markLandSeedMeets`), kept-stem widening held smooth by a measured gate, the SVG Add/Replace winding, the licence gate, the shortcut guard's options object, project-file injection sinks, the Transform carry / focus / exact undo | 31 kit suites + t31 in Hebrew + 13 repair suites; gates clean; smoke-fontmaker 63 / 63, smoke-tools 248 / 249 (the Torah Trainer check that fails on main)
+
+_(prior)_ **Next session (S684):** **Branch `claude/zen-goldberg-1lov9k` (S676–S683, draft PR #427): open → continue; merged → fresh branch off `origin/main`.** `sw.js` **v1555**, FM **5.60**, corpus ?v=**9**, catalog ?v=**9**. ⚑ drift: main=d2d922c sw=v1555 fm=5.60 migration=0014_saves_tool_tefillah_trainer.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest next: G torah (S589; pointer: G); then D chrome (S590), C trope (S591), G fontmaker (S593). ⚑ Unaudited (`9e702ae..a402f72`): the class roster, the hub, the footer and cracks, FM 5.60 — unseen by E, K, I, F, B. ⚑ The corpus's senses: S681's Awaiting P2. ⚑ Queue: Flash Cards' S683 P4s; the class editor's unmarked class; the dictionary's Filter by Letter tiles. ⚑ Awaiting: S681, S662, S653, S652.
+
+
+<!-- archived by compact-ledger at the S685 boundary, 2026-11-27 -->
+## Compaction (S685, 2026-11-27) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-11-27 | `21c8b9e4` | torah_trainer.html, torah-and-trope.md, sw.js, probe | (S684 G, gate 2) **A printed reading carries its credits**: the footer's compact strip with the Hebrew text's (CC BY-SA) and the translation's licence; the translation line only where one prints | probe 18 / 18 (before 0 / 18; without the translation rule 10 fail); 64-PDF bench, sheets unchanged but the staff's +1
+
+- [x] 2026-11-23 | (S679 close-out) | branch/deploy note | **S679 = M on `tefillah_trainer.html` (its first): FOUND 3, FIXED 2 + the queued dead footer rule on two pages; 1 logged (gate 3).** Draft PR #427 continues, `sw.js` v1536 → v1539; nothing live changed.
+
+- [x] 2026-11-23 | `e273ca5b` | tefillah_trainer.html, tefillah-trainer.md, sw.js, probe | (S679 M) **A drawer row that cannot act reads as one: the te'amim switch dims with its name, the trope list's name with its choices, the note under its own row** | probe 6 / 6 (before 0 / 6)
+
+- [x] 2026-11-23 | `a5a4890b` | tefillah_trainer.html, tefillah-trainer.md, sw.js, probe | (S679 M; pattern `live-region-display-none-while-empty` kept) **The picker bar holds still while a search is typed** | probe 10 / 10 (before 0 / 10); real fonts 48 / 48 widths
+
+### from Per-session log (one line per session)
+
+- 2026-11-19 | **S664** | iters: 5 | tools: trope_atlas, hebrew_blend_generator, classroom_dashboard ×2, torah-and-trope.md, dashboard.md, sw ×4, probes S664 ×4 | patterns fixed: RTL-inheritance-on-a-Latin-script-container ×1 (the inverse) | pass run: D (trope_atlas, first since S579, clean on …[full text: IMPROVEMENT_ARCHIVE.md]
