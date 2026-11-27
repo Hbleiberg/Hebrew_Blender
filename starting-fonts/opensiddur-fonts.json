@@ -15,7 +15,7 @@
       "foundry": "Shlomo Orbach",
       "foundryUrl": "https://sites.google.com/site/orlaeinayim/download",
       "typographer": "Shlomo Orbach",
-      "version": "1.0; 2010",
+      "version": "1.0; 2011",
       "versionDate": "2011",
       "license": "SIL OFL 1.1",
       "licenseUrl": "https://en.wikipedia.org/wiki/Open_Font_License",
@@ -38,11 +38,57 @@
       "foundry": "Shlomo Orbach",
       "foundryUrl": "https://sites.google.com/site/orlaeinayim/download",
       "typographer": "Shlomo Orbach",
-      "version": "1.0; 2010",
+      "version": "1.0; 2011",
       "versionDate": "2011",
       "license": "SIL OFL 1.1",
       "licenseUrl": "https://en.wikipedia.org/wiki/Open_Font_License",
       "notes": "",
+      "scriptTags": [
+        "hebrew-latin",
+        "yiddish",
+        "ladino"
+      ]
+    },
+    {
+      "slug": "sofer-stam-ashkenaz",
+      "name": "Sofer Stam Ashkenaz",
+      "family": "SoferStamAshkenaz",
+      "categories": [
+        "full-diacritic-support"
+      ],
+      "diacriticSupport": "t’amim and niqqud",
+      "style": "Scribal / Ashkenaz",
+      "foundry": "Culmus Project",
+      "foundryUrl": "http://culmus.sourceforge.net/",
+      "typographer": "Yoram Gnat (modified by Mordechai Shaliehsaboo)",
+      "version": "0.931",
+      "versionDate": "",
+      "license": "GPL+FE",
+      "licenseUrl": "http://en.wikipedia.org/wiki/GNU_GPL_font_exception",
+      "notes": "Modified with improvements by Mordechai Shaliehsaboo",
+      "scriptTags": [
+        "hebrew-latin",
+        "yiddish",
+        "ladino"
+      ]
+    },
+    {
+      "slug": "sofer-stam-sefarad",
+      "name": "Sofer Stam Sefarad",
+      "family": "SoferStamSefarad",
+      "categories": [
+        "full-diacritic-support"
+      ],
+      "diacriticSupport": "t’amim and niqqud",
+      "style": "Scribal / Sepharadi",
+      "foundry": "Culmus Project",
+      "foundryUrl": "http://culmus.sourceforge.net/",
+      "typographer": "Yoram Gnat (modified by Mordechai Shaliehsaboo)",
+      "version": "0.931",
+      "versionDate": "",
+      "license": "GPL+FE",
+      "licenseUrl": "http://en.wikipedia.org/wiki/GNU_GPL_font_exception",
+      "notes": "Modified with improvements by Mordechai Shaliehsaboo",
       "scriptTags": [
         "hebrew-latin",
         "yiddish",
@@ -61,11 +107,11 @@
       "foundry": "Culmus Project",
       "foundryUrl": "http://culmus.sourceforge.net/",
       "typographer": "Yoram Gnat",
-      "version": "0.103yg",
+      "version": "1.6; Sofer",
       "versionDate": "",
       "license": "GPL+FE",
       "licenseUrl": "http://en.wikipedia.org/wiki/GNU_GPL_font_exception",
-      "notes": "",
+      "notes": "Modified with improvements by Mordechai Shaliehsaboo",
       "scriptTags": [
         "hebrew-latin",
         "yiddish",
@@ -88,7 +134,7 @@
       "versionDate": "",
       "license": "GPL+FE",
       "licenseUrl": "http://en.wikipedia.org/wiki/GNU_GPL_font_exception",
-      "notes": "",
+      "notes": "Modified with improvements by Mordechai Shaliehsaboo",
       "scriptTags": [
         "hebrew-latin",
         "yiddish",
@@ -107,11 +153,11 @@
       "foundry": "Culmus Project",
       "foundryUrl": "http://culmus.sourceforge.net/",
       "typographer": "Yoram Gnat",
-      "version": "1.6",
+      "version": "1.6; Sofer",
       "versionDate": "",
       "license": "GPL+FE",
       "licenseUrl": "http://en.wikipedia.org/wiki/GNU_GPL_font_exception",
-      "notes": "",
+      "notes": "Modified with improvements by Mordechai Shaliehsaboo",
       "scriptTags": [
         "hebrew-latin",
         "yiddish",
@@ -130,11 +176,11 @@
       "foundry": "Culmus Project",
       "foundryUrl": "http://culmus.sourceforge.net/",
       "typographer": "Yoram Gnat",
-      "version": "0.150yg",
+      "version": "0.200yg; Sofer",
       "versionDate": "",
       "license": "GPL+FE",
       "licenseUrl": "http://en.wikipedia.org/wiki/GNU_GPL_font_exception",
-      "notes": "",
+      "notes": "Modified with improvements by Mordechai Shaliehsaboo",
       "scriptTags": [
         "hebrew-latin",
         "yiddish",
@@ -142,22 +188,22 @@
       ]
     },
     {
-      "slug": "taamey-frank-clm",
-      "name": "Taamey Frank CLM",
-      "family": "TaameyFrankCLM",
+      "slug": "frank-sofer",
+      "name": "Frank Sofer",
+      "family": "FrankSofer",
       "categories": [
         "full-diacritic-support"
       ],
       "diacriticSupport": "t’amim and niqqud",
       "style": "Serif",
-      "foundry": "Culmus Project",
-      "foundryUrl": "http://culmus.sourceforge.net/",
-      "typographer": "Yoram Gnat",
-      "version": "0.11",
+      "foundry": "SoferFonts",
+      "foundryUrl": "https://github.com/soferbooks/sofer-fonts/",
+      "typographer": "Yoram Gnat (modified by Mordechai Shaliehsaboo)",
+      "version": "0.931",
       "versionDate": "",
       "license": "GPL+FE",
       "licenseUrl": "http://en.wikipedia.org/wiki/GNU_GPL_font_exception",
-      "notes": "",
+      "notes": "TaameyFrank, modified with improvements by Mordechai Shaliehsaboo",
       "scriptTags": [
         "hebrew-latin",
         "yiddish",
@@ -181,6 +227,52 @@
       "license": "GPL 2.0",
       "licenseUrl": "http://en.wikipedia.org/wiki/GNU_General_Public_License",
       "notes": "",
+      "scriptTags": [
+        "hebrew-latin",
+        "yiddish",
+        "ladino"
+      ]
+    },
+    {
+      "slug": "vilna-sofer",
+      "name": "Vilna Sofer",
+      "family": "VilnaSofer",
+      "categories": [
+        "full-diacritic-support"
+      ],
+      "diacriticSupport": "t’amim and niqqud",
+      "style": "Serif",
+      "foundry": "SoferFonts",
+      "foundryUrl": "https://github.com/soferbooks/sofer-fonts/",
+      "typographer": "Alan Hoenig/Omega Makor (modified by Mordechai Shaliehsaboo)",
+      "version": "0.931",
+      "versionDate": "",
+      "license": "GPL+FE",
+      "licenseUrl": "http://en.wikipedia.org/wiki/GNU_GPL_font_exception",
+      "notes": "Mekorot Vilna, modified with improvements by Mordechai Shaliehsaboo",
+      "scriptTags": [
+        "hebrew-latin",
+        "yiddish",
+        "ladino"
+      ]
+    },
+    {
+      "slug": "vilna-classic",
+      "name": "Vilna Classic",
+      "family": "VilnaClassic",
+      "categories": [
+        "full-diacritic-support"
+      ],
+      "diacriticSupport": "t’amim and niqqud",
+      "style": "Serif",
+      "foundry": "SoferFonts",
+      "foundryUrl": "https://github.com/soferbooks/sofer-fonts/",
+      "typographer": "Maxim Iorsh (modified by Mordechai Shaliehsaboo)",
+      "version": "0.931",
+      "versionDate": "",
+      "license": "GPL 2.0",
+      "licenseUrl": "http://en.wikipedia.org/wiki/GNU_General_Public_License",
+      "notes": "derived from the Mekorot Vilna font/Drugulin CLM",
       "scriptTags": [
         "hebrew-latin",
         "yiddish",
@@ -279,6 +371,29 @@
       ]
     },
     {
+      "slug": "hadassah",
+      "name": "Hadassah",
+      "family": "Hadassah",
+      "categories": [
+        "full-diacritic-support"
+      ],
+      "diacriticSupport": "t’amim and niqqud",
+      "style": "Serif",
+      "foundry": "SoferFonts",
+      "foundryUrl": "https://github.com/soferbooks/sofer-fonts/",
+      "typographer": "Yoram Gnat (modified by Mordechai Shaliehsaboo)",
+      "version": "0.931",
+      "versionDate": "",
+      "license": "GPL+FE",
+      "licenseUrl": "http://en.wikipedia.org/wiki/GNU_GPL_font_exception",
+      "notes": "Hadassim, modified with improvements by Mordechai Shaliehsaboo",
+      "scriptTags": [
+        "hebrew-latin",
+        "yiddish",
+        "ladino"
+      ]
+    },
+    {
       "slug": "notorashihebrew",
       "name": "NotoRashiHebrew",
       "family": "NotoRashiHebrew",
@@ -356,11 +471,11 @@
       "foundry": "Culmus Project",
       "foundryUrl": "http://culmus.sourceforge.net/",
       "typographer": "Yoram Gnat",
-      "version": "0.11",
+      "version": "0.110",
       "versionDate": "",
       "license": "GPL+FE",
       "licenseUrl": "http://en.wikipedia.org/wiki/GNU_GPL_font_exception",
-      "notes": "",
+      "notes": "Modified with improvements by Mordechai Shaliehsaboo",
       "scriptTags": [
         "hebrew-latin",
         "yiddish",
@@ -406,29 +521,6 @@
       "license": "GPL 2.0",
       "licenseUrl": "http://en.wikipedia.org/wiki/GNU_General_Public_License",
       "notes": "",
-      "scriptTags": [
-        "hebrew-latin",
-        "yiddish",
-        "ladino"
-      ]
-    },
-    {
-      "slug": "drugulin-clm",
-      "name": "Drugulin CLM",
-      "family": "DrugulinCLM",
-      "categories": [
-        "partial-diacritic-support"
-      ],
-      "diacriticSupport": "general diacritic positioning errors",
-      "style": "Serif",
-      "foundry": "Culmus Project",
-      "foundryUrl": "http://culmus.sourceforge.net/",
-      "typographer": "Maxim Iorsh",
-      "version": "0.140",
-      "versionDate": "",
-      "license": "GPL 2.0",
-      "licenseUrl": "http://en.wikipedia.org/wiki/GNU_General_Public_License",
-      "notes": "derived from the Mekorot Vilna font",
       "scriptTags": [
         "hebrew-latin",
         "yiddish",
@@ -574,29 +666,6 @@
       ]
     },
     {
-      "slug": "hadasim-clm",
-      "name": "Hadasim CLM",
-      "family": "HadasimCLM",
-      "categories": [
-        "partial-diacritic-support"
-      ],
-      "diacriticSupport": "niqqud only",
-      "style": "Serif",
-      "foundry": "Culmus Project",
-      "foundryUrl": "http://culmus.sourceforge.net/",
-      "typographer": "Maxim Iorsh",
-      "version": "0.140",
-      "versionDate": "",
-      "license": "GPL+FE",
-      "licenseUrl": "http://en.wikipedia.org/wiki/GNU_GPL_font_exception",
-      "notes": "",
-      "scriptTags": [
-        "hebrew-latin",
-        "yiddish",
-        "ladino"
-      ]
-    },
-    {
       "slug": "shmulik-clm",
       "name": "Shmulik CLM",
       "family": "ShmulikCLM",
@@ -617,116 +686,6 @@
         "hebrew-only",
         "yiddish",
         "ladino"
-      ]
-    },
-    {
-      "slug": "benor-rashi",
-      "name": "BenOr Rashi",
-      "family": "BenOrRashi",
-      "categories": [
-        "partial-diacritic-support"
-      ],
-      "diacriticSupport": "niqqud only",
-      "style": "Semi-Cursive / Sepharadi",
-      "foundry": "Sefaradizo",
-      "foundryUrl": "http://sefaradizo.org/ladino/fuente_ben_or_rashi/index-en.html",
-      "typographer": "David ben Or",
-      "version": "1.023",
-      "versionDate": "2017",
-      "license": "UFL 1.0",
-      "licenseUrl": "http://font.ubuntu.com/licence/",
-      "notes": "",
-      "scriptTags": [
-        "hebrew-only",
-        "yiddish",
-        "ladino"
-      ]
-    },
-    {
-      "slug": "mekorot-rashi",
-      "name": "Mekorot Rashi",
-      "family": "Mekorot-Rashi",
-      "categories": [
-        "partial-diacritic-support"
-      ],
-      "diacriticSupport": "niqqud only",
-      "style": "Semi-Cursive / Sepharadi",
-      "foundry": "Mekorot",
-      "foundryUrl": "http://mekorot.sourceforge.net/",
-      "typographer": "Alan Hoenig/Omega Makor (corrections by Yoram Gnat)",
-      "version": "0.003",
-      "versionDate": "",
-      "license": "LPPL 1.3c",
-      "licenseUrl": "http://en.wikipedia.org/wiki/LaTeX_Project_Public_License",
-      "notes": "",
-      "scriptTags": [
-        "hebrew-only",
-        "yiddish"
-      ]
-    },
-    {
-      "slug": "dorian-clm-italic",
-      "name": "Dorian CLM (Italic)",
-      "family": "DorianCLM-Italic",
-      "categories": [
-        "partial-diacritic-support"
-      ],
-      "diacriticSupport": "niqqud only",
-      "style": "Cursive",
-      "foundry": "Culmus Project",
-      "foundryUrl": "http://culmus.sourceforge.net/",
-      "typographer": "Maxim Iorsh",
-      "version": "2.1",
-      "versionDate": "",
-      "license": "GPL 2.0",
-      "licenseUrl": "http://en.wikipedia.org/wiki/GNU_General_Public_License",
-      "notes": "",
-      "scriptTags": [
-        "hebrew-only",
-        "yiddish",
-        "ladino"
-      ]
-    },
-    {
-      "slug": "gveret-levin-alefalefalef",
-      "name": "Gveret Levin AlefAlefAlef",
-      "family": "GveretLevinAlefAlefAlef",
-      "categories": [
-        "partial-diacritic-support"
-      ],
-      "diacriticSupport": "niqqud only",
-      "style": "Cursive / ktav-yad",
-      "foundry": "אאא",
-      "foundryUrl": "https://alefalefalef.co.il/",
-      "typographer": "Shavit Yaacov",
-      "version": "1.000",
-      "versionDate": "",
-      "license": "SIL OFL 1.1",
-      "licenseUrl": "https://en.wikipedia.org/wiki/Open_Font_License",
-      "notes": "",
-      "scriptTags": [
-        "hebrew-only"
-      ]
-    },
-    {
-      "slug": "máshkit",
-      "name": "Máshkit",
-      "family": "Mashkit",
-      "categories": [
-        "partial-diacritic-support"
-      ],
-      "diacriticSupport": "niqqud only",
-      "style": "Ashkenaz / Semi-Cursive",
-      "foundry": "Refoyl Finkl",
-      "foundryUrl": "http://www.cs.uky.edu/~raphael/yiddish.html",
-      "typographer": "Raphael Finkel",
-      "version": "001.000",
-      "versionDate": "",
-      "license": "GPL+FE",
-      "licenseUrl": "http://en.wikipedia.org/wiki/GNU_GPL_font_exception",
-      "notes": "",
-      "scriptTags": [
-        "hebrew-only"
       ]
     },
     {
@@ -1107,89 +1066,46 @@
       ]
     },
     {
-      "slug": "shuneet-square",
-      "name": "Shuneet Square",
-      "family": "Shuneet_Square_v2",
-      "categories": [
-        "partial-diacritic-support"
-      ],
-      "diacriticSupport": "niqqud only",
-      "style": "Fancy",
-      "foundry": "Michael Cunliffe Thompson",
-      "foundryUrl": "http://www.cunliffethompson.com/font/",
-      "typographer": "Michael Cunliffe Thompson",
-      "version": "2.0",
-      "versionDate": "2012",
-      "license": "SIL OFL 1.1",
-      "licenseUrl": "https://en.wikipedia.org/wiki/Open_Font_License",
-      "notes": "",
-      "scriptTags": [
-        "hebrew-latin",
-        "yiddish",
-        "ladino"
-      ]
-    },
-    {
-      "slug": "shuneet-classic",
-      "name": "Shuneet Classic",
-      "family": "Shuneet_Classic_v2",
-      "categories": [
-        "partial-diacritic-support"
-      ],
-      "diacriticSupport": "niqqud only",
-      "style": "Fancy",
-      "foundry": "Michael Cunliffe Thompson",
-      "foundryUrl": "http://www.cunliffethompson.com/font/",
-      "typographer": "Michael Cunliffe Thompson",
-      "version": "2.0",
-      "versionDate": "2012",
-      "license": "SIL OFL 1.1",
-      "licenseUrl": "https://en.wikipedia.org/wiki/Open_Font_License",
-      "notes": "",
-      "scriptTags": [
-        "hebrew-latin",
-        "yiddish",
-        "ladino"
-      ]
-    },
-    {
-      "slug": "secular-one",
-      "name": "Secular One",
-      "family": "SecularOne",
+      "slug": "dejavu-sans",
+      "name": "DejaVu Sans",
+      "family": "DejaVuSans",
       "categories": [
         "partial-diacritic-support"
       ],
       "diacriticSupport": "niqqud only",
       "style": "Sans-Serif",
-      "foundry": "Michal Sahar",
-      "foundryUrl": "https://github.com/MichalSahar/Secular",
-      "typographer": "Hagilda",
-      "version": "1.000",
+      "foundry": "DejaVu Fonts team",
+      "foundryUrl": "https://dejavu-fonts.github.io",
+      "typographer": "Tavmjon Bah, et al",
+      "version": "2.35",
       "versionDate": "",
-      "license": "SIL OFL 1.1",
-      "licenseUrl": "https://en.wikipedia.org/wiki/Open_Font_License",
+      "license": "DejaVu Fonts license",
+      "licenseUrl": "https://github.com/dejavu-fonts/dejavu-fonts?tab=License-1-ov-file#",
       "notes": "",
       "scriptTags": [
-        "hebrew-latin"
+        "hebrew-latin",
+        "latin-extended",
+        "yiddish",
+        "ladino"
       ]
     },
     {
-      "slug": "suez-one",
-      "name": "Suez One",
-      "family": "SuezOne",
+      "slug": "rubik",
+      "name": "Rubik",
+      "family": "Rubik",
       "categories": [
         "partial-diacritic-support"
       ],
       "diacriticSupport": "niqqud only",
       "style": "Sans-Serif",
-      "foundry": "Michal Sahar",
-      "foundryUrl": "https://github.com/MichalSahar/Suez",
-      "typographer": "Hagilda",
-      "version": "1.000",
+      "foundry": "Meir Sadan",
+      "foundryUrl": "http://meirsadan.com/",
+      "typographer": "Hubert & Fischer",
+      "version": "2.000",
       "versionDate": "",
       "license": "SIL OFL 1.1",
       "licenseUrl": "https://en.wikipedia.org/wiki/Open_Font_License",
-      "notes": "",
+      "notes": "May display diacritic positioning errors in text editor/layout software.",
       "scriptTags": [
         "hebrew-latin"
       ]
@@ -1306,26 +1222,91 @@
       ]
     },
     {
-      "slug": "dorian-clm",
-      "name": "Dorian CLM",
-      "family": "DorianCLM",
+      "slug": "shuneet-classic",
+      "name": "Shuneet Classic",
+      "family": "Shuneet_Classic_v2",
       "categories": [
         "partial-diacritic-support"
       ],
       "diacriticSupport": "niqqud only",
       "style": "Fancy",
-      "foundry": "Culmus Project",
-      "foundryUrl": "http://culmus.sourceforge.net/",
-      "typographer": "Maxim Iorsh",
-      "version": "2.1",
-      "versionDate": "",
-      "license": "GPL 2.0",
-      "licenseUrl": "http://en.wikipedia.org/wiki/GNU_General_Public_License",
+      "foundry": "Michael Cunliffe Thompson",
+      "foundryUrl": "http://www.cunliffethompson.com/font/",
+      "typographer": "Michael Cunliffe Thompson",
+      "version": "2.0",
+      "versionDate": "2012",
+      "license": "SIL OFL 1.1",
+      "licenseUrl": "https://en.wikipedia.org/wiki/Open_Font_License",
       "notes": "",
       "scriptTags": [
-        "hebrew-only",
+        "hebrew-latin",
         "yiddish",
         "ladino"
+      ]
+    },
+    {
+      "slug": "shuneet-square",
+      "name": "Shuneet Square",
+      "family": "Shuneet_Square_v2",
+      "categories": [
+        "partial-diacritic-support"
+      ],
+      "diacriticSupport": "niqqud only",
+      "style": "Fancy",
+      "foundry": "Michael Cunliffe Thompson",
+      "foundryUrl": "http://www.cunliffethompson.com/font/",
+      "typographer": "Michael Cunliffe Thompson",
+      "version": "2.0",
+      "versionDate": "2012",
+      "license": "SIL OFL 1.1",
+      "licenseUrl": "https://en.wikipedia.org/wiki/Open_Font_License",
+      "notes": "",
+      "scriptTags": [
+        "hebrew-latin",
+        "yiddish",
+        "ladino"
+      ]
+    },
+    {
+      "slug": "secular-one",
+      "name": "Secular One",
+      "family": "SecularOne",
+      "categories": [
+        "partial-diacritic-support"
+      ],
+      "diacriticSupport": "niqqud only",
+      "style": "Sans-Serif",
+      "foundry": "Michal Sahar",
+      "foundryUrl": "https://github.com/MichalSahar/Secular",
+      "typographer": "Hagilda",
+      "version": "1.000",
+      "versionDate": "",
+      "license": "SIL OFL 1.1",
+      "licenseUrl": "https://en.wikipedia.org/wiki/Open_Font_License",
+      "notes": "",
+      "scriptTags": [
+        "hebrew-latin"
+      ]
+    },
+    {
+      "slug": "suez-one",
+      "name": "Suez One",
+      "family": "SuezOne",
+      "categories": [
+        "partial-diacritic-support"
+      ],
+      "diacriticSupport": "niqqud only",
+      "style": "Sans-Serif",
+      "foundry": "Michal Sahar",
+      "foundryUrl": "https://github.com/MichalSahar/Suez",
+      "typographer": "Hagilda",
+      "version": "1.000",
+      "versionDate": "",
+      "license": "SIL OFL 1.1",
+      "licenseUrl": "https://en.wikipedia.org/wiki/Open_Font_License",
+      "notes": "",
+      "scriptTags": [
+        "hebrew-latin"
       ]
     },
     {
@@ -1350,6 +1331,92 @@
       ]
     },
     {
+      "slug": "hatkafa",
+      "name": "Hatkafa",
+      "family": "Hatkafa",
+      "categories": [
+        "partial-diacritic-support"
+      ],
+      "diacriticSupport": "niqqud only",
+      "style": "Fancy",
+      "foundry": "XELO Studio / XELOTYPE",
+      "foundryUrl": "https://xelo.bio.link",
+      "typographer": "Umar ben / Ben Nafi",
+      "version": "1.003",
+      "versionDate": "",
+      "license": "SIL OFL 1.1",
+      "licenseUrl": "https://en.wikipedia.org/wiki/Open_Font_License",
+      "notes": "",
+      "scriptTags": [
+        "hebrew-only"
+      ]
+    },
+    {
+      "slug": "noot",
+      "name": "Noot",
+      "family": "Noot",
+      "categories": [
+        "partial-diacritic-support"
+      ],
+      "diacriticSupport": "niqqud only",
+      "style": "Fancy",
+      "foundry": "Amos Jerbi",
+      "foundryUrl": "http://www.amosjerbi.com/",
+      "typographer": "Amos Jerbi",
+      "version": "1.000",
+      "versionDate": "",
+      "license": "SIL OFL 1.1",
+      "licenseUrl": "https://en.wikipedia.org/wiki/Open_Font_License",
+      "notes": "May display diacritic positioning errors in text editor/layout software.",
+      "scriptTags": [
+        "hebrew-latin"
+      ]
+    },
+    {
+      "slug": "fredokaone",
+      "name": "FredokaOne",
+      "family": "FredokaOne",
+      "categories": [
+        "partial-diacritic-support"
+      ],
+      "diacriticSupport": "niqqud only",
+      "style": "Fancy",
+      "foundry": "The Fredoka Project",
+      "foundryUrl": "https://github.com/hafontia/Fredoka-One",
+      "typographer": "Ben Nathan, Milena B. Brandão",
+      "version": "2.000",
+      "versionDate": "",
+      "license": "SIL OFL 1.1",
+      "licenseUrl": "https://en.wikipedia.org/wiki/Open_Font_License",
+      "notes": "May display diacritic positioning errors in text editor/layout software.",
+      "scriptTags": [
+        "hebrew-latin"
+      ]
+    },
+    {
+      "slug": "dorian-clm",
+      "name": "Dorian CLM",
+      "family": "DorianCLM",
+      "categories": [
+        "partial-diacritic-support"
+      ],
+      "diacriticSupport": "niqqud only",
+      "style": "Fancy",
+      "foundry": "Culmus Project",
+      "foundryUrl": "http://culmus.sourceforge.net/",
+      "typographer": "Maxim Iorsh",
+      "version": "2.1",
+      "versionDate": "",
+      "license": "GPL 2.0",
+      "licenseUrl": "http://en.wikipedia.org/wiki/GNU_General_Public_License",
+      "notes": "",
+      "scriptTags": [
+        "hebrew-only",
+        "yiddish",
+        "ladino"
+      ]
+    },
+    {
       "slug": "makabi-yg-based-on-qumran-isaiah-scroll-modernized",
       "name": "Makabi YG (based on Qumran Isaiah Scroll, modernized)",
       "family": "MakabiYG",
@@ -1368,6 +1435,117 @@
       "notes": "",
       "scriptTags": [
         "hebrew-latin"
+      ]
+    },
+    {
+      "slug": "mekorot-rashi",
+      "name": "Mekorot Rashi",
+      "family": "MekorotRashi",
+      "categories": [
+        "partial-diacritic-support"
+      ],
+      "diacriticSupport": "niqqud only",
+      "style": "Semi-Cursive / Sepharadi",
+      "foundry": "Mekorot",
+      "foundryUrl": "http://mekorot.sourceforge.net/",
+      "typographer": "Alan Hoenig/Omega Makor (corrections by Yoram Gnat and Mordechai Shaliehsaboo)",
+      "version": "0.931",
+      "versionDate": "",
+      "license": "LPPL 1.3c",
+      "licenseUrl": "http://en.wikipedia.org/wiki/LaTeX_Project_Public_License",
+      "notes": "Modified with improvements by Mordechai Shaliehsaboo",
+      "scriptTags": [
+        "hebrew-latin",
+        "yiddish",
+        "ladino"
+      ]
+    },
+    {
+      "slug": "benor-rashi",
+      "name": "BenOr Rashi",
+      "family": "BenOrRashi",
+      "categories": [
+        "partial-diacritic-support"
+      ],
+      "diacriticSupport": "niqqud only",
+      "style": "Semi-Cursive / Sepharadi",
+      "foundry": "Sefaradizo",
+      "foundryUrl": "http://sefaradizo.org/ladino/fuente_ben_or_rashi/index-en.html",
+      "typographer": "David ben Or",
+      "version": "1.023",
+      "versionDate": "2017",
+      "license": "UFL 1.0",
+      "licenseUrl": "http://font.ubuntu.com/licence/",
+      "notes": "",
+      "scriptTags": [
+        "hebrew-only",
+        "yiddish",
+        "ladino"
+      ]
+    },
+    {
+      "slug": "dorian-clm-italic",
+      "name": "Dorian CLM (Italic)",
+      "family": "DorianCLM-Italic",
+      "categories": [
+        "partial-diacritic-support"
+      ],
+      "diacriticSupport": "niqqud only",
+      "style": "Cursive",
+      "foundry": "Culmus Project",
+      "foundryUrl": "http://culmus.sourceforge.net/",
+      "typographer": "Maxim Iorsh",
+      "version": "2.1",
+      "versionDate": "",
+      "license": "GPL 2.0",
+      "licenseUrl": "http://en.wikipedia.org/wiki/GNU_General_Public_License",
+      "notes": "",
+      "scriptTags": [
+        "hebrew-only",
+        "yiddish",
+        "ladino"
+      ]
+    },
+    {
+      "slug": "gveret-levin-alefalefalef",
+      "name": "Gveret Levin AlefAlefAlef",
+      "family": "GveretLevinAlefAlefAlef",
+      "categories": [
+        "partial-diacritic-support"
+      ],
+      "diacriticSupport": "niqqud only",
+      "style": "Cursive / ktav-yad",
+      "foundry": "אאא",
+      "foundryUrl": "https://alefalefalef.co.il/",
+      "typographer": "Shavit Yaacov",
+      "version": "1.000",
+      "versionDate": "",
+      "license": "SIL OFL 1.1",
+      "licenseUrl": "https://en.wikipedia.org/wiki/Open_Font_License",
+      "notes": "",
+      "scriptTags": [
+        "hebrew-only"
+      ]
+    },
+    {
+      "slug": "máshkit",
+      "name": "Máshkit",
+      "family": "Mashkit",
+      "categories": [
+        "partial-diacritic-support"
+      ],
+      "diacriticSupport": "niqqud only",
+      "style": "Ashkenaz / Semi-Cursive",
+      "foundry": "Refoyl Finkl",
+      "foundryUrl": "http://www.cs.uky.edu/~raphael/yiddish.html",
+      "typographer": "Raphael Finkel",
+      "version": "001.000",
+      "versionDate": "",
+      "license": "GPL+FE",
+      "licenseUrl": "http://en.wikipedia.org/wiki/GNU_GPL_font_exception",
+      "notes": "",
+      "scriptTags": [
+        "hebrew-only"
       ]
     },
     {
@@ -1441,7 +1619,7 @@
       "name": "Linux Biolinum Keyboard",
       "family": "Linux-Biolinum-Keyboard",
       "categories": [
-        "failing-diacritic-support"
+        "sans-diacritics"
       ],
       "diacriticSupport": "general diacritic positioning errors",
       "style": "fixed-width / Serif",
@@ -1452,7 +1630,7 @@
       "versionDate": "",
       "license": "GPL+FE, SIL OFL 1.1",
       "licenseUrl": "https://en.wikipedia.org/wiki/Open_Font_License",
-      "notes": "",
+      "notes": "letter display only. not intended for use with niqqud",
       "scriptTags": [
         "hebrew-latin"
       ]
@@ -1500,27 +1678,6 @@
       "scriptTags": [
         "hebrew-only",
         "ladino"
-      ]
-    },
-    {
-      "slug": "rubik",
-      "name": "Rubik",
-      "family": "Rubik",
-      "categories": [
-        "failing-diacritic-support"
-      ],
-      "diacriticSupport": "general diacritic positioning errors",
-      "style": "Sans-Serif",
-      "foundry": "Meir Sadan",
-      "foundryUrl": "http://meirsadan.com/",
-      "typographer": "Hubert & Fischer",
-      "version": "2.000",
-      "versionDate": "",
-      "license": "SIL OFL 1.1",
-      "licenseUrl": "https://en.wikipedia.org/wiki/Open_Font_License",
-      "notes": "",
-      "scriptTags": [
-        "hebrew-latin"
       ]
     },
     {
@@ -1591,87 +1748,49 @@
       ]
     },
     {
-      "slug": "fredokaone",
-      "name": "FredokaOne",
-      "family": "FredokaOne",
+      "slug": "meldo-rashi",
+      "name": "Meldo Rashi",
+      "family": "MeldoRashi",
       "categories": [
         "failing-diacritic-support"
       ],
-      "diacriticSupport": "general positioning errors",
-      "style": "Fancy",
-      "foundry": "The Fredoka Project",
-      "foundryUrl": "https://github.com/hafontia/Fredoka-One",
-      "typographer": "Ben Nathan, Milena B. Brandão",
-      "version": "2.000",
-      "versionDate": "",
-      "license": "SIL OFL 1.1",
-      "licenseUrl": "https://en.wikipedia.org/wiki/Open_Font_License",
-      "notes": "no niqqud/t’amim",
-      "scriptTags": [
-        "hebrew-latin"
-      ]
-    },
-    {
-      "slug": "noot",
-      "name": "Noot",
-      "family": "Noot",
-      "categories": [
-        "failing-diacritic-support"
-      ],
-      "diacriticSupport": "general diacritic positioning errors",
-      "style": "Fancy",
-      "foundry": "Amos Jerbi",
-      "foundryUrl": "http://www.amosjerbi.com/",
-      "typographer": "Amos Jerbi",
+      "diacriticSupport": "t’amim and niqqud",
+      "style": "Cursive / Sepharadi / ktav-yad",
+      "foundry": "Documenting Judeo-Spanish Project",
+      "foundryUrl": "https://documentingjudeospanish.com",
+      "typographer": "Nathan Gross",
       "version": "1.000",
       "versionDate": "",
       "license": "SIL OFL 1.1",
       "licenseUrl": "https://en.wikipedia.org/wiki/Open_Font_License",
       "notes": "",
       "scriptTags": [
-        "hebrew-latin"
+        "hebrew-latin",
+        "yiddish",
+        "ladino"
       ]
     },
     {
-      "slug": "sofer-stam-ashkenaz",
-      "name": "Sofer Stam Ashkenaz",
-      "family": "StamAshkenazCLM",
+      "slug": "meldo-solitreo",
+      "name": "Meldo Solitreo",
+      "family": "MeldoSolitreo",
       "categories": [
-        "sans-diacritics"
+        "failing-diacritic-support"
       ],
-      "diacriticSupport": "does not support diacritics",
-      "style": "Scribal / Ashkenaz",
-      "foundry": "Culmus Project",
-      "foundryUrl": "http://culmus.sourceforge.net/",
-      "typographer": "Yoram Gnat",
-      "version": "0.110",
+      "diacriticSupport": "t’amim and niqqud",
+      "style": "Cursive / Sepharadi / ktav-yad",
+      "foundry": "Documenting Judeo-Spanish Project",
+      "foundryUrl": "https://documentingjudeospanish.com",
+      "typographer": "Nathan Gross",
+      "version": "1.000",
       "versionDate": "",
-      "license": "GPL+FE",
-      "licenseUrl": "http://en.wikipedia.org/wiki/GNU_GPL_font_exception",
-      "notes": "no niqqud/t’amim",
+      "license": "SIL OFL 1.1",
+      "licenseUrl": "https://en.wikipedia.org/wiki/Open_Font_License",
+      "notes": "",
       "scriptTags": [
-        "hebrew-only"
-      ]
-    },
-    {
-      "slug": "sofer-stam-sefarad",
-      "name": "Sofer Stam Sefarad",
-      "family": "StamSefaradCLM",
-      "categories": [
-        "sans-diacritics"
-      ],
-      "diacriticSupport": "does not support diacritics",
-      "style": "Scribal / Sepharadi",
-      "foundry": "Culmus Project",
-      "foundryUrl": "http://culmus.sourceforge.net/",
-      "typographer": "Yoram Gnat",
-      "version": "0.110",
-      "versionDate": "",
-      "license": "GPL+FE",
-      "licenseUrl": "http://en.wikipedia.org/wiki/GNU_GPL_font_exception",
-      "notes": "no niqqud/t’amim",
-      "scriptTags": [
-        "hebrew-only"
+        "hebrew-latin",
+        "yiddish",
+        "ladino"
       ]
     },
     {
