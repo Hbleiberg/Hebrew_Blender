@@ -1358,7 +1358,9 @@
     return all[0];
   }
   function drawSide() {
-    var all = list(), cur = ed.classId;
+    // The class the table shows (selected() falls back to the first when none is chosen or the chosen one is gone):
+    // read straight from ed.classId, an editor opened with no class marked none in the list beside its table.
+    var all = list(), cur = (selected() || {}).id;
     var items = all.map(function (c) {
       return el('li', null, [el('button', { type: 'button', cls: 'ivc-class', 'data-k': 'cls:' + c.id, 'aria-current': c.id === cur ? 'true' : undefined,
         on: { click: function () { ed.classId = c.id; ed.pending = null; ed.paste = false; ed.merge = false; ed.note = null; draw(); } } },
