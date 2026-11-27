@@ -2578,8 +2578,13 @@ opens that font pre-imported into a fresh, **license-locked** project via a 3-st
   archive stays the truth. **Automated intake:** `scripts/stage_os_fonts.py` takes the audit's
   unmatched entries (`--emit-new`), downloads each archive from the partner's site repository
   (`fonts/<family>/<family>.zip`, recorded as the upstream), picks the Regular/Book/Medium/Light face
-  and the plain-text LICENSE/OFL/COPYING/README member (preferring the one that states the GPL font
-  exception when that is the verdict), runs `add_os_font.py --dry-run`, and stages only when the
+  and the plain-text LICENSE/OFL/COPYING/README member, runs `add_os_font.py --dry-run`, and, when
+  the verdict is GPL but the chosen text does not state the font exception while another shipped text
+  does, tries that text alone, then its Licence section followed by the GPL body, then only its
+  exception paragraph followed by the GPL body (each verbatim; the first that classifies GPL+FE is
+  staged, so `LICENSE.txt` always states the exception a GPL+FE font carries). The exception is
+  matched by its own wording, "as a special exception, if you create a document", never the bare
+  phrase, which the GPL v2 body also uses. It stages only when the
   verdict's license family agrees with the partner's label — a coarse "GPL 3.0" label against shipped
   GPL+FE text is staged and appended to `not-staged.json` `discrepancies` (the one machine write to
   that file). `--name` is the catalogue name minus a trailing parenthetical, `--id` the catalogue slug
