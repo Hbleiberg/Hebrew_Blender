@@ -1969,13 +1969,18 @@ render, which used to drop focus to `<body>` after any press. A control that car
 wraps `renderControlsNow`). Every control of Edit points opts in — the Shapes buttons, the Contours
 rows (`ct:`, `cts:`, `ctv:`, `ctd:<index>`), every button, slider, number field, radio and checkbox of
 the Transform section (`xf:*`, so a slider stepped with the arrow keys commits each step and stays
-focused), Round corners, Reduce points and the selection actions (`np:*`) — and so do Re-trace and
+focused), Round corners, Reduce points and the selection actions (`np:*`, the split *Delete*'s ▾ and
+its menu's two items among them: `np:delmenu`, `np:delpts`, `np:delct`) — and so do Re-trace and
 Clear in Trace (`tr:*`) and the *Copy outline…* and *Paste SVG code…* buttons of every step
 (`cp:outline`, `svg:code`, one key across the steps, since an Insert can land on another one); a new
 keyboard-operable control in that column should too. A control whose press takes it away names
 where focus goes instead, **`data-fk-else="<key> <key>…"`**, tried in order: *Select all* and *Paste*
 the selection's first action, *Delete* the empty selection's *Select all*, a contour row's × the row
-before it, *Clear outline* the step it lands on. A dialog remembers its opener by id or by `data-fk`
+before it, *Clear outline* the step it lands on. A twin that is not drawn (an item of the ▾ menu,
+which every rebuild closes) cannot take focus, so `fkFind` passes it over for the next key — the
+menu's items name the ▾ first; a menu closed under its focused item (the click that dismisses it:
+*Cancel* on *Delete contour*'s confirmation) hands focus to its ▾ (`npnlDelCloseAll`), and the arrows
+that walk it stop there, never reaching the nudge shortcut. A dialog remembers its opener by id or by `data-fk`
 inside the nearest ancestor with an id (`modalOpenerKey`), so `aCloseModal` gives focus back to the
 rebuilt twin when the column was redrawn while it was open (`modalOpenerFind`, which also tries the
 opener's `data-fk-else`). Every Transform button posts what it did on the status line (`xformDoneText`
