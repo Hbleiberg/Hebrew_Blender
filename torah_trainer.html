@@ -1010,6 +1010,10 @@ body.dark .tt-assign-badge.is-warn { color:#f0c060; background:#3a2f14; }
   100% { background:transparent; }
 }
 .tt-flash { animation: ttFlash 1.5s ease-out; border-radius:6px; }
+/* The flash's gold start sat under the verse's own Read / Chant / Loop / Copy labels (--muted) at 3.9:1 light and
+   2.5:1 dark, 4.5 only after 0.35 / 0.7 s; while it runs they take the text colour, as on the selected and looping
+   plates. :where() keeps (0,1,0), so a chip's gold hover and an active chip's navy on gold still win. */
+:where(.tt-flash) :is(.tt-speak, .tt-chant, .tt-loop, .tt-copy, .tt-tune) { color:var(--text); }
 
 /* In-page navigation bar — sticky aliyah jump chips + "you are here" readout. */
 .tt-jumpnav {
