@@ -27693,7 +27693,7 @@ function templateCellHTML(item, kind) {
   const label =
     '<div style="position:absolute;top:5px;left:7px;display:flex;align-items:center;gap:6px;'
       + 'color:' + TPL_INK + ';font-family:\'Source Sans 3\',sans-serif;line-height:1.05;pointer-events:none;">'
-      + '<span style="font-family:' + esc(fontFam) + ';font-size:22px;direction:rtl;">' + glyph + '</span>'
+      + '<span style="font-family:' + esc(fontFam) + ';font-size:22px;direction:ltr;unicode-bidi:isolate;">' + glyph + '</span>'   // the sample is the shape to write: a left-to-right isolate, so a right-to-left sheet never mirrors a bracket (it drew "(" in Right Paren's box, and a font written from it shipped its brackets backwards), as the Preview PDF's punctuation page
       + '<span style="font-size:10px;"><strong>' + esc(gName(item.name)) + '</strong><br>'   // in the UI's language, like the sheet's title
       + '<span style="font-size:8.5px;opacity:.9;">' + code + esc(cls) + '</span></span>'
     + '</div>';
