@@ -551,6 +551,12 @@ which is a visible half-undo. The cost is that the entry retains a second copy o
 `upload image` all pay it deliberately, and so does every SVG assignment (*SVG import*, below); full
 combined sheets never do — they live in `project.combinedSheets`, not in the item.
 
+A mark item that an operation **creates** (`customMark`) is made inside its `udDo`, with
+**`made: true`** on its item scope: the `before` snapshot is then null, `udRestore` deletes the item
+on undo and makes it again on redo, so undo leaves the store exactly as it was rather than one empty
+item richer (`gxCommit`'s scaled accent copies). Generate Bold still creates the marks it thickens
+before its snapshot, so its undo leaves them as empty items that read as the built-in.
+
 ### Photo upload — one letter or a whole pick
 `prepImageForItem(it, file)` does all the async work (file read, decode, `autoThresholdFor`,
 `defaultFitTransform`) and hands back the *mutation* as a closure, so a corrupt file changes nothing
@@ -1238,8 +1244,11 @@ and stretches only as far as it must to hold the value it finds (`markSizeRange`
 spread slider (0–500) stretches the same way up to the spread's stored limit of 600, so a scaled
 spread is never clamped by its first touch. Latin accents have no size setting (they
 bake at scale 1), so there the shape *is* scaled: an imported accent in place, a built-in one that
-actually ships through a scaled custom copy created before the undo snapshot (the Generate Bold
-idiom — emptied by undo, it reads as the built-in again). An accent belongs to the Latin letters, not
+actually ships through a scaled custom copy that `gxCommit` makes inside its `udDo`. The copy's item
+scope is marked `made` (its `before` is null — there was no item), so `udRestore` deletes it on undo
+and makes it again on redo: the accent store comes back exactly as it was, and the built-in reads as
+before. (A precomp snapshot likewise lists the fields the form did not carry, `absent`, so a restore
+leaves them out instead of writing `null` into them.) An accent belongs to the Latin letters, not
 to the nikkud box: its shape follows the operation's `accentX` / `accentY` whenever the set holds
 every letter that carries it — the whole font, whatever the marks box says, or *Only the English
 tab* — and one letter leaves the shared shape as it is (the dialog's scope hint says so for a Latin
@@ -1444,8 +1453,12 @@ its own is traced through that placement next, so it takes the placement's lean
 (`photoLean(src)`): with no outline yet as its record, and over an outline traced from the old
 placement as `l.photoSlant`, which waits beside the record until the next trace from the picture
 (`finalizeFromRaw` → `photoSlantTake`) makes it the record. `l.photoSlant` composes and narrows with
-the record under Slant and Width, and composes under a whole-letter Slant in Edit points (the carry,
-`xformCarryBase` → `xformSlantCarry` → `xformPutCarry`) — the photo's matrix moves with each — and goes wherever the record
+the record under Slant and Width, and under a whole-letter Slant, Scale, Width/Height or Flip H in Edit
+points changes as the record does (the carry, `xformCarryBase` → `xformCarry` → `xformPutCarry`) — the
+photo's matrix moves with each. A whole-letter rotation or Flip V in Edit points carries no photo and no
+strokes, so the lean they give the record waits the other way round: the picture's or the strokes' own
+lean goes into `l.photoSlant` (`xformLeanPut` → `setOutlineSlant`, as for pasted points) and the rebuild
+that discards the turn makes it the record again. `l.photoSlant` goes wherever the record
 goes for a new placement (a new photo, crop or auto-split, Center image). A new path that replaces
 or copies an outline does the same. The photo "skew" nudges in Align leave no record.
 
@@ -1721,8 +1734,25 @@ project. A gesture also opens with `udFlushPending`, so it never rides a burst a
 open. The sliders run from one table of kinds (`XF_KINDS`: neutral value, undo
 label, readout, done-message), and the pivot comes from the map itself (`xformPivot(keys, m)` — a
 slant pivots on the baseline through `m.py`), so the nodes, the range check and the anchors can never
-use different ones. A whole-glyph **slant** also carries the letter's photo and pen strokes
-(`xformSlantCarry`, the engine's own patch) and updates its lean record; the other whole-glyph
+use different ones. Every whole-glyph transform that moves the anchors — **scale, Width/Height,
+Flip H and slant** — also carries the letter's photo matrix, capture box, hollow-trace ring and pen
+strokes through the same map about the same pivot (`xformCarry`: `gxLetterPatch`, the engine's own
+patch, so the census is one; on a letter with a picture the photo follows a live slider too, by the
+same test the patch makes, and the strokes are settled at the commit), so Trace → Re-trace, saving the
+drawing again or one more stroke rebuilds the *transformed* letter, and its ink and the anchors that
+moved with it agree. The mirror of Flip H keeps the pen's width (the patch's area factor is |det|). A
+carry whose strokes would leave the drawing area refuses the whole transform, as the engine does, with
+its own status line. A carry that takes the ink past the window the tracer can rasterize is kept, as
+the engine keeps it, but a later re-trace or re-save would cut the outside part off under anchors
+that moved with the whole letter, so the press says so after its result — the engine's own *Warn*
+finding (`gxTraceOff`, asked of the outline the transform left: `xformTraceOff`; `xformDoneSay` puts
+the warning after the result, on the buttons, the sliders' commit and Width % with *Keep stem
+thickness*); a rotation, a vertical flip and a letter with no photo and no strokes carry nothing and
+never warn. Undo and redo bring the matrix and the strokes back with the outline (the item
+scope takes `withDraw` when there are strokes). A rotation and a vertical flip move no anchor and
+carry nothing: a rebuild discards them with the other point edits, and the anchors still fit what
+comes back — and so does the lean record, since the lean of the picture's placement or of the strokes
+waits in `l.photoSlant` meanwhile (`xformLeanPut`). A slant also updates the lean record; the other whole-glyph
 transforms keep the record true (`xformSlantAfter`: a flip mirrors it, a Width/Height scale changes
 its tangent, a rotation turns it). A rotation's angle is taken modulo 180° into (−90°, 90°] — a
 sheared shape turned half way round leans exactly as before — and past `XF_LEAN_MAX` (45°) either
@@ -1942,8 +1972,34 @@ default the moment contours exist), in the same undo step.
 **Keyboard focus in the left column.** `renderControls` rebuilds that column from scratch on every
 render, which used to drop focus to `<body>` after any press. A control that carries
 **`data-fk="<key>"`** gets focus back on its rebuilt twin when nothing else took it (`renderControls`
-wraps `renderControlsNow`). The Shapes buttons, the Contours switches (`ct:<index>`) and the
-Transform buttons opt in; a new keyboard-operable control in that column should too. A press that
+wraps `renderControlsNow`). Every control of Edit points opts in — the Shapes buttons, the Contours
+rows (`ct:`, `cts:`, `ctv:`, `ctd:<index>`), every button, slider, number field, radio and checkbox of
+the Transform section (`xf:*`, so a slider stepped with the arrow keys commits each step and stays
+focused), Round corners, Reduce points and the selection actions (`np:*`, the split *Delete*'s ▾ and
+its menu's two items among them: `np:delmenu`, `np:delpts`, `np:delct`) — and so do the controls of
+Trace that rebuild the column (`tr:*`: Re-trace, Clear, *Even out lighting*, *Outline only* and
+*Apply outline to all*, in a letter's Trace and the mark editor's alike) and the *Copy outline…* and *Paste SVG code…* buttons of every step
+(`cp:outline`, `svg:code`, one key across the steps, since an Insert can land on another one); a new
+keyboard-operable control in that column should too. A control whose press takes it away names
+where focus goes instead, **`data-fk-else="<key> <key>…"`**, tried in order: *Select all* and *Paste*
+the selection's first action, *Delete* the empty selection's *Select all*, a contour row's × the row
+before it, *Clear outline* the step it lands on. A twin that is not drawn (an item of the ▾ menu,
+which every rebuild closes) cannot take focus, so `fkFind` passes it over for the next key — the
+menu's items name the ▾ first; a menu closed under its focused item (the click that dismisses it:
+*Cancel* on *Delete contour*'s confirmation) hands focus to its ▾ (`npnlDelCloseAll`), and the arrows
+that walk it stop there, never reaching the nudge shortcut. A dialog remembers its opener by id or by `data-fk`
+inside the nearest ancestor with an id (`modalOpenerKey`), so `aCloseModal` gives focus back to the
+rebuilt twin when the column was redrawn while it was open (`modalOpenerFind`, which also tries the
+opener's `data-fk-else`). Every Transform button posts what it did on the status line (`xformDoneText`
+— the focus stays on the button, so the status line is what a screen reader announces). A slider,
+checkbox or radio that keeps its focus this way is not typing for undo and redo (`udShortcutBlocked`'s
+`notText`, passed only by the Ctrl+Z / Ctrl+Y handler), so Ctrl+Z still undoes right after a slider
+drag or an arrow step; a text or number field keeps its own Ctrl+Z, and every other shortcut (the arrow
+nudges above all) stays off every field. In pen mode Enter places a point and Shift+Enter closes the
+contour wherever focus is — a button keeps focus after a click (the *Edit points* toggle, say), so
+leaving Enter to a focused button would press it and throw the path away; the column's *Cancel path*
+(`np:pencancel`, which names the empty selection's *Select all* for when it goes) keeps focus in the
+column when Space or Escape leaves pen mode. A press that
 came from the keyboard (`event.detail === 0`) moves focus to *Place in the middle*, so "Enter,
 Enter" adds a shape. *Place in the middle* and *Cancel* exist only while a shape is picked, so they
 have no rebuilt twin when the tool goes away: `shapePlaceMiddle` and `shapePick` then put focus on
