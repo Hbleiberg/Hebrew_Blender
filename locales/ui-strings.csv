@@ -3465,7 +3465,6 @@ fontmaker.status.no_svg_matched,"No SVG elements matched a letter name. Box each
 fontmaker.status.no_vector_in_box,No vector shapes inside that box — drag around a letter.,אין צורות וקטוריות בתוך התיבה הזו — גררו סביב אות.,toast,
 fontmaker.status.not_fontmaker_file,Not a Font Maker project file.,זה אינו קובץ פרויקט של יוצר הגופנים.,toast,
 fontmaker.status.not_valid_project,Not a valid project file.,זה אינו קובץ פרויקט תקין.,toast,
-fontmaker.status.nodes_rotated,Rotated {deg}°.,בוצע סיבוב של {deg}°.,toast,
 fontmaker.status.nodes_scaled,Scaled to {pct}%.,בוצע שינוי גודל ל־{pct}%.,toast,
 fontmaker.status.nodes_rotated_cw,Rotated {deg}° clockwise.,בוצע סיבוב של {deg}° עם כיוון השעון.,toast,Edit points → Transform: a rotate button or the angle slider
 fontmaker.status.nodes_rotated_ccw,Rotated {deg}° counter-clockwise.,בוצע סיבוב של {deg}° נגד כיוון השעון.,toast,Edit points → Transform: a rotate button or the angle slider
