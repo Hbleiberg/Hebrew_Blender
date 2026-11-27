@@ -1742,7 +1742,13 @@ same test the patch makes, and the strokes are settled at the commit), so Trace 
 drawing again or one more stroke rebuilds the *transformed* letter, and its ink and the anchors that
 moved with it agree. The mirror of Flip H keeps the pen's width (the patch's area factor is |det|). A
 carry whose strokes would leave the drawing area refuses the whole transform, as the engine does, with
-its own status line; undo and redo bring the matrix and the strokes back with the outline (the item
+its own status line. A carry that takes the ink past the window the tracer can rasterize is kept, as
+the engine keeps it, but a later re-trace or re-save would cut the outside part off under anchors
+that moved with the whole letter, so the press says so after its result — the engine's own *Warn*
+finding (`gxTraceOff`, asked of the outline the transform left: `xformTraceOff`; `xformDoneSay` puts
+the warning after the result, on the buttons, the sliders' commit and Width % with *Keep stem
+thickness*); a rotation, a vertical flip and a letter with no photo and no strokes carry nothing and
+never warn. Undo and redo bring the matrix and the strokes back with the outline (the item
 scope takes `withDraw` when there are strokes). A rotation and a vertical flip move no anchor and
 carry nothing: a rebuild discards them with the other point edits, and the anchors still fit what
 comes back — and so does the lean record, since the lean of the picture's placement or of the strokes

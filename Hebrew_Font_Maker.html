@@ -16647,6 +16647,13 @@ function xformCarry(l, base, kind, arg, m, piv) {
 }
 function xformCarryBase(l) { return JSON.parse(JSON.stringify({ transform: l.transform, captureBox: l.captureBox || null, lineWeight: l.lineWeight, draw: l.draw || null, drawSig: l.drawSig == null ? null : l.drawSig, slant: letterSlant(l), photoSlant: l.photoSlant == null ? null : l.photoSlant })); }
 function xformPutCarry(l, c) { ['transform', 'captureBox', 'lineWeight', 'draw', 'drawSig', 'photoSlant'].forEach(key => { if (key in c) l[key] = c[key]; }); }
+/* A carry that takes the photo or the strokes past what the tracer can see leaves the letter as it is, but a
+   later re-trace or re-save would cut the part outside off, under anchors that moved with the whole of it —
+   the engine's own Warn finding (gxTraceOff), asked of the outline as the transform left it. A point-editor
+   press has no dialog to say it in first, so its status line says it after the result (xformDoneSay); one
+   Undo takes the transform back. */
+function xformTraceOff(l) { return !!(l && l.contours && l.contours.length) && gxTraceOff(l, gxOutlineExtent({ rings: l.contours.map(c => c.points), curves: null })); }
+function xformDoneSay(text, off) { status(off ? I18n.t('fontmaker.status.xform_trace_off', { done: text }) : text); }
 function xformScope(l, kind) {   // a transform that carries pen strokes must snapshot them too (draw is outside a plain item scope)
   return (xformAnchorsFollow(kind) && strokesOwn(l)) ? Object.assign(itemScope(), { withDraw: true }) : itemScope();
 }
@@ -16766,7 +16773,7 @@ function transformSelectedNodes(kind, angleDeg) {            // button / number-
     done = true;
   });
   if (done && lean != null) xformTurnNote(l, kind, lean);
-  if (done) status(xformDoneText(kind, angleDeg, m));        // every press says what it did: focus stays on the button, so the status line is what a screen reader hears
+  if (done) xformDoneSay(xformDoneText(kind, angleDeg, m), !!carry && xformTraceOff(l));   // every press says what it did: focus stays on the button, so the status line is what a screen reader hears
   renderGrids(); renderStage(); renderControls(); syncItalicRow();
 }
 function xformDoneText(kind, arg, m) {
@@ -16811,7 +16818,7 @@ function xformWidthStems(pct) {
   const warn = res.plan.warn.closed.length > 0, stretched = res.plan.warn.stretched.length > 0;   // stretched: the stem step would have pulled this letter apart, so the plan gave it the plain stretch
   const wide = res.k > GXW_WIDE;   // the strokes kept, everything else in the letter stretched more than twice
   if (!gxCommit(res.plan, null)) return;
-  status(I18n.t(stretched ? 'fontmaker.node_editor.scale_stems_stretched' : warn ? 'fontmaker.node_editor.scale_stems_warn' : wide ? 'fontmaker.node_editor.scale_stems_wide' : 'fontmaker.widthall.applied_letter', { pct }));
+  xformDoneSay(I18n.t(stretched ? 'fontmaker.node_editor.scale_stems_stretched' : warn ? 'fontmaker.node_editor.scale_stems_warn' : wide ? 'fontmaker.node_editor.scale_stems_wide' : 'fontmaker.widthall.applied_letter', { pct }), res.plan.warn.off.length > 0);
 }
 /* Live transform sliders — the fillet/reduce burst idiom, but for a RELATIVE op: the slider value
    is the total rotation/scale since drag start (reset-from-base each tick), and it snaps back to
@@ -16905,7 +16912,7 @@ function xformCommit(kind) {
   udBurstCommit();                                           // renested state (same order as the bbox drag-scale pointerup)
   _xformBase = null;
   if (lean != null) xformTurnNote(l, kind, lean);
-  status(XF_KINDS[kind].done(val));
+  xformDoneSay(XF_KINDS[kind].done(val), !!carry && xformTraceOff(l));
   renderGrids(); renderStage(); renderControls(); syncItalicRow();
 }
 function nodeEditPanelHTML(l) {
@@ -18828,6 +18835,10 @@ function gxOutlineExtent(o) {   // → { minX, maxX, minY, maxY, worst } over th
   (o.curves || []).forEach(cv => { if (!cv) return; see(cv.start); cv.segments.forEach(seg => seg.pts.forEach(see)); });
   return b;
 }
+function gxTraceOff(l, e) {   // a letter with a photo or pen strokes whose ink (e: gxOutlineExtent) reaches past what the tracer can see — its outline is fine, a later re-trace or re-save would cut it off (the Warn finding; the point editor's whole-glyph transforms ask it too, xformTraceOff)
+  const hasImage = !!(l.source && l.source.dataUrl), d = l.draw, hasDraw = !!(d && Array.isArray(d.strokes) && d.strokes.length), W = GX_TRACE_WIN;
+  return (hasImage || hasDraw) && (e.minX < W.x0 || e.maxX > W.x1 || e.minY < W.y0 || e.maxY > W.y1);
+}
 const GX_TROP_SIDES = [['tropAboveL', 'tropAbove', -1], ['tropAboveR', 'tropAbove', 1], ['tropBelowL', 'tropBelow', -1], ['tropBelowR', 'tropBelow', 1]];
 function gxLetterPatch(l, spec, ctx) {   // PURE: one letter's new field values → { set, lost, gone, worst, off, drawOut }
   const T = spec.T, TA = spec.TA || T, a = T[0], out = { set: {}, lost: 0, gone: false, worst: 0, off: false, drawOut: false, closed: false };   // T: the outline, photo and stroke centre lines; TA: anchors and pins (the same map unless the operation says otherwise)
@@ -18841,8 +18852,7 @@ function gxLetterPatch(l, spec, ctx) {   // PURE: one letter's new field values 
       out.set.contours = o.rings.map((pts, j) => Object.assign({}, l.contours[o.keep[j]], { points: pts }));
       if (o.curves) out.set.curves = o.curves;
       const e = gxOutlineExtent(o); see(e.worst);
-      const W = GX_TRACE_WIN;
-      out.off = (hasImage || hasDraw) && (e.minX < W.x0 || e.maxX > W.x1 || e.minY < W.y0 || e.maxY > W.y1);
+      out.off = gxTraceOff(l, e);
     }
   }
   if (l.advance != null || (spec.setAdvance && spec.advance != null)) { const v = Math.max(0, spec.advance != null ? spec.advance : Math.round(l.advance * a)); out.set.advance = v; see(v); }   // setAdvance: a letter still on the default width gets its new one written
