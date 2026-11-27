@@ -706,6 +706,9 @@ body.fs-idle #fsBtn:not(:focus-visible) { opacity: 0; pointer-events: none; }
   margin: 0 auto;
   padding: 14px 14px 100px;
 }
+/* The 100px foot is the setup screen's: its sticky Start bar's −100px margin cancels it, so the bar reaches the
+   wrap's edge. The card and results screens kept it and ended 140px above the footer (other pages 40–96). */
+.wrap:has(> #screenSetup:not(.active)) { padding-bottom: 24px; }
 .screen { display: none; }
 .screen.active { display: block; animation: fadeIn 0.25s ease; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
