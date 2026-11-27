@@ -1994,7 +1994,10 @@ opener's `data-fk-else`). Every Transform button posts what it did on the status
 checkbox or radio that keeps its focus this way is not typing for undo and redo (`udShortcutBlocked`'s
 `notText`, passed only by the Ctrl+Z / Ctrl+Y handler), so Ctrl+Z still undoes right after a slider
 drag or an arrow step; a text or number field keeps its own Ctrl+Z, and every other shortcut (the arrow
-nudges above all) stays off every field. A press that
+nudges above all) stays off every field. In pen mode Enter places a point, except on a focused button,
+link, summary or menu item (`keyPressesControl`): there it is that control's press, so the column's
+*Cancel path* (`np:pencancel`, which names the empty selection's *Select all* for when it goes) and
+every other button of the column work from the keyboard while the pen is out. A press that
 came from the keyboard (`event.detail === 0`) moves focus to *Place in the middle*, so "Enter,
 Enter" adds a shape. *Place in the middle* and *Cancel* exist only while a shape is picked, so they
 have no rebuilt twin when the tool goes away: `shapePlaceMiddle` and `shapePick` then put focus on

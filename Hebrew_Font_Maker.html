@@ -16937,7 +16937,7 @@ function nodeEditPanelHTML(l) {
   const ctx = _penMode
     ? `<div class="npnl-ctx" role="group" aria-label="${esc(I18n.t('fontmaker.node_editor.mode_pen'))}">
     <div class="npnl-pen-lines">${I18n.t('fontmaker.node_editor.pen_lines', {keys: khTitle('penCancel')})}</div>
-    <button class="ctl-btn hi-btn npnl-pen-cancel" onclick="togglePenMode()" title="${esc(I18n.t('fontmaker.node_editor.pen_cancel_title', {keys: khTitle('penCancel')}))}" aria-keyshortcuts="${khAria('penCancel')}"><svg class="hi hi-sm hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg>${I18n.t('fontmaker.node_editor.pen_cancel')}</button>
+    <button class="ctl-btn hi-btn npnl-pen-cancel" data-fk="np:pencancel" data-fk-else="np:selall np:smooth np:help" onclick="togglePenMode()" title="${esc(I18n.t('fontmaker.node_editor.pen_cancel_title', {keys: khTitle('penCancel')}))}" aria-keyshortcuts="${khAria('penCancel')}"><svg class="hi hi-sm hi-close" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 7.5l9 9M16.5 7.5l-9 9"/></svg>${I18n.t('fontmaker.node_editor.pen_cancel')}</button>
   </div>`
     : cnt === 0
     ? `<div class="npnl-ctx" role="group" aria-label="${esc(I18n.t('fontmaker.node_editor.sel_actions'))}">
@@ -22544,6 +22544,10 @@ function udShortcutBlocked(o) {
   if (document.querySelector(o.editShape ? '.overlay.open:not(#markEditOverlay)' : '.overlay.open')) return true;
   return false;
 }
+/* Enter on a focused button, link, summary or menu item is that control's own press: a document-level
+   handler that gives Enter a meaning of its own (pen mode places a point with it) leaves it alone, or
+   the press is swallowed by its preventDefault and nothing happens. */
+function keyPressesControl(e) { const t = e.target; return !!(t && t !== document.body && t.closest && t.closest('button, a[href], summary, select, [role="button"], [role="menuitem"]')); }
 /* Ctrl/Cmd+Z = undo · Ctrl/Cmd+Shift+Z or Ctrl+Y = redo */
 document.addEventListener('keydown', e => {
   if (!(e.ctrlKey || e.metaKey) || e.altKey) return;
@@ -22684,6 +22688,7 @@ document.addEventListener('keydown', e => {
   }
   if (e.ctrlKey || e.metaKey) return;                    // let Ctrl/Cmd+Z (undo/redo) fall through
   if (_penMode) {                                        // ── pen mode owns the keyboard ──
+    if (e.key === 'Enter' && keyPressesControl(e)) return;   // …except Enter on a focused button: it presses that button (Cancel path in the left column), never places a point
     if (e.key === 'Enter') { e.preventDefault();
       if (e.shiftKey) closePenContour();
       else if (_penCursor) penPlacePoint(_penCursor.slice(), e.altKey);
