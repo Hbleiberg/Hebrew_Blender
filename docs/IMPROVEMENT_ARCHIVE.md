@@ -99489,6 +99489,7 @@ _(prior)_ **Next session (S684):** **Branch `claude/zen-goldberg-1lov9k` (S676�
 
 - D performance (one tool): 2026-11-27 (**S685 — chrome (S590 → S685; the new hub, the navy footer, the cracks): cold 7 pages × EN 1280 / HE 800 × 1× / 4× on HEAD and the S590-era tree (56 loads, the planted 300 ms click read 300–310 in each), 58 interactions @4×, a locale-held / locale-failed census of 25 pages. 0 tasks over 200 ms after the first cold cell, max interaction task 104 ms. FOUND 1 (the dark label's raw key, 16 pages), FIXED 1 + 3 from the queue; 2 P4. D-next: trope (S598), dictionary (S605), letter_learner (S612).**)
 
+- _(prior)_ **Next session (S687):** **Branch `claude/brave-hopper-ugnafa` (S684–S686, draft PR #429): open → continue; merged → fresh branch off `origin/main`.** `sw.js` **v1569**, FM **6.0**, corpus ?v=**9**, catalog ?v=**9**. ⚑ drift: main=a579686 sw=v1569 fm=6.0 migration=0014_saves_tool_tefillah_trainer.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest next: G fontmaker (S593; pointer: G); then N fontmaker (S595), D trope (S598), H torah (S599), C chrome (S600). ⚑ Suite passes are aging: E S621, K S623, I S628, F S630, B S631 — the Font Maker 6.0 (`d2d922c..a579686`) and the class roster, hub, footer and cracks (`9e702ae..a402f72`) are still unseen by E, K, I, F, B. ⚑ The corpus's senses: S681's Awaiting P2. ⚑ Queue: Flash Cards' S683 profile-row P4; the staff's credits-only sheet (S684); the dictionary's Filter by Letter tiles (a visible change: ask first); the failed-locale raw keys (S685); the trainers' fullscreen bar over the drawer (S675). ⚑ Awaiting: S681, S662, S653, S652.
 - _(prior)_ **Next session (S686):** **Branch `claude/brave-hopper-ugnafa` (S684–S685, draft PR #429): open → continue; merged → fresh branch off `origin/main`.** `sw.js` **v1568**, FM **6.0**, corpus ?v=**9**, catalog ?v=**9**. ⚑ drift: main=a579686 sw=v1568 fm=6.0 migration=0014_saves_tool_tefillah_trainer.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest next: C trope (S591; pointer: C); then G fontmaker (S593), N fontmaker (S595), D trope (S598). ⚑ Suite passes are aging: E S621, K S623, I S628, F S630, B S631 — the Font Maker 6.0 (`d2d922c..a579686`) and the class roster, hub, footer and cracks (`9e702ae..a402f72`) are still unseen by E, K, I, F, B. ⚑ The corpus's senses: S681's Awaiting P2. ⚑ Queue: Flash Cards' S683 profile-row P4; the staff's credits-only sheet (S684); the dictionary's Filter by Letter tiles; the failed-locale raw keys (S685). ⚑ Awaiting: S681, S662, S653, S652.
 
 
@@ -99514,3 +99515,29 @@ _(prior)_ **Next session (S684):** **Branch `claude/zen-goldberg-1lov9k` (S676�
 ### from Discovery-pass rotation (run one per session, stalest first)
 
 - C accessibility (one tool): 2026-11-27 (**S686 — `trope_tutor.html` (S591 → S686, 14 commits: the navy footer, the cracks, the skip link, forced colours) + `hebrew_blend_generator.html` (S594 → S686, 48 commits): census (contrast, 24px targets, names, `aria-hidden` focus, unmarked Hebrew, rings) over 4 tutor views + drill, results, tour, tips and 11 generator states × 4 cells; Tab walks, roving tabs, skip link, motion with its control. CLEAN on both, FOUND 0 (4 leads settled); + 2 queue fixes on the trainers. C-next: chrome (S600), dashboard (S607), fontmaker (S614).**)
+
+
+<!-- archived by compact-ledger at the S688 boundary, 2026-11-27 -->
+## Compaction (S688, 2026-11-27) — moved verbatim from the live ledger
+
+### from Candidates — aged P4 (found more than 90 sessions before S688)
+
+- [ ] P4 (**NEW S597 G; S677 re-measured under the navy footer — not small**) | trope_tutor.html | **8 of 56 prints gain a sheet holding only the footer** (6 Phrases, 2 HE Learn Letter): a full last sheet leaves ~22px for its ~105; the footer's `break-before:avoid` moves nothing (the last card is 5 wrappers deep in a flex body; findings S677). | found S597
+
+### from Done
+
+- [x] 2026-11-27 | `c7a441ef` | flash_cards.html | (S683 queue) **Teacher Tools' profile rows keep their buttons in line**: the active row keeps Set Active's slot hidden, disabled, `aria-hidden` (its Unlink sat 96 px off every other row's) | `prof.mjs`, linked + unlinked profiles, EN light 1280 / HE dark 800: Unlink 716 / 257 on every row (before 812 vs 716, 162 vs 257); a real Set Active click moves the slot
+
+- [x] 2026-11-27 | `f95d5acd` | Hebrew_Font_Maker.html, probe | (S687 G) **A template sheet's sample glyph is never mirrored** (every bidi-mirrored character drew mirrored in its box in both UIs — "(" in Right Paren's — so a font written from the sheet shipped its brackets backwards) | probe `S687-fontmaker-template-samples-never-mirror.mjs` 20 / 20 (before 0 / 20); every other sheet pixel-identical; S593 Auto-detect probe 4 / 4
+
+- [x] 2026-11-27 | `36f294a7` | torah_trainer.html, probe | (S682 queue; pattern `contrast-below-AA-on-a-tinted-or-coloured-plate`) **A flashed verse keeps its Read / Chant / Loop / Copy labels legible** (3.9:1 light / 2.5 dark at the flash's start; light was unrecorded) | probe 8 / 8, ≥ 9.35 light / 5.9 dark (before 0 / 8); hover and the after-flash grey read back
+
+- [x] 2026-11-24 | (S682 close-out) | branch/deploy note | **S682 = C on `torah_trainer.html` (S586 → S682): FOUND 2 + 2 P4, FIXED 2 (one on both trainers), 2 logged at the cap; + 2 from the queue.** Draft PR #427 continues, `sw.js` v1547 → v1551; nothing live …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-24 | `c830114a` | torah_trainer.html, sw.js | (S682 C; pattern `button-focus-lost-to-its-own-rebuild`) **A Chant, Loop or Chant all pressed from the keyboard keeps the focus when it loads another reading** (the rebuilt twin, two frames on, no scroll) | `c682/fix2.mjs` 18 / 18 (before 8 / 18); scroll as before 12 / 12
+
+- [x] 2026-11-24 | `1c5ddb13` | torah_trainer.html, tefillah_trainer.html, sw.js | (S682 C; pattern `contrast-below-AA-on-a-tinted-or-coloured-plate`) **The Latin under a trope-coloured word takes the word's ink** (3.0–4.1:1 light, 2.5–3.0 dark → 5.6+) | `c682/fix1.mjs`: under AA 0 in 22 states (before 175–1,976 a state)
+
+### from Per-session log (one line per session)
+
+- 2026-11-20 | **S667** | iters: 5 | tools: letter_discrimination ×2, trope_atlas ×2, 2 reference docs, sw ×4, probes S667 ×4 | patterns fixed: viewport-height-fit-without-a-floor ×1 (new) | pass run: N (letter_discrimination, first; FOUND 4 + 1, FIXED 2 + 2 on the atlas; 2 logged) | gates: gate 4 …[full text: IMPROVEMENT_ARCHIVE.md]
