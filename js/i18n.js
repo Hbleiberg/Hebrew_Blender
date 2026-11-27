@@ -94,8 +94,15 @@
     });
   }
 
+  // English for the few keys a page writes over an authored English label before any locale has loaded:
+  // the dark toggle's label is set at DOMContentLoaded on a dark visit, which replaced the markup's "Dark"
+  // with the raw key until the locale landed, and for good when the fetch failed. Only while no dict has
+  // loaded; a key missing from a LOADED dict still shows raw.
+  var PRE_READY_EN = { 'shared.darkmode.label_light': 'Light', 'shared.darkmode.label_dark': 'Dark' };
+
   function t(key, params) {
     if (!Object.prototype.hasOwnProperty.call(dict, key)) {
+      if (!dictLoaded && Object.prototype.hasOwnProperty.call(PRE_READY_EN, key)) return substitute(PRE_READY_EN[key], params);
       // Only warn once a dict is actually loaded — pre-ready every key looks missing (see dictLoaded).
       if (dictLoaded && typeof console !== 'undefined' && console.warn) console.warn('[i18n] missing key: ' + key);
       return key;
