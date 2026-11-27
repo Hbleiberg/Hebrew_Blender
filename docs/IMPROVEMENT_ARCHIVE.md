@@ -99450,3 +99450,41 @@ _(prior)_ **Next session (S684):** **Branch `claude/zen-goldberg-1lov9k` (S676�
 ### from Per-session log (one line per session)
 
 - 2026-11-19 | **S664** | iters: 5 | tools: trope_atlas, hebrew_blend_generator, classroom_dashboard ×2, torah-and-trope.md, dashboard.md, sw ×4, probes S664 ×4 | patterns fixed: RTL-inheritance-on-a-Latin-script-container ×1 (the inverse) | pass run: D (trope_atlas, first since S579, clean on …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- _(prior)_ **Next session (S685):** **Branch `claude/brave-hopper-ugnafa` (S684, its draft PR): open → continue; merged → fresh branch off `origin/main`.** `sw.js` **v1567**, FM **6.0**, corpus ?v=**9**, catalog ?v=**9**. ⚑ drift: main=a579686 sw=v1567 fm=6.0 migration=0014_saves_tool_tefillah_trainer.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest next: D chrome (S590; pointer: D); then C trope (S591), G fontmaker (S593), N fontmaker (S595). ⚑ Unaudited: Font Maker 6.0 (`d2d922c..a579686`, 238 commits outside the loop, its own adversarial review in the archive) and the class roster, the hub, the footer and cracks (`9e702ae..a402f72`) — unseen by E, K, I, F, B. ⚑ The corpus's senses: S681's Awaiting P2. ⚑ Queue: Flash Cards' S683 P4s; the staff's credits-only sheet (S684); the dictionary's Filter by Letter tiles. ⚑ Awaiting: S681, S662, S653, S652.
+
+
+<!-- archived by compact-ledger at the S686 boundary, 2026-11-27 -->
+## Compaction (S686, 2026-11-27) — moved verbatim from the live ledger
+
+### from Candidates — aged P4 (found more than 90 sessions before S686)
+
+- [ ] P4 (**NEW S595 N**) | Hebrew_Font_Maker.html | **A window opened mid-tour opens under the tour's card**: on a phone the card covers its Close (the card's ✕ still ends the tour). | found S595
+
+- [ ] P4 (**NEW S595 N — gate 2/4**) | Hebrew_Font_Maker.html | **A phone turned sideways gets the tablet notice** (tiered by width alone); one over 820px gets none. | found S595
+
+### from Candidates (prioritized, top = next)
+
+- [ ] P4 (**NEW S685 D**) | js/i18n.js, 10 tool pages | **A failed locale fetch leaves every JS-built string a raw key until a retry lands** (the census's failed arm: 25 cells on the tool pages — quick-start chips, nusach names, filter heads; static text keeps its English, the retry heals on `online` / a visible tab / 3 tries): an English fallback for JS strings is a shared-script question (findings S685). | found S685
+
+### from Done
+
+- [x] 2026-11-24 | `4493ffdb` | trope_atlas.html, sw.js, probe | (S680 queue) **The sign table fits its box between a phone and a wide window** | real fonts 320–1600: 16 widths fit, 49 identical, PDFs identical; probe 16 / 16 (before 14 / 16)
+
+- [x] 2026-11-24 | `7c4d080a` | trope_atlas.html, sw.js, probe | (S680 queue) **The notes keep "CC BY-SA 4.0" on one line** | probe 4 / 4 (before 1 / 4), every 20px from 320 to 1400; real fonts: broken at 41 (HE) / 2 (EN) widths before, none after
+
+- [x] 2026-11-24 | (S680 close-out) | branch/deploy note | **S680 = M on `trope_atlas.html` (its 2nd, S584 → S680): FOUND 3 + 1 suite P2 by the way (live since `a402f72c`); FIXED 4 (the P2 on six pages, a new bidi shape on three, the queued Tefillah rule); 2 atlas P4s logged (the page at its cap).** Draft PR #427 continues, `sw.js` v1539 → v1543; nothing live changed.
+
+- [x] 2026-11-24 | `2f4a844c` | Hebrew_Font_Maker.html, sw.js, probe | (S680 M; pattern `translated-text-in-a-pinned-ltr-box`, its 3rd carrier) **The stage legend's Hebrew sentence ends with its period, not before its first word** | probe 6 / 6 (before 2 / 6); EN computed styles 4 / 4 (1,792 elements)
+
+- [x] 2026-11-24 | `686fbf85` | trope_atlas.html, hebrew_blend_generator.html, sw.js, probe | (S680 M; NEW pattern `translated-text-in-a-pinned-ltr-box`) **Hebrew in a left-to-right box reads in Hebrew order: the atlas's zarka note; the generator's empty worksheet (its period, its quick-start chips, the tour arrow)** | probe 8 / 8 (before 4 / 8); EN full pages pixel-identical 8 / 8
+
+- [x] 2026-11-24 | `815069dd` | 6 tool pages, build-kintsugi.mjs, home.md, sw.js, detector | (S680 by the way, P2; NEW pattern `stray-text-in-a-style-block`) **A pasted builder status line swallowed the Torah Trainer's `.hol-ico` rule, so its parasha and holiday icons drew 149–347px (live since `a402f72c`): the line goes from six pages and the builder prints it to stderr** | rules kept 6 / 6 …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Per-session log (one line per session)
+
+- 2026-11-20 | **S666** | iters: 5 | tools: classroom_dashboard ×2, 16 more pages ×1 (the skip rule), trope_atlas ×2, trope_tutor ×2, torah_trainer ×2, dashboard.md, torah-and-trope.md, sw ×3, a detector new + one extended, probes S666 ×2 | patterns fixed: focus-hidden-under-a-sticky-bar ×1, …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- D performance (one tool): 2026-11-27 (**S685 — chrome (S590 → S685; the new hub, the navy footer, the cracks): cold 7 pages × EN 1280 / HE 800 × 1× / 4× on HEAD and the S590-era tree (56 loads, the planted 300 ms click read 300–310 in each), 58 interactions @4×, a locale-held / locale-failed census of 25 pages. 0 tasks over 200 ms after the first cold cell, max interaction task 104 ms. FOUND 1 (the dark label's raw key, 16 pages), FIXED 1 + 3 from the queue; 2 P4. D-next: trope (S598), dictionary (S605), letter_learner (S612).**)

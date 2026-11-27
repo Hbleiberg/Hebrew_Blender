@@ -66,17 +66,15 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P3 (**NEW 2026-09-26**) | torah_trainer.html | **The karaoke highlight likely runs a word off in the 19 TIMING_SLIPS stretches** (Shemini 6 from Leviticus 11:8 on), where a timing file slips while its count still matches. | found 2026-09-26
 
+- [ ] P4 (**NEW S685 D**) | js/i18n.js, 10 tool pages | **A failed locale fetch leaves every JS-built string a raw key until a retry lands** (the census's failed arm: 25 cells on the tool pages — quick-start chips, nusach names, filter heads; static text keeps its English, the retry heals on `online` / a visible tab / 3 tries): an English fallback for JS strings is a shared-script question …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [ ] P4 (**NEW S685 — after `4cafae3a`**) | flash_cards.html | **17 of the dictionary's 13,080 words are wider than a listening tile even in two columns** (6 at 560px; e.g. אֶפִּיסְטֵמוֹלוֹגְיָה 243 px in 231): a Words round with one of them runs it past its tile's edge. | found S685
+
 - [ ] P4 (**NEW S684 G — after `21c8b9e4`**) | torah_trainer.html | **A printed reading can end on a sheet holding only the credits strip** (the Trope staff on Genesis 1, 17 → 18 sheets; findings S684). | found S684
-
-- [ ] P4 (**NEW S683 M**) | flash_cards.html | **The drill and results screens end 140–150px above the footer** (`.wrap`'s 100px padding; other pages 40–96). | found S683
-
-- [ ] P4 (**NEW S683 M**) | flash_cards.html | **A listening round's three answers sit 2 + 1**. | found S683
 
 - [ ] P4 (**NEW S683 M — gate 3, a component**) | flash_cards.html | **Emoji mode's Gender is a square bar, the Mode panel's one choice not drawn as a pill group**. | found S683
 
 - [ ] P4 (**NEW S683 M**) | flash_cards.html | **Teacher Tools' profile rows' buttons do not line up row to row** (the active row has no Set Active). | found S683
-
-- [ ] P4 (**NEW S682 C; S683 re-timed**) | torah_trainer.html | **A verse's 1.5 s gold flash drops its grey Read / Chant / Loop / Copy chips to 2.6:1 at its start in dark mode (4.5 after ~0.7 s)**. | found S682
 
 - [ ] P4 (**NEW S681 H — the page at the cap**) | hebrew_dictionary.html | **Filter by Letter offers letters no word has in that place**: the 1st Letter row's five final forms (ף, ץ 0 words; ך 2, ם 1, ן 1) and the Last Letter row's regular מ נ כ פ צ (9, 3, 4, 3, 2 — abbreviations), beside ם 884 and ן 1,177, so a teacher who taps "Mem" for words ending in mem gets nine odd ones. | found S681
 
@@ -135,10 +133,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S599 H**) | torah_trainer.html | **After Create, the Assign dialog's fields stay live** (New code word changes only the box); the feedback label sits at its textarea's foot. | found S599
 
 - [ ] P4 (**NEW S597 G; S677 re-measured under the navy footer — not small**) | trope_tutor.html | **8 of 56 prints gain a sheet holding only the footer** (6 Phrases, 2 HE Learn Letter): a full last sheet leaves ~22px for its ~105; the footer's `break-before:avoid` moves nothing (the last card is 5 wrappers deep in a flex body; findings S677). | found S597
-
-- [ ] P4 (**NEW S595 N**) | Hebrew_Font_Maker.html | **A window opened mid-tour opens under the tour's card**: on a phone the card covers its Close (the card's ✕ still ends the tour). | found S595
-
-- [ ] P4 (**NEW S595 N — gate 2/4**) | Hebrew_Font_Maker.html | **A phone turned sideways gets the tablet notice** (tiered by width alone); one over 820px gets none. | found S595
 
 - [ ] P4 (**NEW S672 P — verify first; pattern `synced-reading-follows-the-other-tab`**) | flash_cards.html, name_tags.html, letter_learner.html, hebrew_dictionary.html | **A synced settings row that names what is open may follow the other tab, as the two trainers' did**: run smoke-sync's `readingStays` shape on the deck or profile in use, the open list, the mode and card, the filters. | found …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -392,6 +386,16 @@ _(none)_
 
 ## Done
 
+- [x] 2026-11-27 | (S685 close-out) | branch/deploy note | **S685 = D on the chrome bundle (S590 → S685, 709 commits; 16–41 to each page): FOUND 1, FIXED 1 (16 pages) + 3 from the queue.** Branch `claude/brave-hopper-ugnafa`, continuing draft PR #429; `sw.js` v1568; nothing live.
+
+- [x] 2026-11-27 | `36f294a7` | torah_trainer.html, probe | (S682 queue; pattern `contrast-below-AA-on-a-tinted-or-coloured-plate`) **A flashed verse keeps its Read / Chant / Loop / Copy labels legible** (3.9:1 light / 2.5 dark at the flash's start; light was unrecorded) | probe 8 / 8, ≥ 9.35 light / 5.9 dark (before 0 / 8); hover and the after-flash grey read back
+
+- [x] 2026-11-27 | `4cafae3a` | flash_cards.html, probe | (S683 queue) **A listening round's three short answers share one row** (words ≤ 5 letters; a first all-rounds version ran 209–666 dictionary words past their tile and was narrowed before commit) | probe 48 / 48, 480 cards, 0 overflow (before 32 / 48); 11,036 admitted words 0 overflow
+
+- [x] 2026-11-27 | `4ea5398f` | flash_cards.html, probe | (S683 queue) **The drill and results screens end 64px above the footer, not 140** | probe 8 / 8, the setup screen's Start bar identical (before 0 / 8)
+
+- [x] 2026-11-27 | `ce63803a` | js/i18n.js, sw.js, probe | (S685 D; pattern `pre-ready-i18n / never-re-rendered`) **16 pages: the dark toggle says "Light" before the locale loads, not `shared.darkmode.label_light`** (for the whole locale fetch on a dark first visit; for good when it failed) | probe 64 / 64 (before 6 / 64); recipe 72 cells 0 raw keys
+
 - [x] 2026-11-27 | (S684 close-out) | branch/deploy note | **S684 = G on `torah_trainer.html` (S589 → S684, 70 commits to the page): FOUND 1 (gate 2: print the credits) + 1 P4, FIXED 1; + a queued P4, a reference fix.** Branch `claude/brave-hopper-ugnafa`, new draft PR; `sw.js` v1567; nothing live.
 
 - [x] 2026-11-27 | `6b746e7a` | docs/reference/home.md | (S684 G census) **The footer reference says which pages print the credits** | census: 23 pages, credits on 11
@@ -412,31 +416,21 @@ _(none)_
 
 - [x] 2026-11-24 | (S682 close-out) | branch/deploy note | **S682 = C on `torah_trainer.html` (S586 → S682): FOUND 2 + 2 P4, FIXED 2 (one on both trainers), 2 logged at the cap; + 2 from the queue.** Draft PR #427 continues, `sw.js` v1547 → v1551; nothing live …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- [x] 2026-11-24 | `4493ffdb` | trope_atlas.html, sw.js, probe | (S680 queue) **The sign table fits its box between a phone and a wide window** | real fonts 320–1600: 16 widths fit, 49 identical, PDFs identical; probe 16 / 16 (before 14 / 16)
-
 - [x] 2026-11-24 | `c830114a` | torah_trainer.html, sw.js | (S682 C; pattern `button-focus-lost-to-its-own-rebuild`) **A Chant, Loop or Chant all pressed from the keyboard keeps the focus when it loads another reading** (the rebuilt twin, two frames on, no scroll) | `c682/fix2.mjs` 18 / 18 (before 8 / 18); scroll as before 12 / 12
 
 - [x] 2026-11-24 | `1c5ddb13` | torah_trainer.html, tefillah_trainer.html, sw.js | (S682 C; pattern `contrast-below-AA-on-a-tinted-or-coloured-plate`) **The Latin under a trope-coloured word takes the word's ink** (3.0–4.1:1 light, 2.5–3.0 dark → 5.6+) | `c682/fix1.mjs`: under AA 0 in 22 states (before 175–1,976 a state)
 
 - [x] 2026-11-24 | (S681 close-out) | branch/deploy note | **S681 = H on `hebrew_dictionary.html` (S585 → S681, 46 commits to the page): 5 lessons + the student cell; FOUND 4 (a P2 corpus call to the maintainer, 2 FIXED, 1 P4 logged at the cap), FIXED 2 more from the queue.** Draft PR #427 continues, `sw.js` v1543 → v1547, corpus ?v=8 → 9; nothing live changed.
 
-- [x] 2026-11-24 | `7c4d080a` | trope_atlas.html, sw.js, probe | (S680 queue) **The notes keep "CC BY-SA 4.0" on one line** | probe 4 / 4 (before 1 / 4), every 20px from 320 to 1400; real fonts: broken at 41 (HE) / 2 (EN) widths before, none after
-
 - [x] 2026-11-24 | `54dce54c` | hebrew_dictionary.html, sw.js, probe | (S681 H) **A card's headword never runs under its corner controls** (the copy / Google / Hear trio and Bulk Copy Mode's box) | census, every card × 4 cells × 4 states: 0 under a control (before 323–13,081); probe 18 / 18 (before 9 fail)
 
 - [x] 2026-11-24 | `71e8f6b4` | data/hebrew_words.json, 3 fetchers, README.md, ops.md, sw.js, probe | (S681 H) **A vowel's dotted circle shows that vowel alone: the ten vowel-name glosses lose a stray chirik (corpus ?v=9)** | probe 8 / 8 (before 5 / 8); S629's probe passes; recipe 12 / 12
 
-- [x] 2026-11-24 | (S680 close-out) | branch/deploy note | **S680 = M on `trope_atlas.html` (its 2nd, S584 → S680): FOUND 3 + 1 suite P2 by the way (live since `a402f72c`); FIXED 4 (the P2 on six pages, a new bidi shape on three, the queued Tefillah rule); 2 atlas P4s logged (the page at its cap).** Draft PR #427 continues, `sw.js` v1539 → v1543; nothing live changed.
-
-- [x] 2026-11-24 | `2f4a844c` | Hebrew_Font_Maker.html, sw.js, probe | (S680 M; pattern `translated-text-in-a-pinned-ltr-box`, its 3rd carrier) **The stage legend's Hebrew sentence ends with its period, not before its first word** | probe 6 / 6 (before 2 / 6); EN computed styles 4 / 4 (1,792 elements)
-
-- [x] 2026-11-24 | `686fbf85` | trope_atlas.html, hebrew_blend_generator.html, sw.js, probe | (S680 M; NEW pattern `translated-text-in-a-pinned-ltr-box`) **Hebrew in a left-to-right box reads in Hebrew order: the atlas's zarka note; the generator's empty worksheet (its period, its quick-start chips, the tour arrow)** | probe 8 / 8 (before 4 / 8); EN full pages pixel-identical 8 / 8
-
-- [x] 2026-11-24 | `815069dd` | 6 tool pages, build-kintsugi.mjs, home.md, sw.js, detector | (S680 by the way, P2; NEW pattern `stray-text-in-a-style-block`) **A pasted builder status line swallowed the Torah Trainer's `.hol-ico` rule, so its parasha and holiday icons drew 149–347px (live since `a402f72c`): the line goes from six pages and the builder prints it to stderr** | rules kept 6 / 6 …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-11-27 | **S685** | iters: 5 | tools: js/i18n.js (16 pages), flash_cards ×2, torah_trainer, sw, probes ×4 | patterns fixed: pre-ready-i18n / never-re-rendered ×1, contrast-below-AA-on-a-tinted-or-coloured-plate ×1 | pass run: D (chrome, S590 → S685; FOUND 1, FIXED 1; 2 P4) | gates: none
 
 - 2026-11-27 | **S684** | iters: 4 | tools: torah_trainer, ivrit-classes.js (4 pages), home.md, torah-and-trope.md, sw, probes ×2 | patterns fixed: — | pass run: G (torah_trainer; FOUND 1 + 1 P4, FIXED 1) | gate 2 answered (print the credits)
 
@@ -476,11 +470,9 @@ _(none)_
 
 - 2026-11-20 | **S665** | iters: 5 | tools: trope_atlas ×2, flash_cards, hebrew_blend_generator, torah-and-trope.md, sw ×4, probes S665 ×4 | patterns fixed: focus-hidden-under-a-sticky-bar ×1, skip-target-rings-the-whole-column ×1 (new), dark-navy-fill-matches-its-ground ×1 | pass run: C …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- 2026-11-20 | **S666** | iters: 5 | tools: classroom_dashboard ×2, 16 more pages ×1 (the skip rule), trope_atlas ×2, trope_tutor ×2, torah_trainer ×2, dashboard.md, torah-and-trope.md, sw ×3, a detector new + one extended, probes S666 ×2 | patterns fixed: focus-hidden-under-a-sticky-bar ×1, …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S684 (2026-11-27):** torah_trainer, ivrit-classes.js, home.md, torah-and-trope.md, sw.js, probes ×2 · S683: flash_cards ×2, ivrit-classes.js, tefillah_trainer ×2, torah_trainer, locales, sw.js ×4, probes ×2
+- **Snapshot S685 (2026-11-27):** js/i18n.js (16 pages), flash_cards ×2, torah_trainer, sw.js, probes ×4 · S684: torah_trainer, ivrit-classes.js, home.md, torah-and-trope.md, sw.js, probes ×2
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
 
@@ -778,7 +770,7 @@ _(none)_
 
 - `dark-override-outranks-hover` | ACTIVE | owner A | det: recipe | last S357 | streak 1 | hits 0
 
-- `contrast-below-AA-on-a-tinted-or-coloured-plate` | ACTIVE | owner M | det: recipe | last S682 | streak 0
+- `contrast-below-AA-on-a-tinted-or-coloured-plate` | ACTIVE | owner M | det: recipe | last S685 | streak 0
 
 - `native-control-outside-the-field-rule` | ACTIVE | owner M | det: recipe | last S660 | streak 1 | hits 2
 
@@ -850,7 +842,7 @@ _(none)_
 
 - `modal-focus-trap` | ACTIVE | owner H | det: recipe | last S426 | streak 0
 
-- `pre-ready-i18n / never-re-rendered` | ACTIVE | owner D | det: recipe | last S538 | streak 0
+- `pre-ready-i18n / never-re-rendered` | ACTIVE | owner D | det: recipe | last S685 | streak 0
 
 - `placeholder-as-only-accessible-name` | DRAFT | owner A | det: none | last S0 | streak 0
 
@@ -872,7 +864,7 @@ _(none)_
 
 - G print & export fidelity (one tool): 2026-11-27 (**S684 — `torah_trainer.html` (S589 → S684, 70 commits to the page): 64 + 24 + 12 + 12 PDFs, a credits census. FOUND 1 (gate 2) + 1 P4, FIXED 1.** G-next: fontmaker (S593), trope (S597), dashboard (S604).)
 
-- D performance (one tool): 2026-11-23 (**S678 — `tefillah_trainer.html` (its first D): the 287-reading census, cold ×3 @1× / @4× over 8 starting states, a CPU profile, 23 interactions @4× by real input, scrolling, paper, heap, the waterfall. FOUND 1 (the Torah Trainer's S570 transliteration freeze, here too: not small), FIXED 3 from the queue. D-next: chrome (S590), trope (S598), dictionary …[full text: IMPROVEMENT_ARCHIVE.md]
+- D performance (one tool): 2026-11-27 (**S685 — chrome (S590 → S685; the new hub, the navy footer, the cracks): cold 7 pages × EN 1280 / HE 800 × 1× / 4× on HEAD and the S590-era tree (56 loads, the planted 300 ms click read 300–310 in each), 58 interactions @4×, a locale-held / locale-failed census of 25 pages. 0 tasks over 200 ms after the first cold cell, max interaction task 104 ms. FOUND 1 …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - I first-load & empty-state: 2026-11-08 (**S628 — 41st I, S539 → S627 (503 commits; the Trope Atlas', reading assignments', the review page's and the 55 `parsha/` pages' first I): 81 virgin cells (plants 482/486); storage = S539's; 88 seeds; 27 tours; ~260 openers + 24 drawer tabs; 164 bad URLs; the Atlas' load paths; 55 parsha pages. FOUND 4, FIXED 3.**)
 
@@ -890,4 +882,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-11-08 (**S630 — 41st F, long-build progress (S542's F-next; the affordance's first F): 13 presses that build before they answer, by real clicks with an animation-frame recorder, real PDF libraries from a cache, a held CDN, double presses at raw points. FOUND 2, FIXED 2 (+1 P4). F-next: destructive-action confirms.**)
 
-**Next session (S685):** **Branch `claude/brave-hopper-ugnafa` (S684, its draft PR): open → continue; merged → fresh branch off `origin/main`.** `sw.js` **v1567**, FM **6.0**, corpus ?v=**9**, catalog ?v=**9**. ⚑ drift: main=a579686 sw=v1567 fm=6.0 migration=0014_saves_tool_tefillah_trainer.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest next: D chrome (S590; pointer: D); then C trope (S591), G fontmaker (S593), N fontmaker (S595). ⚑ Unaudited: Font Maker 6.0 (`d2d922c..a579686`, 238 commits outside the loop, its own adversarial review in the archive) and the class roster, the hub, the footer and cracks (`9e702ae..a402f72`) — unseen by E, K, I, F, B. ⚑ The corpus's senses: S681's Awaiting P2. ⚑ Queue: Flash Cards' S683 P4s; the staff's credits-only sheet (S684); the dictionary's Filter by Letter tiles. ⚑ Awaiting: S681, S662, S653, S652.
+**Next session (S686):** **Branch `claude/brave-hopper-ugnafa` (S684–S685, draft PR #429): open → continue; merged → fresh branch off `origin/main`.** `sw.js` **v1568**, FM **6.0**, corpus ?v=**9**, catalog ?v=**9**. ⚑ drift: main=a579686 sw=v1568 fm=6.0 migration=0014_saves_tool_tefillah_trainer.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest next: C trope (S591; pointer: C); then G fontmaker (S593), N fontmaker (S595), D trope (S598). ⚑ Suite passes are aging: E S621, K S623, I S628, F S630, B S631 — the Font Maker 6.0 (`d2d922c..a579686`) and the class roster, hub, footer and cracks (`9e702ae..a402f72`) are still unseen by E, K, I, F, B. ⚑ The corpus's senses: S681's Awaiting P2. ⚑ Queue: Flash Cards' S683 profile-row P4; the staff's credits-only sheet (S684); the dictionary's Filter by Letter tiles; the failed-locale raw keys (S685). ⚑ Awaiting: S681, S662, S653, S652.
