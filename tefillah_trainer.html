@@ -307,7 +307,9 @@ html[lang="he"] .settings-header h2, html[lang="he"] .tt-set-sub, html[lang="he"
 .tt-instline .tt-inst { font-size:0.95rem; font-family:var(--heb-font); direction:rtl; text-align:start; }
 .tt-inst-en { font-size:0.8rem; color:var(--muted); font-style:italic; direction:ltr; text-align:start; }
 .tt-grid-row.tt-instrow { display:block; }
-.tt-bible .tt-inst-inline { font-size:0.55em; }
+/* An inline-block, so a note that wraps keeps its own pitch: inline, every line it took was the running text's line box
+   (1.9 × the prayer's size: 13px rows 46px apart). Its short notes still sit in the line. */
+.tt-bible .tt-inst-inline { font-size:0.55em; display:inline-block; max-width:100%; }
 body.hide-inst .tt-inst, body.hide-inst .tt-instline, body.hide-inst .tt-instrow, body.hide-inst .tt-inst-en { display:none; }
 /* The source's own bold (a prayer's opening words) and small print (a line said quietly). */
 .tt-word.tt-b { font-weight:700; }
