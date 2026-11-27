@@ -1285,6 +1285,10 @@ body.dark .lc-replay { color: var(--gold-light); }
 .lc-replay .hi { width: 1em; height: 1em; }   /* the speaker at the button's 2.5rem, the size of the 🔊 it replaced (the shared .hi pins 16px) */
 .lc-hint { font-size: 0.92rem; color: var(--ink-soft); text-align: center; min-height: 1.2em; }
 .lc-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+/* Three short answers share one row where the card is wide enough (renderListeningCard sets .lc-three); two columns
+   left the third alone under the other two. Four stay two by two, a phone keeps two columns, and a longer word keeps
+   the two-column tile it needs. */
+@media (min-width: 560px) { .lc-choices.lc-three { grid-template-columns: repeat(3, 1fr); } }
 .lc-tile {
   min-height: 82px; padding: 12px 10px; position: relative;   /* anchors the .lc-key number badge */
   border: 2px solid var(--border-strong); border-radius: 14px;
@@ -9043,6 +9047,12 @@ function renderListeningCard(card) {
   const replay = document.getElementById('lcReplay');
   currentListenChoices = sampleChoices(card, listeningChoices);
   grid.innerHTML = '';
+  // Three answers go in one row only while every word in them is 5 letters or fewer: a third of the card holds about
+  // that at the tile's 3rem (a 6-letter word already ran past it at 800px), and a longer one keeps its two-column tile.
+  // (A numbers round with the numeral on its front shows digits, as choiceFace does.)
+  const digits = otherModeActive && otherSubMode === 'numbers' && numberFront === 'number';
+  grid.classList.toggle('lc-three', currentListenChoices.length === 3 && currentListenChoices.every(c =>
+    String(digits ? c.translit : (c.heb || '')).replace(/\u05BE/g, ' ').replace(/[\u0591-\u05C7]/g, '').split(/\s+/).every(w => w.length <= 5)));
   currentListenChoices.forEach((c, i) => {
     const b = document.createElement('button');
     b.type = 'button';
