@@ -1061,6 +1061,46 @@ was deliberately NOT staged and why.
 - Designer: Yoram Gnat · added 2026-08-26
 - Upstream source: <https://opensiddur.org/wp-content/uploads/fonts/Proto-Canaanite-alt3/Proto-Canaanite-alt3.zip>
 
+## Frank Sofer
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=frank-sofer>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=frank-sofer">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception · reserved names honored: Taamey D
+- Designer: Yoram Gnat (modified by Mordechai Shaliehsaboo) · upstream version 0.931 · added 2026-11-27
+- Upstream source: <https://github.com/aharonium/opensiddur.org/blob/master/fonts/FrankSofer/FrankSofer.zip>
+
+## Vilna Sofer
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=vilna-sofer>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=vilna-sofer">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception · reserved names honored: Taamey D
+- Designer: Alan Hoenig/Omega Makor (modified by Mordechai Shaliehsaboo) · upstream version 0.931 · added 2026-11-27
+- Upstream source: <https://github.com/aharonium/opensiddur.org/blob/master/fonts/VilnaSofer/VilnaSofer.zip>
+
+## Vilna Classic
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=vilna-classic>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=vilna-classic">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception · reserved names honored: Taamey D
+- Designer: Maxim Iorsh (modified by Mordechai Shaliehsaboo) · upstream version 0.931 · added 2026-11-27
+- Upstream source: <https://github.com/aharonium/opensiddur.org/blob/master/fonts/VilnaClassic/VilnaClassic.zip>
+
+## Hadassah
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=hadassah>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=hadassah">Edit this font using IvritSuite</a>`
+- License: GNU GPL v2 with font exception · reserved names honored: Taamey D
+- Designer: Yoram Gnat (modified by Mordechai Shaliehsaboo) · upstream version 0.931 · added 2026-11-27
+- Upstream source: <https://github.com/aharonium/opensiddur.org/blob/master/fonts/Hadassah/Hadassah.zip>
+
+## Hatkafa
+
+- Live link: <https://ivritsuite.com/Hebrew_Font_Maker.html?start=hatkafa>
+- Snippet: `<a href="https://ivritsuite.com/Hebrew_Font_Maker.html?start=hatkafa">Edit this font using IvritSuite</a>`
+- License: SIL Open Font License 1.1 · reserved names honored: Hatkafa
+- Designer: Umar ben / Ben Nafi · upstream version 1.003 · added 2026-11-27
+- Upstream source: <https://github.com/aharonium/opensiddur.org/blob/master/fonts/Hatkafa/Hatkafa.zip>
+
 ## Staged on a declared license (17)
 
 These archives ship no license file. The partner declared the license, so the staged
@@ -1095,3 +1135,4 @@ in the font's own distribution. The shipped text decides; this records the diffe
 - **Shuneet_Classic_v2** — page: SIL OFL 1.1 · staged as: CC-BY-SA-3.0. The fonts page declares SIL OFL 1.1, but the License.html shipped with the distribution states CC BY-SA 3.0 — the font author's own page against the distributor's catalogue. Staged under the shipped text. Both permit editing; worth reconciling upstream.
 - **Shuneet_Square_v2** — page: SIL OFL 1.1 · staged as: CC-BY-SA-3.0. The fonts page declares SIL OFL 1.1, but the License.html shipped with the distribution states CC BY-SA 3.0 — the font author's own page against the distributor's catalogue. Staged under the shipped text. Both permit editing; worth reconciling upstream.
 - **Tnua-Libre** — page: GPL 3.0 · staged as: GPL-with-font-exception. The fonts page lists this as GPL 3.0, but the license text shipped in the distribution states the font exception verbatim, so it is staged as GPL+FE. Primary text wins; the page label is coarser.
+- **Vilna Classic** — page: GPL 2.0 · staged as: GPL-with-font-exception. The partner list labels this "GPL 2.0", but the license text shipped in the archive (README.md (its font-exception paragraph) + LICENSE) states the font exception verbatim, so it is staged as GPL+FE. Primary text wins; the label is coarser. Recorded by the automated intake.

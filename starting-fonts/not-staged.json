@@ -144,6 +144,13 @@
       "pageLicense": "GPL 3.0",
       "staged": "GPL-with-font-exception",
       "note": "The fonts page lists this as GPL 3.0, but the license text shipped in the distribution states the font exception verbatim, so it is staged as GPL+FE. Primary text wins; the page label is coarser."
+    },
+    {
+      "name": "Vilna Classic",
+      "id": "vilna-classic",
+      "pageLicense": "GPL 2.0",
+      "staged": "GPL-with-font-exception",
+      "note": "The partner list labels this \"GPL 2.0\", but the license text shipped in the archive (README.md (its font-exception paragraph) + LICENSE) states the font exception verbatim, so it is staged as GPL+FE. Primary text wins; the label is coarser. Recorded by the automated intake."
     }
   ]
 }
