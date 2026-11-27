@@ -36,7 +36,9 @@ const base = `http://127.0.0.1:${server.address().port}`;
 let fail = 0;
 const ok = (cond, msg) => { if (!cond) fail++; console.log(`${cond ? '✔' : '✘'} ${msg}`); };
 const STANDIN = fs.readFileSync(path.join(REPO, 'fonts', 'FrankRuhlLibre-Regular.ttf'));
-const DEAD = /\/Shlomo%20Orbach%20\(OFL\)\/Shlomo\/Shlomo\.ttf$/, REAL = /\/Shlomo%20Orbach%20\(OFL\)\/Shlomo\.ttf$/;
+// Since the picker faces moved to `fonts/` (OpenSiddur's WOFF2 editions, same-origin), the real path is /fonts/Shlomo.woff2;
+// the old CDN spelling still counts, so ROOT=<an older tree> keeps working.
+const DEAD = /\/Shlomo%20Orbach%20\(OFL\)\/Shlomo\/Shlomo\.ttf$/, REAL = /\/Shlomo%20Orbach%20\(OFL\)\/Shlomo\.ttf$|\/fonts\/Shlomo\.woff2$/;
 const liveCache = {};
 function cdn(u) {
   if (!process.env.LIVE) return DEAD.test(u) ? { status: 404, body: 'Not found' } : { status: 200, body: STANDIN };
@@ -53,7 +55,8 @@ for (const cell of [{ lang: 'en', dark: false, w: 1280 }, { lang: 'he', dark: tr
     const ctx = await browser.newContext({ viewport: { width: cell.w, height: 900 }, serviceWorkers: 'block', colorScheme: cell.dark ? 'dark' : 'light' });
     await ctx.route('**/*', r => {
       const u = r.request().url();
-      if (u.startsWith(base) || u.startsWith('data:') || u.startsWith('blob:')) return r.continue();
+      if (u.startsWith(base)) { if (REAL.test(u)) hits.real++; return r.continue(); }
+      if (u.startsWith('data:') || u.startsWith('blob:')) return r.continue();
       if (u.startsWith('https://cdn.jsdelivr.net/gh/aharonium/fonts')) {
         if (DEAD.test(u)) hits.dead++; if (REAL.test(u)) hits.real++;
         const x = cdn(u); return r.fulfill({ status: x.status, contentType: x.status === 200 ? 'font/ttf' : 'text/plain', body: x.body, headers: { 'access-control-allow-origin': '*' } });

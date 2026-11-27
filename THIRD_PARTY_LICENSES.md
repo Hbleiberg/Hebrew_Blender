@@ -246,9 +246,10 @@ abuse.
 
 ## Fonts
 
-IvritSuite displays Hebrew and Latin text in a number of openly-licensed typefaces. **Most are loaded at runtime from Google Fonts; a handful are self-hosted via a jsDelivr CDN mirror of the [`aharonium/fonts`](https://github.com/aharonium/fonts) collection.** The font binaries redistributed in this repository are:
+IvritSuite displays Hebrew and Latin text in a number of openly-licensed typefaces. **Most are loaded at runtime from Google Fonts; eight are self-hosted in `fonts/` as the WOFF2 web editions published by the OpenSiddur Project in [`aharonium/opensiddur.org`](https://github.com/aharonium/opensiddur.org/tree/master/fonts) (originally collected in [`aharonium/fonts`](https://github.com/aharonium/fonts)).** The font binaries redistributed in this repository are:
 
 - `splash/fonts/` — **Libre Baskerville** (OFL 1.1; license text at `splash/fonts/OFL.txt`), bundled so `splash/gen_splash.py` can render the app launch screens offline.
+- `fonts/EzraSIL-SR.woff2`, `fonts/Shlomo.woff2`, `fonts/ShlomoSemiStam.woff2`, `fonts/ShlomoStam.woff2`, `fonts/DyslexiaHebrew.woff2`, `fonts/ShmulikCLM.woff2`, `fonts/KeterAramTsova.woff2`, `fonts/Shofar.woff2` — the font pickers' OpenSiddur faces, each beside its own licence as shipped by the partner (`fonts/<name>-LICENSE.txt`, the same text the Font Maker's Starting Fonts carry).
 - `fonts/FrankRuhlLibre-Regular.ttf` — **Frank Ruhl Libre** (OFL 1.1; license text at `fonts/OFL.txt`), self-hosted and precached by the service worker as the suite's default Hebrew face.
 - `fonts/NotoSerifHebrew-Taamim.ttf` — **Noto Serif Hebrew** (OFL 1.1; license text at `fonts/NotoSerifHebrew-Taamim-LICENSE.txt`), a Hebrew-block subset (letters, nikkud, the cantillation range U+0591–05AF and the U+25CC dotted circle) self-hosted and precached as the `'IvritSuite Taamim'` fallback family that every Hebrew font stack ends with, because Frank Ruhl Libre itself has no te'amim glyphs.
 - `fonts/Reuben.ttf` — **Reuben** by Baruch Sienna (CC0), made with the IvritSuite Hebrew Font Maker and offered for download in the Resources gallery; its CC0 dedication is declared in the gallery entry and in the notice generated with each download.
@@ -278,11 +279,11 @@ Every typeface the site requests is listed below, grouped by license. The two li
 | Playpen Sans Hebrew | TypeTogether | Google Fonts (a Hebrew-block subset is also bundled in `fonts/`) | https://fonts.google.com/specimen/Playpen+Sans+Hebrew |
 | Heebo | Oded Ezer | Google Fonts | https://fonts.google.com/specimen/Heebo |
 | Assistant | Ben Nathan | Google Fonts | https://fonts.google.com/specimen/Assistant |
-| Ezra SIL | SIL International | self-hosted (jsDelivr · `aharonium/fonts`) | https://software.sil.org/ezra/ |
-| Shlomo | Shlomo Orbach | self-hosted (jsDelivr · `aharonium/fonts`) | https://github.com/aharonium/fonts |
-| Shlomo SemiStam | Shlomo Orbach | self-hosted (jsDelivr · `aharonium/fonts`) | https://github.com/aharonium/fonts |
-| Shlomo Stam | Shlomo Orbach | self-hosted (jsDelivr · `aharonium/fonts`) | https://github.com/aharonium/fonts |
-| Dyslexia Hebrew | Jake Shoag | self-hosted (jsDelivr · `aharonium/fonts`) | https://github.com/aharonium/fonts |
+| Ezra SIL | SIL International | self-hosted (`fonts/`, from OpenSiddur) | https://software.sil.org/ezra/ |
+| Shlomo | Shlomo Orbach | self-hosted (`fonts/`, from OpenSiddur) | https://github.com/aharonium/fonts |
+| Shlomo SemiStam | Shlomo Orbach | self-hosted (`fonts/`, from OpenSiddur) | https://github.com/aharonium/fonts |
+| Shlomo Stam | Shlomo Orbach | self-hosted (`fonts/`, from OpenSiddur) | https://github.com/aharonium/fonts |
+| Dyslexia Hebrew | Jake Shoag | self-hosted (`fonts/`, from OpenSiddur) | https://github.com/aharonium/fonts |
 | Nunito | Vernon Adams, Cyreal, Jacques Le Bailly | Google Fonts | https://fonts.google.com/specimen/Nunito |
 | Quicksand | Andrew Paglinawan | Google Fonts | https://fonts.google.com/specimen/Quicksand |
 | Merriweather | Eben Sorkin — Sorkin Type | Google Fonts | https://fonts.google.com/specimen/Merriweather |
@@ -386,13 +387,13 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
 
 ### Fonts under the GNU GPL v2 with Font Exception (Culmus Project)
 
-These three Hebrew typefaces are by **Yoram Gnat**, part of the **Culmus Project** (https://culmus.sourceforge.io/), and are loaded at runtime from the jsDelivr CDN mirror of `aharonium/fonts` — their binaries are not redistributed in this repository.
+These three Hebrew typefaces are by **Yoram Gnat**, part of the **Culmus Project** (https://culmus.sourceforge.io/), and are self-hosted in `fonts/` as OpenSiddur's WOFF2 web editions, each beside its licence notice.
 
 | Font | Designer / Author | Loaded via | More info |
 |---|---|---|---|
-| Shmulik CLM | Yoram Gnat — Culmus Project | self-hosted (jsDelivr · `aharonium/fonts`) | https://culmus.sourceforge.io/ |
-| Keter Aram Sova | Yoram Gnat — Culmus Project | self-hosted (jsDelivr · `aharonium/fonts`) | https://culmus.sourceforge.io/ |
-| Shofar | Yoram Gnat — Culmus Project | self-hosted (jsDelivr · `aharonium/fonts`) | https://culmus.sourceforge.io/ |
+| Shmulik CLM | Yoram Gnat — Culmus Project | self-hosted (`fonts/`, from OpenSiddur) | https://culmus.sourceforge.io/ |
+| Keter Aram Sova | Yoram Gnat — Culmus Project | self-hosted (`fonts/`, from OpenSiddur) | https://culmus.sourceforge.io/ |
+| Shofar | Yoram Gnat — Culmus Project | self-hosted (`fonts/`, from OpenSiddur) | https://culmus.sourceforge.io/ |
 
 They are licensed under the **GNU General Public License, version 2** (or, at your option, any later version) — full text at https://www.gnu.org/licenses/old-licenses/gpl-2.0.html — **with the following Font Exception**, which allows the fonts to be embedded in a document without that document becoming subject to the GPL:
 

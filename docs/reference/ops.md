@@ -466,9 +466,11 @@ pages, not the other way round — `grep -o 'Content-Security-Policy[^>]*' *.htm
   children, as on `reading_assignments.html`), no account origins, `connect-src 'self'` only (results never leave the device), plus the
   font-picker `cdn.jsdelivr.net` in `font-src` below.
 - **The nine pages with a Hebrew font picker** (Generator, Flash Cards, Dictionary, Torah Trainer, Trope Tutor, Dashboard, Letter Learner,
-  Name Tags, Font Maker — Parsha Emojis and the Trope Atlas have none): `cdn.jsdelivr.net` in `font-src` — the self-hosted `aharonium/fonts` faces (Ezra SIL, Shlomo,
-  Dyslexia Hebrew, the Culmus faces) every Hebrew font picker offers; the Letter Learner's Fonts tab takes Shlomo Stam
-  from the same origin.
+  Name Tags, Font Maker — Parsha Emojis and the Trope Atlas have none): `cdn.jsdelivr.net` still in `font-src`, though no picker face loads from it any more. The OpenSiddur faces every Hebrew font picker offers (Ezra SIL SR, Shlomo,
+  Shlomo SemiStam, Shlomo Stam, Dyslexia Hebrew, Shmulik CLM, Keter Aram Tsova, Shofar) are same-origin WOFF2 files in
+  `fonts/` (`'self'`), never jsDelivr: jsDelivr refuses files from a GitHub repository over 50 MB, and both
+  `aharonium/fonts` and `aharonium/opensiddur.org` are (measured: intermittent 403s, "Package size exceeded"). The
+  Letter Learner's Fonts tab takes Shlomo Stam from the same folder.
 - **Generator, Flash Cards, Dictionary, Torah Trainer, Name Tags:** `esm.sh` + `cdn.jsdelivr.net` in `script-src` and
   `connect-src` (the transliteration ESM). Name Tags' CSP is the Dictionary's, character for character.
 - **Generator, Font Maker:** `cdnjs.cloudflare.com` in `script-src` (html2canvas / jspdf, injected on the first PDF export or template download — never a parser-blocking `<head>` script).
