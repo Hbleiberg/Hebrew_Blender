@@ -99635,3 +99635,23 @@ _(prior)_ **Next session (S689):** **Branch `claude/hopeful-gauss-84xtgn` (S687�
 - D performance (one tool): 2026-11-28 (**S690 — trope + dictionary (`trope_tutor.html` S598 → S690, `hebrew_dictionary.html` S605 → S690): cold 1× / 4× × EN / HE × light / dark (0 tasks over 200 ms, ready 223–227 / 885–976 and 320–374 / 1.4–1.9 s), 60 + 17 interactions by real input @4× and @1×, a 33-cycle leak run. FOUND 0 on both; the Tutor's long-tradition Phrases steps (220–289 @4×) are S598's, awaiting.** D-next: letter_learner (S612), flash (S618), parsha_emojis (S627).)
 
 _(prior)_ **Next session (S690):** **Branch `claude/hopeful-gauss-84xtgn` (S687–S689, draft PR #433): open → continue; merged → fresh branch off `origin/main`.** `sw.js` **v1578**, FM **6.0**, corpus ?v=**9**, catalog ?v=**9**. ⚑ drift: main=e1636db sw=v1578 fm=6.0 migration=0014_saves_tool_tefillah_trainer.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest next: D trope (S598; pointer: D); then H torah (S599), C chrome (S600), P torah (S602). ⚑ Suite passes are aging: E S621, K S623, I S628, F S630, B S631 — the Font Maker 6.0 and the self-hosted OpenSiddur faces (`79d3437`, outside the loop) are still unseen by E, K, I, F, B. ⚑ Queue: the credits-only last sheet on both the Tutor (S689) and the Trainer (S684) — `break-before: avoid` on the footer does nothing in Chromium; the FM Width dialog's 1.9 s scan @4× (S688 P3); the dictionary's Filter by Letter tiles (ask first); the failed-locale raw keys (S685). ⚑ Awaiting: S681, S662, S653, S652.
+
+
+<!-- archived by compact-ledger at the S692 boundary, 2026-11-28 -->
+## Compaction (S692, 2026-11-28) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-11-28 | `237e4676` | torah_trainer.html, tefillah_trainer.html, sw.js | (S686 queue) **In Hebrew full screen the focused skip link shows below the Exit button** (it lay partly under it, ~1,900 px², on both trainers) | `n688/skip.mjs` by `#fsBtn`, HE light 1280 / dark 800: overlap 0, 4 / 4 corners its own (before 1,918 px², 3 / 4); EN light / dark unchanged; 0 errors
+
+- [x] 2026-11-27 | (S686 close-out) | branch/deploy note | **S686 = C on `trope_tutor.html` (S591 → S686, 14 commits to the page) + `hebrew_blend_generator.html` (S594 → S686, 48 commits): CLEAN on both (FOUND 0 new; 4 leads settled) + 2 from the queue on the two trainers.** Branch `claude/brave-hopper-ugnafa`, continuing draft PR #429; `sw.js` v1569; nothing live.
+
+### from Per-session log (one line per session)
+
+- 2026-11-21 | **S671** | iters: 4 | tools: trope_atlas ×2, torah_trainer, torah-and-trope.md, sw ×3, probes S671 ×3 | patterns fixed: — | pass run: H (trope_atlas, 2nd since S583; FOUND 2 + 1 P4 + 2 seeds, FIXED 2 + the S653 ring from the queue; the S670 toggle P4 refuted) | gates: none | SW: …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- H teacher walkthrough / paper-cuts (one tool): 2026-11-28 (**S691 — `torah_trainer.html` (S599 → S691, 66 commits to the page)**: 2 lessons by real clicks signed out (next week's maftir → Shabbat Chanukah; a Chanukah reading saved as a favorite), EN light 1280 / HE dark 800, + the student cell (Chant all at 1366×768 and in fullscreen at 1024×768). FOUND 3: 2 FIXED by gate 2 answers (`7fd2582b`, `a9363eb6`), 1 seed. H-next: chrome (S606), generator (S613), letter_learner (S619).)
+
+_(prior)_ **Next session (S691):** **Branch `claude/hopeful-gauss-84xtgn` (S687–S690, draft PR #433): open → continue; merged → fresh branch off `origin/main`.** `sw.js` **v1580**, FM **6.0**, corpus ?v=**9**, catalog ?v=**9**. ⚑ drift: main=e1636db sw=v1580 fm=6.0 migration=0014_saves_tool_tefillah_trainer.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest next: H torah (S599; pointer: H); then C chrome (S600), P torah (S602), M chrome (S603). ⚑ Suite passes are aging: E S621, K S623, I S628, F S630, B S631 — the Font Maker 6.0 and the self-hosted OpenSiddur faces (`79d3437`, outside the loop) are still unseen by E, K, I, F, B. ⚑ Queue: the credits-only last sheet on the Tutor (S689) and the Trainer (S684); the FM Width dialog's 1.9 s scan @4× (S688 P3); the dictionary's Filter by Letter tiles (ask first); the failed-locale raw keys (S685). ⚑ Awaiting: S681, S662, S653, S652.
