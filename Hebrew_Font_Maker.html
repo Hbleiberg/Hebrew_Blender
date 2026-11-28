@@ -9355,8 +9355,8 @@ function adPickerOpen(boxId) {
   opts.forEach(L => {
     const taken = traced.has(L.cp);
     h += `<button type="button" class="${taken ? 'taken' : ''}" onclick="adAssign(${b.id}, '${L.cp}')"`
-      + `${taken ? ` title="${esc(_adT('pick_taken_title', L.name + ' already has an image or trace — assigning will replace it', {name: L.name}))}"` : ''}>`
-      + `<span class="heb" lang="he">${String.fromCodePoint(parseInt(L.cp, 16))}</span> ${esc(L.name)}${taken ? ' •' : ''}</button>`;
+      + `${taken ? ` title="${esc(_adT('pick_taken_title', gName(L.name) + ' already has an image or trace — assigning will replace it', {name: gName(L.name)}))}"` : ''}>`
+      + `<span class="heb" lang="he">${String.fromCodePoint(parseInt(L.cp, 16))}</span> ${esc(gName(L.name))}${taken ? ' •' : ''}</button>`;
   });
   h += `<button type="button" onclick="adSkipBox(${b.id})">${esc(b.skip ? _adT('unskip_box', 'Un-skip') : _adT('skip_box', 'Skip this box'))}</button>`;
   h += `<button type="button" onclick="adUnassign(${b.id})">${esc(_adT('unassign', 'Unassign'))}</button>`;
@@ -16425,10 +16425,10 @@ function confirmAndDeleteContours(doomedIn) {         // shared confirm rules: s
   const pts = doomed.reduce((s, ci) => s + nodeModel.contours[ci].nodes.length, 0);
   const run = () => _deleteContoursNow(l, doomed, empties);
   if (empties) askModal(I18n.t('fontmaker.modals.delete_outline_title'),
-    I18n.t('fontmaker.modals.delete_outline_body', {name: `<b>${esc(l.name)}</b>`, keys: khTitle('undo')}),
+    I18n.t('fontmaker.modals.delete_outline_body', {name: `<b>${esc(gName(l.name))}</b>`, keys: khTitle('undo')}),
     [ {label:I18n.t('fontmaker.modals.cancel'), cls:'ghost'}, {label:I18n.t('fontmaker.modals.delete_all'), onClick: run} ]);
   else if (big) askModal(I18n.t('fontmaker.modals.delete_contour_title'),
-    I18n.t(doomed.length === 1 ? 'fontmaker.modals.delete_contour_body.one' : 'fontmaker.modals.delete_contour_body.other', {count: doomed.length, pts: pts, name: `<b>${esc(l.name)}</b>`, keys: khTitle('undo')}),
+    I18n.t(doomed.length === 1 ? 'fontmaker.modals.delete_contour_body.one' : 'fontmaker.modals.delete_contour_body.other', {count: doomed.length, pts: pts, name: `<b>${esc(gName(l.name))}</b>`, keys: khTitle('undo')}),
     [ {label:I18n.t('fontmaker.modals.cancel'), cls:'ghost'}, {label:I18n.t('fontmaker.modals.delete'), onClick: run} ]);
   else run();   // small specks delete without friction
 }
@@ -21428,7 +21428,7 @@ function openKernClass(id) {
   const host = document.getElementById('kernClassList'); host.innerHTML = '';
   LETTERS.filter(L => L.cat !== 'punct').forEach(L => {
     const lab = document.createElement('label'); lab.className = 'chk'; lab.style.cssText = 'font-size:0.84rem;';
-    lab.innerHTML = `<input type="checkbox" class="kc-cp" value="${L.cp}" ${sel.has(L.cp)?'checked':''}> <span style="font-family:${esc(project.template.font)};font-size:1.1rem;">${String.fromCodePoint(parseInt(L.cp,16))}</span> ${esc(L.name)}`;
+    lab.innerHTML = `<input type="checkbox" class="kc-cp" value="${L.cp}" ${sel.has(L.cp)?'checked':''}> <span style="font-family:${esc(project.template.font)};font-size:1.1rem;">${String.fromCodePoint(parseInt(L.cp,16))}</span> ${esc(gName(L.name))}`;
     host.appendChild(lab);
   });
   aOpenModal('kernClassOverlay', closeKernClass);
@@ -21668,7 +21668,7 @@ function renderAlignLeft(L, l) {
   } else if (project.inputMode === 'combined' && project.combinedSheets.length && curKind === 'letter') {
     html += (!l.source.dataUrl)
       ? `<div class="hint">${_pT('pick_then_box', 'Pick a letter, then drag a box around it on the sheet to bring it into the editor. Keyboard: arrows move the box, +/− resize, Enter to crop.')}</div>`
-      : `<div class="hint">${_pT('region_selected', 'Region selected for <b>{name}</b>.', {name: esc(l.name)})}</div>
+      : `<div class="hint">${_pT('region_selected', 'Region selected for <b>{name}</b>.', {name: esc(gName(l.name))})}</div>
          <div class="ctl-row"><button class="ctl-btn" onclick="reselectArea()">↺ Re-select area</button></div>`;
   }
   // Adjust tools appear once there's an image to move (never for already-vector glyphs: font / SVG)
@@ -22096,7 +22096,7 @@ function _anchorXYBlockHTML(l, cls, a, xyWhat) {
   const pinHint = actPin ? `<div class="hint" style="font-size:0.7rem;text-align:center;margin-top:4px;color:var(--gold);">✎ ${esc(I18n.t('fontmaker.fidelity.pinned_hint'))}
       <button class="ctl-btn" style="font-size:0.7rem;padding:1px 8px;margin-inline-start:4px;" onclick="unpinActiveMark()">${I18n.t('fontmaker.fidelity.unpin')}</button></div>` : '';
   return `<hr class="ctl-divider">
-    <div class="ws-side-title">${esc(_pT('pos_title', '{class} position — {name} only', {class: anchorLabelT(cls), name: l.name}))}</div>
+    <div class="ws-side-title">${esc(_pT('pos_title', '{class} position — {name} only', {class: anchorLabelT(cls), name: gName(l.name)}))}</div>
     <div class="anc-xy">
       <label>X <input type="number" id="ancX" value="${esc(a.x)}" oninput="setAnchorCoord('x',this.value)" onchange="udBurstCommit()"></label>
       <label>Y <input type="number" id="ancY" value="${esc(a.y)}" oninput="setAnchorCoord('y',this.value)" onchange="udBurstCommit()"></label>
@@ -22106,7 +22106,7 @@ function _anchorXYBlockHTML(l, cls, a, xyWhat) {
       <button class="ctl-btn" onclick="centerAnchorH()" title="${esc(_pT('center_h_title', 'Center horizontally — halfway between the left and right margins'))}">${_pT('center_h', 'Center ↔')}</button>
       <button class="ctl-btn" onclick="centerAnchorV()" title="${esc(_pT('center_v_title', 'Center vertically — halfway between the top and base lines'))}">${_pT('center_v', 'Center ↕')}</button>
     </div>
-    <div class="hint" style="font-size:0.7rem;text-align:center;margin-top:5px;">${actPin ? '' : _pT('moves_xy_hint', 'Moves ' + xyWhat + ' on <b>' + esc(l.name) + '</b> only.', { what: xyWhat, name: '<b>' + esc(l.name) + '</b>' })}</div>`;
+    <div class="hint" style="font-size:0.7rem;text-align:center;margin-top:5px;">${actPin ? '' : _pT('moves_xy_hint', 'Moves ' + xyWhat + ' on <b>' + esc(gName(l.name)) + '</b> only.', { what: xyWhat, name: '<b>' + esc(gName(l.name)) + '</b>' })}</div>`;
 }
 function _anchorPinsSectionHTML(l) {
   // The COUNT is live pins only: one whose stored key no longer matches (a pinned trop whose halign
@@ -22168,7 +22168,7 @@ function renderSmrAnchorLeft(l) {
   const xy = _anchorXYBlockHTML(l, cls, a, _pT('xy_what_smr', 'the marks of this column'));
   return `
     ${_placementNavRowHTML()}
-    <div class="ws-side-title">${esc(_pT('place_the', '{name}: place the…', {name: l.name}))}</div>
+    <div class="ws-side-title">${esc(_pT('place_the', '{name}: place the…', {name: gName(l.name)}))}</div>
     <div class="ctl-row">${classBtns}</div>
     <hr class="ctl-divider">${grid}
     ${xy}
@@ -22335,7 +22335,7 @@ function renderAnchorLeft(L, l) {
   const navRow = _placementNavRowHTML();
   L.innerHTML = `
     ${navRow}
-    <div class="ws-side-title">${esc(_pT('place_the', '{name}: place the…', {name: l.name}))}</div>
+    <div class="ws-side-title">${esc(_pT('place_the', '{name}: place the…', {name: gName(l.name)}))}</div>
     <div class="ctl-row">${classBtns}</div>
     ${ grid ? `<hr class="ctl-divider">${grid}` : '' }
     ${xy}
@@ -30018,7 +30018,7 @@ function openApplyAlign(){
   const host = document.getElementById('applyAlignList'); host.innerHTML = '';
   LETTERS.filter(L => L.cat !== 'punct' && L.cp !== src.codepoint).forEach(L => {
     const lab = document.createElement('label'); lab.className = 'chk'; lab.style.cssText = 'font-size:0.84rem;';
-    lab.innerHTML = `<input type="checkbox" class="aa-cp" value="${L.cp}"> <span style="font-family:${esc(project.template.font)};font-size:1.1rem;">${String.fromCodePoint(parseInt(L.cp,16))}</span> ${esc(L.name)}`;
+    lab.innerHTML = `<input type="checkbox" class="aa-cp" value="${L.cp}"> <span style="font-family:${esc(project.template.font)};font-size:1.1rem;">${String.fromCodePoint(parseInt(L.cp,16))}</span> ${esc(gName(L.name))}`;
     host.appendChild(lab);
   });
   aOpenModal('applyAlignOverlay', closeApplyAlign);
@@ -30053,7 +30053,7 @@ function openApplyNikkud(){
   const host = document.getElementById('applyNikkudList'); host.innerHTML = '';
   LETTERS.filter(L => L.cat !== 'punct' && L.cp !== src.codepoint).forEach(L => {
     const lab = document.createElement('label'); lab.className = 'chk'; lab.style.cssText = 'font-size:0.84rem;';
-    lab.innerHTML = `<input type="checkbox" class="an-cp" value="${L.cp}"> <span style="font-family:${esc(project.template.font)};font-size:1.1rem;">${String.fromCodePoint(parseInt(L.cp,16))}</span> ${esc(L.name)}`;
+    lab.innerHTML = `<input type="checkbox" class="an-cp" value="${L.cp}"> <span style="font-family:${esc(project.template.font)};font-size:1.1rem;">${String.fromCodePoint(parseInt(L.cp,16))}</span> ${esc(gName(L.name))}`;
     host.appendChild(lab);
   });
   aOpenModal('applyNikkudOverlay', closeApplyNikkud);
@@ -30097,7 +30097,7 @@ function openCopyOutline(){
   let first = true;
   sources.forEach(L => {
     const lab = document.createElement('label'); lab.className = 'chk'; lab.style.cssText = 'font-size:0.84rem;';
-    lab.innerHTML = `<input type="radio" name="copyOutlineSrc" class="co-cp" value="${esc(L.codepoint)}"${first?' checked':''}> <span style="font-family:${esc(project.template.font)};font-size:1.1rem;">${String.fromCodePoint(parseInt(L.codepoint,16))}</span> ${esc(L.name)}`;
+    lab.innerHTML = `<input type="radio" name="copyOutlineSrc" class="co-cp" value="${esc(L.codepoint)}"${first?' checked':''}> <span style="font-family:${esc(project.template.font)};font-size:1.1rem;">${String.fromCodePoint(parseInt(L.codepoint,16))}</span> ${esc(gName(L.name))}`;
     host.appendChild(lab); first = false;
   });
   const w = document.getElementById('copyOutlineWidth'); if (w) w.checked = false;
