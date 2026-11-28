@@ -1859,6 +1859,9 @@ body.fullscreen #fsExitBtn { display: flex; }
    at z-index 200 it lay over the drawer's dark toggle and Close button and the tops of its last tabs. While the drawer
    is open the button goes under the drawer's backdrop (90), like everything else outside a modal. */
 body.fullscreen:has(#settingsModal.open) #fsExitBtn { z-index: 80; }
+/* The presentation bar (bottom, 200) stays up while the drawer it opened is open, and at 1024px its plate lay over the
+   drawer's bottom-start corner: it goes under the backdrop too. */
+body.fullscreen:has(#settingsModal.open) #ttFsBar { z-index: 80; }
 /* Idle-hide (shared fullscreen idle-hide block): the exit plate fades after 3s without pointer activity, returns on
    the next move, never hides while keyboard-focused. #ttFsBar keeps its own 4s show/hide. */
 body.fs-idle #fsExitBtn:not(:focus-visible) { opacity: 0; pointer-events: none; }
