@@ -99541,3 +99541,41 @@ _(prior)_ **Next session (S684):** **Branch `claude/zen-goldberg-1lov9k` (S676�
 ### from Per-session log (one line per session)
 
 - 2026-11-20 | **S667** | iters: 5 | tools: letter_discrimination ×2, trope_atlas ×2, 2 reference docs, sw ×4, probes S667 ×4 | patterns fixed: viewport-height-fit-without-a-floor ×1 (new) | pass run: N (letter_discrimination, first; FOUND 4 + 1, FIXED 2 + 2 on the atlas; 2 logged) | gates: gate 4 …[full text: IMPROVEMENT_ARCHIVE.md]
+
+
+<!-- archived by compact-ledger at the S689 boundary, 2026-11-28 -->
+## Compaction (S689, 2026-11-28) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-11-28 | `56722380` | Hebrew_Font_Maker.html, probe | (S687 queue) **Letter-picking dialogs and the Nikkud panel name letters in the UI's language** (`gName()` at 13 sites: Auto-detect's picker + tooltip, kerning class, Apply alignment / nikkud, Copy outline, two delete confirms, the Align / Nikkud titles and hints) | probe `S688-fontmaker-letter-names-in-ui-language.mjs` 10 / 10 (before: the 5 HE arms fail); check-inline-js clean
+
+- [x] 2026-11-28 | `e5c424a7` | Hebrew_Font_Maker.html, sw.js | (S688 N) **Edit points' hint card keeps clear of the side ruler on a phone** (every line lost its first letters under the 22px ruler) | probe `S688-fontmaker-node-hint-clears-the-ruler.mjs` (before: SE + Pixel 7 fail; the 1280 control keeps its natural width); `n688/hint.mjs` 0 / 6 phones covered (before 5 / 6), landscape pixel-identical
+
+- [x] 2026-11-27 | `c7a441ef` | flash_cards.html | (S683 queue) **Teacher Tools' profile rows keep their buttons in line**: the active row keeps Set Active's slot hidden, disabled, `aria-hidden` (its Unlink sat 96 px off every other row's) | `prof.mjs`, linked + unlinked profiles, EN light 1280 / HE dark 800: Unlink 716 / 257 on every row (before 812 vs 716, 162 vs 257); a real Set Active click …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-27 | `4cafae3a` | flash_cards.html, probe | (S683 queue) **A listening round's three short answers share one row** (words ≤ 5 letters; a first all-rounds version ran 209–666 dictionary words past their tile and was narrowed before commit) | probe 48 / 48, 480 cards, 0 overflow (before 32 / 48); 11,036 admitted words 0 overflow
+
+- [x] 2026-11-27 | `4ea5398f` | flash_cards.html, probe | (S683 queue) **The drill and results screens end 64px above the footer, not 140** | probe 8 / 8, the setup screen's Start bar identical (before 0 / 8)
+
+- [x] 2026-11-27 | `613861e6` | js/ivrit-classes.js, probe | (S683 queue) **The class editor's list marks the class its table shows** | probe 12 / 12 (before 4 / 12); smoke-classes 17 / 17
+
+- [x] 2026-11-24 | (S683 close-out) | branch/deploy note | **S683 = M on `flash_cards.html`: FOUND 1 + a gate 3 (answered), both FIXED; 4 P4; + the S678 P4.** Draft PR #427, `sw.js` v1551 → v1555; nothing live.
+
+- [x] 2026-11-24 | `5353f49d` | tefillah_trainer.html, sw.js | (S683; S678 queue; `pinned-english-without-lang`) **Koren's Hebrew catchwords are marked as Hebrew** (`escEn()`) | 18 / 18 (before 0); pixel-identical; smoke-tefillah 89 / 89
+
+- [x] 2026-11-24 | `e8c57b7e` | torah_trainer.html, tefillah_trainer.html, locales, sw.js | (S683; S678 queue; `pinned-english-without-lang`) **The Share tab's לגניזה and שם ה׳ are marked as Hebrew** | 16 cells `he` (before `en`); pixel-identical
+
+- [x] 2026-11-24 | `c362ad45` | js/ivrit-classes.js, class-roster.md, sw.js, probe | (S683 M, gate 3) **The class-list editor takes the suite's look on its four pages** | probe 41 / 41 (before 20 fail); smoke-classes 17 / 17
+
+- [x] 2026-11-24 | `300249ec` | flash_cards.html, sw.js, probe | (S683 M) **Teacher Tools' Class label sits on its menu's centre line** (was 11px high) | probe 25 / 25 (before 5 fail)
+
+### from Per-session log (one line per session)
+
+- 2026-11-20 | **S668** | iters: 5 | tools: letter_discrimination, reading_assignments, flash_cards, classroom_dashboard, 2 reference docs, sw ×4, probes S668 ×2 | patterns fixed: text-field-under-16px-zooms-on-ios-focus ×1, vh-capped-sheet-without-dvh-twin ×1 | pass run: P (letter_discrimination, …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- N mobile & touch-device (one surface): 2026-11-28 (**S688 — 48th N, `Hebrew_Font_Maker.html` (S595 → S688, FM 5.59 → 6.0; the Scale / Width / Slant, SVG paste and installed-font dialogs new since): 6 descriptors × 10 views on a partner font by taps (60 views: overflow 0, unfit 0, close failures 0, 0 errors); a finger drags a point and the Width slider; rotation with a dialog open; 4× CPU on the Width preview. FOUND 3, FIXED 1 (+1 P3, +1 P4) + 2 from the queue. N-next: dictionary (S601), dashboard (S608), name_tags (S615).**)
+
+_(prior)_ **Next session (S688):** **Branch `claude/hopeful-gauss-84xtgn` (S687, draft PR): open → continue; merged → fresh branch off `origin/main`.** `sw.js` **v1573**, FM **6.0**, corpus ?v=**9**, catalog ?v=**9**. ⚑ drift: main=e1636db sw=v1570 fm=6.0 migration=0014_saves_tool_tefillah_trainer.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest next: N fontmaker (S595; pointer: N); then D trope (S598), H torah (S599), C chrome (S600). ⚑ Suite passes are aging: E S621, K S623, I S628, F S630, B S631 — the Font Maker 6.0 and the self-hosted OpenSiddur faces (`79d3437`, outside the loop: 61 URLs on 11 pages, `fonts/`) are still unseen by E, K, I, F, B. ⚑ Queue: the FM letter-picker names (S687 P3, K-shaped); the staff's credits-only sheet (S684); the dictionary's Filter by Letter tiles (ask first); the failed-locale raw keys (S685); the trainers' fullscreen bar over the drawer (S675). ⚑ Awaiting: S681, S662, S653, S652.
