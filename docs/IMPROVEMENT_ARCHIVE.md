@@ -99611,3 +99611,27 @@ _(prior)_ **Next session (S688):** **Branch `claude/hopeful-gauss-84xtgn` (S687,
 - G print & export fidelity (one tool): 2026-11-28 (**S689 — `trope_tutor.html` (S597 → S689, 34 commits to the page and `js/trope-staff.js`): 27 melodies × Learn / Phrases × 4 cells (EN / HE × light / dark × Letter / A4) = 212 PDFs by the real Print buttons, 1,655 sheets, 0 screen-only words, 0 errors; Ctrl+P from Drill and Settings, a moved key, `?melody=`. FOUND 2, FIXED 1 (+1 P4).** G-next: dashboard (S604), letter_learner (S611), dictionary (S617).)
 
 _(prior)_ **Next session (S689):** **Branch `claude/hopeful-gauss-84xtgn` (S687–S688, draft PR #433): open → continue; merged → fresh branch off `origin/main`.** `sw.js` **v1576**, FM **6.0**, corpus ?v=**9**, catalog ?v=**9**. ⚑ drift: main=e1636db sw=v1576 fm=6.0 migration=0014_saves_tool_tefillah_trainer.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest next: G trope (S597; pointer: G); then D trope (S598), H torah (S599), C chrome (S600) — C's generator reads S686 since `d1b4a4b5`. ⚑ Suite passes are aging: E S621, K S623, I S628, F S630, B S631 — the Font Maker 6.0 and the self-hosted OpenSiddur faces (`79d3437`, outside the loop) are still unseen by E, K, I, F, B. ⚑ Queue: the FM Width dialog's 1.9 s scan @4× (S688 P3, D-shaped); the staff's credits-only sheet (S684); the dictionary's Filter by Letter tiles (ask first); the failed-locale raw keys (S685); the trainers' fullscreen bar over the drawer (S675). ⚑ Awaiting: S681, S662, S653, S652.
+
+
+<!-- archived by compact-ledger at the S691 boundary, 2026-11-28 -->
+## Compaction (S691, 2026-11-28) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-11-28 | `735c38e4` | flash_cards.html, sw.js, probe | (S685 queue) **A listening round's long word fits its tile** (a 12–15 letter word widened its column; two in one card ran the answers 48–86 px past the card) | probe `S690-flashcards-long-word-fits-its-listening-tile.mjs` 8 / 8 (before 0 / 8; the short-word control keeps the tile's size)
+
+- [x] 2026-11-28 | `bb72cb84` | Hebrew_Font_Maker.html, font-maker.md, sw.js, probe | (S644 queue) **Continue where you left off reopens the letter that was open** (it always landed on Alef) | probe `S690-fontmaker-continue-reopens-the-open-letter.mjs` 4 / 4 by the wizard, a tile click and the real Continue (before: Gimel → Alef 2 / 2; the Alef control both)
+
+- [x] 2026-11-27 | (S685 close-out) | branch/deploy note | **S685 = D on the chrome bundle (S590 → S685, 709 commits; 16–41 to each page): FOUND 1, FIXED 1 (16 pages) + 3 from the queue.** Branch `claude/brave-hopper-ugnafa`, continuing draft PR #429; `sw.js` v1568; nothing live.
+
+- [x] 2026-11-27 | `ce63803a` | js/i18n.js, sw.js, probe | (S685 D; pattern `pre-ready-i18n / never-re-rendered`) **16 pages: the dark toggle says "Light" before the locale loads, not `shared.darkmode.label_light`** (for the whole locale fetch on a dark first visit; for good when it failed) | probe 64 / 64 (before 6 / 64); recipe 72 cells 0 raw keys
+
+### from Per-session log (one line per session)
+
+- 2026-11-21 | **S670** | iters: 5 | tools: holiday_guide, trope_atlas, hebrew_blend_generator, reading_assignments, 3 reference docs, sw ×4, probes S670 ×3 + the S669 header probe's `OPEN` | patterns fixed: header-ink-on-a-plate-print-drops ×1, physical-property-that-never-mirrors ×4 | pass run: N …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- D performance (one tool): 2026-11-28 (**S690 — trope + dictionary (`trope_tutor.html` S598 → S690, `hebrew_dictionary.html` S605 → S690): cold 1× / 4× × EN / HE × light / dark (0 tasks over 200 ms, ready 223–227 / 885–976 and 320–374 / 1.4–1.9 s), 60 + 17 interactions by real input @4× and @1×, a 33-cycle leak run. FOUND 0 on both; the Tutor's long-tradition Phrases steps (220–289 @4×) are S598's, awaiting.** D-next: letter_learner (S612), flash (S618), parsha_emojis (S627).)
+
+_(prior)_ **Next session (S690):** **Branch `claude/hopeful-gauss-84xtgn` (S687–S689, draft PR #433): open → continue; merged → fresh branch off `origin/main`.** `sw.js` **v1578**, FM **6.0**, corpus ?v=**9**, catalog ?v=**9**. ⚑ drift: main=e1636db sw=v1578 fm=6.0 migration=0014_saves_tool_tefillah_trainer.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest next: D trope (S598; pointer: D); then H torah (S599), C chrome (S600), P torah (S602). ⚑ Suite passes are aging: E S621, K S623, I S628, F S630, B S631 — the Font Maker 6.0 and the self-hosted OpenSiddur faces (`79d3437`, outside the loop) are still unseen by E, K, I, F, B. ⚑ Queue: the credits-only last sheet on both the Tutor (S689) and the Trainer (S684) — `break-before: avoid` on the footer does nothing in Chromium; the FM Width dialog's 1.9 s scan @4× (S688 P3); the dictionary's Filter by Letter tiles (ask first); the failed-locale raw keys (S685). ⚑ Awaiting: S681, S662, S653, S652.
