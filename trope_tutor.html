@@ -2204,8 +2204,8 @@ document.addEventListener('fullscreenchange', () => {
 });
 /* Resolve the family hues into body CSS vars (same var names as torah_trainer,
    so chips/labels/mastery cells recolor on theme flips for free). */
-function applyFamilyColors() {
-  const dark = document.body.classList.contains('dark');
+function applyFamilyColors(forceLight) {
+  const dark = !forceLight && document.body.classList.contains('dark');
   const pal = dark ? TROPE_DEFAULTS_DARK : TROPE_DEFAULTS_LIGHT;
   for (const fam of TROPE_FAMILY_DEFS) {
     const hex = pal[fam.key] || '#888888';
@@ -3916,6 +3916,11 @@ function clearPrintChart() {
 }
 function printChart() { stopTune(); buildPrintChart(); window.print(); }   // the sheet is built from live cards: none may be playing
 window.addEventListener('beforeprint', buildPrintChart);   // plain Ctrl+P gets the full chart too
+// Paper takes the light palette: the dark family hues are inline body vars that outrank the print block's token
+// reset, so a dark-theme print drew the Phrases bars and every chip's edge in the pale screen inks (the Torah
+// Trainer's applyTropeColors() swap); afterprint puts the screen's palette back.
+window.addEventListener('beforeprint', () => applyFamilyColors(true));
+window.addEventListener('afterprint', () => applyFamilyColors());
 window.addEventListener('afterprint', clearPrintChart);
 
 function nextFamily() {
