@@ -23,9 +23,12 @@ const server = http.createServer((req, res) => {
 await new Promise(r => server.listen(0, '127.0.0.1', r));
 const BASE = `http://127.0.0.1:${server.address().port}`;
 const browser = await chromium.launch();
-const SEEN = ['hebrewDashboard_tourSeen', 'hebrewDashboard_setupSeen', 'hebrewFlashCards_tourSeen', 'hebrewBlendGenerator_tourSeen'];
+const SEEN = ['hebrewDashboard_tourSeen', 'hebrewDashboard_setupSeen', 'hebrewFlashCards_tourSeen', 'hebrewBlendGenerator_tourSeen', 'hebrewTropeTutor_tourSeen'];
 const PAGES = {
   'classroom_dashboard.html': { open: async p => { await p.click('#gearBtn'); await p.waitForTimeout(500); }, sw: 'label.toggle:has(#hideZoomBar)', input: '#hideZoomBar' },
+  'flash_cards.html': { open: async () => {}, sw: 'label.switch:has(#inverseToggle)', input: '#inverseToggle' },
+  'hebrew_blend_generator.html': { open: async () => {}, sw: 'label.toggle:has(#answerKeyToggle)', input: '#answerKeyToggle' },
+  'trope_tutor.html': { open: async p => { await p.click('#tabSettings'); await p.waitForTimeout(400); }, sw: 'label.toggle:has(#optTuneEcho)', input: '#optTuneEcho' },
 };
 const want = process.argv.slice(2).length ? process.argv.slice(2) : Object.keys(PAGES);
 const diff = (page, a, b) => page.evaluate(async ([a, b]) => {

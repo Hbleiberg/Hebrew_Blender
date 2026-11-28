@@ -2850,6 +2850,13 @@ html[lang="he"] .beta-tag { letter-spacing: normal; text-transform: none; }   /*
      on a Highlight fill it hides the HighlightText glyphs (a blank block where the label was); opted out, the explicit system
      colours still follow the theme (S548). */
   @media (forced-colors:active) {
+    /* An on / off switch is a filled track and a white knob, both forced to Canvas on Canvas: every switch vanished, on and off alike. The Torah Trainer's rules: an edged track and a ButtonText knob; on, the selection pair. */
+    .slider { forced-color-adjust:none; background:Canvas; border:1px solid ButtonText; }
+    .slider::before { background:ButtonText; }
+    .toggle input:checked + .slider { background:Highlight; border-color:Highlight; }
+    .toggle input:checked + .slider::before { background:HighlightText; }
+    .toggle input:disabled + .slider { border-color:GrayText; }
+    .toggle input:disabled + .slider::before { background:GrayText; }
     .blend-type-btn.active, body.dark .blend-type-btn.active,
     .color-mode-btn.active, body.dark .color-mode-btn.active,
     .letter-tile.selected, body.dark .letter-tile.selected,

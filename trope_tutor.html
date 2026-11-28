@@ -1322,6 +1322,13 @@ label:has(.vh-file:focus-visible) { outline:2px solid var(--focus-ring); outline
    on a Highlight fill it hides the HighlightText glyphs (a blank block where the label was); opted out, the explicit system
    colours still follow the theme (S548). */
 @media (forced-colors:active) {
+  /* An on / off switch is a filled track and a white knob, both forced to Canvas on Canvas: every switch vanished, on and off alike. The Torah Trainer's rules: an edged track and a ButtonText knob; on, the selection pair. */
+  .slider { forced-color-adjust:none; background:Canvas; border:1px solid ButtonText; }
+  .slider::before { background:ButtonText; }
+  input:checked + .slider { background:Highlight; border-color:Highlight; }
+  input:checked + .slider::before { background:HighlightText; }
+  input:disabled + .slider { border-color:GrayText; }
+  input:disabled + .slider::before { background:GrayText; }
   .tu-tab[aria-selected="true"], body.dark .tu-tab[aria-selected="true"],
   .tu-chip.active,
   .font-opt.active, body.dark .font-opt.active,
