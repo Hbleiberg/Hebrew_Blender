@@ -84,8 +84,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 
 - [ ] P4 (**NEW S676 G — after `016e91ef`**) | tefillah_trainer.html | **10 of 312 prints still end on the credits alone: Page view and Side by side** (on the grid the rule pushed the reading off sheet 1). | found S676
 
-- [ ] P4 (**NEW S675 C; S686: the focus half FIXED `de669c2e`**) | tefillah_trainer.html, torah_trainer.html | **In full screen at 1024px the presentation bar (z-index 200, kept up while the drawer it opened is open) lies over the open drawer's bottom-start corner.** | found S675
-
 - [ ] P4 (**NEW S674 H — gate 2, a default**) | tefillah_trainer.html, torah_trainer.html | **"Select lines to copy…" opens the copy bar with Select lines off.** | found S674
 
 - [ ] P4 (**NEW S673 N — verify first; pattern `install-banner-over-a-sheet's-bottom-controls`**) | dashboard, dictionary, generator, name_tags, torah_trainer | **Their drawers and sidebars (the Trainer's audio bar) were never opened under the forced install hint**; the S673 probe is the recipe. | found S673
@@ -127,8 +125,6 @@ printed/exported artifact a student receives, (3) dual-audience (Hebrew + secula
 - [ ] P4 (**NEW S611 G — the picture's own call**) | letter_learner.html | **The hello picture's sleeve (a cuff drawn to y 103 of its 0–100 frame) touches שָׁלוֹם under it on the cursive coloring sheets** (3–8px of ink at 60 dpi, cursive landscape and portrait at 100%; 0.1–0.6px clear in Block). | found S611
 
 - [ ] P4 (**NEW S608 N — verify on an iPhone first**) | classroom_dashboard.html | **The board's text editor and Bulk preset edit's five message editors are contenteditable at 15.2px under a finger** (`.editor` 0.95rem): if iOS zooms into a focused editor as into a field, 1.05×; the coarse rule covers inputs only. | found S608
-
-- [ ] P4 (**NEW S599 H**) | torah_trainer.html | **After Create, the Assign dialog's fields stay live** (New code word changes only the box); the feedback label sits at its textarea's foot. | found S599
 
 - [ ] P4 (**NEW S685 D**) | js/i18n.js, 10 tool pages | **A failed locale fetch leaves every JS-built string a raw key until a retry lands** (the census's failed arm: 25 cells on the tool pages — quick-start chips, nusach names, filter heads; static text keeps its English, the retry heals on `online` / a visible tab / 3 tries): an English fallback for JS strings is a shared-script question …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -384,6 +380,12 @@ _(none)_
 
 ## Done
 
+- [x] 2026-11-28 | (S689 close-out) | branch/deploy note | **S689 = G on `trope_tutor.html` (S597 → S689, 34 commits to the page and the staff engine): FOUND 2, FIXED 1 (+1 P4) + 1 from the queue; 1 attempt reverted.** Branch `claude/hopeful-gauss-84xtgn`, continuing draft PR #433; `sw.js` v1578; nothing live.
+
+- [x] 2026-11-28 | — (reverted) | trope_tutor.html | (S689 G) attempted `break-before: avoid` on the printed footer to keep a last card with the credits: no sheet changed in 24 PDFs (6 credits-only before and after) — logged P4 | `g689/chart.mjs` + `scan.py`
+
+- [x] 2026-11-28 | `9ac0ed4d` | trope_tutor.html, sw.js, probe | (S689 G) **A dark-theme print draws the trope families in the light palette** (the Phrases bars and chip edges printed in the pale screen inks, 3% less ink a sheet) | probe `S689-trope-tutor-print-takes-light-family-colours.mjs` (before: both dark cells 7 / 7 families off); dark / light ink 53 / 53 PDFs equal (before 26 off)
+
 - [x] 2026-11-28 | (S688 close-out) | branch/deploy note | **S688 = N on `Hebrew_Font_Maker.html` (S595 → S688, FM 5.59 → 6.0): FOUND 3, FIXED 1 (+1 P3, +1 P4) + 2 from the queue + the loop's coverage parse.** Branch `claude/hopeful-gauss-84xtgn`, continuing draft PR #433; `sw.js` v1576; nothing live.
 
 - [x] 2026-11-28 | `d1b4a4b5` | scripts/loop/coverage.mjs, loop-findings.md | (S688) **Coverage reads a heading's parentheses before its first colon** (S686's generator C was hidden behind "(… to the page: …)"; S687's heading reworded so its queue fix is not credited) | every pass's table before / after: only C generator S594 → S686; `--check` agrees
@@ -406,15 +408,11 @@ _(none)_
 
 - [x] 2026-11-27 | `ce63803a` | js/i18n.js, sw.js, probe | (S685 D; pattern `pre-ready-i18n / never-re-rendered`) **16 pages: the dark toggle says "Light" before the locale loads, not `shared.darkmode.label_light`** (for the whole locale fetch on a dark first visit; for good when it failed) | probe 64 / 64 (before 6 / 64); recipe 72 cells 0 raw keys
 
-- [x] 2026-11-27 | (S684 close-out) | branch/deploy note | **S684 = G on `torah_trainer.html` (S589 → S684, 70 commits to the page): FOUND 1 (gate 2: print the credits) + 1 P4, FIXED 1; + a queued P4, a reference fix.** Branch `claude/brave-hopper-ugnafa`, new draft PR; `sw.js` v1567; nothing live.
-
-- [x] 2026-11-27 | `6b746e7a` | docs/reference/home.md | (S684 G census) **The footer reference says which pages print the credits** | census: 23 pages, credits on 11
-
-- [x] 2026-11-27 | `21c8b9e4` | torah_trainer.html, torah-and-trope.md, sw.js, probe | (S684 G, gate 2) **A printed reading carries its credits** (the Hebrew's CC BY-SA, the translation's licence) | probe 18 / 18 (before 0 / 18); 64 PDFs
-
 ## Metrics
 
 ### Per-session log (one line per session)
+
+- 2026-11-28 | **S689** | iters: 4 | tools: trope_tutor ×2 (one reverted), torah_trainer, tefillah_trainer, sw ×2, probes ×2 | patterns fixed: — | pass run: G (trope_tutor, S597 → S689; FOUND 2, FIXED 1; 1 P4) | gates: none
 
 - 2026-11-28 | **S688** | iters: 5 | tools: fontmaker ×2, torah_trainer, tefillah_trainer, coverage.mjs, sw ×3, probes ×2 | patterns fixed: — | pass run: N (fontmaker, S595 → S688; FOUND 3, FIXED 1; 1 P3, 1 P4) | gates: none
 
@@ -454,11 +452,9 @@ _(none)_
 
 - 2026-11-21 | **S670** | iters: 5 | tools: holiday_guide, trope_atlas, hebrew_blend_generator, reading_assignments, 3 reference docs, sw ×4, probes S670 ×3 + the S669 header probe's `OPEN` | patterns fixed: header-ink-on-a-plate-print-drops ×1, physical-property-that-never-mirrors ×4 | pass run: N …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- 2026-11-20 | **S669** | iters: 5 | tools: trope_atlas ×2, account, contact, privacy, terms, resources, holiday_guide ×2, reading_assignments, 4 reference docs, sw ×4, probes S669 ×3 | patterns fixed: print-block-split-at-a-sheet-foot ×1, header-ink-on-a-plate-print-drops ×7 (new), …[full text: IMPROVEMENT_ARCHIVE.md]
-
 ### Tool coverage (last-touched date per tool)
 
-- **Snapshot S688 (2026-11-28):** fontmaker ×2, torah_trainer, tefillah_trainer, coverage.mjs, sw.js, probes ×2 · S687: fontmaker ×2, flash_cards, sw.js, probe
+- **Snapshot S689 (2026-11-28):** trope_tutor ×2, torah_trainer, tefillah_trainer, sw.js, probes ×2 · S688: fontmaker ×2, torah_trainer, tefillah_trainer, coverage.mjs, sw.js, probes ×2
 
 ### Pattern health (one status line per pattern — shape, owner, detection and record: docs/reference/loop-patterns.md)
 
@@ -848,7 +844,7 @@ _(none)_
 
 - A recurring-pattern sweep: 2026-11-20 (**S666 — 43rd A with the A2 parse classification, `6f9a5992..26421db7` (the first full sweep since S530: 18,315 added lines over 37 files; Name Tags', the Trope Atlas', the Holiday Guide's, `letter_discrimination.html`'s, the coloring hub's and `trope_review.html`'s first A): 32 static arms over the added lines (plants 32 / 32), 10 new storage keys, 44 …[full text: IMPROVEMENT_ARCHIVE.md]
 
-- G print & export fidelity (one tool): 2026-11-27 (**S687 — `Hebrew_Font_Maker.html` (S593 → S687, 218 commits to the page, FM 5.59 → 6.0): 4 formats × 2 fonts by real clicks (fontTools, ufoLib2, HarfBuzz), 11 PDFs × 4 cells (dark = light), the project round trip on a fresh profile. FOUND 2, FIXED 2 (+1 P3).** G-next: trope (S597), dashboard (S604), letter_learner (S611).)
+- G print & export fidelity (one tool): 2026-11-28 (**S689 — `trope_tutor.html` (S597 → S689, 34 commits to the page and `js/trope-staff.js`): 27 melodies × Learn / Phrases × 4 cells (EN / HE × light / dark × Letter / A4) = 212 PDFs by the real Print buttons, 1,655 sheets, 0 screen-only words, 0 errors; Ctrl+P from Drill and Settings, a moved key, `?melody=`. FOUND 2, FIXED 1 (+1 P4).** G-next: …[full text: IMPROVEMENT_ARCHIVE.md]
 
 - D performance (one tool): 2026-11-27 (**S685 — chrome (S590 → S685; the new hub, the navy footer, the cracks): cold 7 pages × EN 1280 / HE 800 × 1× / 4× on HEAD and the S590-era tree (56 loads, the planted 300 ms click read 300–310 in each), 58 interactions @4×, a locale-held / locale-failed census of 25 pages. 0 tasks over 200 ms after the first cold cell, max interaction task 104 ms. FOUND 1 …[full text: IMPROVEMENT_ARCHIVE.md]
 
@@ -868,4 +864,4 @@ _(none)_
 
 - F cross-tool consistency: 2026-11-08 (**S630 — 41st F, long-build progress (S542's F-next; the affordance's first F): 13 presses that build before they answer, by real clicks with an animation-frame recorder, real PDF libraries from a cache, a held CDN, double presses at raw points. FOUND 2, FIXED 2 (+1 P4). F-next: destructive-action confirms.**)
 
-**Next session (S689):** **Branch `claude/hopeful-gauss-84xtgn` (S687–S688, draft PR #433): open → continue; merged → fresh branch off `origin/main`.** `sw.js` **v1576**, FM **6.0**, corpus ?v=**9**, catalog ?v=**9**. ⚑ drift: main=e1636db sw=v1576 fm=6.0 migration=0014_saves_tool_tefillah_trainer.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest next: G trope (S597; pointer: G); then D trope (S598), H torah (S599), C chrome (S600) — C's generator reads S686 since `d1b4a4b5`. ⚑ Suite passes are aging: E S621, K S623, I S628, F S630, B S631 — the Font Maker 6.0 and the self-hosted OpenSiddur faces (`79d3437`, outside the loop) are still unseen by E, K, I, F, B. ⚑ Queue: the FM Width dialog's 1.9 s scan @4× (S688 P3, D-shaped); the staff's credits-only sheet (S684); the dictionary's Filter by Letter tiles (ask first); the failed-locale raw keys (S685); the trainers' fullscreen bar over the drawer (S675). ⚑ Awaiting: S681, S662, S653, S652.
+**Next session (S690):** **Branch `claude/hopeful-gauss-84xtgn` (S687–S689, draft PR #433): open → continue; merged → fresh branch off `origin/main`.** `sw.js` **v1578**, FM **6.0**, corpus ?v=**9**, catalog ?v=**9**. ⚑ drift: main=e1636db sw=v1578 fm=6.0 migration=0014_saves_tool_tefillah_trainer.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest next: D trope (S598; pointer: D); then H torah (S599), C chrome (S600), P torah (S602). ⚑ Suite passes are aging: E S621, K S623, I S628, F S630, B S631 — the Font Maker 6.0 and the self-hosted OpenSiddur faces (`79d3437`, outside the loop) are still unseen by E, K, I, F, B. ⚑ Queue: the credits-only last sheet on both the Tutor (S689) and the Trainer (S684) — `break-before: avoid` on the footer does nothing in Chromium; the FM Width dialog's 1.9 s scan @4× (S688 P3); the dictionary's Filter by Letter tiles (ask first); the failed-locale raw keys (S685). ⚑ Awaiting: S681, S662, S653, S652.
