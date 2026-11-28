@@ -628,7 +628,7 @@ body.dark .sidebar-toggle-btn:hover,body.dark .sidebar-show-btn:hover{background
 /* Under a finger these fields compute 12–13.6px, and iOS Safari zooms the page into a focused field under 16px and
    leaves it zoomed (16/13.6 = 1.18× on the search box). 16px only where the pointer is coarse; the desktop fields keep
    their size (contact's form sets the same rule). !important outranks the inline sizes; the bulk box is readonly, so no zoom. */
-@media (pointer:coarse){.search-wrap input,.sort-sel,#translitStyleSelect,#gematriaFilterType,#gematriaVal1,#gematriaVal2{font-size:16px !important;}}
+@media (pointer:coarse){.search-wrap input,.sort-sel,#translitStyleSelect,#gematriaFilterType,#gematriaVal1,#gematriaVal2,#wlNewName,#wlAddExisting,#bulkTextarea{font-size:16px !important;}}   /* the Word List windows' name box and list menu and Bulk Copy's box are sized inline (0.85rem, 0.75rem): a phone zooms the page on a field under 16px, a read-only one a tap focuses included — pattern text-field-under-16px-zooms-on-ios-focus */
 .search-kbd-hint kbd{direction:ltr;unicode-bidi:isolate;display:inline-block;font-family:ui-monospace,'SFMono-Regular',Menlo,Consolas,monospace;font-size:0.68rem;line-height:1;padding:2px 5px;min-width:1.1em;text-align:center;background:var(--cream);color:var(--muted);border:1px solid var(--border);border-bottom-width:2px;border-radius:4px;}
 /* Section 4: mobile sticky bar (populated by JS at ≤680px) */
 #mobileBar{display:none;}

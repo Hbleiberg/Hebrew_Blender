@@ -562,6 +562,7 @@ body {
   text-decoration:none;
 }
 .skip-link:focus { top:0; outline:2px solid var(--focus-ring); outline-offset:2px; }
+[dir="rtl"] body.fullscreen .skip-link:focus { top:76px; }   /* full screen pins #fsExitBtn to the physical top right (14–69px down), a Hebrew page's inline start: the link shows just below it, whatever the button's label makes its width */
 #ttReading:focus { outline:none; }   /* the skip link's target: it takes the focus without a ring around the whole column */
 header {
   background:var(--navy); color:#fff;
@@ -2139,6 +2140,9 @@ body.fullscreen #fsExitBtn { display: flex; }
    at z-index 200 it lay over the drawer's dark toggle and Close button and the tops of its last tabs. While the drawer
    is open the button goes under the drawer's backdrop (90), like everything else outside a modal. */
 body.fullscreen:has(#settingsModal.open) #fsExitBtn { z-index: 80; }
+/* The presentation bar (bottom, 200) stays up while the drawer it opened is open, and at 1024px its plate lay over the
+   drawer's bottom-start corner: it goes under the backdrop too. */
+body.fullscreen:has(#settingsModal.open) #ttFsBar { z-index: 80; }
 /* Idle-hide (shared fullscreen idle-hide block): the exit plate fades after 3s without pointer activity, returns on
    the next move, never hides while keyboard-focused. #ttFsBar keeps its own 4s show/hide. */
 body.fs-idle #fsExitBtn:not(:focus-visible) { opacity: 0; pointer-events: none; }
@@ -4882,20 +4886,42 @@ function specialReadingKey(sp) {   // specialShabbat's key → the HOLIDAY_READI
 }
 function weekSpecial() {
   if (!window.HebCal || !/^parsha-/.test(settings.scope || '')) return null;
-  const wk = localWeekReading();
-  const p = wk && wk.kind === 'parsha' ? parshiyotData.find(x => x.en === settings.parshahKey) : null;
-  if (!p || !wk.idx.includes(p.n - 1)) return null;
-  let sp = null;
-  try { sp = HebCal.specialShabbat(new Date(), { israel: settings.schedule === 'israel' }); } catch (e) { sp = null; }
+  const p = parshiyotData.find(x => x.en === settings.parshahKey);
+  if (!p) return null;
+  const israel = settings.schedule === 'israel', wk = localWeekReading();
+  let sp = null, date = null;
+  if (wk && wk.kind === 'parsha' && wk.idx.includes(p.n - 1)) {
+    try { sp = HebCal.specialShabbat(new Date(), { israel }); } catch (e) { sp = null; }
+  } else {
+    // Another week's parasha names the special Shabbat of the date it is next read (a teacher preparing next
+    // week's maftir), dated, since "This Shabbat" would be wrong. Memoized per day, parasha and calendar.
+    const k = `${new Date().toDateString()}|${p.n}|${israel}`;
+    if (!_nextSpecialMemo || _nextSpecialMemo.k !== k) {
+      let nx = null, s2 = null;
+      try { nx = HebCal.nextOccurrence(p.n - 1, new Date(), { israel }); s2 = nx ? HebCal.specialShabbat(nx.date, { israel }) : null; } catch (e) { nx = null; s2 = null; }
+      _nextSpecialMemo = { k, sp: s2, date: nx && nx.date };
+    }
+    sp = _nextSpecialMemo.sp; date = _nextSpecialMemo.date;
+  }
   const h = sp ? holidayByKey(specialReadingKey(sp)) : null;
-  return h ? { special: sp, reading: h } : null;
+  return h ? { special: sp, reading: h, date } : null;
 }
+let _nextSpecialMemo = null;
 function weekSpecialHTML() {
   const w = weekSpecial();
   if (!w) return '';
-  const name = holidayName(w.reading), chip = I18n.t('torah.reading.special_chip', { name });
-  const tipKey = w.reading.ref ? 'torah.reading.special_tip' : 'torah.reading.special_tip_haftarah';   // ref:null = the haftarah alone
-  return ` <span class="tt-notice-chip tt-special-chip" aria-label="${esc(chip)}" data-tip="${esc(I18n.t(tipKey, { name }))}">${esc(chip)}</span>`
+  const name = holidayName(w.reading);
+  let chip, tip;
+  if (w.date) {
+    let date;
+    try { date = w.date.toLocaleDateString(I18n.lang === 'he' ? 'he-IL' : 'en-US', { month: 'short', day: 'numeric' }); } catch (e) { date = `${w.date.getMonth() + 1}/${w.date.getDate()}`; }
+    chip = I18n.t('torah.reading.special_chip_dated', { date, name });
+    tip = I18n.t(w.reading.ref ? 'torah.reading.special_tip_dated' : 'torah.reading.special_tip_haftarah_dated', { date, name });
+  } else {
+    chip = I18n.t('torah.reading.special_chip', { name });
+    tip = I18n.t(w.reading.ref ? 'torah.reading.special_tip' : 'torah.reading.special_tip_haftarah', { name });   // ref:null = the haftarah alone
+  }
+  return ` <span class="tt-notice-chip tt-special-chip" aria-label="${esc(chip)}" data-tip="${esc(tip)}">${esc(chip)}</span>`
     + ` <button type="button" class="btn btn-xs btn-secondary tt-special-open" onclick="openWeekSpecial()">${esc(I18n.t('torah.reading.special_open'))}</button>`;
 }
 function openWeekSpecial() { const w = weekSpecial(); if (w) { clearLoop(); applyHolidayReading(w.reading); } }
@@ -8008,6 +8034,10 @@ async function toggleChantAll() {
     if (_ttLoaded) ttRelease();
     chantAllState.active = true;
     chantAllState.tt = currentVerses.map(v => `${v.chapter}:${v.verse}`);
+    // A whole parsha starts at the aliyah the reader is in, as the PocketTorah chain below does.
+    const _from = _aliyahStarts && aliyahNumForLabel(_currentVerseLabel), _a = _from > 1 && _aliyahStarts.find(x => x.num === _from);
+    const _at = _a ? chantAllState.tt.indexOf(_a.label) : -1;
+    if (_at > 0) chantAllState.tt = chantAllState.tt.slice(_at);
     chantAllState.queue = null;
     chantAllState.overlay = null;
     chantAllState.parsha = currentReadingCtx && currentReadingCtx.parshahEntry;
@@ -8058,7 +8088,12 @@ async function toggleChantAll() {
     if (!p) { setStatus(I18n.t('torah.status.pick_parsha_chant'), false, 'torah.status.pick_parsha_chant'); return; }
     if (settings.scope === 'parsha-haftarah') queue = ['H'];
     else if (/^parsha-aliyah-(\d)$/.test(settings.scope)) queue = [settings.scope.match(/(\d)$/)[1]];
-    else queue = ['1','2','3','4','5','6','7'];
+    else {
+      // The whole parsha plays from the aliyah the reader is in (the jump bar's gold chip: a chip jump, or the
+      // scroll), so a student who jumped to aliyah 3 is not sent back to the top; at the top it is aliyah 1.
+      const from = Math.max(1, Math.min(7, aliyahNumForLabel(_currentVerseLabel) || 1));
+      queue = ['1','2','3','4','5','6','7'].slice(from - 1);
+    }
   }
   chantAllState.active = true;
   chantAllState.queue = queue;

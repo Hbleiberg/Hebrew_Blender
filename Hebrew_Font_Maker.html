@@ -1071,6 +1071,7 @@ header{--kin-pt:10px;--kin-pb:10px;--kin-gap:14px;}   /* this header's block pad
   /* first-run hint — zero-height sticky wrapper floats the card over the stage top edge without taking layout space */
   .node-hint-wrap { display: none; position: sticky; top: 2px; height: 0; z-index: 5; }
   body.rulers-on .node-hint-wrap { top: 26px; }   /* clear the 22px ruler bar (z6 — it would occlude the card) */
+  body.rulers-on .node-hint { max-width: calc(100% - 52px); }   /* …and the side bar: a phone-wide card ran under it and lost each line's first letters (centred, so 26px a side) */
   body.mode-nodes .node-hint-wrap { display: block; }
   .node-hint { display: flex; align-items: center; gap: 8px; width: max-content; max-width: 96%; margin: 0 auto; background: var(--white); border: 1px solid var(--gold); border-radius: 8px; padding: 3px 6px 3px 10px; font-size: 0.76rem; color: var(--text); box-shadow: 0 2px 8px rgba(0,0,0,0.15); pointer-events: none; }
   .node-hint .ctl-btn { pointer-events: auto; }   /* only the ?/✕ buttons intercept clicks — the card never blocks stage hits beneath it */
@@ -9354,8 +9355,8 @@ function adPickerOpen(boxId) {
   opts.forEach(L => {
     const taken = traced.has(L.cp);
     h += `<button type="button" class="${taken ? 'taken' : ''}" onclick="adAssign(${b.id}, '${L.cp}')"`
-      + `${taken ? ` title="${esc(_adT('pick_taken_title', L.name + ' already has an image or trace — assigning will replace it', {name: L.name}))}"` : ''}>`
-      + `<span class="heb" lang="he">${String.fromCodePoint(parseInt(L.cp, 16))}</span> ${esc(L.name)}${taken ? ' •' : ''}</button>`;
+      + `${taken ? ` title="${esc(_adT('pick_taken_title', gName(L.name) + ' already has an image or trace — assigning will replace it', {name: gName(L.name)}))}"` : ''}>`
+      + `<span class="heb" lang="he">${String.fromCodePoint(parseInt(L.cp, 16))}</span> ${esc(gName(L.name))}${taken ? ' •' : ''}</button>`;
   });
   h += `<button type="button" onclick="adSkipBox(${b.id})">${esc(b.skip ? _adT('unskip_box', 'Un-skip') : _adT('skip_box', 'Skip this box'))}</button>`;
   h += `<button type="button" onclick="adUnassign(${b.id})">${esc(_adT('unassign', 'Unassign'))}</button>`;
@@ -16424,10 +16425,10 @@ function confirmAndDeleteContours(doomedIn) {         // shared confirm rules: s
   const pts = doomed.reduce((s, ci) => s + nodeModel.contours[ci].nodes.length, 0);
   const run = () => _deleteContoursNow(l, doomed, empties);
   if (empties) askModal(I18n.t('fontmaker.modals.delete_outline_title'),
-    I18n.t('fontmaker.modals.delete_outline_body', {name: `<b>${esc(l.name)}</b>`, keys: khTitle('undo')}),
+    I18n.t('fontmaker.modals.delete_outline_body', {name: `<b>${esc(gName(l.name))}</b>`, keys: khTitle('undo')}),
     [ {label:I18n.t('fontmaker.modals.cancel'), cls:'ghost'}, {label:I18n.t('fontmaker.modals.delete_all'), onClick: run} ]);
   else if (big) askModal(I18n.t('fontmaker.modals.delete_contour_title'),
-    I18n.t(doomed.length === 1 ? 'fontmaker.modals.delete_contour_body.one' : 'fontmaker.modals.delete_contour_body.other', {count: doomed.length, pts: pts, name: `<b>${esc(l.name)}</b>`, keys: khTitle('undo')}),
+    I18n.t(doomed.length === 1 ? 'fontmaker.modals.delete_contour_body.one' : 'fontmaker.modals.delete_contour_body.other', {count: doomed.length, pts: pts, name: `<b>${esc(gName(l.name))}</b>`, keys: khTitle('undo')}),
     [ {label:I18n.t('fontmaker.modals.cancel'), cls:'ghost'}, {label:I18n.t('fontmaker.modals.delete'), onClick: run} ]);
   else run();   // small specks delete without friction
 }
@@ -21427,7 +21428,7 @@ function openKernClass(id) {
   const host = document.getElementById('kernClassList'); host.innerHTML = '';
   LETTERS.filter(L => L.cat !== 'punct').forEach(L => {
     const lab = document.createElement('label'); lab.className = 'chk'; lab.style.cssText = 'font-size:0.84rem;';
-    lab.innerHTML = `<input type="checkbox" class="kc-cp" value="${L.cp}" ${sel.has(L.cp)?'checked':''}> <span style="font-family:${esc(project.template.font)};font-size:1.1rem;">${String.fromCodePoint(parseInt(L.cp,16))}</span> ${esc(L.name)}`;
+    lab.innerHTML = `<input type="checkbox" class="kc-cp" value="${L.cp}" ${sel.has(L.cp)?'checked':''}> <span style="font-family:${esc(project.template.font)};font-size:1.1rem;">${String.fromCodePoint(parseInt(L.cp,16))}</span> ${esc(gName(L.name))}`;
     host.appendChild(lab);
   });
   aOpenModal('kernClassOverlay', closeKernClass);
@@ -21667,7 +21668,7 @@ function renderAlignLeft(L, l) {
   } else if (project.inputMode === 'combined' && project.combinedSheets.length && curKind === 'letter') {
     html += (!l.source.dataUrl)
       ? `<div class="hint">${_pT('pick_then_box', 'Pick a letter, then drag a box around it on the sheet to bring it into the editor. Keyboard: arrows move the box, +/− resize, Enter to crop.')}</div>`
-      : `<div class="hint">${_pT('region_selected', 'Region selected for <b>{name}</b>.', {name: esc(l.name)})}</div>
+      : `<div class="hint">${_pT('region_selected', 'Region selected for <b>{name}</b>.', {name: esc(gName(l.name))})}</div>
          <div class="ctl-row"><button class="ctl-btn" onclick="reselectArea()">↺ Re-select area</button></div>`;
   }
   // Adjust tools appear once there's an image to move (never for already-vector glyphs: font / SVG)
@@ -22095,7 +22096,7 @@ function _anchorXYBlockHTML(l, cls, a, xyWhat) {
   const pinHint = actPin ? `<div class="hint" style="font-size:0.7rem;text-align:center;margin-top:4px;color:var(--gold);">✎ ${esc(I18n.t('fontmaker.fidelity.pinned_hint'))}
       <button class="ctl-btn" style="font-size:0.7rem;padding:1px 8px;margin-inline-start:4px;" onclick="unpinActiveMark()">${I18n.t('fontmaker.fidelity.unpin')}</button></div>` : '';
   return `<hr class="ctl-divider">
-    <div class="ws-side-title">${esc(_pT('pos_title', '{class} position — {name} only', {class: anchorLabelT(cls), name: l.name}))}</div>
+    <div class="ws-side-title">${esc(_pT('pos_title', '{class} position — {name} only', {class: anchorLabelT(cls), name: gName(l.name)}))}</div>
     <div class="anc-xy">
       <label>X <input type="number" id="ancX" value="${esc(a.x)}" oninput="setAnchorCoord('x',this.value)" onchange="udBurstCommit()"></label>
       <label>Y <input type="number" id="ancY" value="${esc(a.y)}" oninput="setAnchorCoord('y',this.value)" onchange="udBurstCommit()"></label>
@@ -22105,7 +22106,7 @@ function _anchorXYBlockHTML(l, cls, a, xyWhat) {
       <button class="ctl-btn" onclick="centerAnchorH()" title="${esc(_pT('center_h_title', 'Center horizontally — halfway between the left and right margins'))}">${_pT('center_h', 'Center ↔')}</button>
       <button class="ctl-btn" onclick="centerAnchorV()" title="${esc(_pT('center_v_title', 'Center vertically — halfway between the top and base lines'))}">${_pT('center_v', 'Center ↕')}</button>
     </div>
-    <div class="hint" style="font-size:0.7rem;text-align:center;margin-top:5px;">${actPin ? '' : _pT('moves_xy_hint', 'Moves ' + xyWhat + ' on <b>' + esc(l.name) + '</b> only.', { what: xyWhat, name: '<b>' + esc(l.name) + '</b>' })}</div>`;
+    <div class="hint" style="font-size:0.7rem;text-align:center;margin-top:5px;">${actPin ? '' : _pT('moves_xy_hint', 'Moves ' + xyWhat + ' on <b>' + esc(gName(l.name)) + '</b> only.', { what: xyWhat, name: '<b>' + esc(gName(l.name)) + '</b>' })}</div>`;
 }
 function _anchorPinsSectionHTML(l) {
   // The COUNT is live pins only: one whose stored key no longer matches (a pinned trop whose halign
@@ -22167,7 +22168,7 @@ function renderSmrAnchorLeft(l) {
   const xy = _anchorXYBlockHTML(l, cls, a, _pT('xy_what_smr', 'the marks of this column'));
   return `
     ${_placementNavRowHTML()}
-    <div class="ws-side-title">${esc(_pT('place_the', '{name}: place the…', {name: l.name}))}</div>
+    <div class="ws-side-title">${esc(_pT('place_the', '{name}: place the…', {name: gName(l.name)}))}</div>
     <div class="ctl-row">${classBtns}</div>
     <hr class="ctl-divider">${grid}
     ${xy}
@@ -22334,7 +22335,7 @@ function renderAnchorLeft(L, l) {
   const navRow = _placementNavRowHTML();
   L.innerHTML = `
     ${navRow}
-    <div class="ws-side-title">${esc(_pT('place_the', '{name}: place the…', {name: l.name}))}</div>
+    <div class="ws-side-title">${esc(_pT('place_the', '{name}: place the…', {name: gName(l.name)}))}</div>
     <div class="ctl-row">${classBtns}</div>
     ${ grid ? `<hr class="ctl-divider">${grid}` : '' }
     ${xy}
@@ -27567,9 +27568,12 @@ async function _generatePreviewPDF() {
       chunk.forEach((L, ri) => {
         const ry = top + headH + ri*rowH, cy = ry + rowH/2, ch = String.fromCodePoint(parseInt(L.cp,16));
         const lx = x0 + labelW/2, pl = project.letters.find(q => q.codepoint === L.cp), an = pl && pl.anchors;
+        // The row's letter name in the UI's language, as the page's own grids show it (gName): the chart's column heads were
+        // already Hebrew in a Hebrew UI while its rows still said "Alef", "Bet".
+        const nm = gName(L.name);
         ctx.direction = 'ltr'; ctx.fillStyle = '#888'; ctx.font = "9px 'Source Sans 3', sans-serif";
         if (an && an.below && an.above && an.center) {
-          ctx.fillText(L.name, lx, ry + 13);
+          ctx.fillText(nm, lx, ry + 13);
           ctx.font = "7px 'Source Sans 3', sans-serif"; ctx.fillStyle = '#999';
           // The pair in one left-to-right isolate (U+2066 … U+2069: a canvas has no unicode-bidi), the line in the UI's own
           // direction: after the Hebrew word, "106,-45" drew as "45-,106" (the comma and minus between numbers took the
@@ -27580,7 +27584,7 @@ async function _generatePreviewPDF() {
           ctx.fillText(I18n.t('fontmaker.canvas.anchor_above',  { xy: xy(an.above) }),  lx, ry + 40);
           ctx.fillText(I18n.t('fontmaker.canvas.anchor_center', { xy: xy(an.center) }), lx, ry + 52);
         } else {
-          ctx.fillText(L.name, lx, cy);
+          ctx.fillText(nm, lx, cy);
         }
         ctx.fillStyle = '#111'; ctx.direction = 'rtl'; ctx.font = HEB(26);
         CHART_COLS.forEach((c, ci) => {
@@ -27690,8 +27694,8 @@ function templateCellHTML(item, kind) {
   const label =
     '<div style="position:absolute;top:5px;left:7px;display:flex;align-items:center;gap:6px;'
       + 'color:' + TPL_INK + ';font-family:\'Source Sans 3\',sans-serif;line-height:1.05;pointer-events:none;">'
-      + '<span style="font-family:' + esc(fontFam) + ';font-size:22px;direction:rtl;">' + glyph + '</span>'
-      + '<span style="font-size:10px;"><strong>' + esc(item.name) + '</strong><br>'
+      + '<span style="font-family:' + esc(fontFam) + ';font-size:22px;direction:ltr;unicode-bidi:isolate;">' + glyph + '</span>'   // the sample is the shape to write: a left-to-right isolate, so a right-to-left sheet never mirrors a bracket (it drew "(" in Right Paren's box, and a font written from it shipped its brackets backwards), as the Preview PDF's punctuation page
+      + '<span style="font-size:10px;"><strong>' + esc(gName(item.name)) + '</strong><br>'   // in the UI's language, like the sheet's title
       + '<span style="font-size:8.5px;opacity:.9;">' + code + esc(cls) + '</span></span>'
     + '</div>';
   return '<div style="position:relative;box-sizing:border-box;width:100%;height:100%;'
@@ -28347,7 +28351,7 @@ async function loadProjectFile(file) {
   await fmCloudClaim(data);
   if (await applyProjectData(data)) status(I18n.t('fontmaker.status.project_loaded'));
 }
-async function applyProjectData(data) {           // shared by file-load and "Load recent"
+async function applyProjectData(data, opts) {           // shared by file-load and "Load recent"; opts.cur = Continue's {kind, cp}
   if (!data || data.format !== 'hebrew-font-maker-project') { status(I18n.t('fontmaker.status.not_fontmaker_file')); return false; }
   // The font block is the project's identity (name, metrics, mark sets): a file whose block is not a
   // plain object is not a project, and it used to throw past the `project =` line — a workspace with
@@ -28378,6 +28382,14 @@ async function applyProjectData(data) {           // shared by file-load and "Lo
   for (const dl of project.letters) { try { await drawEnsureRaster(dl); } catch (e) {} }
   curKind = 'letter'; curCp = LETTER_ORDER[0];
   syncMetaToForm(); renderGrids(); _setWorkMode(_defaultStepForCur());   // reopen an already-traced first letter directly on Edit points
+  // Continue reopens the item that was on screen when the snapshot was taken, if the project still has it (a mark is
+  // looked up, never created: customMark() would add a store entry outside undo).
+  const _cur = opts && opts.cur;
+  if (_cur && typeof _cur.cp === 'string' && !(_cur.kind === 'letter' && _cur.cp === curCp)
+      && (_cur.kind === 'letter' ? project.letters.some(l => l.codepoint === _cur.cp)
+          : !!(project.font[_cur.kind] && project.font[_cur.kind].custom && project.font[_cur.kind].custom[_cur.cp]))) {
+    try { _selectItem(_cur.kind, _cur.cp); } catch (e) { curKind = 'letter'; curCp = LETTER_ORDER[0]; renderGrids(); _setWorkMode(_defaultStepForCur()); }
+  }
   fmCloudReset();       // the previous project's cloud state does not carry over (identity rides in the project itself)
   markClean();          // a freshly loaded project is a known-good state — clear the dirty flag
   autosaveNow();        // …and make the continuity snapshot reflect what was just loaded
@@ -28701,7 +28713,7 @@ async function autosaveNow() {
       try {
         if (typeof indexedDB === 'undefined' || typeof CompressionStream === 'undefined') throw new Error('no IDB/gzip');
         const blob = await gzipBlob(autosaveParts(project));     // full project incl. images, gzipped
-        await autosavePut({ id: 'current', savedAt: new Date().toISOString(), gz: await blob.arrayBuffer(), cloudRev: (project.cloudRev || null), cloudClean: !_cloudDirty });   // cloudRev/cloudClean: lets a cloud Open reuse this snapshot
+        await autosavePut({ id: 'current', savedAt: new Date().toISOString(), gz: await blob.arrayBuffer(), cloudRev: (project.cloudRev || null), cloudClean: !_cloudDirty, cur: { kind: curKind, cp: curCp } });   // cloudRev/cloudClean: lets a cloud Open reuse this snapshot; cur: the item on screen, which Continue reopens (UI state beside the project, never in it)
       } catch (e) {   // private mode / no IndexedDB → stripped localStorage slot (outlines survive, images don't)
         try { localStorage.setItem('hebrewFontMaker_autosave', JSON.stringify(stripImagesForAutosave(project))); } catch (_) {}
       }
@@ -28756,7 +28768,7 @@ function _bootLaunchPrompt(data, rec, stripped) {
     I18n.t('fontmaker.modals.continue_body', {time: `<b>${_autosaveRelTime((rec && rec.savedAt) || data.savedAt)}</b>`})
     + (stripped ? '<br><span class="warn">' + I18n.t('fontmaker.modals.continue_stripped') + '</span>' : '')
     + '<br><span style="color:var(--muted);font-size:0.82rem;">' + I18n.t('fontmaker.modals.continue_untouched') + '</span>',
-    [ { label: I18n.t('fontmaker.modals.continue'), onClick: async () => { if (await applyProjectData(data)) { status(I18n.t('fontmaker.status.reopened_recent')); fmCloudResumeAfterRestore(rec); } } },
+    [ { label: I18n.t('fontmaker.modals.continue'), onClick: async () => { if (await applyProjectData(data, { cur: rec && rec.cur })) { status(I18n.t('fontmaker.status.reopened_recent')); fmCloudResumeAfterRestore(rec); } } },
       { label: I18n.t('fontmaker.modals.start_fresh'), cls: 'ghost', onClick: () => { autosaveDiscard(); wizardOpen('gate'); } } ]);
 }
 /* ── ?start=<id> deep link (partner starting fonts — see CLAUDE.md: Starting Fonts) ──
@@ -28812,7 +28824,7 @@ async function osStartBoot(id, data, rec, stripped) {
     I18n.t('fontmaker.osfont.boot_pick_body', {font: '<b>' + esc(ctx.entry.displayName) + '</b>', time: '<b>' + _autosaveRelTime((rec && rec.savedAt) || data.savedAt) + '</b>'})
     + '<br><span style="color:var(--muted);font-size:0.82rem;">' + I18n.t('fontmaker.osfont.boot_pick_note') + '</span>',
     [ { label: I18n.t('fontmaker.osfont.boot_open_font', {font: ctx.entry.displayName}), onClick: () => { autosaveDiscard(); wizardOpen('osfont'); } },
-      { label: I18n.t('fontmaker.modals.continue'), cls: 'ghost', onClick: async () => { _osStartCtx = null; if (await applyProjectData(data)) { status(I18n.t('fontmaker.status.reopened_recent')); fmCloudResumeAfterRestore(rec); } } } ]);
+      { label: I18n.t('fontmaker.modals.continue'), cls: 'ghost', onClick: async () => { _osStartCtx = null; if (await applyProjectData(data, { cur: rec && rec.cur })) { status(I18n.t('fontmaker.status.reopened_recent')); fmCloudResumeAfterRestore(rec); } } } ]);
 }
 /* Draw-mode strokes arrive from disk like everything else — via ivritSafeParse, but shape/size are
    still untrusted. Hard caps + finite-only + clamps; anything malformed degrades to null (no strokes). */
@@ -30014,7 +30026,7 @@ function openApplyAlign(){
   const host = document.getElementById('applyAlignList'); host.innerHTML = '';
   LETTERS.filter(L => L.cat !== 'punct' && L.cp !== src.codepoint).forEach(L => {
     const lab = document.createElement('label'); lab.className = 'chk'; lab.style.cssText = 'font-size:0.84rem;';
-    lab.innerHTML = `<input type="checkbox" class="aa-cp" value="${L.cp}"> <span style="font-family:${esc(project.template.font)};font-size:1.1rem;">${String.fromCodePoint(parseInt(L.cp,16))}</span> ${esc(L.name)}`;
+    lab.innerHTML = `<input type="checkbox" class="aa-cp" value="${L.cp}"> <span style="font-family:${esc(project.template.font)};font-size:1.1rem;">${String.fromCodePoint(parseInt(L.cp,16))}</span> ${esc(gName(L.name))}`;
     host.appendChild(lab);
   });
   aOpenModal('applyAlignOverlay', closeApplyAlign);
@@ -30049,7 +30061,7 @@ function openApplyNikkud(){
   const host = document.getElementById('applyNikkudList'); host.innerHTML = '';
   LETTERS.filter(L => L.cat !== 'punct' && L.cp !== src.codepoint).forEach(L => {
     const lab = document.createElement('label'); lab.className = 'chk'; lab.style.cssText = 'font-size:0.84rem;';
-    lab.innerHTML = `<input type="checkbox" class="an-cp" value="${L.cp}"> <span style="font-family:${esc(project.template.font)};font-size:1.1rem;">${String.fromCodePoint(parseInt(L.cp,16))}</span> ${esc(L.name)}`;
+    lab.innerHTML = `<input type="checkbox" class="an-cp" value="${L.cp}"> <span style="font-family:${esc(project.template.font)};font-size:1.1rem;">${String.fromCodePoint(parseInt(L.cp,16))}</span> ${esc(gName(L.name))}`;
     host.appendChild(lab);
   });
   aOpenModal('applyNikkudOverlay', closeApplyNikkud);
@@ -30093,7 +30105,7 @@ function openCopyOutline(){
   let first = true;
   sources.forEach(L => {
     const lab = document.createElement('label'); lab.className = 'chk'; lab.style.cssText = 'font-size:0.84rem;';
-    lab.innerHTML = `<input type="radio" name="copyOutlineSrc" class="co-cp" value="${esc(L.codepoint)}"${first?' checked':''}> <span style="font-family:${esc(project.template.font)};font-size:1.1rem;">${String.fromCodePoint(parseInt(L.codepoint,16))}</span> ${esc(L.name)}`;
+    lab.innerHTML = `<input type="radio" name="copyOutlineSrc" class="co-cp" value="${esc(L.codepoint)}"${first?' checked':''}> <span style="font-family:${esc(project.template.font)};font-size:1.1rem;">${String.fromCodePoint(parseInt(L.codepoint,16))}</span> ${esc(gName(L.name))}`;
     host.appendChild(lab); first = false;
   });
   const w = document.getElementById('copyOutlineWidth'); if (w) w.checked = false;
