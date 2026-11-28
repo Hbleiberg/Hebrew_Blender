@@ -8012,6 +8012,10 @@ async function toggleChantAll() {
     if (_ttLoaded) ttRelease();
     chantAllState.active = true;
     chantAllState.tt = currentVerses.map(v => `${v.chapter}:${v.verse}`);
+    // A whole parsha starts at the aliyah the reader is in, as the PocketTorah chain below does.
+    const _from = _aliyahStarts && aliyahNumForLabel(_currentVerseLabel), _a = _from > 1 && _aliyahStarts.find(x => x.num === _from);
+    const _at = _a ? chantAllState.tt.indexOf(_a.label) : -1;
+    if (_at > 0) chantAllState.tt = chantAllState.tt.slice(_at);
     chantAllState.queue = null;
     chantAllState.overlay = null;
     chantAllState.parsha = currentReadingCtx && currentReadingCtx.parshahEntry;
@@ -8062,7 +8066,12 @@ async function toggleChantAll() {
     if (!p) { setStatus(I18n.t('torah.status.pick_parsha_chant'), false, 'torah.status.pick_parsha_chant'); return; }
     if (settings.scope === 'parsha-haftarah') queue = ['H'];
     else if (/^parsha-aliyah-(\d)$/.test(settings.scope)) queue = [settings.scope.match(/(\d)$/)[1]];
-    else queue = ['1','2','3','4','5','6','7'];
+    else {
+      // The whole parsha plays from the aliyah the reader is in (the jump bar's gold chip: a chip jump, or the
+      // scroll), so a student who jumped to aliyah 3 is not sent back to the top; at the top it is aliyah 1.
+      const from = Math.max(1, Math.min(7, aliyahNumForLabel(_currentVerseLabel) || 1));
+      queue = ['1','2','3','4','5','6','7'].slice(from - 1);
+    }
   }
   chantAllState.active = true;
   chantAllState.queue = queue;
