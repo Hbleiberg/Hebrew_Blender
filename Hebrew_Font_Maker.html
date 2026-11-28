@@ -1071,6 +1071,7 @@ header{--kin-pt:10px;--kin-pb:10px;--kin-gap:14px;}   /* this header's block pad
   /* first-run hint — zero-height sticky wrapper floats the card over the stage top edge without taking layout space */
   .node-hint-wrap { display: none; position: sticky; top: 2px; height: 0; z-index: 5; }
   body.rulers-on .node-hint-wrap { top: 26px; }   /* clear the 22px ruler bar (z6 — it would occlude the card) */
+  body.rulers-on .node-hint { max-width: calc(100% - 52px); }   /* …and the side bar: a phone-wide card ran under it and lost each line's first letters (centred, so 26px a side) */
   body.mode-nodes .node-hint-wrap { display: block; }
   .node-hint { display: flex; align-items: center; gap: 8px; width: max-content; max-width: 96%; margin: 0 auto; background: var(--white); border: 1px solid var(--gold); border-radius: 8px; padding: 3px 6px 3px 10px; font-size: 0.76rem; color: var(--text); box-shadow: 0 2px 8px rgba(0,0,0,0.15); pointer-events: none; }
   .node-hint .ctl-btn { pointer-events: auto; }   /* only the ?/✕ buttons intercept clicks — the card never blocks stage hits beneath it */
