@@ -99655,3 +99655,27 @@ _(prior)_ **Next session (S690):** **Branch `claude/hopeful-gauss-84xtgn` (S687�
 - H teacher walkthrough / paper-cuts (one tool): 2026-11-28 (**S691 — `torah_trainer.html` (S599 → S691, 66 commits to the page)**: 2 lessons by real clicks signed out (next week's maftir → Shabbat Chanukah; a Chanukah reading saved as a favorite), EN light 1280 / HE dark 800, + the student cell (Chant all at 1366×768 and in fullscreen at 1024×768). FOUND 3: 2 FIXED by gate 2 answers (`7fd2582b`, `a9363eb6`), 1 seed. H-next: chrome (S606), generator (S613), letter_learner (S619).)
 
 _(prior)_ **Next session (S691):** **Branch `claude/hopeful-gauss-84xtgn` (S687–S690, draft PR #433): open → continue; merged → fresh branch off `origin/main`.** `sw.js` **v1580**, FM **6.0**, corpus ?v=**9**, catalog ?v=**9**. ⚑ drift: main=e1636db sw=v1580 fm=6.0 migration=0014_saves_tool_tefillah_trainer.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest next: H torah (S599; pointer: H); then C chrome (S600), P torah (S602), M chrome (S603). ⚑ Suite passes are aging: E S621, K S623, I S628, F S630, B S631 — the Font Maker 6.0 and the self-hosted OpenSiddur faces (`79d3437`, outside the loop) are still unseen by E, K, I, F, B. ⚑ Queue: the credits-only last sheet on the Tutor (S689) and the Trainer (S684); the FM Width dialog's 1.9 s scan @4× (S688 P3); the dictionary's Filter by Letter tiles (ask first); the failed-locale raw keys (S685). ⚑ Awaiting: S681, S662, S653, S652.
+
+
+<!-- archived by compact-ledger at the S693 boundary, 2026-11-28 -->
+## Compaction (S693, 2026-11-28) — moved verbatim from the live ledger
+
+### from Done
+
+- [x] 2026-11-28 | `56722380` | Hebrew_Font_Maker.html, probe | (S687 queue) **Letter-picking dialogs and the Nikkud panel name letters in the UI's language** (`gName()` at 13 sites: Auto-detect's picker + tooltip, kerning class, Apply alignment / nikkud, Copy outline, two delete confirms, the Align / Nikkud titles and hints) | probe `S688-fontmaker-letter-names-in-ui-language.mjs` 10 / 10 …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-27 | (S687 close-out) | branch/deploy note | **S687 = G on `Hebrew_Font_Maker.html` (S593 → S687, 218 commits to the page, FM 5.59 → 6.0): FOUND 2, FIXED 2 (+1 P3 logged) + Flash Cards' S683 profile-row P4 from the queue.** Branch `claude/hopeful-gauss-84xtgn` (PR #429 merged), new draft PR; `sw.js` v1573; nothing live.
+
+- [x] 2026-11-27 | `f95d5acd` | Hebrew_Font_Maker.html, probe | (S687 G) **A template sheet's sample glyph is never mirrored** (every bidi-mirrored character drew mirrored in its box in both UIs — "(" in Right Paren's — so a font written from the sheet shipped its brackets backwards) | probe `S687-fontmaker-template-samples-never-mirror.mjs` 20 / 20 (before 0 / 20); every other sheet …[full text: IMPROVEMENT_ARCHIVE.md]
+
+- [x] 2026-11-27 | `e7202fd6` | Hebrew_Font_Maker.html | (S687 G) **The Preview PDF's Letter × Nikkud rows and the template sheets name each letter in the UI's language** (`gName()`; the heads were Hebrew, the rows "Alef") | 11 PDFs × 4 cells re-rendered: EN 0 px changed, HE only the chart and the Hebrew-named sheets; dark = light everywhere
+
+### from Per-session log (one line per session)
+
+- 2026-11-23 | **S672** | iters: 3 | tools: tefillah_trainer, torah_trainer, smoke-sync ×2, coverage.mjs, 4 reference docs, sw ×2 | patterns fixed: synced-reading-follows-the-other-tab ×2 (new) | pass run: P (tefillah_trainer, first; FOUND 1 shape on 2 pages, FIXED 2; 2 logged) | gates: none | SW: …[full text: IMPROVEMENT_ARCHIVE.md]
+
+### from Discovery-pass rotation (run one per session, stalest first)
+
+- C accessibility (one tool): 2026-11-28 (**S692 — the chrome bundle (S600 → S692, 59 commits: the grouped home page, the navy footer, the cracks, the lockup) + `classroom_dashboard.html` (S607 → S692, 58 commits)**: census 56 chrome cells + the fonts view, the dialogs, motion, forced colours, text spacing; dashboard census 64 states × cells, drawer Tab walks, forced colours. FOUND 5: 4 FIXED (`3ea327e3`, `dc80b0e8`, `8328dc19`, `a76edebc`), 1 P4, 1 measurement. C-next: fontmaker (S614), letter_learner (S620), parsha_emojis (S620))
+
+_(prior)_ **Next session (S692):** **Branch `claude/hopeful-gauss-84xtgn` (S687–S691, draft PR #433): open → continue; merged → fresh branch off `origin/main`.** `sw.js` **v1582**, FM **6.0**, corpus ?v=**9**, catalog ?v=**9**. ⚑ drift: main=e1636db sw=v1582 fm=6.0 migration=0014_saves_tool_tefillah_trainer.sql live=yes functions=eb3e7ad sdk=2.116.0 config=58edf33 keepalive=aed4e7b ⚑ Stalest next: C chrome (S600; pointer: C); then N dictionary (S601), P torah (S602), M chrome (S603). ⚑ Suite passes are aging: E S621, K S623, I S628, F S630, B S631 — the Font Maker 6.0 and the self-hosted OpenSiddur faces are still unseen by E, K, I, F, B. ⚑ Queue: the credits-only last sheet on the Tutor (S689) and the Trainer (S684); the FM Width dialog's 1.9 s scan @4× (S688 P3); the dictionary's Filter by Letter tiles (ask first); the failed-locale raw keys (S685). ⚑ Awaiting: S681, S662, S653, S652.
