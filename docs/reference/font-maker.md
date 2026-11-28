@@ -28,7 +28,10 @@ members of an array). The **IndexedDB** db `hebrewFontMaker` (version 2) holds t
 change; an upgrade an older tab blocks gives up after 4 s, and the page then uses the localStorage fallbacks.
 The autosave is written by
 `autosaveNow()` one snapshot at a time: a request while one is being written is not dropped — the writer runs
-once more when it finishes (`_autosaveAgain`), so the newest edit always reaches the snapshot. Shared
+once more when it finishes (`_autosaveAgain`), so the newest edit always reaches the snapshot. The record also carries `cur` (`{kind, cp}`, the item on
+screen when it was written: UI state beside the project, never inside it), which both *Continue* buttons pass to
+`applyProjectData(data, {cur})` to reopen that letter or mark when the project still has it (a mark is looked up,
+never created). Shared
 site-wide key it also reads: `hebrewBlender_darkMode`. **One AllTools exception:**
 `hebrewFontMaker_lastAuthor` (the onboarding wizard's remembered author name — a scalar identity pref
 like `hebFont`, not project data) IS registered in all five AllTools sites as `fmLastAuthor`. A project's

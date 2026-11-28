@@ -28351,7 +28351,7 @@ async function loadProjectFile(file) {
   await fmCloudClaim(data);
   if (await applyProjectData(data)) status(I18n.t('fontmaker.status.project_loaded'));
 }
-async function applyProjectData(data) {           // shared by file-load and "Load recent"
+async function applyProjectData(data, opts) {           // shared by file-load and "Load recent"; opts.cur = Continue's {kind, cp}
   if (!data || data.format !== 'hebrew-font-maker-project') { status(I18n.t('fontmaker.status.not_fontmaker_file')); return false; }
   // The font block is the project's identity (name, metrics, mark sets): a file whose block is not a
   // plain object is not a project, and it used to throw past the `project =` line — a workspace with
@@ -28382,6 +28382,14 @@ async function applyProjectData(data) {           // shared by file-load and "Lo
   for (const dl of project.letters) { try { await drawEnsureRaster(dl); } catch (e) {} }
   curKind = 'letter'; curCp = LETTER_ORDER[0];
   syncMetaToForm(); renderGrids(); _setWorkMode(_defaultStepForCur());   // reopen an already-traced first letter directly on Edit points
+  // Continue reopens the item that was on screen when the snapshot was taken, if the project still has it (a mark is
+  // looked up, never created: customMark() would add a store entry outside undo).
+  const _cur = opts && opts.cur;
+  if (_cur && typeof _cur.cp === 'string' && !(_cur.kind === 'letter' && _cur.cp === curCp)
+      && (_cur.kind === 'letter' ? project.letters.some(l => l.codepoint === _cur.cp)
+          : !!(project.font[_cur.kind] && project.font[_cur.kind].custom && project.font[_cur.kind].custom[_cur.cp]))) {
+    try { _selectItem(_cur.kind, _cur.cp); } catch (e) { curKind = 'letter'; curCp = LETTER_ORDER[0]; renderGrids(); _setWorkMode(_defaultStepForCur()); }
+  }
   fmCloudReset();       // the previous project's cloud state does not carry over (identity rides in the project itself)
   markClean();          // a freshly loaded project is a known-good state — clear the dirty flag
   autosaveNow();        // …and make the continuity snapshot reflect what was just loaded
@@ -28705,7 +28713,7 @@ async function autosaveNow() {
       try {
         if (typeof indexedDB === 'undefined' || typeof CompressionStream === 'undefined') throw new Error('no IDB/gzip');
         const blob = await gzipBlob(autosaveParts(project));     // full project incl. images, gzipped
-        await autosavePut({ id: 'current', savedAt: new Date().toISOString(), gz: await blob.arrayBuffer(), cloudRev: (project.cloudRev || null), cloudClean: !_cloudDirty });   // cloudRev/cloudClean: lets a cloud Open reuse this snapshot
+        await autosavePut({ id: 'current', savedAt: new Date().toISOString(), gz: await blob.arrayBuffer(), cloudRev: (project.cloudRev || null), cloudClean: !_cloudDirty, cur: { kind: curKind, cp: curCp } });   // cloudRev/cloudClean: lets a cloud Open reuse this snapshot; cur: the item on screen, which Continue reopens (UI state beside the project, never in it)
       } catch (e) {   // private mode / no IndexedDB → stripped localStorage slot (outlines survive, images don't)
         try { localStorage.setItem('hebrewFontMaker_autosave', JSON.stringify(stripImagesForAutosave(project))); } catch (_) {}
       }
@@ -28760,7 +28768,7 @@ function _bootLaunchPrompt(data, rec, stripped) {
     I18n.t('fontmaker.modals.continue_body', {time: `<b>${_autosaveRelTime((rec && rec.savedAt) || data.savedAt)}</b>`})
     + (stripped ? '<br><span class="warn">' + I18n.t('fontmaker.modals.continue_stripped') + '</span>' : '')
     + '<br><span style="color:var(--muted);font-size:0.82rem;">' + I18n.t('fontmaker.modals.continue_untouched') + '</span>',
-    [ { label: I18n.t('fontmaker.modals.continue'), onClick: async () => { if (await applyProjectData(data)) { status(I18n.t('fontmaker.status.reopened_recent')); fmCloudResumeAfterRestore(rec); } } },
+    [ { label: I18n.t('fontmaker.modals.continue'), onClick: async () => { if (await applyProjectData(data, { cur: rec && rec.cur })) { status(I18n.t('fontmaker.status.reopened_recent')); fmCloudResumeAfterRestore(rec); } } },
       { label: I18n.t('fontmaker.modals.start_fresh'), cls: 'ghost', onClick: () => { autosaveDiscard(); wizardOpen('gate'); } } ]);
 }
 /* ── ?start=<id> deep link (partner starting fonts — see CLAUDE.md: Starting Fonts) ──
@@ -28816,7 +28824,7 @@ async function osStartBoot(id, data, rec, stripped) {
     I18n.t('fontmaker.osfont.boot_pick_body', {font: '<b>' + esc(ctx.entry.displayName) + '</b>', time: '<b>' + _autosaveRelTime((rec && rec.savedAt) || data.savedAt) + '</b>'})
     + '<br><span style="color:var(--muted);font-size:0.82rem;">' + I18n.t('fontmaker.osfont.boot_pick_note') + '</span>',
     [ { label: I18n.t('fontmaker.osfont.boot_open_font', {font: ctx.entry.displayName}), onClick: () => { autosaveDiscard(); wizardOpen('osfont'); } },
-      { label: I18n.t('fontmaker.modals.continue'), cls: 'ghost', onClick: async () => { _osStartCtx = null; if (await applyProjectData(data)) { status(I18n.t('fontmaker.status.reopened_recent')); fmCloudResumeAfterRestore(rec); } } } ]);
+      { label: I18n.t('fontmaker.modals.continue'), cls: 'ghost', onClick: async () => { _osStartCtx = null; if (await applyProjectData(data, { cur: rec && rec.cur })) { status(I18n.t('fontmaker.status.reopened_recent')); fmCloudResumeAfterRestore(rec); } } } ]);
 }
 /* Draw-mode strokes arrive from disk like everything else — via ivritSafeParse, but shape/size are
    still untrusted. Hard caps + finite-only + clamps; anything malformed degrades to null (no strokes). */
