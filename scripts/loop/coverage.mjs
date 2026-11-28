@@ -50,8 +50,9 @@ const last = Object.fromEntries(SURFACE_PASSES.map(p => [p, {}]));   // pass →
 // parenthesis: "FIXED 2 (+ dashboard, i18n.js)" and "(trope was S480, not S365)" name no audited surface.
 const surfacesOf = head => {
   const out = []; const first = surfaceOf(head); if (first) out.push(first);
-  let core = head.replace(/^[\s\S]*?\*\*S\d+/, '').split(':')[0];
-  for (let i = 0; i < 3; i++) core = core.replace(/\([^()]*\)/g, ' ');
+  let core = head.replace(/^[\s\S]*?\*\*S\d+/, '');
+  for (let i = 0; i < 3; i++) core = core.replace(/\([^()]*\)/g, ' ');   // parentheses first: a colon inside one ("(14 commits to the page: …)") is not the row's
+  core = core.split(':')[0];
   for (const m of core.matchAll(/\+\s*`?([A-Za-z_]+(?:\.html)?)`?/g)) { const s = surfaceOf(m[1]); if (s && !out.includes(s)) out.push(s); }
   return out;
 };
