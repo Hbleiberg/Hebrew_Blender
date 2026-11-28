@@ -2783,7 +2783,15 @@ html.dark-early body .hol-ico, body.dark .hol-ico {
   .hk-tab.active, body.dark .hk-tab.active { background: Highlight; border-color: Highlight; color: HighlightText; forced-color-adjust: none; }
   /* The chosen pill of a segmented choice (the header language, the colour mode…) is a white fill on a tinted track. */
   .radio-group input:checked + label, body.dark .radio-group input:checked + label { background: Highlight; color: HighlightText; box-shadow: none; forced-color-adjust: none; }
-  .swm-chip.armed, body.dark .swm-chip.armed { outline: 3px solid Highlight; outline-offset: 1px; }   /* the week editor's armed chip: a ring, so its colour swatch and name stay as they are */
+  .swm-chip.armed, body.dark .swm-chip.armed { outline: 3px solid Highlight; outline-offset: 1px; }
+  /* An on / off switch is a filled track and a white knob, both forced to Canvas on Canvas: the drawer's switches vanished,
+     on and off alike. The Torah Trainer's rules: an edged track and a ButtonText knob; on, the selection pair. */
+  .slider { forced-color-adjust: none; background: Canvas; border: 1px solid ButtonText; }
+  .slider::before { background: ButtonText; }
+  input:checked + .slider { background: Highlight; border-color: Highlight; }
+  input:checked + .slider::before { background: HighlightText; }
+  input:disabled + .slider { border-color: GrayText; }
+  input:disabled + .slider::before { background: GrayText; }   /* the week editor's armed chip: a ring, so its colour swatch and name stay as they are */
   .font-opt.active .font-opt-preview, .font-opt.active .font-opt-name, .font-opt.active .font-opt-default, body.dark .font-opt.active .font-opt-preview,
   .emoji-set-btn.active[data-set="none"], body.dark .emoji-set-btn.active[data-set="none"] { color: HighlightText; }
 }
