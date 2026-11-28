@@ -1621,7 +1621,7 @@ aliyah on their own cycle: other verses).
   → `specialReadingKey` → the `HOLIDAY_READINGS` entry; a `.tt-special-chip` (`torah.reading.special_chip`,
   its tip `special_tip`, or `special_tip_haftarah` when the entry has no Torah `ref` — the parasha's own maftir
   is read then) and an *Open it* button (`openWeekSpecial` → `applyHolidayReading`); nothing is stored, the chip
-  is recomputed on every render — and the date lookup names it under any date's parasha.
+  is recomputed on every render — and the date lookup names it under any date's parasha. Another week's parasha names the special Shabbat of the date it is next read (`HebCal.nextOccurrence` → `specialShabbat` of that date, memoized per day, parasha and calendar in `_nextSpecialMemo`), dated: `torah.reading.special_chip_dated` ("Dec 5: Shabbat Chanukah — day 1"), its tip `special_tip_dated` / `special_tip_haftarah_dated`, the same *Open it* button.
 - **The special Shabbatot** (`HebCal.specialShabbat(date, {israel})`: what the Shabbat on or after `date` reads
   besides its parasha, or null). The keys (`HebCal.SPECIAL_KEYS`): `shekalim` / `shekalim_rosh_chodesh` (the
   Shabbat on or before 1 Adar — Adar II in a leap year — and whether it is 30 Shevat or 1 Adar), `zachor` (before

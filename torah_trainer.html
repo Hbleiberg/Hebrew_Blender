@@ -4886,20 +4886,42 @@ function specialReadingKey(sp) {   // specialShabbat's key → the HOLIDAY_READI
 }
 function weekSpecial() {
   if (!window.HebCal || !/^parsha-/.test(settings.scope || '')) return null;
-  const wk = localWeekReading();
-  const p = wk && wk.kind === 'parsha' ? parshiyotData.find(x => x.en === settings.parshahKey) : null;
-  if (!p || !wk.idx.includes(p.n - 1)) return null;
-  let sp = null;
-  try { sp = HebCal.specialShabbat(new Date(), { israel: settings.schedule === 'israel' }); } catch (e) { sp = null; }
+  const p = parshiyotData.find(x => x.en === settings.parshahKey);
+  if (!p) return null;
+  const israel = settings.schedule === 'israel', wk = localWeekReading();
+  let sp = null, date = null;
+  if (wk && wk.kind === 'parsha' && wk.idx.includes(p.n - 1)) {
+    try { sp = HebCal.specialShabbat(new Date(), { israel }); } catch (e) { sp = null; }
+  } else {
+    // Another week's parasha names the special Shabbat of the date it is next read (a teacher preparing next
+    // week's maftir), dated, since "This Shabbat" would be wrong. Memoized per day, parasha and calendar.
+    const k = `${new Date().toDateString()}|${p.n}|${israel}`;
+    if (!_nextSpecialMemo || _nextSpecialMemo.k !== k) {
+      let nx = null, s2 = null;
+      try { nx = HebCal.nextOccurrence(p.n - 1, new Date(), { israel }); s2 = nx ? HebCal.specialShabbat(nx.date, { israel }) : null; } catch (e) { nx = null; s2 = null; }
+      _nextSpecialMemo = { k, sp: s2, date: nx && nx.date };
+    }
+    sp = _nextSpecialMemo.sp; date = _nextSpecialMemo.date;
+  }
   const h = sp ? holidayByKey(specialReadingKey(sp)) : null;
-  return h ? { special: sp, reading: h } : null;
+  return h ? { special: sp, reading: h, date } : null;
 }
+let _nextSpecialMemo = null;
 function weekSpecialHTML() {
   const w = weekSpecial();
   if (!w) return '';
-  const name = holidayName(w.reading), chip = I18n.t('torah.reading.special_chip', { name });
-  const tipKey = w.reading.ref ? 'torah.reading.special_tip' : 'torah.reading.special_tip_haftarah';   // ref:null = the haftarah alone
-  return ` <span class="tt-notice-chip tt-special-chip" aria-label="${esc(chip)}" data-tip="${esc(I18n.t(tipKey, { name }))}">${esc(chip)}</span>`
+  const name = holidayName(w.reading);
+  let chip, tip;
+  if (w.date) {
+    let date;
+    try { date = w.date.toLocaleDateString(I18n.lang === 'he' ? 'he-IL' : 'en-US', { month: 'short', day: 'numeric' }); } catch (e) { date = `${w.date.getMonth() + 1}/${w.date.getDate()}`; }
+    chip = I18n.t('torah.reading.special_chip_dated', { date, name });
+    tip = I18n.t(w.reading.ref ? 'torah.reading.special_tip_dated' : 'torah.reading.special_tip_haftarah_dated', { date, name });
+  } else {
+    chip = I18n.t('torah.reading.special_chip', { name });
+    tip = I18n.t(w.reading.ref ? 'torah.reading.special_tip' : 'torah.reading.special_tip_haftarah', { name });   // ref:null = the haftarah alone
+  }
+  return ` <span class="tt-notice-chip tt-special-chip" aria-label="${esc(chip)}" data-tip="${esc(tip)}">${esc(chip)}</span>`
     + ` <button type="button" class="btn btn-xs btn-secondary tt-special-open" onclick="openWeekSpecial()">${esc(I18n.t('torah.reading.special_open'))}</button>`;
 }
 function openWeekSpecial() { const w = weekSpecial(); if (w) { clearLoop(); applyHolidayReading(w.reading); } }
