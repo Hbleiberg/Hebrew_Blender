@@ -1284,11 +1284,11 @@ body.dark .fc-badge { color: var(--navy-deep); }   /* white on the dark tokens r
 body.dark .lc-replay { color: var(--gold-light); }
 .lc-replay .hi { width: 1em; height: 1em; }   /* the speaker at the button's 2.5rem, the size of the 🔊 it replaced (the shared .hi pins 16px) */
 .lc-hint { font-size: 0.92rem; color: var(--ink-soft); text-align: center; min-height: 1.2em; }
-.lc-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.lc-choices { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }   /* minmax: a long word's min-content widened its column and ran the grid past the card (lcFitWords sizes it to the tile instead) */
 /* Three short answers share one row where the card is wide enough (renderListeningCard sets .lc-three); two columns
    left the third alone under the other two. Four stay two by two, a phone keeps two columns, and a longer word keeps
    the two-column tile it needs. */
-@media (min-width: 560px) { .lc-choices.lc-three { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 560px) { .lc-choices.lc-three { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 .lc-tile {
   min-height: 82px; padding: 12px 10px; position: relative;   /* anchors the .lc-key number badge */
   border: 2px solid var(--border-strong); border-radius: 14px;
@@ -9043,6 +9043,20 @@ function setListenHint() {
   if (!hint) return;
   hint.textContent = listenHeard ? I18n.t('flashcards.card.listen_hint_heard') : I18n.t('flashcards.card.listen_hint_tap');
 }
+// A few dictionary words (a 12–15 letter loanword: אֶפִּיסְטֵמוֹלוֹגְיָה) are wider than a two-column tile at its 3rem and
+// ran past its edge. A word that does not fit its tile is set just small enough to fit; every other word keeps the
+// tile's size. Measured once the tiles are laid out (a hidden card measures 0 and is left as it is).
+function lcFitWords(grid) {
+  grid.querySelectorAll('.lc-tile').forEach(t => {
+    const w = t.querySelector('.lc-heb, .lc-num'); if (!w) return;
+    w.style.fontSize = '';
+    const cs = getComputedStyle(t);
+    const room = t.clientWidth - parseFloat(cs.paddingInlineStart) - parseFloat(cs.paddingInlineEnd);
+    const need = w.getBoundingClientRect().width;
+    if (room > 0 && need > room) w.style.fontSize = (parseFloat(getComputedStyle(w).fontSize) * room / need * 0.97).toFixed(1) + 'px';
+  });
+}
+window.addEventListener('resize', () => { const g = document.getElementById('lcChoices'); if (g && g.offsetParent) lcFitWords(g); });   // a turned phone re-fits (four tiles)
 function renderListeningCard(card) {
   listenLocked = false;
   listenHeard = false;   // each card starts silent — the student taps 🔊 to hear it
@@ -9078,6 +9092,7 @@ function renderListeningCard(card) {
     b.disabled = true;   // the answers wait for the speaker (below)
     grid.appendChild(b);
   });
+  lcFitWords(grid);
   // Revisiting an already-graded card (via Prev): lock and reveal the correct tile.
   const graded = scores[currentIndex] === true || scores[currentIndex] === false;
   if (graded) {
